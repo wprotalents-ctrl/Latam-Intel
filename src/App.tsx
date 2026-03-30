@@ -80,7 +80,88 @@ const TRANSLATIONS = {
     latAmSignal: "LatAm Signal",
     aiToolOfWeek: "AI Tool of the Week",
     countryWatch: "Country Watch",
-    fiveLinks: "Five Links Worth Your Time"
+    fiveLinks: "Five Links Worth Your Time",
+    fxRates: "FX RATES // LIVE",
+    ago: "AGO",
+    openReport: "OPEN REPORT",
+    generatingSignal: "GENERATING SIGNAL...",
+    generateNewBriefing: "GENERATE NEW BRIEFING",
+    systemsNominal: "SYSTEMS NOMINAL",
+    total: "TOTAL",
+    queue: "QUEUE",
+    feeds: "FEEDS",
+    night: "Night",
+    customize: "Customize",
+    rotation: "Rotation",
+    resume: "Resume",
+    pause: "Pause",
+    muted: "Muted",
+    unmuted: "Unmuted",
+    sourceLink: "Source ↗",
+    edt: "EDT",
+    data: "DATA",
+    beta: "SITDECK BETA",
+    scanning: "SCANNING...",
+    aircraft: "AIRCRAFT",
+    systemLogTitle: "SYSTEM LOG",
+    logMsgs: [
+      "Satellite Link Established: SECTOR_7",
+      "New Signal Detected: 35.41217, -50.55469",
+      "Encrypted Feed Decrypted: CH_04",
+      "Conflict Monitor Alert: Sector 4",
+      "Data Ingestion Complete: LATAM_NORTH",
+      "System Nominal: All Nodes Active",
+      "Unauthorized Access Attempt Blocked: IP_88.1.2.3"
+    ],
+    sent: "SENT",
+    marketPulseItems: [
+      { label: 'FinTech BR', value: 'High', trend: '+12.4%', sentiment: '+2.1' },
+      { label: 'Nearshore MX', value: 'Peak', trend: '+8.1%', sentiment: '+1.9' },
+      { label: 'SaaS CO', value: 'Rising', trend: '+4.2%', sentiment: '+0.8' }
+    ],
+    aiToolScores: [
+      { label: 'SPEED', score: 5 },
+      { label: 'SPANISH', score: 4 },
+      { label: 'VALUE', score: 5 },
+      { label: 'EXEC REL', score: 5 }
+    ],
+    // LatAm Signal Content
+    signalTitle: "Lithium’s Value-Add Pivot: The Andean Manufacturing Play",
+    signalDesc1: "The discovery of new lithium deposits in the Andean triangle is a distraction; the real signal is the aggressive shift in Chilean and Argentine regulatory frameworks toward mandatory local processing. We are seeing a 30% increase in 'local content' clauses in recent mining concessions. Governments are no longer content with extraction royalties; they are demanding battery component assembly as a condition for access.",
+    signalDesc2: "For the LatAm executive, this is a supply chain and talent problem. The talent pool for specialized chemical and process engineering in the Andean region is currently at 95% utilization. If you are planning energy-intensive infrastructure—specifically data centers or localized hardware manufacturing—you are now competing with state-backed industrial projects for the same limited pool of technical talent.",
+    signalSoWhat: "Audit your hardware supply chain for Andean lithium exposure and begin scouting technical talent in Salta and Antofagasta today to avoid the 40% wage premium coming when these processing plants go live in 2027.",
+    // AI Tool Content
+    aiToolName: "PERPLEXITY PRO",
+    aiToolTitle: "Stopping the 'Google Search' Time Sink",
+    aiToolDesc: "The problem isn't finding information; it's the 45 minutes spent filtering SEO-spam to find one credible regulatory update. Perplexity Pro solves this by providing cited, real-time answers from the live web.",
+    aiToolWorkflowLabel: "MY WORKFLOW",
+    aiToolWorkflow: "I tested this for 7 days for market intelligence. I prompted it to 'Monitor the Chilean Official Gazette (Diario Oficial) for any new decrees regarding lithium concession bidding windows,' specifically requesting sources in Spanish. It returned a 3-paragraph summary with direct links to the PDF decrees, saving me roughly 3 hours of manual searching.",
+    aiToolLimitation: "Limitation: It occasionally hallucinates specific dates in complex legal text; always click the citation link for the final 'sign-off.'",
+    aiToolVerdict: "Verdict for LatAm executives: A mandatory replacement for traditional search if you value your time more than $20/month.",
+    // Country Watch Content
+    countryWatchItems: [
+      { country: "Brazil", flag: "🇧🇷", text: "FinTechs pivoting from growth to ARPU; marketing spend down 20%. Profitability is the new growth; audit unit economics before the next board meeting." },
+      { country: "Mexico", flag: "🇲🇽", text: "Monterrey/Guadalajara engineering capacity hits 98%; salaries up 40%. Stop hunting for 'perfect' bilinguals; hire for technical excellence and build the communication layer internally." },
+      { country: "Chile", flag: "🇨🇱", text: "New 30% 'local content' mandate for lithium processing confirmed. Expect a 40% wage premium for chemical engineers in Antofagasta. Audit energy storage supply chains now." }
+    ],
+    // Five Links Content
+    fiveLinksItems: [
+      { title: "Lithium Value-Add Pivot", source: "REUTERS", why: "Mandatory local processing in Chile/Argentina is the new supply chain bottleneck for hardware and data center projects." },
+      { title: "The 'Rappi Mafia' Second Wave", source: "LATAM INTEL", why: "Medellín’s B2B SaaS density now rivals São Paulo; benchmark your regional expansion against these leaner 40% margin startups." }
+    ],
+    // News Feed Content
+    newsFeedItems: [
+      { title: "New lithium deposits discovered in Andean triangle", source: "REUTERS", time: "2h" },
+      { title: "Satellite imagery confirms movement of heavy machinery near Sector 7", source: "INTEL_SAT", time: "4h" },
+      { title: "Twenty-two migrants missing after boat sinks off Brazil coast", source: "BBC", time: "6h" },
+      { title: "Morocco claims Western Sahara sovereignty at UN summit", source: "AL JAZEERA", time: "8h" },
+      { title: "Houthi ballistic missile launch detected in Red Sea sector", source: "OSINT_TECH", time: "10h" }
+    ],
+    cinemaCards: [
+      { type: 'SOCIAL', time: '2m ago', content: "@Osinttechnical: Notably, at least one officer from Air Command Center, Ukraine's most prolific user of the PATRIOT, is present.", author: '@osinttechnical', color: 'text-blue-500', dot: 'bg-blue-500' },
+      { type: 'INTEL', time: '8m ago', content: "Satellite imagery confirms movement of heavy machinery near the border of Sector 7. High probability of infrastructure deployment.", author: 'GEO: 22.316°, 113.937°', color: 'text-accent', dot: 'bg-accent' },
+      { type: 'SIGNAL', time: '15m ago', content: "Unusual frequency spike detected in the 450MHz band. Originating from maritime coordinates in the South Atlantic.", author: 'SIGINT-BETA', color: 'text-green-500', dot: 'bg-green-500' }
+    ]
   },
   ES: {
     dashboard: "Panel",
@@ -126,7 +207,88 @@ const TRANSLATIONS = {
     latAmSignal: "Señal LatAm",
     aiToolOfWeek: "Herramienta IA de la Semana",
     countryWatch: "Vigilancia de Países",
-    fiveLinks: "Cinco Enlaces que Valen tu Tiempo"
+    fiveLinks: "Cinco Enlaces que Valen tu Tiempo",
+    fxRates: "TASAS DE CAMBIO // EN VIVO",
+    ago: "ATRÁS",
+    openReport: "ABRIR INFORME",
+    generatingSignal: "GENERANDO SEÑAL...",
+    generateNewBriefing: "GENERAR NUEVO INFORME",
+    systemsNominal: "SISTEMAS NOMINALES",
+    total: "TOTAL",
+    queue: "COLA",
+    feeds: "FUENTES",
+    night: "Noche",
+    customize: "Personalizar",
+    rotation: "Rotación",
+    resume: "Reanudar",
+    pause: "Pausa",
+    muted: "Silenciado",
+    unmuted: "Sonido",
+    sourceLink: "Fuente ↗",
+    edt: "EDT",
+    data: "DATOS",
+    beta: "SITDECK BETA",
+    scanning: "ESCANEANDO...",
+    aircraft: "AERONAVES",
+    systemLogTitle: "LOG DEL SISTEMA",
+    logMsgs: [
+      "Enlace Satelital Establecido: SECTOR_7",
+      "Nueva Señal Detectada: 35.41217, -50.55469",
+      "Feed Encriptado Decodificado: CH_04",
+      "Alerta del Monitor de Conflictos: Sector 4",
+      "Ingestión de Datos Completa: LATAM_NORTH",
+      "Sistema Nominal: Todos los Nodos Activos",
+      "Intento de Acceso No Autorizado Bloqueado: IP_88.1.2.3"
+    ],
+    sent: "SENT",
+    marketPulseItems: [
+      { label: 'FinTech BR', value: 'Alto', trend: '+12.4%', sentiment: '+2.1' },
+      { label: 'Nearshore MX', value: 'Pico', trend: '+8.1%', sentiment: '+1.9' },
+      { label: 'SaaS CO', value: 'Creciente', trend: '+4.2%', sentiment: '+0.8' }
+    ],
+    aiToolScores: [
+      { label: 'VELOCIDAD', score: 5 },
+      { label: 'ESPAÑOL', score: 4 },
+      { label: 'VALOR', score: 5 },
+      { label: 'REL EJEC', score: 5 }
+    ],
+    // LatAm Signal Content
+    signalTitle: "Pivote de Valor Agregado del Litio: La Jugada de Manufactura Andina",
+    signalDesc1: "El descubrimiento de nuevos depósitos de litio en el triángulo andino es una distracción; la verdadera señal es el cambio agresivo en los marcos regulatorios de Chile y Argentina hacia el procesamiento local obligatorio. Estamos viendo un aumento del 30% en las cláusulas de 'contenido local' en las concesiones mineras recientes. Los gobiernos ya no se conforman con las regalías de extracción; están exigiendo el ensamblaje de componentes de baterías como condición para el acceso.",
+    signalDesc2: "Para el ejecutivo de LatAm, esto es un problema de cadena de suministro y talento. El pool de talento para ingeniería química y de procesos especializada en la región andina está actualmente al 95% de utilización. Si está planeando infraestructura intensiva en energía, específicamente centros de datos o fabricación de hardware local, ahora compite con proyectos industriales respaldados por el estado por el mismo pool limitado de talento técnico.",
+    signalSoWhat: "Audite su cadena de suministro de hardware para la exposición al litio andino y comience a buscar talento técnico en Salta y Antofagasta hoy mismo para evitar la prima salarial del 40% que vendrá cuando estas plantas de procesamiento entren en funcionamiento en 2027.",
+    // AI Tool Content
+    aiToolName: "PERPLEXITY PRO",
+    aiToolTitle: "Deteniendo la Pérdida de Tiempo en 'Búsquedas de Google'",
+    aiToolDesc: "El problema no es encontrar información; son los 45 minutos que se pasan filtrando el spam de SEO para encontrar una actualización regulatoria creíble. Perplexity Pro resuelve esto proporcionando respuestas citadas en tiempo real de la web en vivo.",
+    aiToolWorkflowLabel: "MI FLUJO DE TRABAJO",
+    aiToolWorkflow: "Probé esto durante 7 días para inteligencia de mercado. Le pedí: 'Monitorea el Diario Oficial de Chile para cualquier nuevo decreto sobre ventanas de licitación de concesiones de litio', solicitando específicamente fuentes en español. Devolvió un resumen de 3 párrafos con enlaces directos a los decretos en PDF, ahorrándome aproximadamente 3 horas de búsqueda manual.",
+    aiToolLimitation: "Limitación: Ocasionalmente alucina fechas específicas en textos legales complejos; siempre haga clic en el enlace de la cita para la 'aprobación' final.",
+    aiToolVerdict: "Veredicto para ejecutivos de LatAm: Un reemplazo obligatorio para la búsqueda tradicional si valora su tiempo más que $20 al mes.",
+    // Country Watch Content
+    countryWatchItems: [
+      { country: "Brasil", flag: "🇧🇷", text: "FinTechs pivotando del crecimiento al ARPU; gasto en marketing bajó un 20%. La rentabilidad es el nuevo crecimiento; audite la economía unitaria antes de la próxima reunión de junta." },
+      { country: "México", flag: "🇲🇽", text: "La capacidad de ingeniería en Monterrey/Guadalajara llega al 98%; salarios subieron un 40%. Deje de buscar bilingües 'perfectos'; contrate por excelencia técnica y construya la capa de comunicación internamente." },
+      { country: "Chile", flag: "🇨🇱", text: "Confirmado nuevo mandato de 30% de 'contenido local' para el procesamiento de litio. Espere una prima salarial del 40% para ingenieros químicos en Antofagasta. Audite las cadenas de suministro de almacenamiento de energía ahora." }
+    ],
+    // Five Links Content
+    fiveLinksItems: [
+      { title: "Pivote de Valor Agregado del Litio", source: "REUTERS", why: "El procesamiento local obligatorio en Chile/Argentina es el nuevo cuello de botella de la cadena de suministro para proyectos de hardware y centros de datos." },
+      { title: "La Segunda Ola de la 'Mafia Rappi'", source: "LATAM INTEL", why: "La densidad de SaaS B2B de Medellín ahora rivaliza con São Paulo; compare su expansión regional con estas startups más ágiles con márgenes del 40%." }
+    ],
+    // News Feed Content
+    newsFeedItems: [
+      { title: "Nuevos depósitos de litio descubiertos en el triángulo andino", source: "REUTERS", time: "2h" },
+      { title: "Imágenes satelitales confirman movimiento de maquinaria pesada cerca del Sector 7", source: "INTEL_SAT", time: "4h" },
+      { title: "Veintidós migrantes desaparecidos tras hundimiento de bote frente a costa de Brasil", source: "BBC", time: "6h" },
+      { title: "Marruecos reclama soberanía del Sáhara Occidental en cumbre de la ONU", source: "AL JAZEERA", time: "8h" },
+      { title: "Detectado lanzamiento de misil balístico Houthi en sector del Mar Rojo", source: "OSINT_TECH", time: "10h" }
+    ],
+    cinemaCards: [
+      { type: 'SOCIAL', time: 'hace 2m', content: "@Osinttechnical: Notablemente, al menos un oficial del Centro de Comando Aéreo, el usuario más prolífico del PATRIOT en Ucrania, está presente.", author: '@osinttechnical', color: 'text-blue-500', dot: 'bg-blue-500' },
+      { type: 'INTEL', time: 'hace 8m', content: "Imágenes satelitales confirman el movimiento de maquinaria pesada cerca de la frontera del Sector 7. Alta probabilidad de despliegue de infraestructura.", author: 'GEO: 22.316°, 113.937°', color: 'text-accent', dot: 'bg-accent' },
+      { type: 'SIGNAL', time: 'hace 15m', content: "Detectado pico de frecuencia inusual en la banda de 450MHz. Originado en coordenadas marítimas en el Atlántico Sur.", author: 'SIGINT-BETA', color: 'text-green-500', dot: 'bg-green-500' }
+    ]
   },
   PT: {
     dashboard: "Painel",
@@ -170,9 +332,90 @@ const TRANSLATIONS = {
     localTriangulation: "Triangulação Local",
     visualTelemetry: "Telemetria Visual",
     latAmSignal: "Sinal LatAm",
-    aiToolOfWeek: "Ferramenta IA da Semana",
+    aiToolOfWeek: "Ferramenta de IA da Semana",
     countryWatch: "Vigilância de Países",
-    fiveLinks: "Cinco Links que Valem seu Tempo"
+    fiveLinks: "Cinco Links que Valem seu Tempo",
+    fxRates: "TAXAS DE CÂMBIO // AO VIVO",
+    ago: "ATRÁS",
+    openReport: "ABRIR RELATÓRIO",
+    generatingSignal: "GERANDO SINAL...",
+    generateNewBriefing: "GERAR NOVO RELATÓRIO",
+    systemsNominal: "SISTEMAS NOMINAIS",
+    total: "TOTAL",
+    queue: "FILA",
+    feeds: "FONTES",
+    night: "Noite",
+    customize: "Personalizar",
+    rotation: "Rotação",
+    resume: "Retomar",
+    pause: "Pausa",
+    muted: "Mudo",
+    unmuted: "Som",
+    sourceLink: "Fonte ↗",
+    edt: "EDT",
+    data: "DADOS",
+    beta: "SITDECK BETA",
+    scanning: "ESCANEANDO...",
+    aircraft: "AERONAVES",
+    systemLogTitle: "LOG DO SISTEMA",
+    logMsgs: [
+      "Link de Satélite Estabelecido: SECTOR_7",
+      "Novo Sinal Detectado: 35.41217, -50.55469",
+      "Feed Criptografado Decifrado: CH_04",
+      "Alerta do Monitor de Conflitos: Setor 4",
+      "Ingestão de Dados Concluída: LATAM_NORTH",
+      "Sistema Nominal: Todos os Nós Ativos",
+      "Tentativa de Acesso Não Autorizado Bloqueada: IP_88.1.2.3"
+    ],
+    sent: "SENT",
+    marketPulseItems: [
+      { label: 'FinTech BR', value: 'Alto', trend: '+12.4%', sentiment: '+2.1' },
+      { label: 'Nearshore MX', value: 'Pico', trend: '+8.1%', sentiment: '+1.9' },
+      { label: 'SaaS CO', value: 'Crescente', trend: '+4.2%', sentiment: '+0.8' }
+    ],
+    aiToolScores: [
+      { label: 'VELOCIDADE', score: 5 },
+      { label: 'ESPANHOL', score: 4 },
+      { label: 'VALOR', score: 5 },
+      { label: 'REL EXEC', score: 5 }
+    ],
+    // LatAm Signal Content
+    signalTitle: "Pivô de Valor Agregado do Lítio: A Jogada de Manufatura Andina",
+    signalDesc1: "A descoberta de novos depósitos de lítio no triângulo andino é uma distração; o sinal real é a mudança agressiva nos marcos regulatórios chileno e argentino em direção ao processamento local obrigatório. Estamos vendo um aumento de 30% nas cláusulas de 'conteúdo local' em concessões de mineração recentes. Os governos não estão mais satisfeitos com os royalties de extração; eles estão exigindo a montagem de componentes de bateria como condição para o acesso.",
+    signalDesc2: "Para o executivo da LatAm, este é um problema de cadeia de suprimentos e talentos. O pool de talentos para engenharia química e de processos especializada na região andina está atualmente com 95% de utilização. Se você está planejando infraestrutura intensiva em energia — especificamente data centers ou fabricação de hardware localizado — você está agora competindo com projetos industriais apoiados pelo estado pelo mesmo pool limitado de talentos técnicos.",
+    signalSoWhat: "Audite sua cadeia de suprimentos de hardware para exposição ao lítio andino e comece a buscar talentos técnicos em Salta e Antofagasta hoje para evitar o prêmio salarial de 40% que virá quando essas plantas de processamento entrarem em operação em 2027.",
+    // AI Tool Content
+    aiToolName: "PERPLEXITY PRO",
+    aiToolTitle: "Parando a Perda de Tempo com 'Buscas no Google'",
+    aiToolDesc: "O problema não é encontrar informações; são os 45 minutos gastos filtrando spam de SEO para encontrar uma atualização regulatória confiável. O Perplexity Pro resolve isso fornecendo respostas citadas em tempo real da web ao vivo.",
+    aiToolWorkflowLabel: "MEU FLUXO DE TRABALHO",
+    aiToolWorkflow: "Testei isso por 7 dias para inteligência de mercado. Eu o instruí a 'Monitorar o Diário Oficial do Chile (Diario Oficial) para quaisquer novos decretos sobre janelas de licitação de concessão de lítio', solicitando especificamente fontes em espanhol. Ele retornou um resumo de 3 parágrafos com links diretos para os decretos em PDF, economizando cerca de 3 horas de pesquisa manual.",
+    aiToolLimitation: "Limitação: Ocasionalmente alucina datas específicas em textos legais complexos; sempre clique no link da citação para a 'aprovação' final.",
+    aiToolVerdict: "Veredicto para executivos da LatAm: Uma substituição obrigatória para a busca tradicional se você valoriza seu tempo mais do que US$ 20/mês.",
+    // Country Watch Content
+    countryWatchItems: [
+      { country: "Brasil", flag: "🇧🇷", text: "FinTechs pivotando do crescimento para o ARPU; gastos com marketing caíram 20%. Rentabilidade é o novo crescimento; audite a economia unitária antes da próxima reunião do conselho." },
+      { country: "México", flag: "🇲🇽", text: "A capacidade de engenharia em Monterrey/Guadalajara atinge 98%; salários subiram 40%. Pare de caçar bilingues 'perfeitos'; contrate por excelência técnica e construya a camada de comunicação internamente." },
+      { country: "Chile", flag: "🇨🇱", text: "Confirmado novo mandato de 30% de 'conteúdo local' para o processamento de lítio. Espere um prêmio salarial de 40% para engenheiros químicos em Antofagasta. Audite as cadeias de suprimentos de armazenamento de energia agora." }
+    ],
+    // Five Links Content
+    fiveLinksItems: [
+      { title: "Pivô de Valor Agregado do Lítio", source: "REUTERS", why: "O processamento local obrigatório no Chile/Argentina é o novo gargalo da cadeia de suprimentos para projetos de hardware e data centers." },
+      { title: "A Segunda Onda da 'Máfia Rappi'", source: "LATAM INTEL", why: "A densidade de SaaS B2B de Medellín agora rivaliza com São Paulo; compare sua expansão regional com essas startups mais enxutas com margem de 40%." }
+    ],
+    // News Feed Content
+    newsFeedItems: [
+      { title: "Novos depósitos de lítio descobertos no triângulo andino", source: "REUTERS", time: "2h" },
+      { title: "Imagens de satélite confirmam movimento de maquinário pesado perto do Setor 7", source: "INTEL_SAT", time: "4h" },
+      { title: "Vinte e dois migrantes desaparecidos após naufrágio de barco na costa do Brasil", source: "BBC", time: "6h" },
+      { title: "Marrocos reivindica soberania do Saara Ocidental em cúpula da ONU", source: "AL JAZEERA", time: "8h" },
+      { title: "Detectado lançamento de míssil balístico Houthi no setor do Mar Vermelho", source: "OSINT_TECH", time: "10h" }
+    ],
+    cinemaCards: [
+      { type: 'SOCIAL', time: 'há 2m', content: "@Osinttechnical: Notavelmente, pelo menos um oficial do Centro de Comando Aéreo, o usuário mais prolífico do PATRIOT na Ucrânia, está presente.", author: '@osinttechnical', color: 'text-blue-500', dot: 'bg-blue-500' },
+      { type: 'INTEL', time: 'há 8m', content: "Imagens de satélite confirmam o movimento de maquinário pesado perto da fronteira do Setor 7. Alta probabilidade de implantação de infraestrutura.", author: 'GEO: 22.316°, 113.937°', color: 'text-accent', dot: 'bg-accent' },
+      { type: 'SIGNAL', time: 'há 15m', content: "Pico de frequência incomum detectado na banda de 450MHz. Originário de coordenadas marítimas no Atlântico Sul.", author: 'SIGINT-BETA', color: 'text-green-500', dot: 'bg-green-500' }
+    ]
   }
 };
 
@@ -222,7 +465,8 @@ const WorldMap = () => (
   </div>
 );
 
-const RadarWidget = () => {
+const RadarWidget = ({ lang }: { lang: Language }) => {
+  const t = TRANSLATIONS[lang];
   const [blips, setBlips] = useState<{ id: number; x: number; y: number; opacity: number }[]>([]);
 
   useEffect(() => {
@@ -268,26 +512,19 @@ const RadarWidget = () => {
         ))}
       </div>
       <div className="z-10 flex flex-col items-center bg-black/40 p-2 backdrop-blur-sm border border-white/5">
-        <div className="mono text-[8px] text-accent font-bold mb-1">SCANNING...</div>
-        <div className="mono text-[12px] font-black text-white">177 AIRCRAFT</div>
+        <div className="mono text-[8px] text-accent font-bold mb-1">{t.scanning}</div>
+        <div className="mono text-[12px] font-black text-white">177 {t.aircraft}</div>
       </div>
     </div>
   );
 };
 
 const SystemLog = ({ lang }: { lang: Language }) => {
+  const t = TRANSLATIONS[lang];
   const [logs, setLogs] = useState<{ id: number; time: string; msg: string; type: 'INFO' | 'WARN' | 'CRIT' }[]>([]);
 
   useEffect(() => {
-    const messages = [
-      "Satellite Link Established: SECTOR_7",
-      "New Signal Detected: 35.41217, -50.55469",
-      "Encrypted Feed Decrypted: CH_04",
-      "Conflict Monitor Alert: Sector 4",
-      "Data Ingestion Complete: LATAM_NORTH",
-      "System Nominal: All Nodes Active",
-      "Unauthorized Access Attempt Blocked: IP_88.1.2.3"
-    ];
+    const messages = t.logMsgs;
 
     const interval = setInterval(() => {
       setLogs(prev => [
@@ -301,13 +538,13 @@ const SystemLog = ({ lang }: { lang: Language }) => {
       ]);
     }, 3000);
     return () => clearInterval(interval);
-  }, []);
+  }, [t.logMsgs]);
 
   return (
     <div className="bg-surface border border-border p-4 h-48 overflow-hidden flex flex-col">
       <div className="flex items-center justify-between mb-2">
         <div className="mono text-[9px] text-white/40 flex items-center gap-2">
-          <Activity size={10} className="text-accent" /> SYSTEM LOG
+          <Activity size={10} className="text-accent" /> {t.systemLogTitle}
         </div>
         <div className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse" />
       </div>
@@ -324,41 +561,16 @@ const SystemLog = ({ lang }: { lang: Language }) => {
   );
 };
 
-const CinemaGlobe = () => {
+const CinemaGlobe = ({ lang }: { lang: Language }) => {
   const [activeCard, setActiveCard] = useState(0);
-  const cards = [
-    {
-      type: 'SOCIAL',
-      time: '2m ago',
-      content: "@Osinttechnical: Notably, at least one officer from Air Command Center, Ukraine's most prolific user of the PATRIOT, is present.",
-      author: '@osinttechnical',
-      color: 'text-blue-500',
-      dot: 'bg-blue-500'
-    },
-    {
-      type: 'INTEL',
-      time: '8m ago',
-      content: "Satellite imagery confirms movement of heavy machinery near the border of Sector 7. High probability of infrastructure deployment.",
-      author: 'GEO: 22.316°, 113.937°',
-      color: 'text-accent',
-      dot: 'bg-accent'
-    },
-    {
-      type: 'SIGNAL',
-      time: '15m ago',
-      content: "Unusual frequency spike detected in the 450MHz band. Originating from maritime coordinates in the South Atlantic.",
-      author: 'SIGINT-BETA',
-      color: 'text-green-500',
-      dot: 'bg-green-500'
-    }
-  ];
+  const cards = TRANSLATIONS[lang].cinemaCards;
 
   useEffect(() => {
     const interval = setInterval(() => {
       setActiveCard((prev) => (prev + 1) % cards.length);
     }, 8000);
     return () => clearInterval(interval);
-  }, []);
+  }, [cards.length]);
 
   return (
     <div className="relative w-full h-full flex items-center justify-center overflow-hidden">
@@ -436,7 +648,7 @@ const CinemaGlobe = () => {
             </p>
             <div className="flex items-center justify-between mono text-[8px] text-white/40 border-t border-white/10 pt-4">
               <span>{cards[activeCard].author}</span>
-              <span className="text-accent">Source ↗</span>
+              <span className="text-accent">{TRANSLATIONS[lang].sourceLink}</span>
             </div>
           </motion.div>
         </AnimatePresence>
@@ -483,7 +695,7 @@ export default function App() {
             <div className="w-8 h-8 bg-accent flex items-center justify-center text-black font-black text-xl">L</div>
             <div className="flex flex-col text-left">
               <h1 className="text-sm font-black uppercase tracking-tighter leading-none">LatAm Intel</h1>
-              <span className="mono text-[8px] text-accent/60">SITDECK BETA</span>
+              <span className="mono text-[8px] text-accent/60">{t.beta}</span>
             </div>
           </button>
 
@@ -508,12 +720,12 @@ export default function App() {
             <div className="flex items-center gap-2 text-white/40">
               <Clock size={12} />
               <span className="text-accent font-bold">{currentTime.toLocaleTimeString([], { hour12: false })}</span>
-              <span className="opacity-50">EDT</span>
+              <span className="opacity-50">{t.edt}</span>
             </div>
             <div className="w-px h-4 bg-border" />
             <div className="flex items-center gap-2 text-white/40">
               <Activity size={12} />
-              <span className="text-green-500 font-bold">DATA</span>
+              <span className="text-green-500 font-bold">{t.data}</span>
             </div>
           </div>
           
@@ -539,19 +751,19 @@ export default function App() {
       <div className="border-b border-border bg-surface/50 backdrop-blur-md flex items-center px-6 py-2 gap-6 overflow-x-auto no-scrollbar">
         <div className="flex items-center gap-4">
           <button className="flex items-center gap-2 mono text-[9px] text-white/40 hover:text-white transition-colors">
-            <Activity size={12} /> Rotation
+            <Activity size={12} /> {t.rotation}
           </button>
           <button 
             onClick={() => setIsPaused(!isPaused)}
             className="flex items-center gap-2 mono text-[9px] text-white/40 hover:text-white transition-colors"
           >
-            {isPaused ? <Play size={12} /> : <Pause size={12} />} {isPaused ? 'Resume' : 'Pause'}
+            {isPaused ? <Play size={12} /> : <Pause size={12} />} {isPaused ? t.resume : t.pause}
           </button>
           <button 
             onClick={() => setIsMuted(!isMuted)}
             className="flex items-center gap-2 mono text-[9px] text-white/40 hover:text-white transition-colors"
           >
-            {isMuted ? <VolumeX size={12} /> : <Volume2 size={12} />} {isMuted ? 'Muted' : 'Unmuted'}
+            {isMuted ? <VolumeX size={12} /> : <Volume2 size={12} />} {isMuted ? t.muted : t.unmuted}
           </button>
         </div>
         <div className="w-px h-4 bg-border" />
@@ -566,16 +778,16 @@ export default function App() {
         <div className="w-px h-4 bg-border" />
         <div className="flex items-center gap-4">
           <button className="flex items-center gap-2 mono text-[9px] text-white/40 hover:text-white transition-colors">
-            <Moon size={12} /> Night
+            <Moon size={12} /> {t.night}
           </button>
           <button className="flex items-center gap-2 mono text-[9px] text-white/40 hover:text-white transition-colors">
-            <Settings size={12} /> Customize
+            <Settings size={12} /> {t.customize}
           </button>
         </div>
         <div className="ml-auto flex items-center gap-4">
-          <div className="mono text-[9px] text-white/20">TOTAL <span className="text-white">60</span></div>
-          <div className="mono text-[9px] text-white/20">QUEUE <span className="text-white">0</span></div>
-          <div className="mono text-[9px] text-white/20">FEEDS <span className="text-white">0</span></div>
+          <div className="mono text-[9px] text-white/20">{t.total} <span className="text-white">60</span></div>
+          <div className="mono text-[9px] text-white/20">{t.queue} <span className="text-white">0</span></div>
+          <div className="mono text-[9px] text-white/20">{t.feeds} <span className="text-white">0</span></div>
         </div>
       </div>
 
@@ -589,7 +801,7 @@ export default function App() {
               exit={{ opacity: 0 }}
               className="absolute inset-0"
             >
-              <CinemaGlobe />
+              <CinemaGlobe lang={lang} />
               
               {/* Right Sidebar Overlays */}
               <div className="absolute top-6 right-6 w-96 flex flex-col gap-6 pointer-events-none">
@@ -685,7 +897,7 @@ export default function App() {
                         <Activity size={10} className="text-accent" /> {t.radar}
                       </div>
                     </div>
-                    <RadarWidget />
+                    <RadarWidget lang={lang} />
                     <div className="mt-4 space-y-2">
                       {[
                         { label: 'Commercial', color: 'bg-green-500' },
@@ -716,18 +928,18 @@ export default function App() {
                     </div>
                     <div className="flex-1">
                       <h4 className="text-xl font-black uppercase tracking-tight mb-4 text-white">
-                        Lithium’s Value-Add Pivot: The Andean Manufacturing Play
+                        {t.signalTitle}
                       </h4>
                       <p className="text-xs leading-relaxed text-white/70 mb-4">
-                        The discovery of new lithium deposits in the Andean triangle is a distraction; the real signal is the aggressive shift in Chilean and Argentine regulatory frameworks toward mandatory local processing. We are seeing a 30% increase in "local content" clauses in recent mining concessions. Governments are no longer content with extraction royalties; they are demanding battery component assembly as a condition for access.
+                        {t.signalDesc1}
                       </p>
                       <p className="text-xs leading-relaxed text-white/70 mb-6">
-                        For the LatAm executive, this is a supply chain and talent problem. The talent pool for specialized chemical and process engineering in the Andean region is currently at 95% utilization. If you are planning energy-intensive infrastructure—specifically data centers or localized hardware manufacturing—you are now competing with state-backed industrial projects for the same limited pool of technical talent.
+                        {t.signalDesc2}
                       </p>
                       <div className="so-what !my-0 !py-3">
-                        <span className="mono font-bold text-accent block mb-1 tracking-widest">SO WHAT?</span>
+                        <span className="mono font-bold text-accent block mb-1 tracking-widest">{t.actionable.toUpperCase()}</span>
                         <p className="text-xs italic">
-                          Audit your hardware supply chain for Andean lithium exposure and begin scouting technical talent in Salta and Antofagasta today to avoid the 40% wage premium coming when these processing plants go live in 2027.
+                          {t.signalSoWhat}
                         </p>
                       </div>
                     </div>
@@ -740,18 +952,12 @@ export default function App() {
                       </div>
                     </div>
                     <div className="space-y-6">
-                      {[
-                        { title: "New lithium deposits discovered in Andean triangle", source: "REUTERS", time: "2h" },
-                        { title: "Satellite imagery confirms movement of heavy machinery near Sector 7", source: "INTEL_SAT", time: "4h" },
-                        { title: "Twenty-two migrants missing after boat sinks off Brazil coast", source: "BBC", time: "6h" },
-                        { title: "Morocco claims Western Sahara sovereignty at UN summit", source: "AL JAZEERA", time: "8h" },
-                        { title: "Houthi ballistic missile launch detected in Red Sea sector", source: "OSINT_TECH", time: "10h" }
-                      ].map((news, i) => (
+                      {t.newsFeedItems.map((news, i) => (
                         <div key={i} className="group cursor-pointer">
                           <h5 className="text-sm font-bold group-hover:text-accent transition-colors mb-1">{news.title}</h5>
                           <div className="flex gap-3 mono text-[8px] text-white/40">
                             <span className="text-accent">{news.source}</span>
-                            <span>{news.time} AGO</span>
+                            <span>{news.time} {t.ago}</span>
                           </div>
                         </div>
                       ))}
@@ -787,7 +993,7 @@ export default function App() {
                             </h3>
                           </div>
                           <div className="flex items-center gap-2 mono text-[9px] font-bold text-accent opacity-0 group-hover:opacity-100 transition-opacity">
-                            OPEN REPORT <ArrowUpRight size={14} />
+                            {t.openReport} <ArrowUpRight size={14} />
                           </div>
                         </div>
                       </article>
@@ -805,19 +1011,17 @@ export default function App() {
                     </div>
                   </div>
                   <div className="space-y-6">
-                    {[
-                      { label: 'FinTech BR', value: 'High', icon: <TrendingUp size={12} />, trend: '+12.4%', sentiment: '+2.1' },
-                      { label: 'Nearshore MX', value: 'Peak', icon: <Users size={12} />, trend: '+8.1%', sentiment: '+1.9' },
-                      { label: 'SaaS CO', value: 'Rising', icon: <Globe size={12} />, trend: '+4.2%', sentiment: '+0.8' }
-                    ].map(item => (
+                    {t.marketPulseItems.map((item, i) => (
                       <div key={item.label} className="flex justify-between items-center p-4 bg-surface border border-border">
                         <div className="flex items-center gap-3">
-                          <div className="p-2 bg-black text-accent">{item.icon}</div>
+                          <div className="p-2 bg-black text-accent">
+                            {i === 0 ? <TrendingUp size={12} /> : i === 1 ? <Users size={12} /> : <Globe size={12} />}
+                          </div>
                           <div className="flex flex-col">
                             <span className="mono font-bold text-[10px]">{item.label}</span>
                             <div className="flex items-center gap-2">
                               <span className="text-[8px] text-green-500 font-mono">{item.trend}</span>
-                              <span className="text-[8px] text-white/40 font-mono">SENT: {item.sentiment}</span>
+                              <span className="text-[8px] text-white/40 font-mono">{t.sent}: {item.sentiment}</span>
                             </div>
                           </div>
                         </div>
@@ -829,7 +1033,7 @@ export default function App() {
 
                 <section className="p-8 bg-bg">
                   <div className="mono text-[9px] text-white/40 mb-4 flex items-center gap-2">
-                    <Activity size={10} className="text-accent" /> FX RATES // LIVE
+                    <Activity size={10} className="text-accent" /> {t.fxRates}
                   </div>
                   <div className="grid grid-cols-3 gap-2">
                     {[
@@ -853,31 +1057,26 @@ export default function App() {
                         <div className="mono text-[9px] text-accent flex items-center gap-2">
                           <Cpu size={10} /> {t.aiToolOfWeek} // REVIEW
                         </div>
-                        <div className="mono text-[8px] text-white/20">PERPLEXITY PRO</div>
+                        <div className="mono text-[8px] text-white/20">{t.aiToolName}</div>
                       </div>
                       
                       <h4 className="text-lg font-black uppercase tracking-tight mb-3">
-                        Stopping the "Google Search" Time Sink
+                        {t.aiToolTitle}
                       </h4>
                       
                       <p className="text-xs text-white/70 leading-relaxed mb-4">
-                        The problem isn't finding information; it's the 45 minutes spent filtering SEO-spam to find one credible regulatory update. Perplexity Pro solves this by providing cited, real-time answers from the live web.
+                        {t.aiToolDesc}
                       </p>
                       
                       <div className="bg-black/40 p-3 border-l-2 border-accent mb-4">
-                        <span className="mono text-[8px] text-accent block mb-1 uppercase">MY WORKFLOW</span>
+                        <span className="mono text-[8px] text-accent block mb-1 uppercase">{t.aiToolWorkflowLabel}</span>
                         <p className="text-[11px] leading-snug">
-                          I tested this for 7 days for market intelligence. Here is exactly how I used it: I prompted it to "Monitor the Chilean Official Gazette (Diario Oficial) for any new decrees regarding lithium concession bidding windows," specifically requesting sources in Spanish. It returned a 3-paragraph summary with direct links to the PDF decrees, saving me roughly 3 hours of manual searching.
+                          {t.aiToolWorkflow}
                         </p>
                       </div>
 
                       <div className="grid grid-cols-4 gap-2 mb-4">
-                        {[
-                          { label: 'SPEED', score: 5 },
-                          { label: 'SPANISH', score: 4 },
-                          { label: 'VALUE', score: 5 },
-                          { label: 'EXEC REL', score: 5 }
-                        ].map(s => (
+                        {t.aiToolScores.map(s => (
                           <div key={s.label} className="flex flex-col items-center p-2 bg-white/5 border border-white/10">
                             <span className="mono text-[7px] text-white/40 mb-1">{s.label}</span>
                             <span className="text-xs font-bold text-accent">{s.score}/5</span>
@@ -886,11 +1085,11 @@ export default function App() {
                       </div>
 
                       <p className="text-[10px] text-white/40 italic mb-4">
-                        Limitation: It occasionally hallucinates specific dates in complex legal text; always click the citation link for the final "sign-off."
+                        {t.aiToolLimitation}
                       </p>
 
                       <p className="text-xs font-bold">
-                        Verdict for LatAm executives: A mandatory replacement for traditional search if you value your time more than $20/month.
+                        {t.aiToolVerdict}
                       </p>
                     </div>
                   </div>
@@ -902,21 +1101,13 @@ export default function App() {
                           <Globe size={10} /> {t.countryWatch} // WEEKLY
                         </div>
                         <div className="space-y-6">
-                          <div className="border-l-2 border-accent pl-4">
-                            <p className="text-xs leading-snug">
-                              <span className="font-bold">🇧🇷 Brazil</span> — FinTechs pivoting from growth to ARPU; marketing spend down 20%. Profitability is the new growth; audit unit economics before the next board meeting.
-                            </p>
-                          </div>
-                          <div className="border-l-2 border-white/20 pl-4">
-                            <p className="text-xs leading-snug">
-                              <span className="font-bold">🇲🇽 Mexico</span> — Monterrey/Guadalajara engineering capacity hits 98%; salaries up 40%. Stop hunting for "perfect" bilinguals; hire for technical excellence and build the communication layer internally.
-                            </p>
-                          </div>
-                          <div className="border-l-2 border-white/20 pl-4">
-                            <p className="text-xs leading-snug">
-                              <span className="font-bold">🇨🇱 Chile</span> — New 30% "local content" mandate for lithium processing confirmed. Expect a 40% wage premium for chemical engineers in Antofagasta. Audit energy storage supply chains now.
-                            </p>
-                          </div>
+                          {t.countryWatchItems.map((item, i) => (
+                            <div key={i} className={`border-l-2 ${i === 0 ? 'border-accent' : 'border-white/20'} pl-4`}>
+                              <p className="text-xs leading-snug">
+                                <span className="font-bold">{item.flag} {item.country}</span> — {item.text}
+                              </p>
+                            </div>
+                          ))}
                         </div>
                       </div>
                     </div>
@@ -938,33 +1129,7 @@ export default function App() {
                     <Linkedin size={10} /> {t.fiveLinks} // CURATED
                   </div>
                   <div className="space-y-4">
-                    {[
-                      { 
-                        title: "Lithium Value-Add Pivot", 
-                        source: "REUTERS", 
-                        why: "Mandatory local processing in Chile/Argentina is the new supply chain bottleneck for hardware and data center projects." 
-                      },
-                      { 
-                        title: "The 'Rappi Mafia' Second Wave", 
-                        source: "LATAM INTEL", 
-                        why: "Medellín’s B2B SaaS density now rivals São Paulo; benchmark your regional expansion against these leaner 40% margin startups." 
-                      },
-                      { 
-                        title: "Nearshoring Talent Deficit Report", 
-                        source: "TECH_MEX", 
-                        why: "Monterrey is at 98% engineering capacity; use this to justify internal language training budgets over 'perfect' bilingual hiring." 
-                      },
-                      { 
-                        title: "Brazil FinTech ARPU Shift", 
-                        source: "NUBANK_IR", 
-                        why: "The pivot from user growth to profitability is officially the standard; use their 20% marketing cut as a baseline for your Q3 budget." 
-                      },
-                      { 
-                        title: "Andean Connectivity Map 2026", 
-                        source: "SUBSEA_INTEL", 
-                        why: "New fiber routes through Antofagasta are live; critical for low-latency edge computing deployments in the Southern Cone." 
-                      }
-                    ].map((link, i) => (
+                    {t.fiveLinksItems.map((link, i) => (
                       <div key={i} className="group cursor-pointer border-b border-white/5 pb-4 last:border-0">
                         <div className="flex justify-between items-start mb-1">
                           <h5 className="text-sm font-bold group-hover:text-accent transition-colors">{link.title} — {link.source}</h5>
@@ -991,12 +1156,12 @@ export default function App() {
                       {isGenerating ? (
                         <>
                           <Activity size={16} className="animate-spin" />
-                          GENERATING SIGNAL...
+                          {t.generatingSignal}
                         </>
                       ) : (
                         <>
                           <Zap size={16} />
-                          GENERATE NEW BRIEFING
+                          {t.generateNewBriefing}
                         </>
                       )}
                     </button>
@@ -1007,7 +1172,7 @@ export default function App() {
                       className="w-full bg-black/10 border-b-2 border-black/20 py-4 mono text-[10px] font-bold text-black focus:border-black focus:ring-0 placeholder:text-black/40"
                     />
                     <button className="w-full border-2 border-black text-black py-4 mono font-bold hover:bg-black hover:text-accent transition-all">
-                      SUBSCRIBE TO INTEL
+                      {t.subscribeBtn}
                     </button>
                   </div>
                 </section>
@@ -1023,7 +1188,7 @@ export default function App() {
           <div className="mono text-[9px] text-white/20">© 2026 LATAM INTEL // {t.rights}</div>
           <div className="flex items-center gap-2 mono text-[9px] text-green-500/60">
             <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
-            SYSTEMS NOMINAL
+            {t.systemsNominal}
           </div>
         </div>
         <div className="flex gap-8 mono text-[9px] font-bold text-white/40">
