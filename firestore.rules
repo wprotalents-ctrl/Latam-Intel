@@ -1,0 +1,104 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // ===============================================================
+    // Assumed Data Model
+    // ===============================================================
+    //
+    // Collection: users
+    // Document ID: uid
+    // Fields:
+    //   - uid: string (required)
+    //   - email: string (required, email format)
+    //   - displayName: string (optional)
+    //   - subscriptionStatus: string (required, enum: ['free', 'premium'])
+    //   - stripeCustomerId: string (optional)
+    //   - createdAt: string (required, date-time format)
+    //
+    // Collection: briefings
+    // Document ID: id
+    // Fields:
+    //   - id: string (required)
+    //   - date: string (required)
+    //   - region: string (required)
+    //   - category: string (required, enum: ['JOBS', 'AI_IMPACT', 'RECRUITMENT', 'HR', 'TECH'])
+    //   - isPremium: bool (required)
+    //   - content: map (required, multilingual)
+    //   - createdAt: string (required, date-time format)
+    //
+    // Collection: subscriptions
+    // Document ID: id
+    // Fields:
+    //   - uid: string (required)
+    //   - stripeSessionId: string (required)
+    //   - plan: string (required)
+    //   - amount: number (required)
+    //   - currency: string (required)
+    //   - status: string (required)
+    //   - createdAt: string (required, date-time format)
+    //
+    // ===============================================================
+
+    // Helper Functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    function isAdmin() {
+      return isAuthenticated() && 
+        (get(/databases/$(database)/documents/users/$(request.auth.uid)).data.subscriptionStatus == 'admin' ||
+         (request.auth.token.email == "iafacilparareinventarte@gmail.com" && request.auth.token.email_verified == true));
+    }
+
+    function isPremium() {
+      return isAuthenticated() && 
+        (get(/databases/$(database)/documents/users/$(request.auth.uid)).data.subscriptionStatus == 'premium' || isAdmin());
+    }
+
+    function isValidEmail(email) {
+      return email is string && email.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$");
+    }
+
+    function isValidDateString(dateStr) {
+      return dateStr is string && dateStr.matches("^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}.*Z?$");
+    }
+
+    // Domain Validators
+    function isValidUser(data) {
+      return data.keys().hasAll(['uid', 'email', 'subscriptionStatus', 'createdAt']) &&
+             data.uid == request.auth.uid &&
+             isValidEmail(data.email) &&
+             data.subscriptionStatus in ['free', 'premium', 'admin'] &&
+             isValidDateString(data.createdAt);
+    }
+
+    function isValidBriefing(data) {
+      return data.keys().hasAll(['id', 'date', 'region', 'category', 'isPremium', 'content', 'createdAt']) &&
+             data.category in ['JOBS', 'AI_IMPACT', 'RECRUITMENT', 'HR', 'TECH'] &&
+             data.isPremium is bool &&
+             isValidDateString(data.createdAt);
+    }
+
+    // Rules
+    match /users/{uid} {
+      allow read: if isOwner(uid) || isAdmin();
+      allow create: if isAuthenticated() && isValidUser(request.resource.data) && request.resource.data.subscriptionStatus == 'free';
+      allow update: if (isOwner(uid) && isValidUser(request.resource.data) && request.resource.data.subscriptionStatus == resource.data.subscriptionStatus) || isAdmin();
+    }
+
+    match /briefings/{id} {
+      allow read: if !resource.data.isPremium || isPremium();
+      allow write: if isAdmin();
+    }
+
+    match /subscriptions/{id} {
+      allow read: if isAuthenticated() && (request.auth.uid == resource.data.uid || isAdmin());
+      allow create: if isAuthenticated() && request.resource.data.uid == request.auth.uid;
+      allow update, delete: if isAdmin();
+    }
+  }
+}

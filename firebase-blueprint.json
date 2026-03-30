@@ -1,0 +1,62 @@
+{
+  "entities": {
+    "UserProfile": {
+      "title": "User Profile",
+      "description": "Stores user information and subscription status",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "description": "Firebase Auth UID" },
+        "email": { "type": "string", "format": "email", "description": "User's email" },
+        "displayName": { "type": "string", "description": "User's display name" },
+        "subscriptionStatus": { "type": "string", "enum": ["free", "premium"], "description": "Current subscription tier" },
+        "stripeCustomerId": { "type": "string", "description": "Stripe Customer ID" },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Account creation date" }
+      },
+      "required": ["uid", "email", "subscriptionStatus", "createdAt"]
+    },
+    "Briefing": {
+      "title": "Intelligence Briefing",
+      "description": "Stores AI-generated intelligence reports",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Unique ID" },
+        "date": { "type": "string", "description": "Formatted date" },
+        "region": { "type": "string", "description": "Region code (BR, MX, CO, GLOBAL)" },
+        "category": { "type": "string", "enum": ["JOBS", "AI_IMPACT", "RECRUITMENT", "HR", "TECH"], "description": "Content category" },
+        "isPremium": { "type": "boolean", "description": "Whether this is premium content" },
+        "content": { "type": "object", "description": "Multilingual content" },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Generation timestamp" }
+      },
+      "required": ["id", "date", "region", "category", "isPremium", "content", "createdAt"]
+    },
+    "Subscription": {
+      "title": "Subscription Record",
+      "description": "Stores payment and subscription history",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "description": "User UID" },
+        "stripeSessionId": { "type": "string", "description": "Stripe Checkout Session ID" },
+        "plan": { "type": "string", "description": "Subscription plan name" },
+        "amount": { "type": "number", "description": "Payment amount" },
+        "currency": { "type": "string", "description": "Payment currency" },
+        "status": { "type": "string", "description": "Payment status" },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Payment date" }
+      },
+      "required": ["uid", "stripeSessionId", "plan", "amount", "currency", "status", "createdAt"]
+    }
+  },
+  "firestore": {
+    "/users/{uid}": {
+      "schema": "UserProfile",
+      "description": "User profiles"
+    },
+    "/briefings/{id}": {
+      "schema": "Briefing",
+      "description": "Intelligence briefings"
+    },
+    "/subscriptions/{id}": {
+      "schema": "Subscription",
+      "description": "Subscription records"
+    }
+  }
+}

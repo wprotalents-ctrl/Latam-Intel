@@ -30,10 +30,23 @@ import {
   Settings,
   LayoutDashboard,
   Tv,
-  Cpu
+  Cpu,
+  LogIn,
+  User as UserIcon,
+  LogOut,
+  Lock,
+  Briefcase,
+  Brain,
+  SearchCode,
+  UserCheck,
+  RefreshCw
 } from 'lucide-react';
-import { MOCK_BRIEFINGS, generateBriefing } from './services/intelService';
-import { Language, Briefing } from './types';
+import { MOCK_BRIEFINGS, generateBriefing, saveBriefing, getRecentBriefings } from './services/intelService';
+import { Language, Briefing, Category } from './types';
+import { auth, onAuthStateChanged, User, signOut, db } from './firebase';
+import { onSnapshot, doc } from 'firebase/firestore';
+import { AuthModal } from './components/AuthModal';
+import { SubscriptionSection } from './components/SubscriptionSection';
 
 const TRANSLATIONS = {
   EN: {
@@ -586,11 +599,11 @@ const CinemaGlobe = ({ lang }: { lang: Language }) => {
       <motion.div 
         animate={{ rotate: 360 }}
         transition={{ duration: 120, repeat: Infinity, ease: "linear" }}
-        className="relative w-[600px] h-[600px] rounded-full border border-accent/20 flex items-center justify-center"
+        className="relative w-[80vw] max-w-[600px] aspect-square rounded-full border border-accent/20 flex items-center justify-center"
       >
         <div className="absolute inset-0 rounded-full bg-gradient-to-br from-accent/10 to-transparent blur-3xl opacity-30" />
-        <div className="w-[580px] h-[580px] rounded-full border border-accent/10 flex items-center justify-center">
-          <div className="w-[500px] h-[500px] rounded-full bg-[#050505] border border-accent/30 shadow-[0_0_100px_rgba(255,107,0,0.1)] relative overflow-hidden">
+        <div className="w-[96%] h-[96%] rounded-full border border-accent/10 flex items-center justify-center">
+          <div className="w-[86%] h-[86%] rounded-full bg-[#050505] border border-accent/30 shadow-[0_0_100px_rgba(255,107,0,0.1)] relative overflow-hidden">
             <div className="absolute inset-0 opacity-20 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')]" />
             
             {[...Array(80)].map((_, i) => (
@@ -660,17 +673,84 @@ const CinemaGlobe = ({ lang }: { lang: Language }) => {
 export default function App() {
   const [selectedBriefing, setSelectedBriefing] = useState<Briefing | null>(null);
   const [filter, setFilter] = useState('All');
+  const [category, setCategory] = useState<Category>('TECH');
   const [lang, setLang] = useState<Language>('EN');
   const [viewMode, setViewMode] = useState<'Dashboard' | 'Cinema'>('Dashboard');
   const [currentTime, setCurrentTime] = useState(new Date());
   const [isPaused, setIsPaused] = useState(false);
   const [isMuted, setIsMuted] = useState(true);
   const [isGenerating, setIsGenerating] = useState(false);
+  const [isSyncing, setIsSyncing] = useState(false);
+  const [user, setUser] = useState<User | null>(null);
+  const [subscriptionStatus, setSubscriptionStatus] = useState<'free' | 'premium'>('free');
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [briefings, setBriefings] = useState<Briefing[]>(MOCK_BRIEFINGS);
+  const [newsletterEmail, setNewsletterEmail] = useState('');
+  const [newsletterStatus, setNewsletterStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+
+  const isAdmin = user?.email === 'iafacilparareinventarte@gmail.com';
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      setUser(user);
+      if (!user) {
+        setSubscriptionStatus('free');
+      }
+    });
+    return () => unsubscribe();
+  }, []);
+
+  useEffect(() => {
+    if (!user) return;
+
+    const unsubscribe = onSnapshot(doc(db, 'users', user.uid), (snapshot) => {
+      if (snapshot.exists()) {
+        const data = snapshot.data();
+        setSubscriptionStatus(data.subscriptionStatus || 'free');
+      }
+    }, (error) => {
+      console.error("Error listening to user profile:", error);
+    });
+
+    return () => unsubscribe();
+  }, [user]);
+
+  useEffect(() => {
+    const fetchBriefings = async () => {
+      const recent = await getRecentBriefings(20);
+      if (recent.length > 0) {
+        setBriefings(recent);
+      }
+    };
+    fetchBriefings();
+  }, []);
+
+  const handleSyncIntelligence = async () => {
+    setIsSyncing(true);
+    try {
+      const response = await fetch('/api/sync-intelligence', { method: 'POST' });
+      if (response.ok) {
+        const data = await response.json();
+        alert(`Sync successful! New briefing ID: ${data.briefingId}`);
+        // Re-fetch briefings
+        const recent = await getRecentBriefings(20);
+        setBriefings(recent);
+      } else {
+        alert('Sync failed. Check server logs.');
+      }
+    } catch (error) {
+      console.error("Sync error:", error);
+    } finally {
+      setIsSyncing(false);
+    }
+  };
 
   const handleGenerateBriefing = async () => {
     setIsGenerating(true);
     try {
-      const newBriefing = await generateBriefing(lang);
+      const newBriefing = await generateBriefing(lang, category);
+      await saveBriefing(newBriefing);
+      setBriefings(prev => [newBriefing, ...prev]);
       setSelectedBriefing(newBriefing);
     } catch (error) {
       console.error("Failed to generate briefing:", error);
@@ -679,14 +759,35 @@ export default function App() {
     }
   };
 
+  const handleNewsletterSubscribe = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newsletterEmail) return;
+    setNewsletterStatus('loading');
+    try {
+      const response = await fetch('/api/subscribe-newsletter', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: newsletterEmail }),
+      });
+      if (response.ok) {
+        setNewsletterStatus('success');
+        setNewsletterEmail('');
+      } else {
+        setNewsletterStatus('error');
+      }
+    } catch (error) {
+      setNewsletterStatus('error');
+    }
+  };
+
   const filteredBriefings = filter === 'All' 
-    ? MOCK_BRIEFINGS 
-    : MOCK_BRIEFINGS.filter(b => b.region === filter);
+    ? briefings 
+    : briefings.filter(b => b.region === filter);
 
   const t = TRANSLATIONS[lang];
 
   return (
-    <div className="min-h-screen flex flex-col bg-bg text-[#e0e0e0] selection:bg-accent selection:text-black font-sans relative">
+    <div className="h-screen flex flex-col bg-bg text-[#e0e0e0] selection:bg-accent selection:text-black font-sans relative">
       <div className="scanline pointer-events-none fixed inset-0 z-[200]" />
       {/* Top Bar / OSINT Header */}
       <header className="border-b border-border bg-surface flex items-center justify-between px-6 py-2">
@@ -741,9 +842,49 @@ export default function App() {
             ))}
           </div>
           
-          <button className="p-2 border border-border hover:bg-white/5 rounded-sm">
-            <Menu size={18} />
-          </button>
+          <div className="flex items-center gap-4">
+            {isAdmin && (
+              <button 
+                onClick={handleSyncIntelligence}
+                disabled={isSyncing}
+                className="hidden lg:flex items-center gap-2 px-3 py-1.5 bg-accent/10 border border-accent/30 text-accent mono text-[9px] font-bold hover:bg-accent/20 transition-all disabled:opacity-50"
+              >
+                <RefreshCw size={12} className={isSyncing ? 'animate-spin' : ''} />
+                {isSyncing ? 'Syncing...' : 'Daily Sync'}
+              </button>
+            )}
+            {user ? (
+              <div className="flex items-center gap-3">
+                <div className="flex flex-col items-end">
+                  <span className="mono text-[9px] text-white font-bold">{user.displayName || 'User'}</span>
+                  <button 
+                    onClick={() => signOut(auth)}
+                    className="mono text-[8px] text-white/40 hover:text-accent transition-colors flex items-center gap-1"
+                  >
+                    <LogOut size={10} /> Logout
+                  </button>
+                </div>
+                <div className="w-8 h-8 rounded-full bg-accent/20 border border-accent/40 flex items-center justify-center overflow-hidden">
+                  {user.photoURL ? (
+                    <img src={user.photoURL} alt="Profile" className="w-full h-full object-cover" />
+                  ) : (
+                    <UserIcon size={16} className="text-accent" />
+                  )}
+                </div>
+              </div>
+            ) : (
+              <button 
+                onClick={() => setIsAuthModalOpen(true)}
+                className="px-4 py-2 bg-accent text-black mono text-[10px] font-bold flex items-center gap-2 hover:opacity-90 transition-opacity"
+              >
+                <LogIn size={14} /> Login
+              </button>
+            )}
+            
+            <button className="p-2 border border-border hover:bg-white/5 rounded-sm">
+              <Menu size={18} />
+            </button>
+          </div>
         </div>
       </header>
 
@@ -966,39 +1107,75 @@ export default function App() {
                 </div>
 
                 {/* Bottom Row: Intelligence Feed */}
-                <div className="bg-bg p-6">
-                  <div className="flex items-center justify-between mb-8">
+                <div className="bg-bg p-6 flex-1">
+                  <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8">
                     <div className="mono text-[9px] text-white/40 flex items-center gap-2">
                       <Activity size={10} className="text-accent" /> {t.dailyBriefing}
                     </div>
-                    <div className="mono text-[9px] text-white/40">{currentTime.toDateString()}</div>
+                    
+                    <div className="flex flex-wrap gap-2">
+                      {[
+                        { id: 'TECH', icon: Cpu, label: 'Tech' },
+                        { id: 'JOBS', icon: Briefcase, label: 'Jobs' },
+                        { id: 'AI_IMPACT', icon: Brain, label: 'AI Impact' },
+                        { id: 'RECRUITMENT', icon: SearchCode, label: 'Recruitment' },
+                        { id: 'HR', icon: UserCheck, label: 'HR' }
+                      ].map((cat) => (
+                        <button
+                          key={cat.id}
+                          onClick={() => setCategory(cat.id as Category)}
+                          className={`px-3 py-1.5 mono text-[9px] font-bold border transition-all flex items-center gap-2 ${
+                            category === cat.id 
+                              ? 'bg-accent border-accent text-black' 
+                              : 'bg-surface border-border text-white/40 hover:border-white/20'
+                          }`}
+                        >
+                          <cat.icon size={12} /> {cat.label}
+                        </button>
+                      ))}
+                    </div>
                   </div>
                   
-                  <div className="space-y-4">
-                    {filteredBriefings.map((briefing) => (
-                      <article 
-                        key={briefing.id}
-                        onClick={() => setSelectedBriefing(briefing)}
-                        className="p-6 bg-surface border border-border hover:border-accent/30 transition-all cursor-pointer group"
-                      >
-                        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                          <div className="flex-1">
-                            <div className="flex items-center gap-3 mb-3">
-                              <span className="px-2 py-0.5 bg-accent text-black text-[8px] font-mono font-bold">{briefing.region}</span>
-                              <span className="mono text-[8px] text-white/40">ID: {briefing.id.padStart(4, '0')}</span>
-                              <span className="mono text-[8px] text-white/40">{briefing.date}</span>
+                    <div className="space-y-4">
+                      {filteredBriefings.filter(b => b.category === category || category === 'TECH').map((briefing) => (
+                        <article 
+                          key={briefing.id}
+                          onClick={() => {
+                            if (briefing.isPremium && subscriptionStatus !== 'premium') {
+                              document.getElementById('subscription-section')?.scrollIntoView({ behavior: 'smooth' });
+                              return;
+                            }
+                            setSelectedBriefing(briefing);
+                          }}
+                          className={`p-6 bg-surface border border-border hover:border-accent/30 transition-all cursor-pointer group relative overflow-hidden ${
+                            briefing.isPremium && subscriptionStatus !== 'premium' ? 'opacity-75' : ''
+                          }`}
+                        >
+                          {briefing.isPremium && (
+                            <div className="absolute top-0 right-0 px-3 py-1 bg-[#ff6b00] text-black mono text-[8px] font-bold uppercase tracking-widest">
+                              Premium
                             </div>
-                            <h3 className="text-xl font-black uppercase tracking-tight group-hover:text-accent transition-colors">
-                              {briefing.content[lang].title}
-                            </h3>
+                          )}
+                          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                            <div className="flex-1">
+                              <div className="flex items-center gap-3 mb-3">
+                                <span className="px-2 py-0.5 bg-accent text-black text-[8px] font-mono font-bold">{briefing.region}</span>
+                                <span className="mono text-[8px] text-white/40">ID: {briefing.id.padStart(4, '0')}</span>
+                                <span className="mono text-[8px] text-white/40">{briefing.date}</span>
+                                <span className="mono text-[8px] text-accent/60 uppercase tracking-widest">{briefing.category}</span>
+                              </div>
+                              <h3 className="text-xl font-black uppercase tracking-tight group-hover:text-accent transition-colors flex items-center gap-2">
+                                {briefing.content[lang].title}
+                                {briefing.isPremium && subscriptionStatus !== 'premium' && <Lock size={14} className="text-[#ff6b00]" />}
+                              </h3>
+                            </div>
+                            <div className="flex items-center gap-2 mono text-[9px] font-bold text-accent opacity-0 group-hover:opacity-100 transition-opacity">
+                              {briefing.isPremium && subscriptionStatus !== 'premium' ? 'Upgrade to Unlock' : t.openReport} <ArrowUpRight size={14} />
+                            </div>
                           </div>
-                          <div className="flex items-center gap-2 mono text-[9px] font-bold text-accent opacity-0 group-hover:opacity-100 transition-opacity">
-                            {t.openReport} <ArrowUpRight size={14} />
-                          </div>
-                        </div>
-                      </article>
-                    ))}
-                  </div>
+                        </article>
+                      ))}
+                    </div>
                 </div>
               </div>
 
@@ -1166,16 +1343,16 @@ export default function App() {
                       )}
                     </button>
                     <div className="h-px bg-black/10 w-full" />
-                    <input 
-                      type="email" 
-                      placeholder="EMAIL@DOMAIN.COM" 
-                      className="w-full bg-black/10 border-b-2 border-black/20 py-4 mono text-[10px] font-bold text-black focus:border-black focus:ring-0 placeholder:text-black/40"
-                    />
-                    <button className="w-full border-2 border-black text-black py-4 mono font-bold hover:bg-black hover:text-accent transition-all">
-                      {t.subscribeBtn}
-                    </button>
+                    <p className="mono text-[10px] text-black/60 leading-relaxed">
+                      Select a category above to generate specific intelligence on Jobs, AI Impact, or HR.
+                    </p>
                   </div>
                 </section>
+              </div>
+
+              {/* Subscription Section */}
+              <div className="col-span-12" id="subscription-section">
+                <SubscriptionSection />
               </div>
             </motion.div>
           )}
@@ -1183,18 +1360,47 @@ export default function App() {
       </main>
 
       {/* OSINT Footer / Status Bar */}
-      <footer className="border-t border-border bg-surface px-6 py-2 flex flex-col md:flex-row justify-between items-center gap-4">
-        <div className="flex items-center gap-6">
-          <div className="mono text-[9px] text-white/20">© 2026 LATAM INTEL // {t.rights}</div>
-          <div className="flex items-center gap-2 mono text-[9px] text-green-500/60">
-            <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
-            {t.systemsNominal}
+      <footer className="border-t border-border bg-surface px-6 py-12">
+        <div className="max-w-7xl mx-auto">
+          <div className="flex flex-col md:flex-row justify-between items-center gap-8 mb-12">
+            <div className="flex flex-col gap-2">
+              <h5 className="mono text-[10px] text-accent font-bold uppercase tracking-widest">Newsletter</h5>
+              <p className="text-sm text-white/60">Get the daily signal directly in your inbox.</p>
+            </div>
+            <form onSubmit={handleNewsletterSubscribe} className="flex w-full max-w-md border border-border overflow-hidden rounded-sm">
+              <input 
+                type="email" 
+                placeholder="Enter your email"
+                value={newsletterEmail}
+                onChange={(e) => setNewsletterEmail(e.target.value)}
+                className="flex-1 bg-bg px-4 py-3 text-xs mono outline-none focus:bg-white/5 transition-colors"
+              />
+              <button 
+                type="submit"
+                disabled={newsletterStatus === 'loading'}
+                className="bg-accent text-black px-6 py-3 text-xs font-bold mono hover:opacity-90 transition-opacity disabled:opacity-50"
+              >
+                {newsletterStatus === 'loading' ? '...' : 'Subscribe'}
+              </button>
+            </form>
+            {newsletterStatus === 'success' && <span className="text-green-500 mono text-[10px]">Subscribed!</span>}
+            {newsletterStatus === 'error' && <span className="text-red-500 mono text-[10px]">Error. Try again.</span>}
           </div>
-        </div>
-        <div className="flex gap-8 mono text-[9px] font-bold text-white/40">
-          <a href="#" className="hover:text-accent transition-colors">{t.terms}</a>
-          <a href="#" className="hover:text-accent transition-colors">{t.privacy}</a>
-          <a href="#" className="hover:text-accent transition-colors">{t.contact}</a>
+
+          <div className="flex flex-col md:flex-row justify-between items-center gap-4 pt-8 border-t border-white/5">
+            <div className="flex items-center gap-6">
+              <div className="mono text-[9px] text-white/20">© 2026 LATAM INTEL // {t.rights}</div>
+              <div className="flex items-center gap-2 mono text-[9px] text-green-500/60">
+                <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
+                {t.systemsNominal}
+              </div>
+            </div>
+            <div className="flex gap-8 mono text-[9px] font-bold text-white/40">
+              <a href="#" className="hover:text-accent transition-colors">{t.terms}</a>
+              <a href="#" className="hover:text-accent transition-colors">{t.privacy}</a>
+              <a href="#" className="hover:text-accent transition-colors">{t.contact}</a>
+            </div>
+          </div>
         </div>
       </footer>
 
@@ -1255,6 +1461,7 @@ export default function App() {
           </motion.div>
         )}
       </AnimatePresence>
+      <AuthModal isOpen={isAuthModalOpen} onClose={() => setIsAuthModalOpen(false)} />
     </div>
   );
 }

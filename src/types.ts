@@ -1,4 +1,5 @@
 export type Language = 'EN' | 'ES' | 'PT';
+export type Category = 'JOBS' | 'AI_IMPACT' | 'RECRUITMENT' | 'HR' | 'TECH';
 
 export interface BriefingContent {
   title: string;
@@ -13,6 +14,8 @@ export interface Briefing {
   id: string;
   date: string;
   region: string;
+  category: Category;
+  isPremium: boolean;
   content: {
     EN: BriefingContent;
     ES: BriefingContent;

@@ -1,13 +1,20 @@
+/// <reference types="vite/client" />
 import { GoogleGenAI, Type } from "@google/genai";
-import { Language, Briefing } from "../types";
+import { Language, Briefing, Category } from "../types";
+import { db, handleFirestoreError, FirestoreOperation } from "../firebase";
+import { doc, setDoc, collection, getDocs, query, orderBy, limit, where } from "firebase/firestore";
 
-const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+// @ts-ignore
+const geminiKey = import.meta.env.VITE_GEMINI_API_KEY || "";
+const ai = geminiKey ? new GoogleGenAI({ apiKey: geminiKey }) : null;
 
 export const MOCK_BRIEFINGS: Briefing[] = [
   {
     id: "1",
     date: "Thursday, March 26, 2026",
     region: "BR",
+    category: "TECH",
+    isPremium: false,
     content: {
       EN: {
         title: "Brazil's FinTech Consolidation: The 'Super-App' War Ends in Unit Economics",
@@ -49,102 +56,36 @@ export const MOCK_BRIEFINGS: Briefing[] = [
         ]
       }
     }
-  },
-  {
-    id: "2",
-    date: "Thursday, March 19, 2026",
-    region: "MX",
-    content: {
-      EN: {
-        title: "Mexico's Nearshoring Bottleneck: The Senior Talent Deficit",
-        sections: [
-          {
-            heading: "The Engineering Wage Spiral",
-            paragraphs: [
-              "Monterrey and Guadalajara are at 98% capacity for senior engineering talent. The influx of US tech firms setting up 'nearshore' hubs has driven salaries up by 35-40% in the last 18 months. We are no longer competing with local firms; we are competing with Silicon Valley remote rates. I've seen CTOs lose entire squads to US startups offering $120K USD for roles that paid $70K two years ago.",
-              "The 'English-first' requirement is the primary filter failing 70% of otherwise qualified candidates. Technical skills are present, but the communication bridge remains fragile. Firms that invest in internal language training and soft-skill development are scaling 3x faster than those waiting for the 'perfect' bilingual hire who likely doesn't exist at your price point."
-            ],
-            soWhat: "Stop hunting for the 'perfect' bilingual senior; hire for technical excellence and build the communication layer internally if you want to scale in 2026."
-          }
-        ]
-      },
-      ES: {
-        title: "Cuello de Botella del Nearshoring en México: El Déficit de Talento Senior",
-        sections: [
-          {
-            heading: "La Espiral Salarial de Ingeniería",
-            paragraphs: [
-              "Monterrey y Guadalajara están al 98% de su capacidad para talento senior en ingeniería. La afluencia de empresas tecnológicas de EE. UU. que establecen centros de 'nearshore' ha impulsado los salarios un 35-40% en los últimos 18 meses. Ya no competimos con empresas locales; competimos con las tarifas remotas de Silicon Valley. He visto a CTOs perder escuadrones enteros ante startups de EE. UU. que ofrecen $120K USD por roles que pagaban $70K hace dos años.",
-              "El requisito de 'inglés primero' es el filtro principal que falla al 70% de los candidatos calificados. Las habilidades técnicas están presentes, pero el puente de comunicación sigue siendo frágil. Las empresas que invierten en capacitación lingüística interna y desarrollo de habilidades blandas están escalando 3 veces más rápido que aquellas que esperan al candidato bilingüe 'perfecto' que probablemente no existe a su nivel de precio."
-            ],
-            soWhat: "Deje de cazar al senior bilingüe 'perfecto'; contrate por excelencia técnica y construya la capa de comunicación internamente si quiere escalar en 2026."
-          }
-        ]
-      },
-      PT: {
-        title: "Gargalo do Nearshoring no México: O Déficit de Talentos Seniores",
-        sections: [
-          {
-            heading: "A Espiral Salarial da Engenharia",
-            paragraphs: [
-              "Monterrey e Guadalajara estão com 98% de capacidade para talentos seniores de engenharia. O fluxo de empresas de tecnologia dos EUA estabelecendo hubs de 'nearshore' elevou os salarios em 35-40% nos últimos 18 meses. Não estamos mais competindo com empresas locais; estamos competindo com as taxas remotas do Silicon Valley. Vi CTOs perderem squads inteiros para startups dos EUA que oferecem US$ 120 mil por cargos que pagavam US$ 70 mil há dois anos.",
-              "O requisito 'English-first' é o principal filtro que reprova 70% dos candidatos qualificados. As habilidades técnicas estão presentes, mas a ponte de comunicação permanece frágil. As empresas que investem em treinamento de idiomas interno e desenvolvimento de soft skills estão escalando 3x mais rápido do que aquelas que esperam pela contratação bilíngue 'perfeita' que provavelmente não existe na sua faixa de preço."
-            ],
-            soWhat: "Pare de caçar o sênior bilíngue 'perfeito'; contrate pela excelência técnica e construva a camada de comunicação internamente se quiser escalar em 2026."
-          }
-        ]
-      }
-    }
-  },
-  {
-    id: "3",
-    date: "Thursday, March 12, 2026",
-    region: "CO",
-    content: {
-      EN: {
-        title: "Colombia's Tech Resilience: Beyond the Rappi Mafia",
-        sections: [
-          {
-            heading: "The Second Wave of Founders",
-            paragraphs: [
-              "Bogotá and Medellín are witnessing a second wave of founders who aren't just Rappi alumni. We are seeing specialized B2B SaaS and Logistics Tech startups emerging with leaner operations. These founders have learned from the 2021-2022 burn rates and are building for 40-50% gross margins from day one. The network effect in Medellín is particularly strong, rivaling São Paulo in terms of community density.",
-              "Geopolitical stability remains the primary concern for foreign VCs. While the local currency has stabilized, the regulatory environment for gig-economy and fintech remains in flux. Smart money is moving into 'infrastructure-play' startups that solve regional logistics and payment friction rather than consumer-facing apps."
-            ],
-            soWhat: "The smart play in Colombia is B2B infrastructure; consumer apps are saturated and facing regulatory headwinds."
-          }
-        ]
-      },
-      ES: {
-        title: "Resiliencia Tech en Colombia: Más allá de la Rappi Mafia",
-        sections: [
-          {
-            heading: "La Segunda Ola de Fundadores",
-            paragraphs: [
-              "Bogotá y Medellín están presenciando una segunda ola de fundadores que no son solo ex-alumnos de Rappi. Estamos viendo el surgimiento de startups especializadas en B2B SaaS y Logistics Tech con operaciones más magras. Estos fundadores han aprendido de las tasas de quema de 2021-2022 y están construyendo para márgenes brutos del 40-50% desde el primer día. El efecto de red en Medellín es particularmente fuerte, rivalizando con São Paulo en términos de densidad comunitaria.",
-              "La estabilidad geopolítica sigue siendo la principal preocupación para los VCs extranjeros. Si bien la moneda local se ha estabilizado, el entorno regulatorio para la economía colaborativa y las fintech sigue en constante cambio. El dinero inteligente se está moviendo hacia startups de 'juego de infraestructura' que resuelven la fricción logística y de pagos regional en lugar de aplicaciones orientadas al consumidor."
-            ],
-            soWhat: "La jugada inteligente en Colombia es la infraestructura B2B; las aplicaciones de consumo están saturadas y enfrentan vientos regulatorios en contra."
-          }
-        ]
-      },
-      PT: {
-        title: "Resiliência Tech na Colômbia: Além da Rappi Mafia",
-        sections: [
-          {
-            heading: "A Segunda Onda de Fundadores",
-            paragraphs: [
-              "Bogotá e Medellín estão testemunhando uma segunda onda de fundadores que não são apenas ex-alunos da Rappi. Estamos vendo o surgimento de startups especializadas em B2B SaaS e Logistics Tech com operações mais enxutas. Esses fundadores aprenderam com as taxas de queima de 2021-2022 e estão construindo para margens brutas de 40-50% desde o primeiro dia. O efeito de rede em Medellín é particularmente forte, rivalizando com São Paulo em termos de densidade comunitária.",
-              "A estabilidade geopolítica continua sendo a principal preocupação dos VCs estrangeiros. Embora a moeda local tenha se estabilizado, o ambiente regulatório para a gig-economy e fintechs permanece em fluxo. O dinheiro inteligente está migrando para startups de 'infraestrutura' que resolvem o atrito logístico e de pagamentos regional, em vez de aplicativos voltados para o consumidor."
-            ],
-            soWhat: "A jogada inteligente na Colômbia é a infraestrutura B2B; os aplicativos de consumo estão saturados e enfrentam ventos regulatórios contrários."
-          }
-        ]
-      }
-    }
   }
 ];
 
-export async function generateBriefing(language: Language = 'EN'): Promise<Briefing> {
+export async function saveBriefing(briefing: Briefing) {
+  try {
+    await setDoc(doc(db, "briefings", briefing.id), {
+      ...briefing,
+      createdAt: new Date().toISOString()
+    });
+  } catch (error) {
+    handleFirestoreError(error, FirestoreOperation.WRITE, `briefings/${briefing.id}`);
+  }
+}
+
+export async function getRecentBriefings(limitCount: number = 10): Promise<Briefing[]> {
+  try {
+    const q = query(collection(db, "briefings"), orderBy("createdAt", "desc"), limit(limitCount));
+    const querySnapshot = await getDocs(q);
+    return querySnapshot.docs.map(doc => doc.data() as Briefing);
+  } catch (error) {
+    try {
+      handleFirestoreError(error, FirestoreOperation.LIST, "briefings");
+    } catch (e) {
+      // Error is already logged by handleFirestoreError
+    }
+    return MOCK_BRIEFINGS;
+  }
+}
+
+export async function generateBriefing(language: Language = 'EN', category: Category = 'TECH'): Promise<Briefing> {
   const langNames = {
     EN: 'English',
     ES: 'Spanish',
@@ -167,7 +108,14 @@ TONE RULES (non-negotiable):
 - Write like a veteran who has seen trends come and go
 
 TASK:
-Generate a NEW intelligence briefing about a current high-impact tech or macro trend in Latin America (e.g., AI regulation in Brazil, nearshoring in Mexico, fintech consolidation in Colombia, or lithium geopolitics in the Andes).
+Generate a NEW intelligence briefing about a current high-impact trend in Latin America.
+CATEGORY: ${category}
+Topics to cover based on category:
+- JOBS: Market shifts, salary trends, remote work impact.
+- AI_IMPACT: Job loss vs creation, productivity gains, automation risks.
+- RECRUITMENT: New tools, C-level shifts, talent wars.
+- HR: Retention strategies, culture shifts in tech hubs.
+- TECH: General ecosystem trends (Fintech, SaaS, Infrastructure).
 
 The response MUST be in ${langNames[language]}.`;
 
@@ -182,6 +130,8 @@ The response MUST be in ${langNames[language]}.`;
           id: { type: Type.STRING },
           date: { type: Type.STRING },
           region: { type: Type.STRING },
+          category: { type: Type.STRING },
+          isPremium: { type: Type.BOOLEAN },
           content: {
             type: Type.OBJECT,
             properties: {
@@ -255,7 +205,7 @@ The response MUST be in ${langNames[language]}.`;
             required: [language]
           }
         },
-        required: ["id", "date", "region", "content"]
+        required: ["id", "date", "region", "category", "isPremium", "content"]
       }
     }
   });
