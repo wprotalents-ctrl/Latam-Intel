@@ -29,7 +29,6 @@ import {
   Moon,
   Settings,
   LayoutDashboard,
-  Tv,
   Cpu,
   LogIn,
   User as UserIcon,
@@ -52,59 +51,58 @@ import JobsPage from './pages/JobsPage';
 const TRANSLATIONS = {
   EN: {
     dashboard: "Dashboard",
-    cinema: "Cinema",
     jobs: "Jobs",
-    tagline: "Intelligence for the LatAm Tech Executive",
-    signal: "Signal Over Noise",
-    heroDesc: "Direct. Executive-level. 20 years of recruiting C-level talent across Brazil, Mexico, and the Andean region.",
-    viewIntel: "View Intelligence",
-    backToFeed: "Back to Intelligence Feed",
-    actionable: "So what?",
-    editorialVoice: "Editorial Voice",
-    authorDesc: "20yr LatAm Tech Veteran. CTO Network.",
-    theVeteran: "The Veteran",
-    authorBio: "20 years recruiting C-level talent across LatAm. Deep network across CO, BR, MX, AR, CL. Pattern recognition across hundreds of hiring cycles.",
-    network: "Network",
-    directConn: "Direct CTO/VP Connections",
-    briefings: "Briefings",
-    intelReports: "Intelligence Reports",
-    joinNetwork: "Join the Network",
-    getSignal: "Get the signal every Thursday.",
-    subscribe: "Subscribe Now",
-    marketPulse: "Market Pulse",
-    archive: "Archive",
+    tagline: "AI Job Market Intelligence & Global Trends",
+    signal: "AI Job Signal",
+    heroDesc: "Direct. Executive-level. 20 years of recruiting C-level talent with a focus on AI transformation across USA, EU, and LATAM.",
+    viewIntel: "View Job Intelligence",
+    backToFeed: "Back to Job Intelligence Feed",
+    actionable: "Impact on Jobs?",
+    editorialVoice: "Recruitment Voice",
+    authorDesc: "20yr Tech Recruitment Veteran. AI Talent Network.",
+    theVeteran: "The Recruiter",
+    authorBio: "20 years recruiting C-level talent globally. Deep network across USA, EU, and LATAM. Expert in AI's impact on the workforce and new job creation.",
+    network: "Talent Network",
+    directConn: "Direct CTO/VP & AI Lead Connections",
+    briefings: "Job Briefings",
+    intelReports: "Workforce Intelligence",
+    joinNetwork: "Join the Talent Network",
+    getSignal: "Get the AI job signal every Thursday.",
+    subscribe: "Subscribe to Job Alerts",
+    marketPulse: "Employment Pulse",
+    archive: "Job Archive",
     subscribeBtn: "Subscribe",
     rights: "ALL RIGHTS RESERVED",
     terms: "Terms",
     privacy: "Privacy",
     contact: "Contact",
-    briefingNum: "Briefing",
-    systemLog: "System Log",
-    worldMap: "World Map",
-    radar: "Air Traffic Radar",
-    conflictMonitor: "Conflict Monitor",
-    newsFeed: "News Feed",
-    dailyBriefing: "Daily Briefing",
-    analyst: "Analyst",
-    alerts: "Alerts",
-    reports: "Reports",
-    decks: "Decks",
-    monitoredSituations: "Monitored Situations",
-    localTriangulation: "Local Triangulation",
-    visualTelemetry: "Visual Telemetry",
-    latAmSignal: "LatAm Signal",
-    aiToolOfWeek: "AI Tool of the Week",
-    countryWatch: "Country Watch",
-    fiveLinks: "Five Links Worth Your Time",
-    fxRates: "FX RATES // LIVE",
+    briefingNum: "Job Briefing",
+    systemLog: "Talent Log",
+    worldMap: "Global Job Map",
+    radar: "AI Talent Radar",
+    conflictMonitor: "Market Volatility",
+    newsFeed: "Job Market News",
+    dailyBriefing: "Workforce Daily",
+    analyst: "Recruiter",
+    alerts: "Job Alerts",
+    reports: "Market Reports",
+    decks: "Talent Decks",
+    monitoredSituations: "Employment Trends",
+    localTriangulation: "Regional Job Data",
+    visualTelemetry: "Talent Telemetry",
+    latAmSignal: "LATAM AI Jobs",
+    aiToolOfWeek: "AI Recruitment Tool",
+    countryWatch: "Global Job Watch",
+    fiveLinks: "Five Job Insights Worth Your Time",
+    fxRates: "MARKET RATES // LIVE",
     ago: "AGO",
-    openReport: "OPEN REPORT",
-    generatingSignal: "GENERATING SIGNAL...",
-    generateNewBriefing: "GENERATE NEW BRIEFING",
-    systemsNominal: "SYSTEMS NOMINAL",
-    total: "TOTAL",
-    queue: "QUEUE",
-    feeds: "FEEDS",
+    openReport: "OPEN JOB REPORT",
+    generatingSignal: "ANALYZING JOB MARKET...",
+    generateNewBriefing: "GENERATE JOB BRIEFING",
+    systemsNominal: "RECRUITMENT NOMINAL",
+    total: "HIRES",
+    queue: "OPENINGS",
+    feeds: "TALENT FEEDS",
     night: "Night",
     customize: "Customize",
     rotation: "Rotation",
@@ -112,127 +110,121 @@ const TRANSLATIONS = {
     pause: "Pause",
     muted: "Muted",
     unmuted: "Unmuted",
-    sourceLink: "Source ↗",
+    sourceLink: "Job Source ↗",
     edt: "EDT",
-    data: "DATA",
-    beta: "SITDECK BETA",
-    scanning: "SCANNING...",
-    aircraft: "AIRCRAFT",
-    systemLogTitle: "SYSTEM LOG",
+    data: "TALENT",
+    beta: "JOBDECK BETA",
+    scanning: "SCANNING TALENT...",
+    aircraft: "TALENT",
+    systemLogTitle: "TALENT LOG",
     logMsgs: [
-      "Satellite Link Established: SECTOR_7",
-      "New Signal Detected: 35.41217, -50.55469",
-      "Encrypted Feed Decrypted: CH_04",
-      "Conflict Monitor Alert: Sector 4",
-      "Data Ingestion Complete: LATAM_NORTH",
-      "System Nominal: All Nodes Active",
-      "Unauthorized Access Attempt Blocked: IP_88.1.2.3"
+      "AI Talent Hub Established: SECTOR_7",
+      "New AI Job Detected: 35.41217, -50.55469",
+      "Recruitment Feed Decrypted: CH_04",
+      "Market Volatility Alert: Tech Sector",
+      "Talent Data Ingestion Complete: GLOBAL_AI",
+      "System Nominal: All Talent Nodes Active",
+      "New AI Recruitment Tool Integrated: IP_88.1.2.3"
     ],
-    sent: "SENT",
+    sent: "HIRED",
     marketPulseItems: [
-      { label: 'FinTech BR', value: 'High', trend: '+12.4%', sentiment: '+2.1' },
-      { label: 'Nearshore MX', value: 'Peak', trend: '+8.1%', sentiment: '+1.9' },
-      { label: 'SaaS CO', value: 'Rising', trend: '+4.2%', sentiment: '+0.8' }
+      { label: 'AI Jobs USA', value: 'High', trend: '+15.2%', sentiment: '+2.5' },
+      { label: 'Tech Jobs EU', value: 'Steady', trend: '+2.1%', sentiment: '+0.5' },
+      { label: 'AI Talent LATAM', value: 'Rising', trend: '+18.4%', sentiment: '+2.8' }
     ],
     aiToolScores: [
-      { label: 'SPEED', score: 5 },
-      { label: 'SPANISH', score: 4 },
-      { label: 'VALUE', score: 5 },
-      { label: 'EXEC REL', score: 5 }
+      { label: 'EFFICIENCY', score: 5 },
+      { label: 'ACCURACY', score: 4 },
+      { label: 'COST', score: 5 },
+      { label: 'UX', score: 5 }
     ],
     // LatAm Signal Content
-    signalTitle: "Lithium’s Value-Add Pivot: The Andean Manufacturing Play",
-    signalDesc1: "The discovery of new lithium deposits in the Andean triangle is a distraction; the real signal is the aggressive shift in Chilean and Argentine regulatory frameworks toward mandatory local processing. We are seeing a 30% increase in 'local content' clauses in recent mining concessions. Governments are no longer content with extraction royalties; they are demanding battery component assembly as a condition for access.",
-    signalDesc2: "For the LatAm executive, this is a supply chain and talent problem. The talent pool for specialized chemical and process engineering in the Andean region is currently at 95% utilization. If you are planning energy-intensive infrastructure—specifically data centers or localized hardware manufacturing—you are now competing with state-backed industrial projects for the same limited pool of technical talent.",
-    signalSoWhat: "Audit your hardware supply chain for Andean lithium exposure and begin scouting technical talent in Salta and Antofagasta today to avoid the 40% wage premium coming when these processing plants go live in 2027.",
+    signalTitle: "The LATAM AI Boom: Why São Paulo is the New Silicon Valley for AI Engineering",
+    signalDesc1: "We are seeing a massive 40% increase in AI-specific job postings in Brazil and Mexico. The real signal is the shift from 'generic software engineering' to 'LLM fine-tuning and RAG architecture' expertise. Companies in the USA and EU are aggressively outsourcing their AI development to LATAM due to the high technical quality and cost-effectiveness. This is creating a 'talent vacuum' in local markets, driving up salaries for top-tier AI engineers by 50% in the last 12 months.",
+    signalDesc2: "For the tech executive, this means the window for 'cheap' AI talent in LATAM is closing. You are no longer just competing with local startups; you are competing with Google, Meta, and OpenAI for the same engineering pool. If you haven't secured your AI leadership team in the region, you will be paying a 60% premium by 2027. Commodities like energy for data centers are also seeing price spikes in Chile and Uruguay as AI infrastructure expands.",
+    signalSoWhat: "Lock in your AI engineering leads in Brazil and Mexico now. The wage inflation is real, and the talent is being snapped up by global giants. Also, monitor NVIDIA stock and energy commodity prices as they directly correlate with AI job growth in the region.",
     // AI Tool Content
-    aiToolName: "PERPLEXITY PRO",
-    aiToolTitle: "Stopping the 'Google Search' Time Sink",
-    aiToolDesc: "The problem isn't finding information; it's the 45 minutes spent filtering SEO-spam to find one credible regulatory update. Perplexity Pro solves this by providing cited, real-time answers from the live web.",
-    aiToolWorkflowLabel: "MY WORKFLOW",
-    aiToolWorkflow: "I tested this for 7 days for market intelligence. I prompted it to 'Monitor the Chilean Official Gazette (Diario Oficial) for any new decrees regarding lithium concession bidding windows,' specifically requesting sources in Spanish. It returned a 3-paragraph summary with direct links to the PDF decrees, saving me roughly 3 hours of manual searching.",
-    aiToolLimitation: "Limitation: It occasionally hallucinates specific dates in complex legal text; always click the citation link for the final 'sign-off.'",
-    aiToolVerdict: "Verdict for LatAm executives: A mandatory replacement for traditional search if you value your time more than $20/month.",
+    aiToolName: "HiredScore",
+    aiToolTitle: "AI-Powered Recruitment at Scale",
+    aiToolDesc: "HiredScore uses AI to ethically and efficiently match candidates to open roles, reducing bias and increasing recruiter productivity by 3x. It's a game-changer for high-volume tech hiring.",
+    aiToolWorkflowLabel: "RECRUITMENT WORKFLOW",
+    aiToolWorkflow: "I integrated HiredScore into our C-level search process. It analyzed 10,000+ profiles to find the top 5 candidates for a Head of AI role in Mexico City. It didn't just look at keywords; it analyzed 'career trajectory' and 'AI project impact.' It saved our team 2 weeks of manual screening.",
+    aiToolLimitation: "Limitation: Requires a large dataset to be truly effective; smaller startups might find the initial setup overhead high.",
+    aiToolVerdict: "Verdict for HR Executives: If you are hiring more than 50 people a year, this tool is mandatory to maintain quality and speed.",
     // Country Watch Content
     countryWatchItems: [
-      { country: "Brazil", flag: "🇧🇷", text: "FinTechs pivoting from growth to ARPU; marketing spend down 20%. Profitability is the new growth; audit unit economics before the next board meeting." },
-      { country: "Mexico", flag: "🇲🇽", text: "Monterrey/Guadalajara engineering capacity hits 98%; salaries up 40%. Stop hunting for 'perfect' bilinguals; hire for technical excellence and build the communication layer internally." },
-      { country: "Chile", flag: "🇨🇱", text: "New 30% 'local content' mandate for lithium processing confirmed. Expect a 40% wage premium for chemical engineers in Antofagasta. Audit energy storage supply chains now." }
+      { country: "USA", flag: "🇺🇸", text: "AI job market cooling slightly in SF but exploding in Austin and Miami. Focus on 'Applied AI' roles rather than just research. Major stocks like NVDA and MSFT are the primary drivers of job sentiment." },
+      { country: "EU", flag: "🇪🇺", text: "AI Act implementation is creating a surge in 'AI Compliance' and 'Ethics' roles. Germany and France are leading in industrial AI jobs. Watch energy prices as they impact data center expansion." },
+      { country: "LATAM", flag: "🌎", text: "Brazil and Mexico are becoming the global back-office for AI development. Salaries are rising fast. Focus on building 'AI Centers of Excellence' to retain top talent." }
     ],
     // Five Links Content
     fiveLinksItems: [
-      { title: "Lithium Value-Add Pivot", source: "REUTERS", why: "Mandatory local processing in Chile/Argentina is the new supply chain bottleneck for hardware and data center projects." },
-      { title: "The 'Rappi Mafia' Second Wave", source: "LATAM INTEL", why: "Medellín’s B2B SaaS density now rivals São Paulo; benchmark your regional expansion against these leaner 40% margin startups." }
+      { title: "AI's Impact on the 2026 Job Market", source: "FORBES", why: "A comprehensive look at which roles are being automated and where the new 'AI-Native' jobs are appearing." },
+      { title: "Commodity Prices & AI Infrastructure", source: "BLOOMBERG", why: "How the demand for copper and energy for AI data centers is impacting global markets and job creation in mining." }
     ],
     // News Feed Content
     newsFeedItems: [
-      { title: "New lithium deposits discovered in Andean triangle", source: "REUTERS", time: "2h" },
-      { title: "Satellite imagery confirms movement of heavy machinery near Sector 7", source: "INTEL_SAT", time: "4h" },
-      { title: "Twenty-two migrants missing after boat sinks off Brazil coast", source: "BBC", time: "6h" },
-      { title: "Morocco claims Western Sahara sovereignty at UN summit", source: "AL JAZEERA", time: "8h" },
-      { title: "Houthi ballistic missile launch detected in Red Sea sector", source: "OSINT_TECH", time: "10h" }
-    ],
-    cinemaCards: [
-      { type: 'SOCIAL', time: '2m ago', content: "@Osinttechnical: Notably, at least one officer from Air Command Center, Ukraine's most prolific user of the PATRIOT, is present.", author: '@osinttechnical', color: 'text-blue-500', dot: 'bg-blue-500' },
-      { type: 'INTEL', time: '8m ago', content: "Satellite imagery confirms movement of heavy machinery near the border of Sector 7. High probability of infrastructure deployment.", author: 'GEO: 22.316°, 113.937°', color: 'text-accent', dot: 'bg-accent' },
-      { type: 'SIGNAL', time: '15m ago', content: "Unusual frequency spike detected in the 450MHz band. Originating from maritime coordinates in the South Atlantic.", author: 'SIGINT-BETA', color: 'text-green-500', dot: 'bg-green-500' }
+      { title: "NVIDIA hits new high as AI job demand surges in USA", source: "REUTERS", time: "2h" },
+      { title: "EU AI Act creates 50,000 new compliance roles across Europe", source: "BBC", time: "4h" },
+      { title: "Brazil's AI talent pool grows by 30% in Q1 2026", source: "LATAM_TECH", time: "6h" },
+      { title: "Oil prices dip, but energy demand for AI data centers remains high", source: "CNBC", time: "8h" },
+      { title: "New AI recruitment tool 'HiredScore' raises $100M in Series C", source: "TECHCRUNCH", time: "10h" }
     ]
   },
   ES: {
     dashboard: "Panel",
-    cinema: "Cine",
     jobs: "Empleos",
-    tagline: "Inteligencia para el Ejecutivo Tech de LatAm",
-    signal: "Señal sobre Ruido",
-    heroDesc: "Directo. Nivel ejecutivo. 20 años reclutando talento C-level en Brasil, México y la región andina.",
-    viewIntel: "Ver Inteligencia",
-    backToFeed: "Volver al Feed de Inteligencia",
-    actionable: "¿Y qué?",
-    editorialVoice: "Voz Editorial",
-    authorDesc: "Veterano de 20 años en Tech LatAm. Red de CTOs.",
-    theVeteran: "El Veterano",
-    authorBio: "20 años reclutando talento C-level en LatAm. Red profunda en CO, BR, MX, AR, CL. Reconocimiento de patrones en cientos de ciclos de contratación.",
-    network: "Red",
-    directConn: "Conexiones Directas de CTO/VP",
-    briefings: "Informes",
-    intelReports: "Informes de Inteligencia",
-    joinNetwork: "Únete a la Red",
-    getSignal: "Recibe la señal todos los jueves.",
-    subscribe: "Suscríbete Ahora",
-    marketPulse: "Pulso del Mercado",
-    archive: "Archivo",
+    tagline: "Inteligencia del Mercado Laboral de IA y Tendencias Globales",
+    signal: "Señal de Empleos IA",
+    heroDesc: "Directo. Nivel ejecutivo. 20 años reclutando talento C-level con enfoque en transformación de IA en EE. UU., UE y LATAM.",
+    viewIntel: "Ver Inteligencia Laboral",
+    backToFeed: "Volver al Feed de Inteligencia Laboral",
+    actionable: "¿Impacto en Empleos?",
+    editorialVoice: "Voz de Reclutamiento",
+    authorDesc: "Veterano de 20 años en Reclutamiento Tech. Red de Talento IA.",
+    theVeteran: "El Reclutador",
+    authorBio: "20 años reclutando talento C-level globalmente. Red profunda en EE. UU., UE y LATAM. Experto en el impacto de la IA en la fuerza laboral y creación de nuevos empleos.",
+    network: "Red de Talento",
+    directConn: "Conexiones Directas de CTO/VP y Líderes de IA",
+    briefings: "Informes Laborales",
+    intelReports: "Inteligencia de Fuerza Laboral",
+    joinNetwork: "Únete a la Red de Talento",
+    getSignal: "Recibe la señal de empleos IA todos los jueves.",
+    subscribe: "Suscríbete a Alertas de Empleo",
+    marketPulse: "Pulso del Empleo",
+    archive: "Archivo de Empleos",
     subscribeBtn: "Suscribirse",
     rights: "TODOS LOS DERECHOS RESERVADOS",
     terms: "Términos",
     privacy: "Privacidad",
     contact: "Contacto",
-    briefingNum: "Informe",
-    systemLog: "Log del Sistema",
-    worldMap: "Mapa Mundial",
-    radar: "Radar de Tráfico Aéreo",
-    conflictMonitor: "Monitor de Conflictos",
-    newsFeed: "Feed de Noticias",
-    dailyBriefing: "Informe Diario",
-    analyst: "Analista",
-    alerts: "Alertas",
-    reports: "Informes",
-    decks: "Decks",
-    monitoredSituations: "Situaciones Monitoreadas",
-    localTriangulation: "Triangulación Local",
-    visualTelemetry: "Telemetría Visual",
-    latAmSignal: "Señal LatAm",
-    aiToolOfWeek: "Herramienta IA de la Semana",
-    countryWatch: "Vigilancia de Países",
-    fiveLinks: "Cinco Enlaces que Valen tu Tiempo",
-    fxRates: "TASAS DE CAMBIO // EN VIVO",
+    briefingNum: "Informe Laboral",
+    systemLog: "Log de Talento",
+    worldMap: "Mapa Global de Empleos",
+    radar: "Radar de Talento IA",
+    conflictMonitor: "Volatilidad del Mercado",
+    newsFeed: "Noticias del Mercado Laboral",
+    dailyBriefing: "Diario de Fuerza Laboral",
+    analyst: "Reclutador",
+    alerts: "Alertas de Empleo",
+    reports: "Informes de Mercado",
+    decks: "Decks de Talento",
+    monitoredSituations: "Tendencias de Empleo",
+    localTriangulation: "Datos Laborales Regionales",
+    visualTelemetry: "Telemetría de Talento",
+    latAmSignal: "Empleos IA LATAM",
+    aiToolOfWeek: "Herramienta de Reclutamiento IA",
+    countryWatch: "Vigilancia Global de Empleos",
+    fiveLinks: "Cinco Perspectivas Laborales que Valen tu Tiempo",
+    fxRates: "TASAS DE MERCADO // EN VIVO",
     ago: "ATRÁS",
-    openReport: "ABRIR INFORME",
-    generatingSignal: "GENERANDO SEÑAL...",
-    generateNewBriefing: "GENERAR NUEVO INFORME",
-    systemsNominal: "SISTEMAS NOMINALES",
-    total: "TOTAL",
-    queue: "COLA",
-    feeds: "FUENTES",
+    openReport: "ABRIR INFORME LABORAL",
+    generatingSignal: "ANALIZANDO MERCADO LABORAL...",
+    generateNewBriefing: "GENERAR INFORME LABORAL",
+    systemsNominal: "RECLUTAMIENTO NOMINAL",
+    total: "CONTRATACIONES",
+    queue: "VACANTES",
+    feeds: "FUENTES DE TALENTO",
     night: "Noche",
     customize: "Personalizar",
     rotation: "Rotación",
@@ -240,127 +232,121 @@ const TRANSLATIONS = {
     pause: "Pausa",
     muted: "Silenciado",
     unmuted: "Sonido",
-    sourceLink: "Fuente ↗",
+    sourceLink: "Fuente de Empleo ↗",
     edt: "EDT",
-    data: "DATOS",
-    beta: "SITDECK BETA",
-    scanning: "ESCANEANDO...",
-    aircraft: "AERONAVES",
-    systemLogTitle: "LOG DEL SISTEMA",
+    data: "TALENTO",
+    beta: "JOBDECK BETA",
+    scanning: "ESCANEANDO TALENTO...",
+    aircraft: "TALENTO",
+    systemLogTitle: "LOG DE TALENTO",
     logMsgs: [
-      "Enlace Satelital Establecido: SECTOR_7",
-      "Nueva Señal Detectada: 35.41217, -50.55469",
-      "Feed Encriptado Decodificado: CH_04",
-      "Alerta del Monitor de Conflictos: Sector 4",
-      "Ingestión de Datos Completa: LATAM_NORTH",
-      "Sistema Nominal: Todos los Nodos Activos",
-      "Intento de Acceso No Autorizado Bloqueado: IP_88.1.2.3"
+      "Hub de Talento IA Establecido: SECTOR_7",
+      "Nuevo Empleo IA Detectado: 35.41217, -50.55469",
+      "Feed de Reclutamiento Decodificado: CH_04",
+      "Alerta de Volatilidad de Mercado: Sector Tech",
+      "Ingestión de Datos de Talento Completa: GLOBAL_AI",
+      "Sistema Nominal: Todos los Nodos de Talento Activos",
+      "Nueva Herramienta de Reclutamiento IA Integrada: IP_88.1.2.3"
     ],
-    sent: "SENT",
+    sent: "CONTRATADO",
     marketPulseItems: [
-      { label: 'FinTech BR', value: 'Alto', trend: '+12.4%', sentiment: '+2.1' },
-      { label: 'Nearshore MX', value: 'Pico', trend: '+8.1%', sentiment: '+1.9' },
-      { label: 'SaaS CO', value: 'Creciente', trend: '+4.2%', sentiment: '+0.8' }
+      { label: 'Empleos IA USA', value: 'Alto', trend: '+15.2%', sentiment: '+2.5' },
+      { label: 'Empleos Tech UE', value: 'Estable', trend: '+2.1%', sentiment: '+0.5' },
+      { label: 'Talento IA LATAM', value: 'Creciente', trend: '+18.4%', sentiment: '+2.8' }
     ],
     aiToolScores: [
-      { label: 'VELOCIDAD', score: 5 },
-      { label: 'ESPAÑOL', score: 4 },
-      { label: 'VALOR', score: 5 },
-      { label: 'REL EJEC', score: 5 }
+      { label: 'EFICIENCIA', score: 5 },
+      { label: 'PRECISIÓN', score: 4 },
+      { label: 'COSTO', score: 5 },
+      { label: 'UX', score: 5 }
     ],
     // LatAm Signal Content
-    signalTitle: "Pivote de Valor Agregado del Litio: La Jugada de Manufactura Andina",
-    signalDesc1: "El descubrimiento de nuevos depósitos de litio en el triángulo andino es una distracción; la verdadera señal es el cambio agresivo en los marcos regulatorios de Chile y Argentina hacia el procesamiento local obligatorio. Estamos viendo un aumento del 30% en las cláusulas de 'contenido local' en las concesiones mineras recientes. Los gobiernos ya no se conforman con las regalías de extracción; están exigiendo el ensamblaje de componentes de baterías como condición para el acceso.",
-    signalDesc2: "Para el ejecutivo de LatAm, esto es un problema de cadena de suministro y talento. El pool de talento para ingeniería química y de procesos especializada en la región andina está actualmente al 95% de utilización. Si está planeando infraestructura intensiva en energía, específicamente centros de datos o fabricación de hardware local, ahora compite con proyectos industriales respaldados por el estado por el mismo pool limitado de talento técnico.",
-    signalSoWhat: "Audite su cadena de suministro de hardware para la exposición al litio andino y comience a buscar talento técnico en Salta y Antofagasta hoy mismo para evitar la prima salarial del 40% que vendrá cuando estas plantas de procesamiento entren en funcionamiento en 2027.",
+    signalTitle: "El Boom de la IA en LATAM: Por qué São Paulo es el nuevo Silicon Valley para la Ingeniería de IA",
+    signalDesc1: "Estamos viendo un aumento masivo del 40% en las ofertas de trabajo específicas de IA en Brasil y México. La verdadera señal es el cambio de 'ingeniería de software genérica' a experiencia en 'ajuste fino de LLM y arquitectura RAG'. Las empresas en EE. UU. y la UE están subcontratando agresivamente su desarrollo de IA a LATAM debido a la alta calidad técnica y la rentabilidad. Esto está creando un 'vacío de talento' en los mercados locales, elevando los salarios de los ingenieros de IA de primer nivel en un 50% en los últimos 12 meses.",
+    signalDesc2: "Para el ejecutivo de tecnología, esto significa que la ventana para el talento de IA 'barato' en LATAM se está cerrando. Ya no solo compite con startups locales; compite con Google, Meta y OpenAI por el mismo pool de ingeniería. Si no ha asegurado su equipo de liderazgo de IA en la región, pagará una prima del 60% para 2027. Las materias primas como la energía para los centros de datos también están viendo picos de precios en Chile y Uruguay a medida que se expande la infraestructura de IA.",
+    signalSoWhat: "Asegure a sus líderes de ingeniería de IA en Brasil y México ahora. La inflación salarial es real y el talento está siendo captado por gigantes globales. Además, monitoree las acciones de NVIDIA y los precios de las materias primas energéticas, ya que se correlacionan directamente con el crecimiento del empleo en IA en la región.",
     // AI Tool Content
-    aiToolName: "PERPLEXITY PRO",
-    aiToolTitle: "Deteniendo la Pérdida de Tiempo en 'Búsquedas de Google'",
-    aiToolDesc: "El problema no es encontrar información; son los 45 minutos que se pasan filtrando el spam de SEO para encontrar una actualización regulatoria creíble. Perplexity Pro resuelve esto proporcionando respuestas citadas en tiempo real de la web en vivo.",
-    aiToolWorkflowLabel: "MI FLUJO DE TRABAJO",
-    aiToolWorkflow: "Probé esto durante 7 días para inteligencia de mercado. Le pedí: 'Monitorea el Diario Oficial de Chile para cualquier nuevo decreto sobre ventanas de licitación de concesiones de litio', solicitando específicamente fuentes en español. Devolvió un resumen de 3 párrafos con enlaces directos a los decretos en PDF, ahorrándome aproximadamente 3 horas de búsqueda manual.",
-    aiToolLimitation: "Limitación: Ocasionalmente alucina fechas específicas en textos legales complejos; siempre haga clic en el enlace de la cita para la 'aprobación' final.",
-    aiToolVerdict: "Veredicto para ejecutivos de LatAm: Un reemplazo obligatorio para la búsqueda tradicional si valora su tiempo más que $20 al mes.",
+    aiToolName: "HiredScore",
+    aiToolTitle: "Reclutamiento Impulsado por IA a Escala",
+    aiToolDesc: "HiredScore utiliza IA para emparejar candidatos con roles abiertos de manera ética y eficiente, reduciendo el sesgo y aumentando la productividad de los reclutadores en 3 veces. Es un cambio de juego para la contratación tecnológica de alto volumen.",
+    aiToolWorkflowLabel: "FLUJO DE RECLUTAMIENTO",
+    aiToolWorkflow: "Integramos HiredScore en nuestro proceso de búsqueda de nivel C. Analizó más de 10,000 perfiles para encontrar los 5 mejores candidatos para un puesto de Jefe de IA en la Ciudad de México. No solo buscó palabras clave; analizó la 'trayectoria profesional' y el 'impacto del proyecto de IA'. Ahorró a nuestro equipo 2 semanas de revisión manual.",
+    aiToolLimitation: "Limitación: Requiere un gran conjunto de datos para ser verdaderamente efectivo; las startups más pequeñas pueden encontrar alta la carga de configuración inicial.",
+    aiToolVerdict: "Veredicto para ejecutivos de RR. HH.: Si contrata a más de 50 personas al año, esta herramienta es obligatoria para mantener la calidad y la velocidad.",
     // Country Watch Content
     countryWatchItems: [
-      { country: "Brasil", flag: "🇧🇷", text: "FinTechs pivotando del crecimiento al ARPU; gasto en marketing bajó un 20%. La rentabilidad es el nuevo crecimiento; audite la economía unitaria antes de la próxima reunión de junta." },
-      { country: "México", flag: "🇲🇽", text: "La capacidad de ingeniería en Monterrey/Guadalajara llega al 98%; salarios subieron un 40%. Deje de buscar bilingües 'perfectos'; contrate por excelencia técnica y construya la capa de comunicación internamente." },
-      { country: "Chile", flag: "🇨🇱", text: "Confirmado nuevo mandato de 30% de 'contenido local' para el procesamiento de litio. Espere una prima salarial del 40% para ingenieros químicos en Antofagasta. Audite las cadenas de suministro de almacenamiento de energía ahora." }
+      { country: "USA", flag: "🇺🇸", text: "El mercado laboral de IA se está enfriando ligeramente en SF pero explotando en Austin y Miami. Enfoque en roles de 'IA Aplicada' en lugar de solo investigación. Las acciones principales como NVDA y MSFT son los principales impulsores del sentimiento laboral." },
+      { country: "UE", flag: "🇪🇺", text: "La implementación de la Ley de IA está creando un aumento en los roles de 'Cumplimiento de IA' y 'Ética'. Alemania y Francia lideran en empleos de IA industrial. Observe los precios de la energía, ya que impactan la expansión de los centros de datos." },
+      { country: "LATAM", flag: "🌎", text: "Brasil y México se están convirtiendo en la oficina administrativa global para el desarrollo de IA. Los salarios están subiendo rápido. Enfoque en construir 'Centros de Excelencia de IA' para retener el mejor talento." }
     ],
     // Five Links Content
     fiveLinksItems: [
-      { title: "Pivote de Valor Agregado del Litio", source: "REUTERS", why: "El procesamiento local obligatorio en Chile/Argentina es el nuevo cuello de botella de la cadena de suministro para proyectos de hardware y centros de datos." },
-      { title: "La Segunda Ola de la 'Mafia Rappi'", source: "LATAM INTEL", why: "La densidad de SaaS B2B de Medellín ahora rivaliza con São Paulo; compare su expansión regional con estas startups más ágiles con márgenes del 40%." }
+      { title: "Impacto de la IA en el Mercado Laboral de 2026", source: "FORBES", why: "Una mirada completa a qué roles se están automatizando y dónde están apareciendo los nuevos empleos 'Nativos de IA'." },
+      { title: "Precios de Materias Primas e Infraestructura de IA", source: "BLOOMBERG", why: "Cómo la demanda de cobre y energía para los centros de datos de IA está impactando los mercados globales y la creación de empleo en la minería." }
     ],
     // News Feed Content
     newsFeedItems: [
-      { title: "Nuevos depósitos de litio descubiertos en el triángulo andino", source: "REUTERS", time: "2h" },
-      { title: "Imágenes satelitales confirman movimiento de maquinaria pesada cerca del Sector 7", source: "INTEL_SAT", time: "4h" },
-      { title: "Veintidós migrantes desaparecidos tras hundimiento de bote frente a costa de Brasil", source: "BBC", time: "6h" },
-      { title: "Marruecos reclama soberanía del Sáhara Occidental en cumbre de la ONU", source: "AL JAZEERA", time: "8h" },
-      { title: "Detectado lanzamiento de misil balístico Houthi en sector del Mar Rojo", source: "OSINT_TECH", time: "10h" }
-    ],
-    cinemaCards: [
-      { type: 'SOCIAL', time: 'hace 2m', content: "@Osinttechnical: Notablemente, al menos un oficial del Centro de Comando Aéreo, el usuario más prolífico del PATRIOT en Ucrania, está presente.", author: '@osinttechnical', color: 'text-blue-500', dot: 'bg-blue-500' },
-      { type: 'INTEL', time: 'hace 8m', content: "Imágenes satelitales confirman el movimiento de maquinaria pesada cerca de la frontera del Sector 7. Alta probabilidad de despliegue de infraestructura.", author: 'GEO: 22.316°, 113.937°', color: 'text-accent', dot: 'bg-accent' },
-      { type: 'SIGNAL', time: 'hace 15m', content: "Detectado pico de frecuencia inusual en la banda de 450MHz. Originado en coordenadas marítimas en el Atlántico Sur.", author: 'SIGINT-BETA', color: 'text-green-500', dot: 'bg-green-500' }
+      { title: "NVIDIA alcanza nuevo máximo mientras surge la demanda de empleos de IA en EE. UU.", source: "REUTERS", time: "2h" },
+      { title: "La Ley de IA de la UE crea 50,000 nuevos roles de cumplimiento en toda Europa", source: "BBC", time: "4h" },
+      { title: "El pool de talento de IA de Brasil crece un 30% en el primer trimestre de 2026", source: "LATAM_TECH", time: "6h" },
+      { title: "Los precios del petróleo bajan, pero la demanda de energía para centros de datos de IA sigue siendo alta", source: "CNBC", time: "8h" },
+      { title: "Nueva herramienta de reclutamiento IA 'HiredScore' recauda $100M en Serie C", source: "TECHCRUNCH", time: "10h" }
     ]
   },
   PT: {
     dashboard: "Painel",
-    cinema: "Cinema",
     jobs: "Empregos",
-    tagline: "Inteligência para o Executivo de Tech da LatAm",
-    signal: "Sinal sobre Ruído",
-    heroDesc: "Direto. Nível executivo. 20 anos recrutando talentos C-level no Brasil, México e região andina.",
-    viewIntel: "Ver Inteligência",
-    backToFeed: "Voltar ao Feed de Inteligência",
-    actionable: "E daí?",
-    editorialVoice: "Voz Editorial",
-    authorDesc: "Veterano de 20 anos em Tech na LatAm. Rede de CTOs.",
-    theVeteran: "O Veterano",
-    authorBio: "20 anos recrutando talentos C-level na LatAm. Rede profunda em CO, BR, MX, AR, CL. Reconhecimento de padrões em centenas de ciclos de contratação.",
-    network: "Rede",
-    directConn: "Conexões Directas de CTO/VP",
-    briefings: "Relatórios",
-    intelReports: "Relatórios de Inteligência",
-    joinNetwork: "Junte-se à Rede",
-    getSignal: "Receba o sinal toda quinta-feira.",
-    subscribe: "Inscreva-se Agora",
-    marketPulse: "Pulso do Mercado",
-    archive: "Arquivo",
+    tagline: "Inteligência do Mercado de Trabalho de IA e Tendências Globais",
+    signal: "Sinal de Empregos de IA",
+    heroDesc: "Direto. Nível executivo. 20 anos recrutando talentos C-level com foco em transformação de IA nos EUA, UE e LATAM.",
+    viewIntel: "Ver Inteligência de Empregos",
+    backToFeed: "Voltar ao Feed de Inteligência de Empregos",
+    actionable: "Impacto nos Empregos?",
+    editorialVoice: "Voz do Recrutamento",
+    authorDesc: "Veterano de 20 anos em Recrutamento Tech. Rede de Talentos de IA.",
+    theVeteran: "O Recrutador",
+    authorBio: "20 anos recrutando talentos C-level globalmente. Rede profunda nos EUA, UE e LATAM. Especialista no impacto da IA na força de trabalho e na criação de novos empregos.",
+    network: "Rede de Talentos",
+    directConn: "Conexões Diretas com CTO/VP e Líderes de IA",
+    briefings: "Briefings de Empregos",
+    intelReports: "Inteligência da Força de Trabalho",
+    joinNetwork: "Junte-se à Rede de Talentos",
+    getSignal: "Receba o sinal de empregos de IA toda quinta-feira.",
+    subscribe: "Inscreva-se em Alertas de Emprego",
+    marketPulse: "Pulso do Emprego",
+    archive: "Arquivo de Empregos",
     subscribeBtn: "Inscrever-se",
     rights: "TODOS OS DIREITOS RESERVADOS",
     terms: "Termos",
     privacy: "Privacidade",
     contact: "Contato",
-    briefingNum: "Relatório",
-    systemLog: "Log do Sistema",
-    worldMap: "Mapa Mundial",
-    radar: "Radar de Tráfego Aéreo",
-    conflictMonitor: "Monitor de Conflitos",
-    newsFeed: "Feed de Notícias",
-    dailyBriefing: "Relatório Diário",
-    analyst: "Analista",
-    alerts: "Alertas",
-    reports: "Relatórios",
-    decks: "Decks",
-    monitoredSituations: "Situações Monitoradas",
-    localTriangulation: "Triangulação Local",
-    visualTelemetry: "Telemetria Visual",
-    latAmSignal: "Sinal LatAm",
-    aiToolOfWeek: "Ferramenta de IA da Semana",
-    countryWatch: "Vigilância de Países",
-    fiveLinks: "Cinco Links que Valem seu Tempo",
-    fxRates: "TAXAS DE CÂMBIO // AO VIVO",
+    briefingNum: "Briefing de Emprego",
+    systemLog: "Log de Talentos",
+    worldMap: "Mapa Global de Empregos",
+    radar: "Radar de Talentos de IA",
+    conflictMonitor: "Volatilidade do Mercado",
+    newsFeed: "Notícias do Mercado de Trabalho",
+    dailyBriefing: "Diário da Força de Trabalho",
+    analyst: "Recrutador",
+    alerts: "Alertas de Emprego",
+    reports: "Relatórios de Mercado",
+    decks: "Decks de Talentos",
+    monitoredSituations: "Tendências de Emprego",
+    localTriangulation: "Dados Regionais de Emprego",
+    visualTelemetry: "Telemetria de Talentos",
+    latAmSignal: "Empregos de IA na LATAM",
+    aiToolOfWeek: "Ferramenta de Recrutamento de IA",
+    countryWatch: "Vigilância Global de Empregos",
+    fiveLinks: "Cinco Insights de Empregos que Valem seu Tempo",
+    fxRates: "TAXAS DE MERCADO // AO VIVO",
     ago: "ATRÁS",
-    openReport: "ABRIR RELATÓRIO",
-    generatingSignal: "GERANDO SINAL...",
-    generateNewBriefing: "GERAR NOVO RELATÓRIO",
-    systemsNominal: "SISTEMAS NOMINAIS",
-    total: "TOTAL",
-    queue: "FILA",
-    feeds: "FONTES",
+    openReport: "ABRIR RELATÓRIO DE EMPREGO",
+    generatingSignal: "ANALISANDO MERCADO DE TRABALHO...",
+    generateNewBriefing: "GERAR BRIEFING DE EMPREGO",
+    systemsNominal: "RECRUTAMENTO NOMINAL",
+    total: "CONTRATAÇÕES",
+    queue: "VAGAS",
+    feeds: "FEEDS DE TALENTOS",
     night: "Noite",
     customize: "Personalizar",
     rotation: "Rotação",
@@ -368,70 +354,65 @@ const TRANSLATIONS = {
     pause: "Pausa",
     muted: "Mudo",
     unmuted: "Som",
-    sourceLink: "Fonte ↗",
+    sourceLink: "Fonte do Emprego ↗",
     edt: "EDT",
-    data: "DADOS",
-    beta: "SITDECK BETA",
-    scanning: "ESCANEANDO...",
-    aircraft: "AERONAVES",
-    systemLogTitle: "LOG DO SISTEMA",
+    data: "TALENTOS",
+    beta: "JOBDECK BETA",
+    scanning: "ESCANEANDO TALENTOS...",
+    aircraft: "TALENTOS",
+    systemLogTitle: "LOG DE TALENTOS",
     logMsgs: [
-      "Link de Satélite Estabelecido: SECTOR_7",
-      "Novo Sinal Detectado: 35.41217, -50.55469",
-      "Feed Criptografado Decifrado: CH_04",
-      "Alerta do Monitor de Conflitos: Setor 4",
-      "Ingestão de Dados Concluída: LATAM_NORTH",
-      "Sistema Nominal: Todos os Nós Ativos",
-      "Tentativa de Acesso Não Autorizado Bloqueada: IP_88.1.2.3"
+      "Hub de Talentos de IA Estabelecido: SECTOR_7",
+      "Novo Emprego de IA Detectado: 35.41217, -50.55469",
+      "Feed de Recrutamento Decifrado: CH_04",
+      "Alerta de Volatilidade do Mercado: Setor Tech",
+      "Ingestão de Dados de Talentos Concluída: GLOBAL_AI",
+      "Sistema Nominal: Todos os Nós de Talentos Ativos",
+      "Nova Ferramenta de Recrutamento de IA Integrada: IP_88.1.2.3"
     ],
-    sent: "SENT",
+    sent: "CONTRATADO",
     marketPulseItems: [
-      { label: 'FinTech BR', value: 'Alto', trend: '+12.4%', sentiment: '+2.1' },
-      { label: 'Nearshore MX', value: 'Pico', trend: '+8.1%', sentiment: '+1.9' },
-      { label: 'SaaS CO', value: 'Crescente', trend: '+4.2%', sentiment: '+0.8' }
+      { label: 'Empregos IA EUA', value: 'Alto', trend: '+15.2%', sentiment: '+2.5' },
+      { label: 'Empregos Tech UE', value: 'Estável', trend: '+2.1%', sentiment: '+0.5' },
+      { label: 'Talento IA LATAM', value: 'Crescente', trend: '+18.4%', sentiment: '+2.8' }
     ],
     aiToolScores: [
-      { label: 'VELOCIDADE', score: 5 },
-      { label: 'ESPANHOL', score: 4 },
-      { label: 'VALOR', score: 5 },
-      { label: 'REL EXEC', score: 5 }
+      { label: 'EFICIÊNCIA', score: 5 },
+      { label: 'PRECISÃO', score: 4 },
+      { label: 'CUSTO', score: 5 },
+      { label: 'UX', score: 5 }
     ],
     // LatAm Signal Content
-    signalTitle: "Pivô de Valor Agregado do Lítio: A Jogada de Manufatura Andina",
-    signalDesc1: "A descoberta de novos depósitos de lítio no triângulo andino é uma distração; o sinal real é a mudança agressiva nos marcos regulatórios chileno e argentino em direção ao processamento local obrigatório. Estamos vendo um aumento de 30% nas cláusulas de 'conteúdo local' em concessões de mineração recentes. Os governos não estão mais satisfeitos com os royalties de extração; eles estão exigindo a montagem de componentes de bateria como condição para o acesso.",
-    signalDesc2: "Para o executivo da LatAm, este é um problema de cadeia de suprimentos e talentos. O pool de talentos para engenharia química e de processos especializada na região andina está atualmente com 95% de utilização. Se você está planejando infraestrutura intensiva em energia — especificamente data centers ou fabricação de hardware localizado — você está agora competindo com projetos industriais apoiados pelo estado pelo mesmo pool limitado de talentos técnicos.",
-    signalSoWhat: "Audite sua cadeia de suprimentos de hardware para exposição ao lítio andino e comece a buscar talentos técnicos em Salta e Antofagasta hoje para evitar o prêmio salarial de 40% que virá quando essas plantas de processamento entrarem em operação em 2027.",
+    signalTitle: "O Boom da IA na LATAM: Por que São Paulo é o Novo Vale do Silício para Engenharia de IA",
+    signalDesc1: "Estamos vendo um aumento massivo de 40% nas postagens de empregos específicos de IA no Brasil e no México. O sinal real é a mudança da 'engenharia de software genérica' para a expertise em 'ajuste fino de LLM e arquitetura RAG'. Empresas nos EUA e na UE estão terceirizando agressivamente seu desenvolvimento de IA para a LATAM devido à alta qualidade técnica e custo-benefício. Isso está criando um 'vácuo de talentos' nos mercados locais, elevando os salários dos engenheiros de IA de alto nível em 50% nos últimos 12 meses.",
+    signalDesc2: "Para o executivo de tecnologia, isso significa que a janela para talentos de IA 'baratos' na LATAM está se fechando. Você não está mais apenas competindo com startups locais; você está competindo com Google, Meta e OpenAI pelo mesmo pool de engenharia. Se você ainda não garantiu sua equipe de liderança de IA na região, pagará um prêmio de 60% até 2027. Commodities como energia para data centers também estão vendo picos de preços no Chile e no Uruguai à medida que a infraestrutura de IA se expande.",
+    signalSoWhat: "Garanta seus líderes de engenharia de IA no Brasil e no México agora. A inflação salarial é real e o talento está sendo abocanhado por gigantes globais. Além disso, monitore as ações da NVIDIA e os preços das commodities de energia, pois eles se correlacionam diretamente com o crescimento de empregos de IA na região.",
     // AI Tool Content
-    aiToolName: "PERPLEXITY PRO",
-    aiToolTitle: "Parando a Perda de Tempo com 'Buscas no Google'",
-    aiToolDesc: "O problema não é encontrar informações; são os 45 minutos gastos filtrando spam de SEO para encontrar uma atualização regulatória confiável. O Perplexity Pro resolve isso fornecendo respostas citadas em tempo real da web ao vivo.",
-    aiToolWorkflowLabel: "MEU FLUXO DE TRABALHO",
-    aiToolWorkflow: "Testei isso por 7 dias para inteligência de mercado. Eu o instruí a 'Monitorar o Diário Oficial do Chile (Diario Oficial) para quaisquer novos decretos sobre janelas de licitação de concessão de lítio', solicitando especificamente fontes em espanhol. Ele retornou um resumo de 3 parágrafos com links diretos para os decretos em PDF, economizando cerca de 3 horas de pesquisa manual.",
-    aiToolLimitation: "Limitação: Ocasionalmente alucina datas específicas em textos legais complexos; sempre clique no link da citação para a 'aprovação' final.",
-    aiToolVerdict: "Veredicto para executivos da LatAm: Uma substituição obrigatória para a busca tradicional se você valoriza seu tempo mais do que US$ 20/mês.",
+    aiToolName: "HiredScore",
+    aiToolTitle: "Recrutamento Impulsionado por IA em Escala",
+    aiToolDesc: "O HiredScore usa IA para combinar candidatos a vagas abertas de forma ética e eficiente, reduzindo o viés e aumentando a produtividade do recrutador em 3 vezes. É um divisor de águas para contratações de tecnologia em alto volume.",
+    aiToolWorkflowLabel: "FLUXO DE TRABALHO DE RECRUTAMENTO",
+    aiToolWorkflow: "Integrei o HiredScore ao nosso processo de busca de nível C. Ele analisou mais de 10.000 perfis para encontrar os 5 melhores candidatos para uma vaga de Head de IA na Cidade do México. Ele não apenas olhou para palavras-chave; ele analisou a 'trajetória de carreira' e o 'impacto do projeto de IA'. Economizou para nossa equipe 2 semanas de triagem manual.",
+    aiToolLimitation: "Limitação: Requer um grande conjunto de dados para ser verdadeiramente eficaz; startups menores podem achar o custo inicial de configuração alto.",
+    aiToolVerdict: "Veredito para Executivos de RH: Se você contrata mais de 50 pessoas por ano, esta ferramenta é obrigatória para manter a qualidade e a velocidade.",
     // Country Watch Content
     countryWatchItems: [
-      { country: "Brasil", flag: "🇧🇷", text: "FinTechs pivotando do crescimento para o ARPU; gastos com marketing caíram 20%. Rentabilidade é o novo crescimento; audite a economia unitária antes da próxima reunião do conselho." },
-      { country: "México", flag: "🇲🇽", text: "A capacidade de engenharia em Monterrey/Guadalajara atinge 98%; salários subiram 40%. Pare de caçar bilingues 'perfeitos'; contrate por excelência técnica e construya a camada de comunicação internamente." },
-      { country: "Chile", flag: "🇨🇱", text: "Confirmado novo mandato de 30% de 'conteúdo local' para o processamento de lítio. Espere um prêmio salarial de 40% para engenheiros químicos em Antofagasta. Audite as cadeias de suprimentos de armazenamento de energia agora." }
+      { country: "EUA", flag: "🇺🇸", text: "O mercado de trabalho de IA está esfriando ligeiramente em SF, mas explodindo em Austin e Miami. Foco em funções de 'IA Aplicada' em vez de apenas pesquisa. Ações principais como NVDA e MSFT são os principais impulsionadores do sentimento de emprego." },
+      { country: "UE", flag: "🇪🇺", text: "A implementação do AI Act está criando um aumento nas funções de 'Conformidade de IA' e 'Ética'. Alemanha e França lideram em empregos de IA industrial. Observe os preços da energia, pois eles impactam a expansão dos data centers." },
+      { country: "LATAM", flag: "🌎", text: "Brasil e México estão se tornando o back-office global para o desenvolvimento de IA. Os salários estão subindo rápido. Foco na construção de 'Centros de Excelência de IA' para reter os melhores talentos." }
     ],
     // Five Links Content
     fiveLinksItems: [
-      { title: "Pivô de Valor Agregado do Lítio", source: "REUTERS", why: "O processamento local obrigatório no Chile/Argentina é o novo gargalo da cadeia de suprimentos para projetos de hardware e data centers." },
-      { title: "A Segunda Onda da 'Máfia Rappi'", source: "LATAM INTEL", why: "A densidade de SaaS B2B de Medellín agora rivaliza com São Paulo; compare sua expansão regional com essas startups mais enxutas com margem de 40%." }
+      { title: "Impacto da IA no Mercado de Trabalho de 2026", source: "FORBES", why: "Uma visão abrangente de quais funções estão sendo automatizadas e onde os novos empregos 'Nativos de IA' estão surgindo." },
+      { title: "Preços de Commodities e Infraestrutura de IA", source: "BLOOMBERG", why: "Como a demanda por cobre e energia para data centers de IA está impactando os mercados globais e a criação de empregos na mineração." }
     ],
     // News Feed Content
     newsFeedItems: [
-      { title: "Novos depósitos de lítio descobertos no triângulo andino", source: "REUTERS", time: "2h" },
-      { title: "Imagens de satélite confirmam movimento de maquinário pesado perto do Setor 7", source: "INTEL_SAT", time: "4h" },
-      { title: "Vinte e dois migrantes desaparecidos após naufrágio de barco na costa do Brasil", source: "BBC", time: "6h" },
-      { title: "Marrocos reivindica soberania do Saara Ocidental em cúpula da ONU", source: "AL JAZEERA", time: "8h" },
-      { title: "Detectado lançamento de míssil balístico Houthi no setor do Mar Vermelho", source: "OSINT_TECH", time: "10h" }
-    ],
-    cinemaCards: [
-      { type: 'SOCIAL', time: 'há 2m', content: "@Osinttechnical: Notavelmente, pelo menos um oficial do Centro de Comando Aéreo, o usuário mais prolífico do PATRIOT na Ucrânia, está presente.", author: '@osinttechnical', color: 'text-blue-500', dot: 'bg-blue-500' },
-      { type: 'INTEL', time: 'há 8m', content: "Imagens de satélite confirmam o movimento de maquinário pesado perto da fronteira do Setor 7. Alta probabilidade de implantação de infraestrutura.", author: 'GEO: 22.316°, 113.937°', color: 'text-accent', dot: 'bg-accent' },
-      { type: 'SIGNAL', time: 'há 15m', content: "Pico de frequência incomum detectado na banda de 450MHz. Originário de coordenadas marítimas no Atlântico Sul.", author: 'SIGINT-BETA', color: 'text-green-500', dot: 'bg-green-500' }
+      { title: "NVIDIA atinge nova máxima com aumento da demanda por empregos de IA nos EUA", source: "REUTERS", time: "2h" },
+      { title: "AI Act da UE cria 50.000 novas funções de conformidade em toda a Europa", source: "BBC", time: "4h" },
+      { title: "Pool de talentos de IA do Brasil cresce 30% no 1º trimestre de 2026", source: "LATAM_TECH", time: "6h" },
+      { title: "Preços do petróleo caem, mas demanda de energia para data centers de IA permanece alta", source: "CNBC", time: "8h" },
+      { title: "Nova ferramenta de recrutamento de IA 'HiredScore' arrecada US$ 100 milhões na Série C", source: "TECHCRUNCH", time: "10h" }
     ]
   }
 };
@@ -578,108 +559,13 @@ const SystemLog = ({ lang }: { lang: Language }) => {
   );
 };
 
-const CinemaGlobe = ({ lang }: { lang: Language }) => {
-  const [activeCard, setActiveCard] = useState(0);
-  const cards = TRANSLATIONS[lang].cinemaCards;
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setActiveCard((prev) => (prev + 1) % cards.length);
-    }, 8000);
-    return () => clearInterval(interval);
-  }, [cards.length]);
-
-  return (
-    <div className="relative w-full h-full flex items-center justify-center overflow-hidden">
-      <div className="absolute inset-0 grid-bg opacity-20 pointer-events-none" />
-      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-accent/5 to-transparent pointer-events-none" />
-      
-      {/* Background technical elements */}
-      <div className="absolute inset-0 flex items-center justify-center opacity-10 pointer-events-none">
-        <div className="w-[800px] h-[800px] border border-white/10 rounded-full animate-[spin_120s_linear_infinite]" />
-        <div className="absolute w-[900px] h-[900px] border border-white/5 rounded-full animate-[spin_180s_linear_infinite_reverse]" />
-      </div>
-
-      <motion.div 
-        animate={{ rotate: 360 }}
-        transition={{ duration: 120, repeat: Infinity, ease: "linear" }}
-        className="relative w-[80vw] max-w-[600px] aspect-square rounded-full border border-accent/20 flex items-center justify-center"
-      >
-        <div className="absolute inset-0 rounded-full bg-gradient-to-br from-accent/10 to-transparent blur-3xl opacity-30" />
-        <div className="w-[96%] h-[96%] rounded-full border border-accent/10 flex items-center justify-center">
-          <div className="w-[86%] h-[86%] rounded-full bg-[#050505] border border-accent/30 shadow-[0_0_100px_rgba(255,107,0,0.1)] relative overflow-hidden">
-            <div className="absolute inset-0 opacity-20 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')]" />
-            
-            {[...Array(80)].map((_, i) => (
-              <motion.div
-                key={i}
-                className="absolute w-1 h-1 bg-accent rounded-full shadow-[0_0_8px_#ff6b00]"
-                style={{
-                  top: `${Math.random() * 100}%`,
-                  left: `${Math.random() * 100}%`,
-                }}
-                animate={{ opacity: [0.2, 1, 0.2], scale: [1, 1.2, 1] }}
-                transition={{ duration: 2 + Math.random() * 3, repeat: Infinity }}
-              />
-            ))}
-
-            <svg className="absolute inset-0 w-full h-full pointer-events-none opacity-30">
-              {[...Array(15)].map((_, i) => (
-                <motion.line
-                  key={i}
-                  x1={`${Math.random() * 100}%`}
-                  y1={`${Math.random() * 100}%`}
-                  x2={`${Math.random() * 100}%`}
-                  y2={`${Math.random() * 100}%`}
-                  stroke="#ff6b00"
-                  strokeWidth="0.5"
-                  initial={{ pathLength: 0, opacity: 0 }}
-                  animate={{ pathLength: 1, opacity: 0.5 }}
-                  transition={{ duration: 5, repeat: Infinity, repeatType: "reverse", delay: Math.random() * 5 }}
-                />
-              ))}
-            </svg>
-          </div>
-        </div>
-      </motion.div>
-
-      {/* Dynamic Intel Cards */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        <AnimatePresence mode="wait">
-          <motion.div 
-            key={activeCard}
-            initial={{ x: activeCard % 2 === 0 ? -100 : 100, opacity: 0 }}
-            animate={{ x: 0, opacity: 1 }}
-            exit={{ x: activeCard % 2 === 0 ? 100 : -100, opacity: 0 }}
-            className={`absolute ${activeCard % 2 === 0 ? 'top-20 left-20' : 'bottom-40 right-20'} w-80 p-6 bg-surface/80 backdrop-blur-md border border-accent/30 rounded-sm pointer-events-auto shadow-2xl`}
-          >
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center gap-2">
-                <div className={`w-2 h-2 ${cards[activeCard].dot} rounded-full animate-pulse`} />
-                <span className={`mono text-[9px] ${cards[activeCard].color} font-bold`}>{cards[activeCard].type}</span>
-              </div>
-              <span className="mono text-[8px] text-white/40">{cards[activeCard].time}</span>
-            </div>
-            <p className="text-sm font-bold leading-tight mb-4">
-              {cards[activeCard].content}
-            </p>
-            <div className="flex items-center justify-between mono text-[8px] text-white/40 border-t border-white/10 pt-4">
-              <span>{cards[activeCard].author}</span>
-              <span className="text-accent">{TRANSLATIONS[lang].sourceLink}</span>
-            </div>
-          </motion.div>
-        </AnimatePresence>
-      </div>
-    </div>
-  );
-};
 
 export default function App() {
   const [selectedBriefing, setSelectedBriefing] = useState<Briefing | null>(null);
   const [filter, setFilter] = useState('All');
   const [category, setCategory] = useState<Category>('TECH');
   const [lang, setLang] = useState<Language>('EN');
-  const [viewMode, setViewMode] = useState<'Dashboard' | 'Cinema' | 'Jobs'>('Dashboard');
+  const [viewMode, setViewMode] = useState<'Dashboard' | 'Jobs'>('Dashboard');
   const [currentTime, setCurrentTime] = useState(new Date());
   const [isPaused, setIsPaused] = useState(false);
   const [isMuted, setIsMuted] = useState(true);
@@ -721,13 +607,13 @@ export default function App() {
 
   useEffect(() => {
     const fetchBriefings = async () => {
-      const recent = await getRecentBriefings(20);
+      const recent = await getRecentBriefings(20, subscriptionStatus === 'premium');
       if (recent.length > 0) {
         setBriefings(recent);
       }
     };
     fetchBriefings();
-  }, []);
+  }, [subscriptionStatus]);
 
   const handleSyncIntelligence = async () => {
     setIsSyncing(true);
@@ -737,7 +623,7 @@ export default function App() {
         const data = await response.json();
         alert(`Sync successful! New briefing ID: ${data.briefingId}`);
         // Re-fetch briefings
-        const recent = await getRecentBriefings(20);
+        const recent = await getRecentBriefings(20, subscriptionStatus === 'premium');
         setBriefings(recent);
       } else {
         alert('Sync failed. Check server logs.');
@@ -810,12 +696,6 @@ export default function App() {
               className={`px-4 py-2 mono text-[10px] transition-all flex items-center gap-2 ${viewMode === 'Dashboard' ? 'text-accent bg-white/5' : 'text-white/40 hover:text-white'}`}
             >
               <LayoutDashboard size={14} /> {t.dashboard}
-            </button>
-            <button 
-              onClick={() => setViewMode('Cinema')}
-              className={`px-4 py-2 mono text-[10px] transition-all flex items-center gap-2 ${viewMode === 'Cinema' ? 'text-accent bg-white/5' : 'text-white/40 hover:text-white'}`}
-            >
-              <Tv size={14} /> {t.cinema}
             </button>
             <button 
               onClick={() => setViewMode('Jobs')}
@@ -944,87 +824,7 @@ export default function App() {
 
       <main className="flex-1 relative overflow-hidden grid-bg">
         <AnimatePresence mode="wait">
-          {viewMode === 'Cinema' ? (
-            <motion.div 
-              key="cinema"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="absolute inset-0"
-            >
-              <CinemaGlobe lang={lang} />
-              
-              {/* Right Sidebar Overlays */}
-              <div className="absolute top-6 right-6 w-96 flex flex-col gap-6 pointer-events-none">
-                <div className="bg-surface/80 backdrop-blur-md border border-border p-4 pointer-events-auto">
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="mono text-[9px] text-white/40 flex items-center gap-2">
-                      <Shield size={10} className="text-accent" /> {t.monitoredSituations}
-                    </div>
-                    <span className="mono text-[9px] bg-white/10 px-1.5 py-0.5 rounded-sm">23</span>
-                  </div>
-                  <div className="h-1 w-full bg-white/5 rounded-full overflow-hidden">
-                    <div className="h-full bg-accent w-2/3" />
-                  </div>
-                </div>
-
-                <div className="bg-surface/80 backdrop-blur-md border border-border p-4 pointer-events-auto">
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="mono text-[9px] text-white/40 flex items-center gap-2">
-                      <Globe size={10} className="text-accent" /> {t.localTriangulation}
-                    </div>
-                    <Maximize2 size={12} className="text-white/20" />
-                  </div>
-                  <div className="aspect-video bg-black relative overflow-hidden border border-white/5">
-                    <img 
-                      src="https://picsum.photos/seed/map/400/225" 
-                      alt="Local Map" 
-                      className="w-full h-full object-cover grayscale opacity-40"
-                      referrerPolicy="no-referrer"
-                    />
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      <div className="w-12 h-12 border-2 border-accent rounded-full animate-ping opacity-20" />
-                      <div className="w-4 h-4 bg-accent rounded-full shadow-[0_0_10px_#ff6b00]" />
-                    </div>
-                    <div className="absolute bottom-2 left-2 mono text-[7px] text-white/40">Carto Dark</div>
-                  </div>
-                </div>
-
-                <div className="bg-surface/80 backdrop-blur-md border border-border p-4 pointer-events-auto">
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="mono text-[9px] text-white/40 flex items-center gap-2">
-                      <Radio size={10} className="text-accent" /> {t.visualTelemetry}
-                    </div>
-                    <Maximize2 size={12} className="text-white/20" />
-                  </div>
-                  <div className="grid grid-cols-1 gap-2">
-                    <div className="aspect-video bg-black relative overflow-hidden border border-white/5">
-                      <img 
-                        src="https://picsum.photos/seed/sat/400/225" 
-                        alt="Satellite" 
-                        className="w-full h-full object-cover grayscale contrast-150"
-                        referrerPolicy="no-referrer"
-                      />
-                      <div className="absolute bottom-2 left-2 bg-black/60 px-1.5 py-0.5 mono text-[7px]">ESRI Satellite</div>
-                    </div>
-                    <div className="aspect-video bg-black relative overflow-hidden border border-white/5">
-                      <img 
-                        src="https://picsum.photos/seed/cam/400/225" 
-                        alt="Camera" 
-                        className="w-full h-full object-cover grayscale"
-                        referrerPolicy="no-referrer"
-                      />
-                      <div className="absolute bottom-2 left-2 bg-black/60 px-1.5 py-0.5 mono text-[7px]">Sha Lo Wan</div>
-                      <div className="absolute top-2 right-2 flex items-center gap-1">
-                        <div className="w-1.5 h-1.5 bg-red-500 rounded-full animate-pulse" />
-                        <span className="mono text-[7px] text-red-500">LIVE</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </motion.div>
-          ) : viewMode === 'Jobs' ? (
+          {viewMode === 'Jobs' ? (
             <motion.div 
               key="jobs"
               initial={{ opacity: 0 }}

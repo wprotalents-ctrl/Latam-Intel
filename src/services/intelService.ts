@@ -68,9 +68,14 @@ export async function saveBriefing(briefing: Briefing) {
   }
 }
 
-export async function getRecentBriefings(limitCount: number = 10): Promise<Briefing[]> {
+export async function getRecentBriefings(limitCount: number = 10, isPremiumUser: boolean = false): Promise<Briefing[]> {
   try {
-    const q = query(collection(db, "briefings"), orderBy("createdAt", "desc"), limit(limitCount));
+    let q;
+    if (isPremiumUser) {
+      q = query(collection(db, "briefings"), orderBy("createdAt", "desc"), limit(limitCount));
+    } else {
+      q = query(collection(db, "briefings"), where("isPremium", "==", false), orderBy("createdAt", "desc"), limit(limitCount));
+    }
     const querySnapshot = await getDocs(q);
     return querySnapshot.docs.map(doc => doc.data() as Briefing);
   } catch (error) {

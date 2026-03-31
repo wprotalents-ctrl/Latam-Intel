@@ -6,8 +6,8 @@ import { auth } from '../firebase';
 import { loadStripe } from '@stripe/stripe-js';
 
 // @ts-ignore
-const stripeKey = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY || "";
-const stripePromise = stripeKey ? loadStripe(stripeKey) : Promise.resolve(null);
+const STRIPE_KEY = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY;
+const stripePromise = STRIPE_KEY ? loadStripe(STRIPE_KEY) : Promise.resolve(null);
 
 interface Plan {
   id: string;
@@ -50,6 +50,10 @@ export const SubscriptionSection: React.FC = () => {
 
   const handleStripePayment = async () => {
     if (!auth.currentUser) return;
+    if (!STRIPE_KEY) {
+      alert('Stripe is not configured. Please set VITE_STRIPE_PUBLISHABLE_KEY in your environment.');
+      return;
+    }
     setLoading('stripe');
     try {
       const response = await fetch('/api/create-checkout-session', {

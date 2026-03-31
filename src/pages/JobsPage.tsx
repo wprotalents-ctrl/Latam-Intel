@@ -75,10 +75,10 @@ export default function JobsPage() {
           <div className="w-10 h-10 bg-accent flex items-center justify-center text-black">
             <Briefcase size={24} />
           </div>
-          <h1 className="text-4xl md:text-5xl font-black tracking-tighter uppercase">Jobs Intelligence</h1>
+          <h1 className="text-4xl md:text-5xl font-black tracking-tighter uppercase">AI Job Intelligence</h1>
         </div>
         <p className="text-white/60 max-w-2xl text-lg">
-          Curated remote opportunities for LatAm tech talent. Signal over noise in the global recruitment market.
+          Curated AI-specific opportunities across USA, EU, and LATAM. Direct signal on the workforce transformation.
         </p>
       </header>
 
@@ -116,7 +116,7 @@ export default function JobsPage() {
       {loading ? (
         <div className="flex flex-col items-center justify-center py-24 gap-4">
           <Loader2 className="text-accent animate-spin" size={48} />
-          <span className="mono text-accent animate-pulse">Scanning global markets...</span>
+          <span className="mono text-accent animate-pulse">Scanning AI global markets...</span>
         </div>
       ) : error ? (
         <div className="flex flex-col items-center justify-center py-24 gap-4 bg-surface border border-red-500/20 rounded-sm">
@@ -187,7 +187,7 @@ export default function JobsPage() {
 
           {filteredJobs.length === 0 && (
             <div className="text-center py-24 border border-dashed border-border">
-              <p className="mono text-white/20">No matching opportunities found in current scan.</p>
+              <p className="mono text-white/20">No matching AI opportunities found in current scan.</p>
             </div>
           )}
         </>
