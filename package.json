@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "tsx server.ts",
+    "start": "tsx server.ts",
     "build": "vite build",
     "preview": "vite preview",
     "clean": "rm -rf dist",
@@ -12,7 +13,7 @@
   },
   "dependencies": {
     "@google/genai": "^1.29.0",
-    "@stripe/stripe-js": "^9.0.1",
+    "@stripe/stripe-js": "^9.0.0",
     "@supabase/supabase-js": "^2.101.0",
     "@tailwindcss/vite": "^4.1.14",
     "@vitejs/plugin-react": "^5.0.4",
@@ -20,6 +21,7 @@
     "clsx": "^2.1.1",
     "coinbase-commerce-node": "^1.0.4",
     "cors": "^2.8.6",
+    "date-fns": "^4.1.0",
     "dotenv": "^17.2.3",
     "express": "^4.22.1",
     "firebase": "^12.11.0",
@@ -29,6 +31,7 @@
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-markdown": "^10.1.0",
+    "recharts": "^3.8.1",
     "resend": "^6.9.4",
     "stripe": "^21.0.1",
     "tailwind-merge": "^3.5.0",

@@ -43,6 +43,46 @@
         "createdAt": { "type": "string", "format": "date-time", "description": "Payment date" }
       },
       "required": ["uid", "stripeSessionId", "plan", "amount", "currency", "status", "createdAt"]
+    },
+    "MarketNews": {
+      "title": "Market News",
+      "description": "Stores job market news headlines",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string", "description": "Article title" },
+        "description": { "type": "string", "description": "Article description" },
+        "url": { "type": "string", "description": "Article URL" },
+        "source": { "type": "string", "description": "News source name" },
+        "publishedAt": { "type": "string", "format": "date-time", "description": "Publication date" },
+        "updatedAt": { "type": "string", "format": "date-time", "description": "Last update timestamp" }
+      },
+      "required": ["title", "url", "source", "publishedAt"]
+    },
+    "MarketIntelSnapshot": {
+      "title": "Market Intelligence Snapshot",
+      "description": "Daily snapshot of hiring trends and job volume",
+      "type": "object",
+      "properties": {
+        "date": { "type": "string", "description": "Snapshot date (YYYY-MM-DD)" },
+        "trends": { "type": "object", "description": "Hiring trends by sector and company" },
+        "volume": { "type": "array", "description": "Job volume by country" },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Creation timestamp" }
+      },
+      "required": ["date", "trends", "volume", "createdAt"]
+    },
+    "CryptoNews": {
+      "title": "Crypto News",
+      "description": "Stores cryptocurrency and blockchain news headlines",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string", "description": "Article title" },
+        "description": { "type": "string", "description": "Article description" },
+        "url": { "type": "string", "description": "Article URL" },
+        "source": { "type": "string", "description": "News source name" },
+        "publishedAt": { "type": "string", "format": "date-time", "description": "Publication date" },
+        "updatedAt": { "type": "string", "format": "date-time", "description": "Last update timestamp" }
+      },
+      "required": ["title", "url", "source", "publishedAt"]
     }
   },
   "firestore": {
@@ -57,6 +97,18 @@
     "/subscriptions/{id}": {
       "schema": "Subscription",
       "description": "Subscription records"
+    },
+    "/market_news/{id}": {
+      "schema": "MarketNews",
+      "description": "Market news articles"
+    },
+    "/market_intel_snapshots/{date}": {
+      "schema": "MarketIntelSnapshot",
+      "description": "Daily market intelligence snapshots"
+    },
+    "/crypto_news/{id}": {
+      "schema": "CryptoNews",
+      "description": "Cryptocurrency news articles"
     }
   }
 }

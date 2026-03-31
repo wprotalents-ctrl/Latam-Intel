@@ -20,6 +20,7 @@ interface Job {
   url: string;
   salary: string;
   source: string;
+  region: string;
 }
 
 const REGIONS = ['All', 'LATAM', 'USA', 'Europe', 'Worldwide'];
@@ -56,14 +57,8 @@ export default function JobsPage() {
       job.company.toLowerCase().includes(searchTerm.toLowerCase());
     
     const matchesRegion = selectedRegion === 'All' || 
-      job.location.toLowerCase().includes(selectedRegion.toLowerCase()) ||
-      (selectedRegion === 'LATAM' && (
-        job.location.toLowerCase().includes('latin america') ||
-        job.location.toLowerCase().includes('brazil') ||
-        job.location.toLowerCase().includes('mexico') ||
-        job.location.toLowerCase().includes('colombia')
-      )) ||
-      (selectedRegion === 'USA' && job.location.toLowerCase().includes('united states'));
+      job.region === selectedRegion ||
+      job.location.toLowerCase().includes(selectedRegion.toLowerCase());
 
     return matchesSearch && matchesRegion;
   });

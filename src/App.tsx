@@ -47,11 +47,13 @@ import { onSnapshot, doc } from 'firebase/firestore';
 import { AuthModal } from './components/AuthModal';
 import { SubscriptionSection } from './components/SubscriptionSection';
 import JobsPage from './pages/JobsPage';
+import MarketIntelPage from './pages/MarketIntelPage';
 
 const TRANSLATIONS = {
   EN: {
     dashboard: "Dashboard",
     jobs: "Jobs",
+    marketIntel: "Market Intel",
     tagline: "AI Job Market Intelligence & Global Trends",
     signal: "AI Job Signal",
     heroDesc: "Direct. Executive-level. 20 years of recruiting C-level talent with a focus on AI transformation across USA, EU, and LATAM.",
@@ -174,6 +176,7 @@ const TRANSLATIONS = {
   ES: {
     dashboard: "Panel",
     jobs: "Empleos",
+    marketIntel: "Inteligencia de Mercado",
     tagline: "Inteligencia del Mercado Laboral de IA y Tendencias Globales",
     signal: "Señal de Empleos IA",
     heroDesc: "Directo. Nivel ejecutivo. 20 años reclutando talento C-level con enfoque en transformación de IA en EE. UU., UE y LATAM.",
@@ -296,6 +299,7 @@ const TRANSLATIONS = {
   PT: {
     dashboard: "Painel",
     jobs: "Empregos",
+    marketIntel: "Inteligência de Mercado",
     tagline: "Inteligência do Mercado de Trabalho de IA e Tendências Globais",
     signal: "Sinal de Empregos de IA",
     heroDesc: "Direto. Nível executivo. 20 anos recrutando talentos C-level com foco em transformação de IA nos EUA, UE e LATAM.",
@@ -565,7 +569,7 @@ export default function App() {
   const [filter, setFilter] = useState('All');
   const [category, setCategory] = useState<Category>('TECH');
   const [lang, setLang] = useState<Language>('EN');
-  const [viewMode, setViewMode] = useState<'Dashboard' | 'Jobs'>('Dashboard');
+  const [viewMode, setViewMode] = useState<'Dashboard' | 'Jobs' | 'MarketIntel'>('Dashboard');
   const [currentTime, setCurrentTime] = useState(new Date());
   const [isPaused, setIsPaused] = useState(false);
   const [isMuted, setIsMuted] = useState(true);
@@ -703,6 +707,12 @@ export default function App() {
             >
               <Briefcase size={14} /> {t.jobs}
             </button>
+            <button 
+              onClick={() => setViewMode('MarketIntel')}
+              className={`px-4 py-2 mono text-[10px] transition-all flex items-center gap-2 ${viewMode === 'MarketIntel' ? 'text-accent bg-white/5' : 'text-white/40 hover:text-white'}`}
+            >
+              <TrendingUp size={14} /> {t.marketIntel}
+            </button>
           </nav>
         </div>
 
@@ -833,6 +843,16 @@ export default function App() {
               className="absolute inset-0 overflow-y-auto"
             >
               <JobsPage />
+            </motion.div>
+          ) : viewMode === 'MarketIntel' ? (
+            <motion.div 
+              key="market-intel"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="absolute inset-0 overflow-y-auto"
+            >
+              <MarketIntelPage />
             </motion.div>
           ) : (
             <motion.div 

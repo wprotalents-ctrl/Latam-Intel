@@ -36,15 +36,24 @@ export async function fetchRemotiveJobs() {
       );
     });
 
-    return filteredJobs.map(job => ({
-      id: job.id.toString(),
-      title: job.title,
-      company: job.company_name,
-      location: job.candidate_required_location,
-      url: job.url,
-      salary: job.salary || 'Not specified',
-      source: 'Remotive'
-    }));
+    return filteredJobs.map(job => {
+      const location = job.candidate_required_location.toLowerCase();
+      let region = 'Worldwide';
+      if (location.includes('usa') || location.includes('united states')) region = 'USA';
+      else if (location.includes('europe') || location.includes('uk')) region = 'Europe';
+      else if (location.includes('latam') || location.includes('latin america') || location.includes('brazil') || location.includes('mexico') || location.includes('colombia') || location.includes('argentina') || location.includes('chile')) region = 'LATAM';
+
+      return {
+        id: job.id.toString(),
+        title: job.title,
+        company: job.company_name,
+        location: job.candidate_required_location,
+        url: job.url,
+        salary: job.salary || 'Not specified',
+        source: 'Remotive',
+        region: region
+      };
+    });
   } catch (error) {
     console.error('Error fetching jobs from Remotive:', error);
     throw error;

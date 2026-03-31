@@ -9,6 +9,10 @@ import admin from "firebase-admin";
 import { getFirestore } from "firebase-admin/firestore";
 import coinbase from "coinbase-commerce-node";
 import { fetchRemotiveJobs } from "./src/services/jobsService";
+import { fetchTechmapJobs } from "./backend/jobs/techmapClient";
+import { fetchAdzunaJobs } from "./src/services/adzunaService";
+import { fetchLinkedInJobs } from "./src/services/linkedinService";
+import { syncMarketIntel } from "./backend/intel/marketIntelService";
 const { Client, resources } = coinbase;
 
 const app = express();
@@ -141,10 +145,126 @@ app.use(express.json());
 // API Routes
 app.get("/api/jobs", async (req, res) => {
   try {
-    const jobs = await fetchRemotiveJobs();
-    res.json(jobs);
+    const [remotiveJobs, techmapJobs, adzunaJobs, linkedinJobs] = await Promise.all([
+      fetchRemotiveJobs(),
+      fetchTechmapJobs(),
+      fetchAdzunaJobs(),
+      fetchLinkedInJobs()
+    ]);
+    
+    // Merge all sources
+    const allJobs = [...remotiveJobs, ...techmapJobs, ...adzunaJobs, ...linkedinJobs];
+    res.json(allJobs);
   } catch (error: any) {
     console.error("Error fetching jobs:", error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Market Intelligence Routes
+app.post("/api/market-intel/sync", async (req, res) => {
+  try {
+    const result = await syncMarketIntel(db);
+    res.json(result);
+  } catch (error: any) {
+    console.error("Sync error:", error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.get("/api/market-intel/news", async (req, res) => {
+  try {
+    const snapshot = await db.collection("market_news")
+      .orderBy("publishedAt", "desc")
+      .limit(10)
+      .get();
+    
+    const news = snapshot.docs.map(doc => doc.data());
+    res.json(news);
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.get("/api/market-intel/crypto-news", async (req, res) => {
+  try {
+    const snapshot = await db.collection("crypto_news")
+      .orderBy("publishedAt", "desc")
+      .limit(10)
+      .get();
+    
+    const news = snapshot.docs.map(doc => doc.data());
+    res.json(news);
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.get("/api/market-intel/trends", async (req, res) => {
+  try {
+    const snapshot = await db.collection("market_intel_snapshots")
+      .orderBy("date", "desc")
+      .limit(1)
+      .get();
+    
+    if (snapshot.empty) return res.json({ sectors: [], companies: [] });
+    
+    const data = snapshot.docs[0].data();
+    res.json(data.trends || { sectors: [], companies: [] });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.get("/api/market-intel/volume", async (req, res) => {
+  try {
+    const snapshot = await db.collection("market_intel_snapshots")
+      .orderBy("date", "desc")
+      .limit(7)
+      .get();
+    
+    const volume = snapshot.docs.map(doc => doc.data().volume || []);
+    res.json(volume);
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.get("/api/market-intel/brief", async (req, res) => {
+  const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
+  if (!GEMINI_API_KEY) return res.status(500).json({ error: "Gemini API key missing" });
+
+  try {
+    // Fetch latest news and trends for context
+    const [newsSnap, trendsSnap] = await Promise.all([
+      db.collection("market_news").orderBy("publishedAt", "desc").limit(5).get(),
+      db.collection("market_intel_snapshots").orderBy("date", "desc").limit(1).get()
+    ]);
+
+    const newsContext = newsSnap.docs.map(doc => doc.data().title).join("\n");
+    const trendsContext = trendsSnap.empty ? "" : JSON.stringify(trendsSnap.docs[0].data().trends);
+
+    const { GoogleGenAI } = await import("@google/genai");
+    const ai = new GoogleGenAI({ apiKey: GEMINI_API_KEY });
+    
+    const prompt = `Based on the following job market news and hiring trends, generate a concise "AI Impact Brief" for this week.
+    Focus on how AI is transforming the workforce, which sectors are hiring, and any notable shifts in remote work or tech layoffs.
+    
+    NEWS:
+    ${newsContext}
+    
+    TRENDS:
+    ${trendsContext}
+    
+    Keep it professional, data-driven, and actionable. Max 200 words.`;
+
+    const aiResponse = await ai.models.generateContent({
+      model: "gemini-3.1-flash-lite-preview",
+      contents: prompt
+    });
+
+    res.json({ brief: aiResponse.text });
+  } catch (error: any) {
     res.status(500).json({ error: error.message });
   }
 });
