@@ -578,7 +578,7 @@ export default function App() {
   const [newsletterEmail, setNewsletterEmail] = useState('');
   const [newsletterStatus, setNewsletterStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
 
-  const isAdmin = user?.email === 'iafacilparareinventarte@gmail.com';
+  const isAdmin = user?.email === 'iafacilparareinventarte@gmail.com' && user?.emailVerified;
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -607,13 +607,13 @@ export default function App() {
 
   useEffect(() => {
     const fetchBriefings = async () => {
-      const recent = await getRecentBriefings(20, subscriptionStatus === 'premium');
+      const recent = await getRecentBriefings(20, subscriptionStatus === 'premium' || isAdmin);
       if (recent.length > 0) {
         setBriefings(recent);
       }
     };
     fetchBriefings();
-  }, [subscriptionStatus]);
+  }, [subscriptionStatus, isAdmin]);
 
   const handleSyncIntelligence = async () => {
     setIsSyncing(true);
@@ -623,7 +623,7 @@ export default function App() {
         const data = await response.json();
         alert(`Sync successful! New briefing ID: ${data.briefingId}`);
         // Re-fetch briefings
-        const recent = await getRecentBriefings(20, subscriptionStatus === 'premium');
+        const recent = await getRecentBriefings(20, subscriptionStatus === 'premium' || isAdmin);
         setBriefings(recent);
       } else {
         alert('Sync failed. Check server logs.');
