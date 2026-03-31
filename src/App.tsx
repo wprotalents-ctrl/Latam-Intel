@@ -47,11 +47,13 @@ import { auth, onAuthStateChanged, User, signOut, db } from './firebase';
 import { onSnapshot, doc } from 'firebase/firestore';
 import { AuthModal } from './components/AuthModal';
 import { SubscriptionSection } from './components/SubscriptionSection';
+import JobsPage from './pages/JobsPage';
 
 const TRANSLATIONS = {
   EN: {
     dashboard: "Dashboard",
     cinema: "Cinema",
+    jobs: "Jobs",
     tagline: "Intelligence for the LatAm Tech Executive",
     signal: "Signal Over Noise",
     heroDesc: "Direct. Executive-level. 20 years of recruiting C-level talent across Brazil, Mexico, and the Andean region.",
@@ -179,6 +181,7 @@ const TRANSLATIONS = {
   ES: {
     dashboard: "Panel",
     cinema: "Cine",
+    jobs: "Empleos",
     tagline: "Inteligencia para el Ejecutivo Tech de LatAm",
     signal: "Señal sobre Ruido",
     heroDesc: "Directo. Nivel ejecutivo. 20 años reclutando talento C-level en Brasil, México y la región andina.",
@@ -306,6 +309,7 @@ const TRANSLATIONS = {
   PT: {
     dashboard: "Painel",
     cinema: "Cinema",
+    jobs: "Empregos",
     tagline: "Inteligência para o Executivo de Tech da LatAm",
     signal: "Sinal sobre Ruído",
     heroDesc: "Direto. Nível executivo. 20 anos recrutando talentos C-level no Brasil, México e região andina.",
@@ -675,7 +679,7 @@ export default function App() {
   const [filter, setFilter] = useState('All');
   const [category, setCategory] = useState<Category>('TECH');
   const [lang, setLang] = useState<Language>('EN');
-  const [viewMode, setViewMode] = useState<'Dashboard' | 'Cinema'>('Dashboard');
+  const [viewMode, setViewMode] = useState<'Dashboard' | 'Cinema' | 'Jobs'>('Dashboard');
   const [currentTime, setCurrentTime] = useState(new Date());
   const [isPaused, setIsPaused] = useState(false);
   const [isMuted, setIsMuted] = useState(true);
@@ -812,6 +816,12 @@ export default function App() {
               className={`px-4 py-2 mono text-[10px] transition-all flex items-center gap-2 ${viewMode === 'Cinema' ? 'text-accent bg-white/5' : 'text-white/40 hover:text-white'}`}
             >
               <Tv size={14} /> {t.cinema}
+            </button>
+            <button 
+              onClick={() => setViewMode('Jobs')}
+              className={`px-4 py-2 mono text-[10px] transition-all flex items-center gap-2 ${viewMode === 'Jobs' ? 'text-accent bg-white/5' : 'text-white/40 hover:text-white'}`}
+            >
+              <Briefcase size={14} /> {t.jobs}
             </button>
           </nav>
         </div>
@@ -1013,6 +1023,16 @@ export default function App() {
                   </div>
                 </div>
               </div>
+            </motion.div>
+          ) : viewMode === 'Jobs' ? (
+            <motion.div 
+              key="jobs"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="absolute inset-0 overflow-y-auto"
+            >
+              <JobsPage />
             </motion.div>
           ) : (
             <motion.div 

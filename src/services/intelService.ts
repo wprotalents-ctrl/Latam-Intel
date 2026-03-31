@@ -4,9 +4,7 @@ import { Language, Briefing, Category } from "../types";
 import { db, handleFirestoreError, FirestoreOperation } from "../firebase";
 import { doc, setDoc, collection, getDocs, query, orderBy, limit, where } from "firebase/firestore";
 
-// @ts-ignore
-const geminiKey = import.meta.env.VITE_GEMINI_API_KEY || "";
-const ai = geminiKey ? new GoogleGenAI({ apiKey: geminiKey }) : null;
+const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY || "" });
 
 export const MOCK_BRIEFINGS: Briefing[] = [
   {
@@ -76,11 +74,7 @@ export async function getRecentBriefings(limitCount: number = 10): Promise<Brief
     const querySnapshot = await getDocs(q);
     return querySnapshot.docs.map(doc => doc.data() as Briefing);
   } catch (error) {
-    try {
-      handleFirestoreError(error, FirestoreOperation.LIST, "briefings");
-    } catch (e) {
-      // Error is already logged by handleFirestoreError
-    }
+    handleFirestoreError(error, FirestoreOperation.LIST, "briefings");
     return MOCK_BRIEFINGS;
   }
 }
