@@ -311,6 +311,98 @@ app.get("/api/market-intel/brief", async (req, res) => {
   }
 });
 
+// Workforce Intelligence Brief Generation
+app.post("/api/generate-workforce-brief", async (req, res) => {
+  const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
+  if (!GEMINI_API_KEY) return res.status(500).json({ error: "Gemini API key missing" });
+
+  try {
+    // 1. Fetch latest news and jobs for context
+    const [newsSnap, jobsSnap] = await Promise.all([
+      db.collection("market_news").orderBy("publishedAt", "desc").limit(10).get(),
+      db.collection("market_intel_snapshots").orderBy("date", "desc").limit(1).get()
+    ]);
+
+    const newsContext = newsSnap.docs.map(doc => JSON.stringify(doc.data())).join("\n");
+    const jobsContext = jobsSnap.empty ? "" : JSON.stringify(jobsSnap.docs[0].data());
+
+    const { GoogleGenAI, Type } = await import("@google/genai");
+    const ai = new GoogleGenAI({ apiKey: GEMINI_API_KEY });
+    
+    const prompt = `Role: You are the Lead Talent Intelligence Expert for the LATAM AI workforce. 
+Your task is to process raw JSON data from news and job APIs into a structured intelligence brief for the "Workforce Daily" dashboard and newsletter.
+
+CONTEXT:
+NEWS: ${newsContext}
+JOBS: ${jobsContext}
+
+Tone: Intelligent, concise, and informal—like a "text from your smartest friend" in the industry. Avoid boring B2B jargon.
+Frame every insight as a useful resource to solve a hiring or workforce problem.
+
+Categorization Logic: Assign every entry to one of these 5 core buckets:
+- Workforce Daily: General LATAM AI market shifts.
+- TechJobs: High-signal technical roles and talent scarcity trends.
+- AI Impact: How automation is reshaping specific LATAM sectors.
+- Recruitment: Operational Intel for HR leaders.
+- HR: Policy, legal, and remote-work culture updates.
+
+Content Hierarchy:
+- Hiring Signal Flag: Identify US/EU firms opening offices or hiring aggressively in Brazil (BR), Mexico (MX), Colombia (CO), Argentina (AR), or Chile (CL).
+- The Teaser (Free Tier): A 150-word snappy summary of the "what."
+- The Deep Dive ($29 Pro Tier): Analysis of "why this matters" and "what to do."
+- Internal Share Hook: A 1-sentence "Slack-ready" summary designed to be copied into corporate channels to drive virality.
+
+Output Format: Return valid JSON only.
+{
+  "id": "unique_slug",
+  "category": "Bucket_Name",
+  "country_code": "BR|MX|CO|AR|CL",
+  "is_hiring_signal": true/false,
+  "subject_line": "informal, lower-case, evocative",
+  "free_teaser": "snappy 150-word summary",
+  "paid_analysis": "full deep-dive for members",
+  "slack_hook": "one-sentence internal share summary",
+  "target_persona": "Hiring Manager|Candidate|Analyst"
+}`;
+
+    const aiResponse = await ai.models.generateContent({
+      model: "gemini-3.1-pro-preview",
+      contents: prompt,
+      config: {
+        responseMimeType: "application/json",
+        responseSchema: {
+          type: Type.OBJECT,
+          properties: {
+            id: { type: Type.STRING },
+            category: { type: Type.STRING, enum: ['Workforce Daily', 'TechJobs', 'AI Impact', 'Recruitment', 'HR'] },
+            country_code: { type: Type.STRING, enum: ['BR', 'MX', 'CO', 'AR', 'CL'] },
+            is_hiring_signal: { type: Type.BOOLEAN },
+            subject_line: { type: Type.STRING },
+            free_teaser: { type: Type.STRING },
+            paid_analysis: { type: Type.STRING },
+            slack_hook: { type: Type.STRING },
+            target_persona: { type: Type.STRING, enum: ['Hiring Manager', 'Candidate', 'Analyst'] }
+          },
+          required: ["id", "category", "country_code", "is_hiring_signal", "subject_line", "free_teaser", "paid_analysis", "slack_hook", "target_persona"]
+        }
+      }
+    });
+
+    const brief = JSON.parse(aiResponse.text);
+    
+    // 3. Save to Firestore
+    await db.collection("intelligence_briefs").doc(brief.id).set({
+      ...brief,
+      createdAt: admin.firestore.FieldValue.serverTimestamp(),
+    });
+
+    res.json(brief);
+  } catch (error: any) {
+    console.error("Generation error:", error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
 app.get("/api/ping", (req, res) => {
   res.send("pong");
 });

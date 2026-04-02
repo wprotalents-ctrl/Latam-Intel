@@ -100,6 +100,14 @@ service cloud.firestore {
              data.publishedAt is timestamp;
     }
 
+    function isValidIntelligenceBrief(data) {
+      return data.keys().hasAll(['id', 'category', 'country_code', 'is_hiring_signal', 'subject_line', 'free_teaser', 'paid_analysis', 'slack_hook', 'target_persona', 'createdAt']) &&
+             data.category in ['Workforce Daily', 'TechJobs', 'AI Impact', 'Recruitment', 'HR'] &&
+             data.country_code in ['BR', 'MX', 'CO', 'AR', 'CL'] &&
+             data.target_persona in ['Hiring Manager', 'Candidate', 'Analyst'] &&
+             data.createdAt is timestamp;
+    }
+
     // Rules
     match /users/{uid} {
       allow read: if isOwner(uid) || isAdmin();
@@ -131,6 +139,11 @@ service cloud.firestore {
     match /market_intel_snapshots/{date} {
       allow read: if isAuthenticated();
       allow write: if isAdmin();
+    }
+    
+    match /intelligence_briefs/{id} {
+      allow read: if isAuthenticated();
+      allow write: if isAdmin() && isValidIntelligenceBrief(request.resource.data);
     }
     
     match /crypto_news/{id} {

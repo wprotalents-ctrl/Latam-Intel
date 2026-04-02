@@ -1,6 +1,6 @@
 /// <reference types="vite/client" />
 import { GoogleGenAI, Type } from "@google/genai";
-import { Language, Briefing, Category } from "../types";
+import { Language, Briefing, Category, IntelligenceBrief } from "../types";
 import { db, handleFirestoreError, FirestoreOperation } from "../firebase";
 import { doc, setDoc, collection, getDocs, query, orderBy, limit, where, serverTimestamp } from "firebase/firestore";
 
@@ -68,6 +68,85 @@ export async function saveBriefing(briefing: Briefing) {
   }
 }
 
+export async function saveIntelligenceBrief(brief: IntelligenceBrief) {
+  try {
+    await setDoc(doc(db, "intelligence_briefs", brief.id), {
+      ...brief,
+      createdAt: serverTimestamp()
+    });
+  } catch (error) {
+    handleFirestoreError(error, FirestoreOperation.WRITE, `intelligence_briefs/${brief.id}`);
+  }
+}
+
+export async function generateIntelligenceBrief(newsContext: string, jobsContext: string): Promise<IntelligenceBrief> {
+  const prompt = `Role: You are the Lead Talent Intelligence Expert for the LATAM AI workforce. 
+Your task is to process raw JSON data from news and job APIs into a structured intelligence brief for the "Workforce Daily" dashboard and newsletter.
+
+CONTEXT:
+NEWS: ${newsContext}
+JOBS: ${jobsContext}
+
+Tone: Intelligent, concise, and informal—like a "text from your smartest friend" in the industry. Avoid boring B2B jargon.
+Frame every insight as a useful resource to solve a hiring or workforce problem.
+
+Categorization Logic: Assign every entry to one of these 5 core buckets:
+- Workforce Daily: General LATAM AI market shifts.
+- TechJobs: High-signal technical roles and talent scarcity trends.
+- AI Impact: How automation is reshaping specific LATAM sectors.
+- Recruitment: Operational Intel for HR leaders.
+- HR: Policy, legal, and remote-work culture updates.
+
+Content Hierarchy:
+- Hiring Signal Flag: Identify US/EU firms opening offices or hiring aggressively in Brazil (BR), Mexico (MX), Colombia (CO), Argentina (AR), or Chile (CL).
+- The Teaser (Free Tier): A 150-word snappy summary of the "what."
+- The Deep Dive ($29 Pro Tier): Analysis of "why this matters" and "what to do."
+- Internal Share Hook: A 1-sentence "Slack-ready" summary designed to be copied into corporate channels to drive virality.
+
+Output Format: Return valid JSON only.
+{
+  "id": "unique_slug",
+  "category": "Bucket_Name",
+  "country_code": "BR|MX|CO|AR|CL",
+  "is_hiring_signal": true/false,
+  "subject_line": "informal, lower-case, evocative",
+  "free_teaser": "snappy 150-word summary",
+  "paid_analysis": "full deep-dive for members",
+  "slack_hook": "one-sentence internal share summary",
+  "target_persona": "Hiring Manager|Candidate|Analyst"
+}`;
+
+  const response = await ai.models.generateContent({
+    model: "gemini-3.1-pro-preview",
+    contents: prompt,
+    config: {
+      responseMimeType: "application/json",
+      responseSchema: {
+        type: Type.OBJECT,
+        properties: {
+          id: { type: Type.STRING },
+          category: { type: Type.STRING, enum: ['Workforce Daily', 'TechJobs', 'AI Impact', 'Recruitment', 'HR'] },
+          country_code: { type: Type.STRING, enum: ['BR', 'MX', 'CO', 'AR', 'CL'] },
+          is_hiring_signal: { type: Type.BOOLEAN },
+          subject_line: { type: Type.STRING },
+          free_teaser: { type: Type.STRING },
+          paid_analysis: { type: Type.STRING },
+          slack_hook: { type: Type.STRING },
+          target_persona: { type: Type.STRING, enum: ['Hiring Manager', 'Candidate', 'Analyst'] }
+        },
+        required: ["id", "category", "country_code", "is_hiring_signal", "subject_line", "free_teaser", "paid_analysis", "slack_hook", "target_persona"]
+      }
+    }
+  });
+
+  try {
+    return JSON.parse(response.text) as IntelligenceBrief;
+  } catch (error) {
+    console.error("Failed to parse Intelligence Brief response:", error);
+    throw error;
+  }
+}
+
 export async function getRecentBriefings(limitCount: number = 10, isPremiumUser: boolean = false): Promise<Briefing[]> {
   try {
     let q;
@@ -84,7 +163,7 @@ export async function getRecentBriefings(limitCount: number = 10, isPremiumUser:
   }
 }
 
-export async function generateBriefing(language: Language = 'EN', category: Category = 'TECH'): Promise<Briefing> {
+export async function generateBriefing(language: Language = 'EN', category: Category = 'Workforce Daily'): Promise<Briefing> {
   const langNames = {
     EN: 'English',
     ES: 'Spanish',
@@ -110,11 +189,11 @@ TASK:
 Generate a NEW intelligence briefing about a current high-impact trend in Latin America.
 CATEGORY: ${category}
 Topics to cover based on category:
-- JOBS: Market shifts, salary trends, remote work impact.
-- AI_IMPACT: Job loss vs creation, productivity gains, automation risks.
-- RECRUITMENT: New tools, C-level shifts, talent wars.
-- HR: Retention strategies, culture shifts in tech hubs.
-- TECH: General ecosystem trends (Fintech, SaaS, Infrastructure).
+- Workforce Daily: General LATAM AI market shifts.
+- TechJobs: High-signal technical roles and talent scarcity trends.
+- AI Impact: How automation is reshaping specific LATAM sectors.
+- Recruitment: Operational Intel for HR leaders.
+- HR: Policy, legal, and remote-work culture updates.
 
 The response MUST be in ${langNames[language]}.`;
 

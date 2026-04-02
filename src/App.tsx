@@ -41,7 +41,8 @@ import {
   RefreshCw,
   Bitcoin,
   Newspaper,
-  Sun
+  Sun,
+  Copy
 } from 'lucide-react';
 import { 
   BarChart, 
@@ -53,9 +54,9 @@ import {
   ResponsiveContainer 
 } from 'recharts';
 import { MOCK_BRIEFINGS, generateBriefing, saveBriefing, getRecentBriefings } from './services/intelService';
-import { Language, Briefing, Category } from './types';
+import { Language, Briefing, Category, IntelligenceBrief } from './types';
 import { auth, onAuthStateChanged, User, signOut, db, handleFirestoreError, FirestoreOperation } from './firebase';
-import { onSnapshot, doc } from 'firebase/firestore';
+import { onSnapshot, doc, collection, query, orderBy, limit } from 'firebase/firestore';
 import { AuthModal } from './components/AuthModal';
 import { SubscriptionSection } from './components/SubscriptionSection';
 import JobsPage from './pages/JobsPage';
@@ -585,8 +586,9 @@ interface MarketIntelData {
 
 export default function App() {
   const [selectedBriefing, setSelectedBriefing] = useState<Briefing | null>(null);
+  const [selectedIntelBrief, setSelectedIntelBrief] = useState<IntelligenceBrief | null>(null);
   const [filter, setFilter] = useState('All');
-  const [category, setCategory] = useState<Category>('TECH');
+  const [category, setCategory] = useState<Category>('Workforce Daily');
   const [lang, setLang] = useState<Language>('EN');
   const [viewMode, setViewMode] = useState<'Dashboard' | 'Jobs'>('Dashboard');
   const [currentTime, setCurrentTime] = useState(new Date());
@@ -598,6 +600,7 @@ export default function App() {
   const [subscriptionStatus, setSubscriptionStatus] = useState<'free' | 'premium'>('free');
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [briefings, setBriefings] = useState<Briefing[]>(MOCK_BRIEFINGS);
+  const [intelBriefs, setIntelBriefs] = useState<IntelligenceBrief[]>([]);
   const [newsletterEmail, setNewsletterEmail] = useState('');
   const [newsletterStatus, setNewsletterStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [theme, setTheme] = useState<'dark' | 'light'>('dark');
@@ -652,6 +655,17 @@ export default function App() {
       }
     };
     fetchBriefings();
+
+    // Fetch new intelligence briefs
+    const q = query(collection(db, "intelligence_briefs"), orderBy("createdAt", "desc"), limit(10));
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const briefs = snapshot.docs.map(doc => doc.data() as IntelligenceBrief);
+      setIntelBriefs(briefs);
+    }, (error) => {
+      handleFirestoreError(error, FirestoreOperation.LIST, "intelligence_briefs");
+    });
+
+    return () => unsubscribe();
   }, [subscriptionStatus, isAdmin]);
 
   useEffect(() => {
@@ -1062,10 +1076,10 @@ export default function App() {
                     
                     <div className="flex flex-wrap gap-2">
                       {[
-                        { id: 'TECH', icon: Cpu, label: 'Tech' },
-                        { id: 'JOBS', icon: Briefcase, label: 'Jobs' },
-                        { id: 'AI_IMPACT', icon: Brain, label: 'AI Impact' },
-                        { id: 'RECRUITMENT', icon: SearchCode, label: 'Recruitment' },
+                        { id: 'Workforce Daily', icon: Cpu, label: 'Workforce' },
+                        { id: 'TechJobs', icon: Briefcase, label: 'TechJobs' },
+                        { id: 'AI Impact', icon: Brain, label: 'AI Impact' },
+                        { id: 'Recruitment', icon: SearchCode, label: 'Recruitment' },
                         { id: 'HR', icon: UserCheck, label: 'HR' }
                       ].map((cat) => (
                         <button
@@ -1084,7 +1098,42 @@ export default function App() {
                   </div>
                   
                     <div className="space-y-4">
-                      {filteredBriefings.filter(b => b.category === category || category === 'TECH').map((briefing) => (
+                      {/* Workforce Daily Intelligence Briefs */}
+                      {intelBriefs.filter(b => b.category === category || category === 'Workforce Daily').map((brief) => (
+                        <article 
+                          key={brief.id}
+                          onClick={() => setSelectedIntelBrief(brief)}
+                          className="p-6 bg-surface border border-accent/20 hover:border-accent transition-all cursor-pointer group relative overflow-hidden"
+                        >
+                          <div className="absolute top-0 right-0 px-3 py-1 bg-accent text-black mono text-[8px] font-bold uppercase tracking-widest">
+                            {brief.category}
+                          </div>
+                          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                            <div className="flex-1">
+                              <div className="flex items-center gap-3 mb-3">
+                                <span className="px-2 py-0.5 bg-text text-bg text-[8px] font-mono font-bold">{brief.country_code}</span>
+                                {brief.is_hiring_signal && (
+                                  <span className="px-2 py-0.5 bg-green-500 text-black text-[8px] font-mono font-bold flex items-center gap-1">
+                                    <Zap size={8} /> HIRING SIGNAL
+                                  </span>
+                                )}
+                                <span className="mono text-[8px] text-text/40 uppercase tracking-widest">{brief.target_persona}</span>
+                              </div>
+                              <h3 className="text-xl font-black uppercase tracking-tight group-hover:text-accent transition-colors">
+                                {brief.subject_line}
+                              </h3>
+                              <p className="mt-2 text-sm text-text/60 line-clamp-2">
+                                {brief.free_teaser}
+                              </p>
+                            </div>
+                            <div className="flex items-center gap-2 mono text-[9px] font-bold text-accent opacity-0 group-hover:opacity-100 transition-opacity">
+                              Read Full Analysis <ArrowUpRight size={14} />
+                            </div>
+                          </div>
+                        </article>
+                      ))}
+
+                      {filteredBriefings.filter(b => b.category === category).map((briefing) => (
                         <article 
                           key={briefing.id}
                           onClick={() => {
@@ -1502,6 +1551,105 @@ export default function App() {
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Intelligence Brief Detail Modal */}
+      <AnimatePresence>
+        {selectedIntelBrief && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-bg/95 backdrop-blur-sm"
+            onClick={() => setSelectedIntelBrief(null)}
+          >
+            <motion.div 
+              initial={{ scale: 0.95, opacity: 0, y: 20 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.95, opacity: 0, y: 20 }}
+              className="bg-surface border border-border w-full max-w-3xl max-h-[90vh] overflow-y-auto relative p-8 md:p-12 rounded-2xl shadow-2xl"
+              onClick={e => e.stopPropagation()}
+            >
+              <button 
+                onClick={() => setSelectedIntelBrief(null)}
+                className="absolute top-6 right-6 p-2 hover:bg-bg rounded-full transition-colors text-text/40 hover:text-text"
+              >
+                <X size={24} />
+              </button>
+
+              <div className="flex items-center gap-4 mb-8">
+                <span className="px-3 py-1 bg-accent text-black mono text-[10px] font-bold uppercase tracking-widest rounded-full">
+                  {selectedIntelBrief.category}
+                </span>
+                <span className="px-3 py-1 bg-text text-bg mono text-[10px] font-bold uppercase tracking-widest rounded-full">
+                  {selectedIntelBrief.country_code}
+                </span>
+                {selectedIntelBrief.is_hiring_signal && (
+                  <span className="px-3 py-1 bg-green-500 text-black mono text-[10px] font-bold uppercase tracking-widest rounded-full flex items-center gap-1">
+                    <Zap size={10} /> Hiring Signal
+                  </span>
+                )}
+              </div>
+
+              <h2 className="text-4xl md:text-6xl font-black uppercase tracking-tighter mb-8 leading-none">
+                {selectedIntelBrief.subject_line}
+              </h2>
+
+              <div className="prose prose-invert max-w-none">
+                <div className="p-6 bg-bg border-l-4 border-accent mb-12">
+                  <h4 className="mono text-[10px] text-accent uppercase tracking-widest mb-4">The Teaser</h4>
+                  <p className="text-lg text-text/80 italic leading-relaxed">
+                    {selectedIntelBrief.free_teaser}
+                  </p>
+                </div>
+
+                <div className="space-y-8">
+                  <h4 className="mono text-[10px] text-text/40 uppercase tracking-widest">The Deep Dive</h4>
+                  {subscriptionStatus === 'premium' || isAdmin ? (
+                    <div className="text-text/80 leading-relaxed whitespace-pre-wrap text-lg">
+                      {selectedIntelBrief.paid_analysis}
+                    </div>
+                  ) : (
+                    <div className="relative p-12 bg-bg border border-border rounded-2xl text-center overflow-hidden">
+                      <div className="absolute inset-0 bg-gradient-to-b from-transparent to-bg/80 pointer-events-none" />
+                      <Lock className="mx-auto mb-6 text-accent" size={48} />
+                      <h3 className="text-2xl font-bold mb-4">Executive Analysis Locked</h3>
+                      <p className="text-text/40 mb-8 max-w-md mx-auto">
+                        This deep-dive analysis is exclusive to LATAM Intel Executive members.
+                      </p>
+                      <button 
+                        onClick={() => {
+                          setSelectedIntelBrief(null);
+                          document.getElementById('subscription-section')?.scrollIntoView({ behavior: 'smooth' });
+                        }}
+                        className="px-8 py-4 bg-accent text-black font-bold rounded-xl hover:opacity-90 transition-all"
+                      >
+                        Upgrade to Unlock
+                      </button>
+                    </div>
+                  )}
+                </div>
+
+                <div className="mt-12 pt-12 border-t border-border">
+                  <h4 className="mono text-[10px] text-text/40 uppercase tracking-widest mb-4">Internal Share Hook</h4>
+                  <div className="p-4 bg-surface border border-border rounded-xl flex items-center justify-between gap-4 group">
+                    <p className="text-sm text-text/60 italic">"{selectedIntelBrief.slack_hook}"</p>
+                    <button 
+                      onClick={() => {
+                        navigator.clipboard.writeText(selectedIntelBrief.slack_hook);
+                        alert('Copied to clipboard!');
+                      }}
+                      className="p-2 hover:bg-bg rounded-lg transition-colors text-accent flex items-center gap-2 mono text-[10px] font-bold"
+                    >
+                      <Copy size={14} /> Copy for Slack
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       <AuthModal isOpen={isAuthModalOpen} onClose={() => setIsAuthModalOpen(false)} />
     </div>
   );
