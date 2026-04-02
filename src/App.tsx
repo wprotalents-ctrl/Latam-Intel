@@ -66,57 +66,57 @@ const TRANSLATIONS = {
     dashboard: "Dashboard",
     jobs: "Jobs",
     marketIntel: "Market Intel",
-    tagline: "AI Job Market Intelligence & Global Trends",
-    signal: "AI Job Signal",
-    heroDesc: "Direct. Executive-level. 20 years of recruiting C-level talent with a focus on AI transformation across USA, EU, and LATAM.",
-    viewIntel: "View Job Intelligence",
-    backToFeed: "Back to Job Intelligence Feed",
-    actionable: "Impact on Jobs?",
-    editorialVoice: "Recruitment Voice",
-    authorDesc: "20yr Tech Recruitment Veteran. AI Talent Network.",
-    theVeteran: "The Recruiter",
-    authorBio: "20 years recruiting C-level talent globally. Deep network across USA, EU, and LATAM. Expert in AI's impact on the workforce and new job creation.",
-    network: "Talent Network",
-    directConn: "Direct CTO/VP & AI Lead Connections",
-    briefings: "Job Briefings",
-    intelReports: "Workforce Intelligence",
-    joinNetwork: "Join the Talent Network",
-    getSignal: "Get the AI job signal every Thursday.",
-    subscribe: "Subscribe to Job Alerts",
-    marketPulse: "Employment Pulse",
-    archive: "Job Archive",
+    tagline: "WProTalents: Strategic Talent Acquisition & AI Market Intelligence",
+    signal: "WPro Signal",
+    heroDesc: "Founder-led headhunting. We bypass the open market to connect US and EU firms with 23,000+ vetted global professionals — with unmatched depth in LATAM.",
+    viewIntel: "Access Talent Intelligence",
+    backToFeed: "Back to Intelligence Feed",
+    actionable: "Hiring Signal?",
+    editorialVoice: "Founder's Voice",
+    authorDesc: "Founder, WProTalents. 20yr Tech Recruitment Veteran.",
+    theVeteran: "The Founder",
+    authorBio: "20 years recruiting C-level talent globally. Founder of WProTalents. We hunt for high-stakes tech roles across USA, EU, and LATAM.",
+    network: "WPro Network",
+    directConn: "23,000+ Vetted Global Professionals",
+    briefings: "Talent Briefings",
+    intelReports: "Strategic Intelligence",
+    joinNetwork: "Initiate Search",
+    getSignal: "Get the AI talent signal every Thursday.",
+    subscribe: "Subscribe to Market Alerts",
+    marketPulse: "Talent Pulse",
+    archive: "Intel Archive",
     subscribeBtn: "Subscribe",
-    rights: "ALL RIGHTS RESERVED",
+    rights: "WProTalents © 2026 ALL RIGHTS RESERVED",
     terms: "Terms",
     privacy: "Privacy",
     contact: "Contact",
-    briefingNum: "Job Briefing",
-    systemLog: "Talent Log",
-    worldMap: "Global Job Map",
-    radar: "AI Talent Radar",
+    briefingNum: "Intel Briefing",
+    systemLog: "WPro Log",
+    worldMap: "Global Talent Map",
+    radar: "WPro Talent Radar",
     conflictMonitor: "Market Volatility",
-    newsFeed: "Job Market News",
+    newsFeed: "Talent Market News",
     dailyBriefing: "Workforce Daily",
-    analyst: "Recruiter",
-    alerts: "Job Alerts",
+    analyst: "Headhunter",
+    alerts: "Talent Alerts",
     reports: "Market Reports",
     decks: "Talent Decks",
-    monitoredSituations: "Employment Trends",
-    localTriangulation: "Regional Job Data",
+    monitoredSituations: "Hiring Trends",
+    localTriangulation: "Regional Talent Data",
     visualTelemetry: "Talent Telemetry",
-    latAmSignal: "LATAM AI Jobs",
-    aiToolOfWeek: "AI Recruitment Tool",
-    countryWatch: "Global Job Watch",
-    fiveLinks: "Five Job Insights Worth Your Time",
+    latAmSignal: "LATAM AI Talent",
+    aiToolOfWeek: "Recruitment Tech",
+    countryWatch: "Global Talent Watch",
+    fiveLinks: "Five Insights Worth Your Time",
     fxRates: "MARKET RATES // LIVE",
     ago: "AGO",
-    openReport: "OPEN JOB REPORT",
-    generatingSignal: "ANALYZING JOB MARKET...",
-    generateNewBriefing: "GENERATE JOB BRIEFING",
-    systemsNominal: "RECRUITMENT NOMINAL",
-    total: "HIRES",
-    queue: "OPENINGS",
-    feeds: "TALENT FEEDS",
+    openReport: "OPEN INTEL REPORT",
+    generatingSignal: "ANALYZING TALENT MARKET...",
+    generateNewBriefing: "GENERATE INTEL BRIEFING",
+    systemsNominal: "WPRO NOMINAL",
+    total: "VETTED",
+    queue: "SEARCHES",
+    feeds: "INTEL FEEDS",
     night: "Night",
     customize: "Customize",
     rotation: "Rotation",
@@ -124,26 +124,26 @@ const TRANSLATIONS = {
     pause: "Pause",
     muted: "Muted",
     unmuted: "Unmuted",
-    sourceLink: "Job Source ↗",
+    sourceLink: "WProTalents ↗",
     edt: "EDT",
-    data: "TALENT",
-    beta: "JOBDECK BETA",
+    data: "WPRO",
+    beta: "WPRO INTEL BETA",
     scanning: "SCANNING TALENT...",
     aircraft: "TALENT",
-    systemLogTitle: "TALENT LOG",
+    systemLogTitle: "WPRO LOG",
     logMsgs: [
-      "AI Talent Hub Established: SECTOR_7",
-      "New AI Job Detected: 35.41217, -50.55469",
+      "WPro Talent Hub Established: SECTOR_7",
+      "New AI Talent Detected: 35.41217, -50.55469",
       "Recruitment Feed Decrypted: CH_04",
       "Market Volatility Alert: Tech Sector",
       "Talent Data Ingestion Complete: GLOBAL_AI",
       "System Nominal: All Talent Nodes Active",
-      "New AI Recruitment Tool Integrated: IP_88.1.2.3"
+      "WPro Recruitment Tool Integrated: IP_88.1.2.3"
     ],
-    sent: "HIRED",
+    sent: "VETTED",
     marketPulseItems: [
-      { label: 'AI Jobs USA', value: 'High', trend: '+15.2%', sentiment: '+2.5' },
-      { label: 'Tech Jobs EU', value: 'Steady', trend: '+2.1%', sentiment: '+0.5' },
+      { label: 'AI Talent USA', value: 'High', trend: '+15.2%', sentiment: '+2.5' },
+      { label: 'Tech Talent EU', value: 'Steady', trend: '+2.1%', sentiment: '+0.5' },
       { label: 'AI Talent LATAM', value: 'Rising', trend: '+18.4%', sentiment: '+2.8' }
     ],
     aiToolScores: [
@@ -158,32 +158,33 @@ const TRANSLATIONS = {
     signalDesc2: "For the tech executive, this means the window for 'cheap' AI talent in LATAM is closing. You are no longer just competing with local startups; you are competing with Google, Meta, and OpenAI for the same engineering pool. If you haven't secured your AI leadership team in the region, you will be paying a 60% premium by 2027. Commodities like energy for data centers are also seeing price spikes in Chile and Uruguay as AI infrastructure expands.",
     signalSoWhat: "Lock in your AI engineering leads in Brazil and Mexico now. The wage inflation is real, and the talent is being snapped up by global giants. Also, monitor NVIDIA stock and energy commodity prices as they directly correlate with AI job growth in the region.",
     // AI Tool Content
-    aiToolName: "HiredScore",
+    aiToolName: "WPro Intelligence",
     aiToolTitle: "AI-Powered Recruitment at Scale",
-    aiToolDesc: "HiredScore uses AI to ethically and efficiently match candidates to open roles, reducing bias and increasing recruiter productivity by 3x. It's a game-changer for high-volume tech hiring.",
+    aiToolDesc: "WProTalents uses AI-assisted sourcing combined with relationship-based recruiting. The speed of modern data mapping with the discretion of old-school headhunting.",
     aiToolWorkflowLabel: "RECRUITMENT WORKFLOW",
-    aiToolWorkflow: "I integrated HiredScore into our C-level search process. It analyzed 10,000+ profiles to find the top 5 candidates for a Head of AI role in Mexico City. It didn't just look at keywords; it analyzed 'career trajectory' and 'AI project impact.' It saved our team 2 weeks of manual screening.",
-    aiToolLimitation: "Limitation: Requires a large dataset to be truly effective; smaller startups might find the initial setup overhead high.",
-    aiToolVerdict: "Verdict for HR Executives: If you are hiring more than 50 people a year, this tool is mandatory to maintain quality and speed.",
+    aiToolWorkflow: "I integrated WPro's protocols into our C-level search process. It analyzed 23,000+ vetted profiles to find the top 5 candidates for a Head of AI role in Mexico City. It didn't just look at keywords; it analyzed 'career trajectory' and 'AI project impact.' It saved our team 2 weeks of manual screening.",
+    aiToolLimitation: "Limitation: Requires a deep understanding of the specific technical requirements to be truly effective.",
+    aiToolVerdict: "Verdict for HR Executives: If you are hiring senior tech talent in LATAM, WPro's approach is mandatory to maintain quality and speed.",
     // Country Watch Content
     countryWatchItems: [
-      { country: "USA", flag: "🇺🇸", text: "AI job market cooling slightly in SF but exploding in Austin and Miami. Focus on 'Applied AI' roles rather than just research. Major stocks like NVDA and MSFT are the primary drivers of job sentiment." },
+      { country: "USA", flag: "🇺🇸", text: "AI talent market cooling slightly in SF but exploding in Austin and Miami. Focus on 'Applied AI' roles rather than just research. Major stocks like NVDA and MSFT are the primary drivers of job sentiment." },
       { country: "EU", flag: "🇪🇺", text: "AI Act implementation is creating a surge in 'AI Compliance' and 'Ethics' roles. Germany and France are leading in industrial AI jobs. Watch energy prices as they impact data center expansion." },
       { country: "LATAM", flag: "🌎", text: "Brazil and Mexico are becoming the global back-office for AI development. Salaries are rising fast. Focus on building 'AI Centers of Excellence' to retain top talent." }
     ],
     // Five Links Content
     fiveLinksItems: [
-      { title: "AI's Impact on the 2026 Job Market", source: "FORBES", why: "A comprehensive look at which roles are being automated and where the new 'AI-Native' jobs are appearing." },
-      { title: "Commodity Prices & AI Infrastructure", source: "BLOOMBERG", why: "How the demand for copper and energy for AI data centers is impacting global markets and job creation in mining." }
+      { title: "AI's Impact on the 2026 Job Market", source: "WPRO_INSIGHTS", why: "A comprehensive look at which roles are being automated and where the new 'AI-Native' jobs are appearing." },
+      { title: "Commodity Prices & AI Infrastructure", source: "WPRO_INTEL", why: "How the demand for copper and energy for AI data centers is impacting global markets and job creation in mining." }
     ],
     // News Feed Content
     newsFeedItems: [
-      { title: "NVIDIA hits new high as AI job demand surges in USA", source: "REUTERS", time: "2h" },
+      { title: "WProTalents expands network to 25,000+ vetted professionals", source: "WPRO_NEWS", time: "2h" },
       { title: "EU AI Act creates 50,000 new compliance roles across Europe", source: "BBC", time: "4h" },
       { title: "Brazil's AI talent pool grows by 30% in Q1 2026", source: "LATAM_TECH", time: "6h" },
       { title: "Oil prices dip, but energy demand for AI data centers remains high", source: "CNBC", time: "8h" },
-      { title: "New AI recruitment tool 'HiredScore' raises $100M in Series C", source: "TECHCRUNCH", time: "10h" }
+      { title: "WProTalents maps top 100 AI engineers in Mexico City", source: "WPRO_INTEL", time: "10h" }
     ]
+
   },
   ES: {
     dashboard: "Panel",
@@ -449,7 +450,7 @@ const WorldMap = () => (
       <path 
         d="M150,150 L200,150 L250,200 L300,200 L350,250 L400,250 L450,300 L500,300 L550,250 L600,250 L650,200 L700,200 L750,150 L800,150 L850,200 L900,200" 
         fill="none" 
-        stroke="#ff6b00" 
+        stroke="var(--accent)" 
         strokeWidth="0.5" 
         className="opacity-40"
       />
@@ -464,7 +465,7 @@ const WorldMap = () => (
           cx={Math.random() * 1000}
           cy={Math.random() * 500}
           r={Math.random() * 2 + 0.5}
-          fill={Math.random() > 0.8 ? "#ff6b00" : "currentColor"}
+          fill={Math.random() > 0.8 ? "var(--accent)" : "currentColor"}
           className="animate-pulse text-text"
           style={{ animationDelay: `${Math.random() * 5}s` }}
         />
@@ -502,7 +503,7 @@ const RadarWidget = ({ lang }: { lang: Language }) => {
   }, []);
 
   return (
-    <div className="relative w-full aspect-square bg-surface flex items-center justify-center border border-border overflow-hidden">
+    <div className="relative w-full aspect-square bg-surface/30 flex items-center justify-center border border-border overflow-hidden">
       <div className="absolute inset-0 flex items-center justify-center">
         {[1, 2, 3, 4].map(i => (
           <div 
@@ -520,7 +521,7 @@ const RadarWidget = ({ lang }: { lang: Language }) => {
             key={blip.id}
             initial={{ scale: 0 }}
             animate={{ scale: 1, opacity: blip.opacity }}
-            className="absolute w-1.5 h-1.5 bg-accent rounded-full shadow-[0_0_5px_#ff6b00]"
+            className="absolute w-1.5 h-1.5 bg-accent rounded-full shadow-[0_0_5px_var(--accent)]"
             style={{ left: `${blip.x}%`, top: `${blip.y}%` }}
           />
         ))}
@@ -706,6 +707,16 @@ export default function App() {
     }
   };
 
+  useEffect(() => {
+    if (theme === 'light') {
+      document.body.classList.add('light');
+      document.documentElement.style.colorScheme = 'light';
+    } else {
+      document.body.classList.remove('light');
+      document.documentElement.style.colorScheme = 'dark';
+    }
+  }, [theme]);
+
   const handleSyncIntelligence = async () => {
     setIsSyncing(true);
     try {
@@ -768,18 +779,18 @@ export default function App() {
   const t = TRANSLATIONS[lang];
 
   return (
-    <div className="h-screen flex flex-col bg-bg text-text selection:bg-accent selection:text-black font-sans relative">
+    <div className={`h-screen flex flex-col bg-bg text-text selection:bg-accent selection:text-black font-sans relative transition-colors duration-300 ${theme === 'light' ? 'light' : ''}`}>
       <div className="scanline pointer-events-none fixed inset-0 z-[200]" />
       {/* Top Bar / OSINT Header */}
       <header className="border-b border-border bg-surface flex items-center justify-between px-6 py-2">
         <div className="flex items-center gap-8">
-          <button onClick={() => setSelectedBriefing(null)} className="flex items-center gap-3 group">
-            <div className="w-8 h-8 bg-accent flex items-center justify-center text-black font-black text-xl">L</div>
+          <a href="https://wprotalents.lat/" target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 group">
+            <div className="w-8 h-8 bg-accent flex items-center justify-center text-black font-black text-xl">W</div>
             <div className="flex flex-col text-left">
-              <h1 className="text-sm font-black uppercase tracking-tighter leading-none">LatAm Intel</h1>
+              <h1 className="text-sm font-black uppercase tracking-tighter leading-none">WProTalents Intel</h1>
               <span className="mono text-[8px] text-accent/60">{t.beta}</span>
             </div>
-          </button>
+          </a>
 
           <nav className="hidden md:flex items-center gap-1">
             <button 
@@ -901,15 +912,12 @@ export default function App() {
           <span className="mono text-[8px] text-text/20">00:00</span>
           <div className="flex-1 h-1 bg-text/5 rounded-full relative overflow-hidden group cursor-pointer">
             <div className="absolute inset-0 bg-accent/20 w-1/3" />
-            <div className="absolute top-0 bottom-0 left-1/3 w-0.5 bg-accent shadow-[0_0_5px_#ff6b00]" />
+            <div className="absolute top-0 bottom-0 left-1/3 w-0.5 bg-accent shadow-[0_0_5px_var(--accent)]" />
           </div>
           <span className="mono text-[8px] text-text/20">23:59</span>
         </div>
         <div className="w-px h-4 bg-border" />
         <div className="flex items-center gap-4">
-          <button className="flex items-center gap-2 mono text-[9px] text-text/40 hover:text-text transition-colors">
-            <Moon size={12} /> {t.night}
-          </button>
           <button className="flex items-center gap-2 mono text-[9px] text-text/40 hover:text-text transition-colors">
             <Settings size={12} /> {t.customize}
           </button>
@@ -1481,7 +1489,7 @@ export default function App() {
 
           <div className="flex flex-col md:flex-row justify-between items-center gap-4 pt-8 border-t border-text/5">
             <div className="flex items-center gap-6">
-              <div className="mono text-[9px] text-text/20">© 2026 LATAM INTEL // {t.rights}</div>
+              <div className="mono text-[9px] text-text/20">WProTalents // {t.rights}</div>
               <div className="flex items-center gap-2 mono text-[9px] text-green-500/60">
                 <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
                 {t.systemsNominal}
@@ -1616,7 +1624,7 @@ export default function App() {
                       <Lock className="mx-auto mb-6 text-accent" size={48} />
                       <h3 className="text-2xl font-bold mb-4">Executive Analysis Locked</h3>
                       <p className="text-text/40 mb-8 max-w-md mx-auto">
-                        This deep-dive analysis is exclusive to LATAM Intel Executive members.
+                        This deep-dive analysis is exclusive to WProTalents Executive members.
                       </p>
                       <button 
                         onClick={() => {

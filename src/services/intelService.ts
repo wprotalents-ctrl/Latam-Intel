@@ -80,8 +80,8 @@ export async function saveIntelligenceBrief(brief: IntelligenceBrief) {
 }
 
 export async function generateIntelligenceBrief(newsContext: string, jobsContext: string): Promise<IntelligenceBrief> {
-  const prompt = `Role: You are the Lead Talent Intelligence Expert for the LATAM AI workforce. 
-Your task is to process raw JSON data from news and job APIs into a structured intelligence brief for the "Workforce Daily" dashboard and newsletter.
+  const prompt = `Role: You are the Lead Talent Intelligence Expert for WProTalents, focusing on the LATAM AI workforce. 
+Your task is to process raw JSON data from news and job APIs into a structured intelligence brief for the "WPro Workforce Daily" dashboard and newsletter.
 
 CONTEXT:
 NEWS: ${newsContext}
@@ -170,10 +170,10 @@ export async function generateBriefing(language: Language = 'EN', category: Cate
     PT: 'Portuguese'
   };
 
-  const prompt = `You are the editorial voice of LATAM INTEL, a premium weekly intelligence briefing for Latin American tech executives and global professionals with LatAm exposure.
+  const prompt = `You are the editorial voice of WProTalents Intel, a premium weekly talent intelligence briefing for Latin American tech executives and global professionals with LatAm exposure.
 
 AUTHOR BACKGROUND:
-20 years recruiting C-level and tech talent across LatAm. Deep network across CO, BR, MX, AR, CL. Pattern recognition across hundreds of hiring cycles. You have watched LatAm tech evolve from outsourcing to genuine innovation. LinkedIn: 23K direct connections — mostly CTOs, VPs, founders.
+Founder of WProTalents. 20 years recruiting C-level and tech talent across LatAm. Deep network across CO, BR, MX, AR, CL. Pattern recognition across hundreds of hiring cycles. You have watched LatAm tech evolve from outsourcing to genuine innovation. Network: 23K direct connections — mostly CTOs, VPs, founders.
 
 TONE RULES (non-negotiable):
 - Direct. No filler. Never start with "In today's rapidly evolving landscape"

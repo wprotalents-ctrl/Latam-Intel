@@ -75,10 +75,10 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
                 </div>
                 
                 <h2 className="text-2xl font-bold tracking-tight text-text">
-                  Join LATAM INTEL
+                  Join WProTalents
                 </h2>
                 <p className="text-text/60 text-sm leading-relaxed">
-                  Access premium intelligence briefings, salary data, and AI impact reports across Latin America.
+                  Access premium talent intelligence, salary data, and AI impact reports across Latin America.
                 </p>
               </div>
 

@@ -98,10 +98,10 @@ app.post("/api/webhooks/stripe", express.raw({ type: "application/json" }), asyn
       if (customerEmail) {
         const resend = getResend();
         await resend.emails.send({
-          from: "LATAM Intel <onboarding@resend.dev>",
+          from: "WProTalents <onboarding@resend.dev>",
           to: customerEmail,
-          subject: "Welcome to LATAM Intel Executive",
-          html: "<h1>Welcome!</h1><p>You now have full access to our daily deep-dive briefings and job impact reports.</p>",
+          subject: "Welcome to WProTalents Executive",
+          html: "<h1>Welcome!</h1><p>You now have full access to our daily deep-dive talent briefings and hiring impact reports.</p>",
         });
       }
     }
@@ -128,10 +128,10 @@ app.post("/api/webhooks/coinbase", express.json(), async (req, res) => {
       if (customerEmail) {
         const resend = getResend();
         await resend.emails.send({
-          from: "LATAM Intel <onboarding@resend.dev>",
+          from: "WProTalents <onboarding@resend.dev>",
           to: customerEmail,
-          subject: "Welcome to LATAM Intel Executive (Crypto)",
-          html: "<h1>Welcome!</h1><p>Your crypto payment has been confirmed. You now have full access.</p>",
+          subject: "Welcome to WProTalents Executive (Crypto)",
+          html: "<h1>Welcome!</h1><p>Your crypto payment has been confirmed. You now have full access to our talent intelligence.</p>",
         });
       }
     }
@@ -329,8 +329,8 @@ app.post("/api/generate-workforce-brief", async (req, res) => {
     const { GoogleGenAI, Type } = await import("@google/genai");
     const ai = new GoogleGenAI({ apiKey: GEMINI_API_KEY });
     
-    const prompt = `Role: You are the Lead Talent Intelligence Expert for the LATAM AI workforce. 
-Your task is to process raw JSON data from news and job APIs into a structured intelligence brief for the "Workforce Daily" dashboard and newsletter.
+    const prompt = `Role: You are the Lead Talent Intelligence Expert for WProTalents, focusing on the LATAM AI workforce. 
+Your task is to process raw JSON data from news and job APIs into a structured intelligence brief for the "WPro Workforce Daily" dashboard and newsletter.
 
 CONTEXT:
 NEWS: ${newsContext}
@@ -446,8 +446,8 @@ app.post("/api/create-crypto-charge", async (req, res) => {
     initCoinbase();
     const { Charge } = resources;
     const charge = await Charge.create({
-      name: "LATAM Intel Executive Subscription",
-      description: "1 Month Premium Access",
+      name: "WProTalents Executive Subscription",
+      description: "1 Month Premium Talent Intelligence",
       local_price: {
         amount: "29.00",
         currency: "USD",
@@ -500,7 +500,7 @@ app.post("/api/send-email", async (req, res) => {
   try {
     const resend = getResend();
     const data = await resend.emails.send({
-      from: "LATAM Intel <onboarding@resend.dev>",
+      from: "WProTalents <onboarding@resend.dev>",
       to,
       subject,
       html,
@@ -547,12 +547,12 @@ app.post("/api/sync-intelligence", async (req, res) => {
     const { GoogleGenAI, Type } = await import("@google/genai");
     const ai = new GoogleGenAI({ apiKey: GEMINI_API_KEY });
     
-    const prompt = `Based on the following recent news from Latin America, generate a premium intelligence briefing for tech executives.
+    const prompt = `Based on the following recent news from Latin America, generate a premium talent intelligence briefing for tech executives.
     
     NEWS CONTEXT:
     ${newsContext}
     
-    Follow the LATAM INTEL editorial voice: Direct, no filler, actionable "So what?".
+    Follow the WProTalents editorial voice: Direct, no filler, actionable "So what?".
     Generate the briefing in English, Spanish, and Portuguese.
     Mark it as isPremium: true.
     Category: TECH.`;
