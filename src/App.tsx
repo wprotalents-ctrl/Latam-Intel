@@ -38,8 +38,19 @@ import {
   Brain,
   SearchCode,
   UserCheck,
-  RefreshCw
+  RefreshCw,
+  Bitcoin,
+  Newspaper
 } from 'lucide-react';
+import { 
+  BarChart, 
+  Bar, 
+  XAxis, 
+  YAxis, 
+  CartesianGrid, 
+  Tooltip, 
+  ResponsiveContainer 
+} from 'recharts';
 import { MOCK_BRIEFINGS, generateBriefing, saveBriefing, getRecentBriefings } from './services/intelService';
 import { Language, Briefing, Category } from './types';
 import { auth, onAuthStateChanged, User, signOut, db } from './firebase';
@@ -47,7 +58,6 @@ import { onSnapshot, doc } from 'firebase/firestore';
 import { AuthModal } from './components/AuthModal';
 import { SubscriptionSection } from './components/SubscriptionSection';
 import JobsPage from './pages/JobsPage';
-import MarketIntelPage from './pages/MarketIntelPage';
 
 const TRANSLATIONS = {
   EN: {
@@ -564,12 +574,20 @@ const SystemLog = ({ lang }: { lang: Language }) => {
 };
 
 
+interface MarketIntelData {
+  news: any[];
+  cryptoNews: any[];
+  trends: { sectors: any[]; companies: any[] };
+  volume: any[];
+  brief: string;
+}
+
 export default function App() {
   const [selectedBriefing, setSelectedBriefing] = useState<Briefing | null>(null);
   const [filter, setFilter] = useState('All');
   const [category, setCategory] = useState<Category>('TECH');
   const [lang, setLang] = useState<Language>('EN');
-  const [viewMode, setViewMode] = useState<'Dashboard' | 'Jobs' | 'MarketIntel'>('Dashboard');
+  const [viewMode, setViewMode] = useState<'Dashboard' | 'Jobs'>('Dashboard');
   const [currentTime, setCurrentTime] = useState(new Date());
   const [isPaused, setIsPaused] = useState(false);
   const [isMuted, setIsMuted] = useState(true);
@@ -581,6 +599,13 @@ export default function App() {
   const [briefings, setBriefings] = useState<Briefing[]>(MOCK_BRIEFINGS);
   const [newsletterEmail, setNewsletterEmail] = useState('');
   const [newsletterStatus, setNewsletterStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+  const [marketIntelData, setMarketIntelData] = useState<MarketIntelData>({
+    news: [],
+    cryptoNews: [],
+    trends: { sectors: [], companies: [] },
+    volume: [],
+    brief: ''
+  });
 
   const isAdmin = user?.email === 'iafacilparareinventarte@gmail.com' && user?.emailVerified;
 
@@ -618,6 +643,42 @@ export default function App() {
     };
     fetchBriefings();
   }, [subscriptionStatus, isAdmin]);
+
+  useEffect(() => {
+    fetchMarketIntel();
+  }, []);
+
+  const fetchMarketIntel = async () => {
+    try {
+      const [newsRes, cryptoRes, trendsRes, volumeRes, briefRes] = await Promise.all([
+        fetch('/api/market-intel/news'),
+        fetch('/api/market-intel/crypto-news'),
+        fetch('/api/market-intel/trends'),
+        fetch('/api/market-intel/volume'),
+        fetch('/api/market-intel/brief')
+      ]);
+
+      if (newsRes.ok && cryptoRes.ok && trendsRes.ok && volumeRes.ok && briefRes.ok) {
+        const [news, cryptoNews, trends, volume, briefData] = await Promise.all([
+          newsRes.json(),
+          cryptoRes.json(),
+          trendsRes.json(),
+          volumeRes.json(),
+          briefRes.json()
+        ]);
+
+        setMarketIntelData({
+          news,
+          cryptoNews,
+          trends,
+          volume: Array.isArray(volume[0]) ? volume[0] : volume,
+          brief: briefData.brief
+        });
+      }
+    } catch (error) {
+      console.error("Failed to fetch market intel:", error);
+    }
+  };
 
   const handleSyncIntelligence = async () => {
     setIsSyncing(true);
@@ -706,12 +767,6 @@ export default function App() {
               className={`px-4 py-2 mono text-[10px] transition-all flex items-center gap-2 ${viewMode === 'Jobs' ? 'text-accent bg-white/5' : 'text-white/40 hover:text-white'}`}
             >
               <Briefcase size={14} /> {t.jobs}
-            </button>
-            <button 
-              onClick={() => setViewMode('MarketIntel')}
-              className={`px-4 py-2 mono text-[10px] transition-all flex items-center gap-2 ${viewMode === 'MarketIntel' ? 'text-accent bg-white/5' : 'text-white/40 hover:text-white'}`}
-            >
-              <TrendingUp size={14} /> {t.marketIntel}
             </button>
           </nav>
         </div>
@@ -842,17 +897,7 @@ export default function App() {
               exit={{ opacity: 0 }}
               className="absolute inset-0 overflow-y-auto"
             >
-              <JobsPage />
-            </motion.div>
-          ) : viewMode === 'MarketIntel' ? (
-            <motion.div 
-              key="market-intel"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="absolute inset-0 overflow-y-auto"
-            >
-              <MarketIntelPage />
+              <JobsPage lang={lang} />
             </motion.div>
           ) : (
             <motion.div 
@@ -946,6 +991,50 @@ export default function App() {
                   </div>
                 </div>
 
+                {/* Market Intel Integration: Brief and Job News */}
+                {marketIntelData.brief && (
+                  <div className="bg-bg p-6 border-b border-border">
+                    <div className="flex items-center gap-2 mb-6">
+                      <Zap size={10} className="text-accent" />
+                      <div className="mono text-[9px] text-accent font-bold uppercase tracking-widest">AI Impact Brief</div>
+                    </div>
+                    <div className="bg-surface border border-accent/20 p-6 relative overflow-hidden">
+                      <div className="absolute top-0 right-0 p-4 opacity-5">
+                        <Zap size={48} className="text-accent" />
+                      </div>
+                      <p className="text-lg font-medium leading-relaxed text-white/90 italic">
+                        "{marketIntelData.brief}"
+                      </p>
+                    </div>
+                  </div>
+                )}
+
+                {marketIntelData.news.length > 0 && (
+                  <div className="bg-bg p-6 border-b border-border">
+                    <div className="flex items-center gap-2 mb-6">
+                      <Newspaper size={10} className="text-accent" />
+                      <div className="mono text-[9px] text-white/40 font-bold uppercase tracking-widest">Today's Job News</div>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {marketIntelData.news.slice(0, 4).map((item, i) => (
+                        <a 
+                          key={i} 
+                          href={item.url} 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          className="p-4 bg-surface border border-border hover:border-accent/40 transition-all group"
+                        >
+                          <div className="flex justify-between items-start gap-2 mb-2">
+                            <span className="mono text-[8px] text-accent uppercase">{item.source}</span>
+                            <span className="mono text-[8px] text-white/20">{new Date(item.publishedAt).toLocaleDateString()}</span>
+                          </div>
+                          <h5 className="text-sm font-bold group-hover:text-accent transition-colors line-clamp-2">{item.title}</h5>
+                        </a>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
                 {/* Bottom Row: Intelligence Feed */}
                 <div className="bg-bg p-6 flex-1">
                   <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8">
@@ -1028,6 +1117,23 @@ export default function App() {
                     </div>
                   </div>
                   <div className="space-y-6">
+                    {marketIntelData.cryptoNews.length > 0 && (
+                      <div className="p-4 bg-surface border border-border">
+                        <div className="flex items-center gap-2 mb-4">
+                          <Bitcoin size={12} className="text-accent" />
+                          <span className="mono font-bold text-[10px] uppercase tracking-widest">Crypto & Web3 Pulse</span>
+                        </div>
+                        <div className="space-y-3">
+                          {marketIntelData.cryptoNews.slice(0, 3).map((item, i) => (
+                            <a key={i} href={item.url} target="_blank" rel="noopener noreferrer" className="block group">
+                              <h6 className="text-[10px] font-bold group-hover:text-accent transition-colors line-clamp-1">{item.title}</h6>
+                              <span className="mono text-[7px] text-white/40 uppercase">{item.source}</span>
+                            </a>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
                     {t.marketPulseItems.map((item, i) => (
                       <div key={item.label} className="flex justify-between items-center p-4 bg-surface border border-border">
                         <div className="flex items-center gap-3">
@@ -1066,6 +1172,83 @@ export default function App() {
                     ))}
                   </div>
                 </section>
+
+                {/* Market Intel Charts */}
+                {marketIntelData.trends.sectors.length > 0 && (
+                  <section className="p-8 bg-bg border-t border-border">
+                    <div className="mono text-[9px] text-white/40 mb-6 flex items-center gap-2">
+                      <TrendingUp size={10} className="text-accent" /> TOP HIRING SECTORS
+                    </div>
+                    <div className="h-[200px] w-full">
+                      <ResponsiveContainer width="100%" height="100%">
+                        <BarChart data={marketIntelData.trends.sectors} layout="vertical">
+                          <CartesianGrid strokeDasharray="3 3" stroke="#1a1a1a" horizontal={false} />
+                          <XAxis type="number" hide />
+                          <YAxis 
+                            dataKey="name" 
+                            type="category" 
+                            width={80} 
+                            stroke="#404040" 
+                            fontSize={8}
+                            tick={{ fill: '#666' }}
+                          />
+                          <Tooltip 
+                            contentStyle={{ backgroundColor: '#0a0a0a', border: '1px solid #262626', fontSize: '10px' }}
+                            itemStyle={{ color: '#ff6b00' }}
+                          />
+                          <Bar dataKey="count" fill="#ff6b00" radius={[0, 2, 2, 0]} />
+                        </BarChart>
+                      </ResponsiveContainer>
+                    </div>
+                  </section>
+                )}
+
+                {marketIntelData.volume.length > 0 && (
+                  <section className="p-8 bg-bg border-t border-border">
+                    <div className="mono text-[9px] text-white/40 mb-6 flex items-center gap-2">
+                      <Globe size={10} className="text-accent" /> LATAM JOB VOLUME
+                    </div>
+                    <div className="h-[200px] w-full">
+                      <ResponsiveContainer width="100%" height="100%">
+                        <BarChart data={marketIntelData.volume}>
+                          <CartesianGrid strokeDasharray="3 3" stroke="#1a1a1a" vertical={false} />
+                          <XAxis 
+                            dataKey="country" 
+                            stroke="#404040" 
+                            fontSize={8}
+                            tick={{ fill: '#666' }}
+                          />
+                          <YAxis 
+                            stroke="#404040" 
+                            fontSize={8}
+                            tick={{ fill: '#666' }}
+                          />
+                          <Tooltip 
+                            contentStyle={{ backgroundColor: '#0a0a0a', border: '1px solid #262626', fontSize: '10px' }}
+                            itemStyle={{ color: '#ff6b00' }}
+                          />
+                          <Bar dataKey="count" fill="#ff6b00" radius={[2, 2, 0, 0]} />
+                        </BarChart>
+                      </ResponsiveContainer>
+                    </div>
+                  </section>
+                )}
+
+                {marketIntelData.trends.companies.length > 0 && (
+                  <section className="p-8 bg-bg border-t border-border">
+                    <div className="mono text-[9px] text-white/40 mb-6 flex items-center gap-2">
+                      <Users size={10} className="text-accent" /> MOST ACTIVE COMPANIES
+                    </div>
+                    <div className="space-y-2">
+                      {marketIntelData.trends.companies.slice(0, 5).map((company, idx) => (
+                        <div key={idx} className="flex items-center justify-between p-2 bg-surface border border-border">
+                          <span className="font-bold text-[10px]">{company.name}</span>
+                          <span className="mono text-[8px] text-accent">{company.count} roles</span>
+                        </div>
+                      ))}
+                    </div>
+                  </section>
+                )}
 
                 <section className="p-8 bg-bg grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="bg-surface border border-border p-6 flex flex-col justify-between">

@@ -25,22 +25,63 @@ interface Job {
 
 const REGIONS = ['All', 'LATAM', 'USA', 'Europe', 'Worldwide'];
 
-export default function JobsPage() {
+const JOBS_TRANSLATIONS = {
+  EN: {
+    title: "AI Job Intelligence",
+    tagline: "Curated AI-specific opportunities across USA, EU, and LATAM. Direct signal on the workforce transformation.",
+    searchPlaceholder: "Search by title or company...",
+    scanning: "Scanning AI global markets...",
+    failed: "Intelligence Retrieval Failed",
+    retry: "RETRY SCAN",
+    viewJob: "VIEW JOB",
+    noJobs: "No matching AI opportunities found in current scan.",
+    salary: "SALARY",
+    source: "SOURCE"
+  },
+  ES: {
+    title: "Inteligencia de Empleos IA",
+    tagline: "Oportunidades específicas de IA curadas en EE. UU., UE y LATAM. Señal directa sobre la transformación de la fuerza laboral.",
+    searchPlaceholder: "Buscar por título o empresa...",
+    scanning: "Escaneando mercados globales de IA...",
+    failed: "Fallo en la Recuperación de Inteligencia",
+    retry: "REINTENTAR ESCANEO",
+    viewJob: "VER EMPLEO",
+    noJobs: "No se encontraron oportunidades de IA coincidentes en el escaneo actual.",
+    salary: "SALARIO",
+    source: "FUENTE"
+  },
+  PT: {
+    title: "Inteligência de Empregos de IA",
+    tagline: "Oportunidades específicas de IA selecionadas nos EUA, UE e LATAM. Sinal direto sobre a transformação da força de trabalho.",
+    searchPlaceholder: "Pesquisar por título ou empresa...",
+    scanning: "Escaneando mercados globais de IA...",
+    failed: "Falha na Recuperação de Inteligência",
+    retry: "REPETIR VARREDURA",
+    viewJob: "VER VAGA",
+    noJobs: "Nenhuma oportunidade de IA correspondente encontrada na varredura atual.",
+    salary: "SALÁRIO",
+    source: "FONTE"
+  }
+};
+
+export default function JobsPage({ lang = 'EN' }: { lang?: string }) {
   const [jobs, setJobs] = useState<Job[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedRegion, setSelectedRegion] = useState('All');
 
+  const t = JOBS_TRANSLATIONS[lang as keyof typeof JOBS_TRANSLATIONS] || JOBS_TRANSLATIONS.EN;
+
   useEffect(() => {
     fetchJobs();
-  }, []);
+  }, [lang]);
 
   const fetchJobs = async () => {
     setLoading(true);
     setError(null);
     try {
-      const response = await fetch('/api/jobs');
+      const response = await fetch(`/api/jobs?lang=${lang}`);
       if (!response.ok) throw new Error('Failed to fetch jobs');
       const data = await response.json();
       setJobs(data);
@@ -70,10 +111,10 @@ export default function JobsPage() {
           <div className="w-10 h-10 bg-accent flex items-center justify-center text-black">
             <Briefcase size={24} />
           </div>
-          <h1 className="text-4xl md:text-5xl font-black tracking-tighter uppercase">AI Job Intelligence</h1>
+          <h1 className="text-4xl md:text-5xl font-black tracking-tighter uppercase">{t.title}</h1>
         </div>
         <p className="text-white/60 max-w-2xl text-lg">
-          Curated AI-specific opportunities across USA, EU, and LATAM. Direct signal on the workforce transformation.
+          {t.tagline}
         </p>
       </header>
 
@@ -83,7 +124,7 @@ export default function JobsPage() {
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-white/40" size={20} />
           <input
             type="text"
-            placeholder="Search by title or company..."
+            placeholder={t.searchPlaceholder}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="w-full bg-surface border border-border pl-12 pr-4 py-4 focus:outline-none focus:border-accent transition-colors"
@@ -111,18 +152,18 @@ export default function JobsPage() {
       {loading ? (
         <div className="flex flex-col items-center justify-center py-24 gap-4">
           <Loader2 className="text-accent animate-spin" size={48} />
-          <span className="mono text-accent animate-pulse">Scanning AI global markets...</span>
+          <span className="mono text-accent animate-pulse">{t.scanning}</span>
         </div>
       ) : error ? (
         <div className="flex flex-col items-center justify-center py-24 gap-4 bg-surface border border-red-500/20 rounded-sm">
           <AlertCircle className="text-red-500" size={48} />
-          <p className="text-red-500 font-bold uppercase tracking-tighter">Intelligence Retrieval Failed</p>
+          <p className="text-red-500 font-bold uppercase tracking-tighter">{t.failed}</p>
           <p className="text-white/40 text-sm">{error}</p>
           <button 
             onClick={fetchJobs}
-            className="mt-4 px-6 py-2 bg-white text-black font-bold hover:bg-gray-200"
+            className="mt-4 px-6 py-2 bg-white text-black font-bold hover:bg-accent transition-colors"
           >
-            RETRY SCAN
+            {t.retry}
           </button>
         </div>
       ) : (
@@ -158,20 +199,20 @@ export default function JobsPage() {
                         {job.location}
                       </div>
                       <div className="flex items-center gap-2 text-sm text-white/60">
-                        <span className="mono text-[8px] border border-white/10 px-1 py-0.5">SALARY</span>
+                        <span className="mono text-[8px] border border-white/10 px-1 py-0.5">{t.salary}</span>
                         {job.salary}
                       </div>
                     </div>
 
                     <div className="flex items-center justify-between pt-6 border-t border-white/5">
-                      <span className="mono text-[8px] text-white/20">SOURCE: {job.source}</span>
+                      <span className="mono text-[8px] text-white/20">{t.source}: {job.source}</span>
                       <a
                         href={job.url}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="flex items-center gap-2 bg-white text-black px-4 py-2 text-xs font-bold hover:bg-accent transition-colors"
                       >
-                        VIEW JOB <ExternalLink size={12} />
+                        {t.viewJob} <ExternalLink size={12} />
                       </a>
                     </div>
                   </div>
@@ -182,7 +223,7 @@ export default function JobsPage() {
 
           {filteredJobs.length === 0 && (
             <div className="text-center py-24 border border-dashed border-border">
-              <p className="mono text-white/20">No matching AI opportunities found in current scan.</p>
+              <p className="mono text-white/20">{t.noJobs}</p>
             </div>
           )}
         </>

@@ -144,6 +144,8 @@ app.use(express.json());
 
 // API Routes
 app.get("/api/jobs", async (req, res) => {
+  const lang = (req.query.lang as string) || "EN";
+  
   try {
     const [remotiveJobs, techmapJobs, adzunaJobs, linkedinJobs] = await Promise.all([
       fetchRemotiveJobs(),
@@ -153,7 +155,47 @@ app.get("/api/jobs", async (req, res) => {
     ]);
     
     // Merge all sources
-    const allJobs = [...remotiveJobs, ...techmapJobs, ...adzunaJobs, ...linkedinJobs];
+    let allJobs = [...remotiveJobs, ...techmapJobs, ...adzunaJobs, ...linkedinJobs];
+
+    // Translation logic if not English
+    if (lang !== "EN" && process.env.GEMINI_API_KEY) {
+      try {
+        const { GoogleGenAI } = await import("@google/genai");
+        const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+        
+        // Translate only the first 15 jobs to keep it fast and within limits
+        const jobsToTranslate = allJobs.slice(0, 15);
+        const remainingJobs = allJobs.slice(15);
+
+        const prompt = `Translate the following job titles and locations into ${lang === 'ES' ? 'Spanish' : 'Portuguese'}. 
+        Return ONLY a JSON array of objects with "id", "title", and "location" fields.
+        
+        JOBS:
+        ${JSON.stringify(jobsToTranslate.map(j => ({ id: j.id, title: j.title, location: j.location })))}`;
+
+        const aiResponse = await ai.models.generateContent({
+          model: "gemini-3.1-flash-lite-preview",
+          contents: prompt,
+          config: { responseMimeType: "application/json" }
+        });
+
+        const translatedData = JSON.parse(aiResponse.text);
+        
+        const translatedJobs = jobsToTranslate.map(job => {
+          const translation = translatedData.find((t: any) => t.id === job.id);
+          if (translation) {
+            return { ...job, title: translation.title, location: translation.location };
+          }
+          return job;
+        });
+
+        allJobs = [...translatedJobs, ...remainingJobs];
+      } catch (transError) {
+        console.error("Translation error:", transError);
+        // Fallback to untranslated jobs
+      }
+    }
+    
     res.json(allJobs);
   } catch (error: any) {
     console.error("Error fetching jobs:", error);
