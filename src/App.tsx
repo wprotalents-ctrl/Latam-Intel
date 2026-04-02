@@ -648,6 +648,8 @@ export default function App() {
   }, [theme]);
 
   useEffect(() => {
+    if (!user) return;
+
     const fetchBriefings = async () => {
       const recent = await getRecentBriefings(20, subscriptionStatus === 'premium' || isAdmin);
       if (recent.length > 0) {
@@ -666,7 +668,7 @@ export default function App() {
     });
 
     return () => unsubscribe();
-  }, [subscriptionStatus, isAdmin]);
+  }, [user, subscriptionStatus, isAdmin]);
 
   useEffect(() => {
     fetchMarketIntel();
