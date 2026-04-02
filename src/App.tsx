@@ -768,7 +768,7 @@ export default function App() {
   const t = TRANSLATIONS[lang];
 
   return (
-    <div className="h-screen flex flex-col bg-bg text-[#e0e0e0] selection:bg-accent selection:text-black font-sans relative">
+    <div className="h-screen flex flex-col bg-bg text-text selection:bg-accent selection:text-black font-sans relative">
       <div className="scanline pointer-events-none fixed inset-0 z-[200]" />
       {/* Top Bar / OSINT Header */}
       <header className="border-b border-border bg-surface flex items-center justify-between px-6 py-2">
@@ -1150,7 +1150,7 @@ export default function App() {
                           }`}
                         >
                           {briefing.isPremium && (
-                            <div className="absolute top-0 right-0 px-3 py-1 bg-[#ff6b00] text-black mono text-[8px] font-bold uppercase tracking-widest">
+                          <div className="absolute top-0 right-0 px-3 py-1 bg-accent text-black mono text-[8px] font-bold uppercase tracking-widest">
                               Premium
                             </div>
                           )}
@@ -1164,7 +1164,7 @@ export default function App() {
                               </div>
                               <h3 className="text-xl font-black uppercase tracking-tight group-hover:text-accent transition-colors flex items-center gap-2">
                                 {briefing.content[lang].title}
-                                {briefing.isPremium && subscriptionStatus !== 'premium' && <Lock size={14} className="text-[#ff6b00]" />}
+                                {briefing.isPremium && subscriptionStatus !== 'premium' && <Lock size={14} className="text-accent" />}
                               </h3>
                             </div>
                             <div className="flex items-center gap-2 mono text-[9px] font-bold text-accent opacity-0 group-hover:opacity-100 transition-opacity">
@@ -1596,7 +1596,7 @@ export default function App() {
                 {selectedIntelBrief.subject_line}
               </h2>
 
-              <div className="prose prose-invert max-w-none">
+              <div className={`prose ${theme === 'dark' ? 'prose-invert' : ''} max-w-none`}>
                 <div className="p-6 bg-bg border-l-4 border-accent mb-12">
                   <h4 className="mono text-[10px] text-accent uppercase tracking-widest mb-4">The Teaser</h4>
                   <p className="text-lg text-text/80 italic leading-relaxed">
