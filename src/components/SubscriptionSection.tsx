@@ -116,13 +116,13 @@ export const SubscriptionSection: React.FC = () => {
   };
 
   return (
-    <div className="py-24 bg-black">
+    <div className="py-24 bg-bg">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-5xl font-bold text-white tracking-tight mb-4">
-            Intelligence for the <span className="text-[#ff6b00]">Next Cycle</span>
+          <h2 className="text-3xl md:text-5xl font-bold text-text tracking-tight mb-4">
+            Intelligence for the <span className="text-accent">Next Cycle</span>
           </h2>
-          <p className="text-gray-400 max-w-2xl mx-auto text-lg">
+          <p className="text-text/40 max-w-2xl mx-auto text-lg">
             Join 12,000+ executives receiving daily signal on the LatAm tech ecosystem.
           </p>
         </div>
@@ -134,28 +134,28 @@ export const SubscriptionSection: React.FC = () => {
               whileHover={{ y: -5 }}
               className={`relative p-8 rounded-2xl border ${
                 plan.isPopular 
-                  ? 'border-[#ff6b00] bg-[#ff6b00]/5 shadow-2xl shadow-[#ff6b00]/10' 
-                  : 'border-gray-800 bg-[#0a0a0a]'
+                  ? 'border-accent bg-accent/5 shadow-2xl shadow-accent/10' 
+                  : 'border-border bg-surface'
               }`}
             >
               {plan.isPopular && (
-                <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-[#ff6b00] text-black text-xs font-bold px-3 py-1 rounded-full uppercase tracking-widest">
+                <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-accent text-black text-xs font-bold px-3 py-1 rounded-full uppercase tracking-widest">
                   Most Popular
                 </div>
               )}
 
               <div className="mb-8">
-                <h3 className="text-xl font-bold text-white mb-2">{plan.name}</h3>
+                <h3 className="text-xl font-bold text-text mb-2">{plan.name}</h3>
                 <div className="flex items-baseline gap-1">
-                  <span className="text-4xl font-bold text-white">{plan.price}</span>
-                  <span className="text-gray-500 text-sm">/month</span>
+                  <span className="text-4xl font-bold text-text">{plan.price}</span>
+                  <span className="text-text/40 text-sm">/month</span>
                 </div>
               </div>
 
               <ul className="space-y-4 mb-8">
                 {plan.features.map((feature, idx) => (
-                  <li key={idx} className="flex items-start gap-3 text-gray-400 text-sm">
-                    <Check className="text-[#ff6b00] shrink-0" size={18} />
+                  <li key={idx} className="flex items-start gap-3 text-text/60 text-sm">
+                    <Check className="text-accent shrink-0" size={18} />
                     {feature}
                   </li>
                 ))}
@@ -167,8 +167,8 @@ export const SubscriptionSection: React.FC = () => {
                   disabled={loading !== null}
                   className={`w-full py-4 rounded-xl font-bold transition-all flex items-center justify-center gap-2 ${
                     plan.isPopular
-                      ? 'bg-[#ff6b00] text-black hover:bg-[#ff8533]'
-                      : 'bg-white text-black hover:bg-gray-200'
+                      ? 'bg-accent text-black hover:opacity-90'
+                      : 'bg-text text-bg hover:opacity-90'
                   } disabled:opacity-50`}
                 >
                   {plan.id === 'free' ? 'Current Plan' : 'Subscribe Now'}
@@ -178,7 +178,7 @@ export const SubscriptionSection: React.FC = () => {
                   <button
                     onClick={handleStripePayment}
                     disabled={loading !== null}
-                    className="w-full py-4 rounded-xl font-bold bg-white text-black hover:bg-gray-200 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+                    className="w-full py-4 rounded-xl font-bold bg-text text-bg hover:opacity-90 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
                   >
                     <CreditCard size={18} />
                     {loading === 'stripe' ? 'Connecting...' : 'Pay with Card'}
@@ -186,14 +186,14 @@ export const SubscriptionSection: React.FC = () => {
                   <button
                     onClick={handleCryptoPayment}
                     disabled={loading !== null}
-                    className="w-full py-4 rounded-xl font-bold bg-[#ff6b00] text-black hover:bg-[#ff8533] transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+                    className="w-full py-4 rounded-xl font-bold bg-accent text-black hover:opacity-90 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
                   >
                     <Coins size={18} />
                     {loading === 'crypto' ? 'Connecting...' : 'Pay with Crypto'}
                   </button>
                   <button 
                     onClick={() => setShowPaymentOptions(false)}
-                    className="w-full text-xs text-gray-500 hover:text-white transition-colors"
+                    className="w-full text-xs text-text/40 hover:text-text transition-colors"
                   >
                     Cancel
                   </button>
@@ -201,7 +201,7 @@ export const SubscriptionSection: React.FC = () => {
               )}
 
               {plan.id === 'premium' && (
-                <p className="mt-4 text-center text-[10px] text-gray-600 uppercase tracking-widest flex items-center justify-center gap-2">
+                <p className="mt-4 text-center text-[10px] text-text/40 uppercase tracking-widest flex items-center justify-center gap-2">
                   <Shield size={10} /> Supports USDC & Crypto via Stripe
                 </p>
               )}
@@ -209,7 +209,7 @@ export const SubscriptionSection: React.FC = () => {
           ))}
         </div>
 
-        <div className="mt-24 grid grid-cols-2 md:grid-cols-4 gap-8 border-t border-gray-900 pt-16">
+        <div className="mt-24 grid grid-cols-2 md:grid-cols-4 gap-8 border-t border-border pt-16">
           {[
             { icon: Globe, label: 'Regional Focus', desc: 'BR, MX, CO, AR, CL' },
             { icon: Zap, label: 'Daily Signal', desc: 'No fluff, just impact' },
@@ -217,11 +217,11 @@ export const SubscriptionSection: React.FC = () => {
             { icon: Coins, label: 'Crypto Ready', desc: 'Pay with USDC' }
           ].map((item, idx) => (
             <div key={idx} className="text-center space-y-2">
-              <div className="w-10 h-10 rounded-lg bg-gray-900 flex items-center justify-center mx-auto mb-4">
-                <item.icon className="text-[#ff6b00]" size={20} />
+              <div className="w-10 h-10 rounded-lg bg-surface flex items-center justify-center mx-auto mb-4">
+                <item.icon className="text-accent" size={20} />
               </div>
-              <h4 className="text-white font-semibold text-sm">{item.label}</h4>
-              <p className="text-gray-500 text-xs">{item.desc}</p>
+              <h4 className="text-text font-semibold text-sm">{item.label}</h4>
+              <p className="text-text/40 text-xs">{item.desc}</p>
             </div>
           ))}
         </div>

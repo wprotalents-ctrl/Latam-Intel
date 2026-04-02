@@ -50,8 +50,8 @@ service cloud.firestore {
 
     function isAdmin() {
       return isAuthenticated() && 
-        (get(/databases/$(database)/documents/users/$(request.auth.uid)).data.get('subscriptionStatus', 'free') == 'admin' ||
-         (request.auth.token.email == "iafacilparareinventarte@gmail.com" && request.auth.token.email_verified == true));
+        ((request.auth.token.email == "iafacilparareinventarte@gmail.com" && request.auth.token.email_verified == true) ||
+         (exists(/databases/$(database)/documents/users/$(request.auth.uid)) && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.get('subscriptionStatus', 'free') == 'admin'));
     }
 
     function isPremium() {
@@ -63,31 +63,53 @@ service cloud.firestore {
       return email is string && email.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$");
     }
 
-    function isValidDateString(dateStr) {
-      return dateStr is string && dateStr.matches("^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}.*Z?$");
+    function isRecent(time) {
+      return time > request.time - duration.value(5, 'm') &&
+             time < request.time + duration.value(5, 'm');
     }
 
     // Domain Validators
     function isValidUser(data) {
-      return data.keys().hasAll(['uid', 'email', 'subscriptionStatus', 'createdAt']) &&
+      let requiredFields = ['uid', 'email', 'subscriptionStatus', 'createdAt', 'updatedAt'];
+      let allowedFields = ['uid', 'email', 'displayName', 'photoURL', 'subscriptionStatus', 'createdAt', 'updatedAt', 'stripeCustomerId'];
+      
+      return data.keys().hasAll(requiredFields) &&
+             data.keys().hasOnly(allowedFields) &&
              data.uid == request.auth.uid &&
              isValidEmail(data.email) &&
-             data.get('subscriptionStatus', 'free') in ['free', 'premium', 'admin'] &&
-             isValidDateString(data.createdAt);
+             data.subscriptionStatus in ['free', 'premium', 'admin'] &&
+             data.createdAt is timestamp &&
+             data.updatedAt is timestamp;
     }
 
     function isValidBriefing(data) {
       return data.keys().hasAll(['id', 'date', 'region', 'category', 'isPremium', 'content', 'createdAt']) &&
              data.category in ['JOBS', 'AI_IMPACT', 'RECRUITMENT', 'HR', 'TECH'] &&
              data.isPremium is bool &&
-             isValidDateString(data.createdAt);
+             data.createdAt is timestamp;
+    }
+
+    function isValidSubscription(data) {
+      return data.keys().hasAll(['uid', 'stripeSessionId', 'plan', 'amount', 'currency', 'status', 'createdAt']) &&
+             data.uid == request.auth.uid &&
+             data.createdAt is timestamp;
+    }
+
+    function isValidMarketNews(data) {
+      return data.keys().hasAll(['title', 'url', 'source', 'publishedAt']) &&
+             data.publishedAt is timestamp;
     }
 
     // Rules
     match /users/{uid} {
       allow read: if isOwner(uid) || isAdmin();
-      allow create: if isAuthenticated() && isValidUser(request.resource.data) && request.resource.data.get('subscriptionStatus', 'free') == 'free';
-      allow update: if (isOwner(uid) && isValidUser(request.resource.data) && request.resource.data.get('subscriptionStatus', 'free') == resource.data.get('subscriptionStatus', 'free')) || isAdmin();
+      allow create: if isAuthenticated() && isValidUser(request.resource.data) && 
+                      request.resource.data.subscriptionStatus == 'free' &&
+                      isRecent(request.resource.data.createdAt);
+      allow update: if (isOwner(uid) && isValidUser(request.resource.data) && 
+                      request.resource.data.subscriptionStatus == resource.data.subscriptionStatus &&
+                      request.resource.data.createdAt == resource.data.createdAt &&
+                      isRecent(request.resource.data.updatedAt)) || isAdmin();
     }
 
     match /briefings/{id} {
@@ -97,16 +119,21 @@ service cloud.firestore {
 
     match /subscriptions/{id} {
       allow read: if isAuthenticated() && (request.auth.uid == resource.data.uid || isAdmin());
-      allow create: if isAuthenticated() && request.resource.data.uid == request.auth.uid;
+      allow create: if isAuthenticated() && isValidSubscription(request.resource.data);
       allow update, delete: if isAdmin();
     }
 
     match /market_news/{id} {
       allow read: if isAuthenticated();
-      allow write: if isAdmin();
+      allow write: if isAdmin() && isValidMarketNews(request.resource.data);
     }
 
     match /market_intel_snapshots/{date} {
+      allow read: if isAuthenticated();
+      allow write: if isAdmin();
+    }
+    
+    match /crypto_news/{id} {
       allow read: if isAuthenticated();
       allow write: if isAdmin();
     }

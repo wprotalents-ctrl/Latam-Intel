@@ -2,7 +2,7 @@
 import { GoogleGenAI, Type } from "@google/genai";
 import { Language, Briefing, Category } from "../types";
 import { db, handleFirestoreError, FirestoreOperation } from "../firebase";
-import { doc, setDoc, collection, getDocs, query, orderBy, limit, where } from "firebase/firestore";
+import { doc, setDoc, collection, getDocs, query, orderBy, limit, where, serverTimestamp } from "firebase/firestore";
 
 const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY || "" });
 
@@ -61,7 +61,7 @@ export async function saveBriefing(briefing: Briefing) {
   try {
     await setDoc(doc(db, "briefings", briefing.id), {
       ...briefing,
-      createdAt: new Date().toISOString()
+      createdAt: serverTimestamp()
     });
   } catch (error) {
     handleFirestoreError(error, FirestoreOperation.WRITE, `briefings/${briefing.id}`);

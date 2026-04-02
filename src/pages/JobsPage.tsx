@@ -113,7 +113,7 @@ export default function JobsPage({ lang = 'EN' }: { lang?: string }) {
           </div>
           <h1 className="text-4xl md:text-5xl font-black tracking-tighter uppercase">{t.title}</h1>
         </div>
-        <p className="text-white/60 max-w-2xl text-lg">
+        <p className="text-text/60 max-w-2xl text-lg">
           {t.tagline}
         </p>
       </header>
@@ -121,7 +121,7 @@ export default function JobsPage({ lang = 'EN' }: { lang?: string }) {
       {/* Filters */}
       <div className="flex flex-col md:flex-row gap-4 mb-12">
         <div className="relative flex-1">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-white/40" size={20} />
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-text/40" size={20} />
           <input
             type="text"
             placeholder={t.searchPlaceholder}
@@ -139,7 +139,7 @@ export default function JobsPage({ lang = 'EN' }: { lang?: string }) {
               className={`px-6 py-4 mono text-[10px] border transition-all whitespace-nowrap ${
                 selectedRegion === region 
                   ? 'bg-accent text-black border-accent font-bold' 
-                  : 'bg-surface text-white/60 border-border hover:border-white/20'
+                  : 'bg-surface text-text/60 border-border hover:border-text/20'
               }`}
             >
               {region}
@@ -158,10 +158,10 @@ export default function JobsPage({ lang = 'EN' }: { lang?: string }) {
         <div className="flex flex-col items-center justify-center py-24 gap-4 bg-surface border border-red-500/20 rounded-sm">
           <AlertCircle className="text-red-500" size={48} />
           <p className="text-red-500 font-bold uppercase tracking-tighter">{t.failed}</p>
-          <p className="text-white/40 text-sm">{error}</p>
+          <p className="text-text/40 text-sm">{error}</p>
           <button 
             onClick={fetchJobs}
-            className="mt-4 px-6 py-2 bg-white text-black font-bold hover:bg-accent transition-colors"
+            className="mt-4 px-6 py-2 bg-text text-bg font-bold hover:opacity-90 transition-colors"
           >
             {t.retry}
           </button>
@@ -194,23 +194,23 @@ export default function JobsPage({ lang = 'EN' }: { lang?: string }) {
                     </div>
 
                     <div className="space-y-3 mb-8 flex-1">
-                      <div className="flex items-center gap-2 text-sm text-white/60">
+                      <div className="flex items-center gap-2 text-sm text-text/60">
                         <MapPin size={14} className="text-accent" />
                         {job.location}
                       </div>
-                      <div className="flex items-center gap-2 text-sm text-white/60">
-                        <span className="mono text-[8px] border border-white/10 px-1 py-0.5">{t.salary}</span>
+                      <div className="flex items-center gap-2 text-sm text-text/60">
+                        <span className="mono text-[8px] border border-text/10 px-1 py-0.5">{t.salary}</span>
                         {job.salary}
                       </div>
                     </div>
 
-                    <div className="flex items-center justify-between pt-6 border-t border-white/5">
-                      <span className="mono text-[8px] text-white/20">{t.source}: {job.source}</span>
+                    <div className="flex items-center justify-between pt-6 border-t border-text/5">
+                      <span className="mono text-[8px] text-text/20">{t.source}: {job.source}</span>
                       <a
                         href={job.url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="flex items-center gap-2 bg-white text-black px-4 py-2 text-xs font-bold hover:bg-accent transition-colors"
+                        className="flex items-center gap-2 bg-text text-bg px-4 py-2 text-xs font-bold hover:bg-accent hover:text-black transition-colors"
                       >
                         {t.viewJob} <ExternalLink size={12} />
                       </a>
@@ -223,7 +223,7 @@ export default function JobsPage({ lang = 'EN' }: { lang?: string }) {
 
           {filteredJobs.length === 0 && (
             <div className="text-center py-24 border border-dashed border-border">
-              <p className="mono text-white/20">{t.noJobs}</p>
+              <p className="mono text-text/20">{t.noJobs}</p>
             </div>
           )}
         </>

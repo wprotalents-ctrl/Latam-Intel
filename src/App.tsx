@@ -40,7 +40,8 @@ import {
   UserCheck,
   RefreshCw,
   Bitcoin,
-  Newspaper
+  Newspaper,
+  Sun
 } from 'lucide-react';
 import { 
   BarChart, 
@@ -53,7 +54,7 @@ import {
 } from 'recharts';
 import { MOCK_BRIEFINGS, generateBriefing, saveBriefing, getRecentBriefings } from './services/intelService';
 import { Language, Briefing, Category } from './types';
-import { auth, onAuthStateChanged, User, signOut, db } from './firebase';
+import { auth, onAuthStateChanged, User, signOut, db, handleFirestoreError, FirestoreOperation } from './firebase';
 import { onSnapshot, doc } from 'firebase/firestore';
 import { AuthModal } from './components/AuthModal';
 import { SubscriptionSection } from './components/SubscriptionSection';
@@ -432,16 +433,16 @@ const TRANSLATIONS = {
 };
 
 const WorldMap = () => (
-  <div className="relative w-full h-full bg-[#0a0a0a] overflow-hidden group">
+  <div className="relative w-full h-full bg-bg overflow-hidden group">
     <div className="scanline" />
     <div className="absolute inset-0 grid-bg opacity-10" />
     <svg viewBox="0 0 1000 500" className="w-full h-full opacity-40">
       {/* Latitude/Longitude lines */}
       {[...Array(10)].map((_, i) => (
-        <line key={`lat-${i}`} x1="0" y1={i * 50} x2="1000" y2={i * 50} stroke="white" strokeWidth="0.2" className="opacity-10" />
+        <line key={`lat-${i}`} x1="0" y1={i * 50} x2="1000" y2={i * 50} stroke="currentColor" strokeWidth="0.2" className="text-text opacity-10" />
       ))}
       {[...Array(20)].map((_, i) => (
-        <line key={`lon-${i}`} x1={i * 50} y1="0" x2={i * 50} y2="500" stroke="white" strokeWidth="0.2" className="opacity-10" />
+        <line key={`lon-${i}`} x1={i * 50} y1="0" x2={i * 50} y2="500" stroke="currentColor" strokeWidth="0.2" className="text-text opacity-10" />
       ))}
       
       <path 
@@ -453,8 +454,8 @@ const WorldMap = () => (
       />
       
       {/* Abstract landmasses */}
-      <path d="M100,100 Q150,80 200,120 T300,100 T400,150 T350,250 T200,300 T100,200 Z" fill="white" className="opacity-5" />
-      <path d="M500,200 Q550,180 600,220 T700,200 T800,250 T750,350 T600,400 T500,300 Z" fill="white" className="opacity-5" />
+      <path d="M100,100 Q150,80 200,120 T300,100 T400,150 T350,250 T200,300 T100,200 Z" fill="currentColor" className="text-text opacity-5" />
+      <path d="M500,200 Q550,180 600,220 T700,200 T800,250 T750,350 T600,400 T500,300 Z" fill="currentColor" className="text-text opacity-5" />
       
       {[...Array(60)].map((_, i) => (
         <circle 
@@ -462,16 +463,16 @@ const WorldMap = () => (
           cx={Math.random() * 1000}
           cy={Math.random() * 500}
           r={Math.random() * 2 + 0.5}
-          fill={Math.random() > 0.8 ? "#ff6b00" : "white"}
-          className="animate-pulse"
+          fill={Math.random() > 0.8 ? "#ff6b00" : "currentColor"}
+          className="animate-pulse text-text"
           style={{ animationDelay: `${Math.random() * 5}s` }}
         />
       ))}
     </svg>
-    <div className="absolute bottom-4 left-4 mono text-[7px] text-white/40 bg-black/80 px-2 py-1 border border-white/10 backdrop-blur-sm">
+    <div className="absolute bottom-4 left-4 mono text-[7px] text-text/40 bg-surface/80 px-2 py-1 border border-text/10 backdrop-blur-sm">
       LAT: 35.41217 | LON: -50.55469 | ALT: 12,400M
     </div>
-    <div className="absolute top-4 right-4 mono text-[7px] text-accent bg-black/80 px-2 py-1 border border-accent/20 backdrop-blur-sm animate-pulse">
+    <div className="absolute top-4 right-4 mono text-[7px] text-accent bg-surface/80 px-2 py-1 border border-accent/20 backdrop-blur-sm animate-pulse">
       LIVE FEED // SAT_04
     </div>
   </div>
@@ -500,17 +501,17 @@ const RadarWidget = ({ lang }: { lang: Language }) => {
   }, []);
 
   return (
-    <div className="relative w-full aspect-square bg-[#0a0a0a] flex items-center justify-center border border-white/5 overflow-hidden">
+    <div className="relative w-full aspect-square bg-surface flex items-center justify-center border border-border overflow-hidden">
       <div className="absolute inset-0 flex items-center justify-center">
         {[1, 2, 3, 4].map(i => (
           <div 
             key={i} 
-            className="absolute border border-white/10 rounded-full" 
+            className="absolute border border-text/10 rounded-full" 
             style={{ width: `${i * 25}%`, height: `${i * 25}%` }} 
           />
         ))}
-        <div className="absolute w-full h-px bg-white/10" />
-        <div className="absolute h-full w-px bg-white/10" />
+        <div className="absolute w-full h-px bg-text/10" />
+        <div className="absolute h-full w-px bg-text/10" />
         <div className="absolute w-full h-full radar-sweep" />
         
         {blips.map(blip => (
@@ -523,9 +524,9 @@ const RadarWidget = ({ lang }: { lang: Language }) => {
           />
         ))}
       </div>
-      <div className="z-10 flex flex-col items-center bg-black/40 p-2 backdrop-blur-sm border border-white/5">
+      <div className="z-10 flex flex-col items-center bg-surface/40 p-2 backdrop-blur-sm border border-text/5">
         <div className="mono text-[8px] text-accent font-bold mb-1">{t.scanning}</div>
-        <div className="mono text-[12px] font-black text-white">177 {t.aircraft}</div>
+        <div className="mono text-[12px] font-black text-text">177 {t.aircraft}</div>
       </div>
     </div>
   );
@@ -555,7 +556,7 @@ const SystemLog = ({ lang }: { lang: Language }) => {
   return (
     <div className="bg-surface border border-border p-4 h-48 overflow-hidden flex flex-col">
       <div className="flex items-center justify-between mb-2">
-        <div className="mono text-[9px] text-white/40 flex items-center gap-2">
+        <div className="mono text-[9px] text-text/40 flex items-center gap-2">
           <Activity size={10} className="text-accent" /> {t.systemLogTitle}
         </div>
         <div className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse" />
@@ -563,9 +564,9 @@ const SystemLog = ({ lang }: { lang: Language }) => {
       <div className="flex-1 space-y-1 overflow-y-auto no-scrollbar font-mono text-[8px]">
         {logs.map(log => (
           <div key={log.id} className="flex gap-2">
-            <span className="text-white/20">[{log.time}]</span>
+            <span className="text-text/20">[{log.time}]</span>
             <span className={log.type === 'WARN' ? 'text-yellow-500' : 'text-accent'}>{log.type}</span>
-            <span className="text-white/60">{log.msg}</span>
+            <span className="text-text/60">{log.msg}</span>
           </div>
         ))}
       </div>
@@ -599,6 +600,7 @@ export default function App() {
   const [briefings, setBriefings] = useState<Briefing[]>(MOCK_BRIEFINGS);
   const [newsletterEmail, setNewsletterEmail] = useState('');
   const [newsletterStatus, setNewsletterStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+  const [theme, setTheme] = useState<'dark' | 'light'>('dark');
   const [marketIntelData, setMarketIntelData] = useState<MarketIntelData>({
     news: [],
     cryptoNews: [],
@@ -628,11 +630,19 @@ export default function App() {
         setSubscriptionStatus(data.subscriptionStatus || 'free');
       }
     }, (error) => {
-      console.error("Error listening to user profile:", error);
+      handleFirestoreError(error, FirestoreOperation.GET, `users/${user.uid}`);
     });
 
     return () => unsubscribe();
   }, [user]);
+
+  useEffect(() => {
+    if (theme === 'light') {
+      document.body.classList.add('light');
+    } else {
+      document.body.classList.remove('light');
+    }
+  }, [theme]);
 
   useEffect(() => {
     const fetchBriefings = async () => {
@@ -758,13 +768,13 @@ export default function App() {
           <nav className="hidden md:flex items-center gap-1">
             <button 
               onClick={() => setViewMode('Dashboard')}
-              className={`px-4 py-2 mono text-[10px] transition-all flex items-center gap-2 ${viewMode === 'Dashboard' ? 'text-accent bg-white/5' : 'text-white/40 hover:text-white'}`}
+              className={`px-4 py-2 mono text-[10px] transition-all flex items-center gap-2 ${viewMode === 'Dashboard' ? 'text-accent bg-text/5' : 'text-text/40 hover:text-text'}`}
             >
               <LayoutDashboard size={14} /> {t.dashboard}
             </button>
             <button 
               onClick={() => setViewMode('Jobs')}
-              className={`px-4 py-2 mono text-[10px] transition-all flex items-center gap-2 ${viewMode === 'Jobs' ? 'text-accent bg-white/5' : 'text-white/40 hover:text-white'}`}
+              className={`px-4 py-2 mono text-[10px] transition-all flex items-center gap-2 ${viewMode === 'Jobs' ? 'text-accent bg-text/5' : 'text-text/40 hover:text-text'}`}
             >
               <Briefcase size={14} /> {t.jobs}
             </button>
@@ -773,13 +783,13 @@ export default function App() {
 
         <div className="flex items-center gap-6">
           <div className="hidden lg:flex items-center gap-4 mono text-[10px]">
-            <div className="flex items-center gap-2 text-white/40">
+            <div className="flex items-center gap-2 text-text/40">
               <Clock size={12} />
               <span className="text-accent font-bold">{currentTime.toLocaleTimeString([], { hour12: false })}</span>
               <span className="opacity-50">{t.edt}</span>
             </div>
             <div className="w-px h-4 bg-border" />
-            <div className="flex items-center gap-2 text-white/40">
+            <div className="flex items-center gap-2 text-text/40">
               <Activity size={12} />
               <span className="text-green-500 font-bold">{t.data}</span>
             </div>
@@ -790,12 +800,20 @@ export default function App() {
               <button
                 key={l}
                 onClick={() => setLang(l)}
-                className={`px-2 py-1 text-[9px] font-mono font-bold transition-colors ${lang === l ? 'bg-accent text-black' : 'bg-surface text-white/40 hover:bg-white/5'}`}
+                className={`px-2 py-1 text-[9px] font-mono font-bold transition-colors ${lang === l ? 'bg-accent text-black' : 'bg-surface text-text/40 hover:bg-text/5'}`}
               >
                 {l}
               </button>
             ))}
           </div>
+          
+          <button
+            onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+            className="p-2 border border-border hover:bg-text/5 rounded-sm text-text/40 hover:text-accent transition-colors"
+            title={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+          >
+            {theme === 'dark' ? <Sun size={16} /> : <Moon size={16} />}
+          </button>
           
           <div className="flex items-center gap-4">
             {isAdmin && (
@@ -811,10 +829,10 @@ export default function App() {
             {user ? (
               <div className="flex items-center gap-3">
                 <div className="flex flex-col items-end">
-                  <span className="mono text-[9px] text-white font-bold">{user.displayName || 'User'}</span>
+                  <span className="mono text-[9px] text-text font-bold">{user.displayName || 'User'}</span>
                   <button 
                     onClick={() => signOut(auth)}
-                    className="mono text-[8px] text-white/40 hover:text-accent transition-colors flex items-center gap-1"
+                    className="mono text-[8px] text-text/40 hover:text-accent transition-colors flex items-center gap-1"
                   >
                     <LogOut size={10} /> Logout
                   </button>
@@ -836,7 +854,7 @@ export default function App() {
               </button>
             )}
             
-            <button className="p-2 border border-border hover:bg-white/5 rounded-sm">
+            <button className="p-2 border border-border hover:bg-text/5 rounded-sm">
               <Menu size={18} />
             </button>
           </div>
@@ -846,44 +864,44 @@ export default function App() {
       {/* Control Bar (Cinema Style) */}
       <div className="border-b border-border bg-surface/50 backdrop-blur-md flex items-center px-6 py-2 gap-6 overflow-x-auto no-scrollbar">
         <div className="flex items-center gap-4">
-          <button className="flex items-center gap-2 mono text-[9px] text-white/40 hover:text-white transition-colors">
+          <button className="flex items-center gap-2 mono text-[9px] text-text/40 hover:text-text transition-colors">
             <Activity size={12} /> {t.rotation}
           </button>
           <button 
             onClick={() => setIsPaused(!isPaused)}
-            className="flex items-center gap-2 mono text-[9px] text-white/40 hover:text-white transition-colors"
+            className="flex items-center gap-2 mono text-[9px] text-text/40 hover:text-text transition-colors"
           >
             {isPaused ? <Play size={12} /> : <Pause size={12} />} {isPaused ? t.resume : t.pause}
           </button>
           <button 
             onClick={() => setIsMuted(!isMuted)}
-            className="flex items-center gap-2 mono text-[9px] text-white/40 hover:text-white transition-colors"
+            className="flex items-center gap-2 mono text-[9px] text-text/40 hover:text-text transition-colors"
           >
             {isMuted ? <VolumeX size={12} /> : <Volume2 size={12} />} {isMuted ? t.muted : t.unmuted}
           </button>
         </div>
         <div className="w-px h-4 bg-border" />
         <div className="flex-1 flex items-center gap-4 min-w-[200px]">
-          <span className="mono text-[8px] text-white/20">00:00</span>
-          <div className="flex-1 h-1 bg-white/5 rounded-full relative overflow-hidden group cursor-pointer">
+          <span className="mono text-[8px] text-text/20">00:00</span>
+          <div className="flex-1 h-1 bg-text/5 rounded-full relative overflow-hidden group cursor-pointer">
             <div className="absolute inset-0 bg-accent/20 w-1/3" />
             <div className="absolute top-0 bottom-0 left-1/3 w-0.5 bg-accent shadow-[0_0_5px_#ff6b00]" />
           </div>
-          <span className="mono text-[8px] text-white/20">23:59</span>
+          <span className="mono text-[8px] text-text/20">23:59</span>
         </div>
         <div className="w-px h-4 bg-border" />
         <div className="flex items-center gap-4">
-          <button className="flex items-center gap-2 mono text-[9px] text-white/40 hover:text-white transition-colors">
+          <button className="flex items-center gap-2 mono text-[9px] text-text/40 hover:text-text transition-colors">
             <Moon size={12} /> {t.night}
           </button>
-          <button className="flex items-center gap-2 mono text-[9px] text-white/40 hover:text-white transition-colors">
+          <button className="flex items-center gap-2 mono text-[9px] text-text/40 hover:text-text transition-colors">
             <Settings size={12} /> {t.customize}
           </button>
         </div>
         <div className="ml-auto flex items-center gap-4">
-          <div className="mono text-[9px] text-white/20">{t.total} <span className="text-white">60</span></div>
-          <div className="mono text-[9px] text-white/20">{t.queue} <span className="text-white">0</span></div>
-          <div className="mono text-[9px] text-white/20">{t.feeds} <span className="text-white">0</span></div>
+          <div className="mono text-[9px] text-text/20">{t.total} <span className="text-text">60</span></div>
+          <div className="mono text-[9px] text-text/20">{t.queue} <span className="text-text">0</span></div>
+          <div className="mono text-[9px] text-text/20">{t.feeds} <span className="text-text">0</span></div>
         </div>
       </div>
 
@@ -912,14 +930,14 @@ export default function App() {
                 {/* Top Row: Map and Radar */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-px bg-border">
                   <div className="md:col-span-2 bg-bg relative min-h-[400px]">
-                    <div className="absolute top-4 left-4 z-20 flex items-center gap-2 mono text-[9px] bg-black/80 p-2 border border-white/10">
+                    <div className="absolute top-4 left-4 z-20 flex items-center gap-2 mono text-[9px] bg-surface/80 p-2 border border-border">
                       <Globe size={10} className="text-accent" /> {t.worldMap}
                     </div>
                     <WorldMap />
                   </div>
                   <div className="bg-bg relative p-4 flex flex-col">
                     <div className="flex items-center justify-between mb-4">
-                      <div className="mono text-[9px] text-white/40 flex items-center gap-2">
+                      <div className="mono text-[9px] text-text/40 flex items-center gap-2">
                         <Activity size={10} className="text-accent" /> {t.radar}
                       </div>
                     </div>
@@ -936,7 +954,7 @@ export default function App() {
                             <div className={`w-1.5 h-1.5 rounded-full ${item.color}`} />
                             {item.label}
                           </div>
-                          <span className="text-white/40">{Math.floor(Math.random() * 50)}</span>
+                          <span className="text-text/40">{Math.floor(Math.random() * 50)}</span>
                         </div>
                       ))}
                     </div>
@@ -950,16 +968,16 @@ export default function App() {
                       <div className="mono text-[9px] text-accent flex items-center gap-2">
                         <Zap size={10} /> {t.latAmSignal} // FEATURED
                       </div>
-                      <div className="mono text-[8px] text-white/20">WEEK 13 // 2026</div>
+                      <div className="mono text-[8px] text-text/20">WEEK 13 // 2026</div>
                     </div>
                     <div className="flex-1">
-                      <h4 className="text-xl font-black uppercase tracking-tight mb-4 text-white">
+                      <h4 className="text-xl font-black uppercase tracking-tight mb-4 text-text">
                         {t.signalTitle}
                       </h4>
-                      <p className="text-xs leading-relaxed text-white/70 mb-4">
+                      <p className="text-xs leading-relaxed text-text/70 mb-4">
                         {t.signalDesc1}
                       </p>
-                      <p className="text-xs leading-relaxed text-white/70 mb-6">
+                      <p className="text-xs leading-relaxed text-text/70 mb-6">
                         {t.signalDesc2}
                       </p>
                       <div className="so-what !my-0 !py-3">
@@ -973,7 +991,7 @@ export default function App() {
 
                   <div className="bg-bg p-6">
                     <div className="flex items-center justify-between mb-6">
-                      <div className="mono text-[9px] text-white/40 flex items-center gap-2">
+                      <div className="mono text-[9px] text-text/40 flex items-center gap-2">
                         <Radio size={10} className="text-accent" /> {t.newsFeed}
                       </div>
                     </div>
@@ -981,7 +999,7 @@ export default function App() {
                       {t.newsFeedItems.map((news, i) => (
                         <div key={i} className="group cursor-pointer">
                           <h5 className="text-sm font-bold group-hover:text-accent transition-colors mb-1">{news.title}</h5>
-                          <div className="flex gap-3 mono text-[8px] text-white/40">
+                          <div className="flex gap-3 mono text-[8px] text-text/40">
                             <span className="text-accent">{news.source}</span>
                             <span>{news.time} {t.ago}</span>
                           </div>
@@ -1002,7 +1020,7 @@ export default function App() {
                       <div className="absolute top-0 right-0 p-4 opacity-5">
                         <Zap size={48} className="text-accent" />
                       </div>
-                      <p className="text-lg font-medium leading-relaxed text-white/90 italic">
+                      <p className="text-lg font-medium leading-relaxed text-text/90 italic">
                         "{marketIntelData.brief}"
                       </p>
                     </div>
@@ -1013,7 +1031,7 @@ export default function App() {
                   <div className="bg-bg p-6 border-b border-border">
                     <div className="flex items-center gap-2 mb-6">
                       <Newspaper size={10} className="text-accent" />
-                      <div className="mono text-[9px] text-white/40 font-bold uppercase tracking-widest">Today's Job News</div>
+                      <div className="mono text-[9px] text-text/40 font-bold uppercase tracking-widest">Today's Job News</div>
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       {marketIntelData.news.slice(0, 4).map((item, i) => (
@@ -1026,7 +1044,7 @@ export default function App() {
                         >
                           <div className="flex justify-between items-start gap-2 mb-2">
                             <span className="mono text-[8px] text-accent uppercase">{item.source}</span>
-                            <span className="mono text-[8px] text-white/20">{new Date(item.publishedAt).toLocaleDateString()}</span>
+                            <span className="mono text-[8px] text-text/20">{new Date(item.publishedAt).toLocaleDateString()}</span>
                           </div>
                           <h5 className="text-sm font-bold group-hover:text-accent transition-colors line-clamp-2">{item.title}</h5>
                         </a>
@@ -1038,7 +1056,7 @@ export default function App() {
                 {/* Bottom Row: Intelligence Feed */}
                 <div className="bg-bg p-6 flex-1">
                   <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8">
-                    <div className="mono text-[9px] text-white/40 flex items-center gap-2">
+                    <div className="mono text-[9px] text-text/40 flex items-center gap-2">
                       <Activity size={10} className="text-accent" /> {t.dailyBriefing}
                     </div>
                     
@@ -1056,7 +1074,7 @@ export default function App() {
                           className={`px-3 py-1.5 mono text-[9px] font-bold border transition-all flex items-center gap-2 ${
                             category === cat.id 
                               ? 'bg-accent border-accent text-black' 
-                              : 'bg-surface border-border text-white/40 hover:border-white/20'
+                              : 'bg-surface border-border text-text/40 hover:border-text/20'
                           }`}
                         >
                           <cat.icon size={12} /> {cat.label}
@@ -1089,8 +1107,8 @@ export default function App() {
                             <div className="flex-1">
                               <div className="flex items-center gap-3 mb-3">
                                 <span className="px-2 py-0.5 bg-accent text-black text-[8px] font-mono font-bold">{briefing.region}</span>
-                                <span className="mono text-[8px] text-white/40">ID: {briefing.id.padStart(4, '0')}</span>
-                                <span className="mono text-[8px] text-white/40">{briefing.date}</span>
+                                <span className="mono text-[8px] text-text/40">ID: {briefing.id.padStart(4, '0')}</span>
+                                <span className="mono text-[8px] text-text/40">{briefing.date}</span>
                                 <span className="mono text-[8px] text-accent/60 uppercase tracking-widest">{briefing.category}</span>
                               </div>
                               <h3 className="text-xl font-black uppercase tracking-tight group-hover:text-accent transition-colors flex items-center gap-2">
@@ -1112,7 +1130,7 @@ export default function App() {
               <div className="col-span-12 lg:col-span-4 flex flex-col gap-px bg-border">
                 <section className="p-8 bg-bg">
                   <div className="flex items-center justify-between mb-8">
-                    <div className="mono text-[9px] text-white/40 flex items-center gap-2">
+                    <div className="mono text-[9px] text-text/40 flex items-center gap-2">
                       <TrendingUp size={10} className="text-accent" /> {t.marketPulse}
                     </div>
                   </div>
@@ -1127,7 +1145,7 @@ export default function App() {
                           {marketIntelData.cryptoNews.slice(0, 3).map((item, i) => (
                             <a key={i} href={item.url} target="_blank" rel="noopener noreferrer" className="block group">
                               <h6 className="text-[10px] font-bold group-hover:text-accent transition-colors line-clamp-1">{item.title}</h6>
-                              <span className="mono text-[7px] text-white/40 uppercase">{item.source}</span>
+                              <span className="mono text-[7px] text-text/40 uppercase">{item.source}</span>
                             </a>
                           ))}
                         </div>
@@ -1137,25 +1155,25 @@ export default function App() {
                     {t.marketPulseItems.map((item, i) => (
                       <div key={item.label} className="flex justify-between items-center p-4 bg-surface border border-border">
                         <div className="flex items-center gap-3">
-                          <div className="p-2 bg-black text-accent">
+                          <div className="p-2 bg-surface text-accent">
                             {i === 0 ? <TrendingUp size={12} /> : i === 1 ? <Users size={12} /> : <Globe size={12} />}
                           </div>
                           <div className="flex flex-col">
                             <span className="mono font-bold text-[10px]">{item.label}</span>
                             <div className="flex items-center gap-2">
                               <span className="text-[8px] text-green-500 font-mono">{item.trend}</span>
-                              <span className="text-[8px] text-white/40 font-mono">{t.sent}: {item.sentiment}</span>
+                              <span className="text-[8px] text-text/40 font-mono">{t.sent}: {item.sentiment}</span>
                             </div>
                           </div>
                         </div>
-                        <span className="px-2 py-0.5 bg-black text-accent text-[8px] font-mono border border-accent/20">{item.value}</span>
+                        <span className="px-2 py-0.5 bg-surface text-accent text-[8px] font-mono border border-accent/20">{item.value}</span>
                       </div>
                     ))}
                   </div>
                 </section>
 
                 <section className="p-8 bg-bg">
-                  <div className="mono text-[9px] text-white/40 mb-4 flex items-center gap-2">
+                  <div className="mono text-[9px] text-text/40 mb-4 flex items-center gap-2">
                     <Activity size={10} className="text-accent" /> {t.fxRates}
                   </div>
                   <div className="grid grid-cols-3 gap-2">
@@ -1165,8 +1183,8 @@ export default function App() {
                       { pair: 'ARS/USD', rate: '1042', change: '-1.1%' }
                     ].map(fx => (
                       <div key={fx.pair} className="bg-surface border border-border p-3 flex flex-col items-center">
-                        <span className="mono text-[7px] text-white/40 mb-1">{fx.pair}</span>
-                        <span className="text-sm font-black text-white">{fx.rate}</span>
+                        <span className="mono text-[7px] text-text/40 mb-1">{fx.pair}</span>
+                        <span className="text-sm font-black text-text">{fx.rate}</span>
                         <span className={`text-[7px] font-mono ${fx.change.startsWith('+') ? 'text-green-500' : 'text-red-500'}`}>{fx.change}</span>
                       </div>
                     ))}
@@ -1176,27 +1194,27 @@ export default function App() {
                 {/* Market Intel Charts */}
                 {marketIntelData.trends.sectors.length > 0 && (
                   <section className="p-8 bg-bg border-t border-border">
-                    <div className="mono text-[9px] text-white/40 mb-6 flex items-center gap-2">
+                    <div className="mono text-[9px] text-text/40 mb-6 flex items-center gap-2">
                       <TrendingUp size={10} className="text-accent" /> TOP HIRING SECTORS
                     </div>
                     <div className="h-[200px] w-full">
                       <ResponsiveContainer width="100%" height="100%">
                         <BarChart data={marketIntelData.trends.sectors} layout="vertical">
-                          <CartesianGrid strokeDasharray="3 3" stroke="#1a1a1a" horizontal={false} />
+                          <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" horizontal={false} />
                           <XAxis type="number" hide />
                           <YAxis 
                             dataKey="name" 
                             type="category" 
                             width={80} 
-                            stroke="#404040" 
+                            stroke="var(--text)" 
                             fontSize={8}
-                            tick={{ fill: '#666' }}
+                            tick={{ fill: 'var(--text)', opacity: 0.4 }}
                           />
                           <Tooltip 
-                            contentStyle={{ backgroundColor: '#0a0a0a', border: '1px solid #262626', fontSize: '10px' }}
-                            itemStyle={{ color: '#ff6b00' }}
+                            contentStyle={{ backgroundColor: 'var(--surface)', border: '1px solid var(--border)', fontSize: '10px' }}
+                            itemStyle={{ color: 'var(--accent)' }}
                           />
-                          <Bar dataKey="count" fill="#ff6b00" radius={[0, 2, 2, 0]} />
+                          <Bar dataKey="count" fill="var(--accent)" radius={[0, 2, 2, 0]} />
                         </BarChart>
                       </ResponsiveContainer>
                     </div>
@@ -1205,29 +1223,29 @@ export default function App() {
 
                 {marketIntelData.volume.length > 0 && (
                   <section className="p-8 bg-bg border-t border-border">
-                    <div className="mono text-[9px] text-white/40 mb-6 flex items-center gap-2">
+                    <div className="mono text-[9px] text-text/40 mb-6 flex items-center gap-2">
                       <Globe size={10} className="text-accent" /> LATAM JOB VOLUME
                     </div>
                     <div className="h-[200px] w-full">
                       <ResponsiveContainer width="100%" height="100%">
                         <BarChart data={marketIntelData.volume}>
-                          <CartesianGrid strokeDasharray="3 3" stroke="#1a1a1a" vertical={false} />
+                          <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" vertical={false} />
                           <XAxis 
                             dataKey="country" 
-                            stroke="#404040" 
+                            stroke="var(--text)" 
                             fontSize={8}
-                            tick={{ fill: '#666' }}
+                            tick={{ fill: 'var(--text)', opacity: 0.4 }}
                           />
                           <YAxis 
-                            stroke="#404040" 
+                            stroke="var(--text)" 
                             fontSize={8}
-                            tick={{ fill: '#666' }}
+                            tick={{ fill: 'var(--text)', opacity: 0.4 }}
                           />
                           <Tooltip 
-                            contentStyle={{ backgroundColor: '#0a0a0a', border: '1px solid #262626', fontSize: '10px' }}
-                            itemStyle={{ color: '#ff6b00' }}
+                            contentStyle={{ backgroundColor: 'var(--surface)', border: '1px solid var(--border)', fontSize: '10px' }}
+                            itemStyle={{ color: 'var(--accent)' }}
                           />
-                          <Bar dataKey="count" fill="#ff6b00" radius={[2, 2, 0, 0]} />
+                          <Bar dataKey="count" fill="var(--accent)" radius={[2, 2, 0, 0]} />
                         </BarChart>
                       </ResponsiveContainer>
                     </div>
@@ -1236,7 +1254,7 @@ export default function App() {
 
                 {marketIntelData.trends.companies.length > 0 && (
                   <section className="p-8 bg-bg border-t border-border">
-                    <div className="mono text-[9px] text-white/40 mb-6 flex items-center gap-2">
+                    <div className="mono text-[9px] text-text/40 mb-6 flex items-center gap-2">
                       <Users size={10} className="text-accent" /> MOST ACTIVE COMPANIES
                     </div>
                     <div className="space-y-2">
@@ -1257,18 +1275,18 @@ export default function App() {
                         <div className="mono text-[9px] text-accent flex items-center gap-2">
                           <Cpu size={10} /> {t.aiToolOfWeek} // REVIEW
                         </div>
-                        <div className="mono text-[8px] text-white/20">{t.aiToolName}</div>
+                        <div className="mono text-[8px] text-text/20">{t.aiToolName}</div>
                       </div>
                       
                       <h4 className="text-lg font-black uppercase tracking-tight mb-3">
                         {t.aiToolTitle}
                       </h4>
                       
-                      <p className="text-xs text-white/70 leading-relaxed mb-4">
+                      <p className="text-xs text-text/70 leading-relaxed mb-4">
                         {t.aiToolDesc}
                       </p>
                       
-                      <div className="bg-black/40 p-3 border-l-2 border-accent mb-4">
+                      <div className="bg-surface/40 p-3 border-l-2 border-accent mb-4">
                         <span className="mono text-[8px] text-accent block mb-1 uppercase">{t.aiToolWorkflowLabel}</span>
                         <p className="text-[11px] leading-snug">
                           {t.aiToolWorkflow}
@@ -1277,14 +1295,14 @@ export default function App() {
 
                       <div className="grid grid-cols-4 gap-2 mb-4">
                         {t.aiToolScores.map(s => (
-                          <div key={s.label} className="flex flex-col items-center p-2 bg-white/5 border border-white/10">
-                            <span className="mono text-[7px] text-white/40 mb-1">{s.label}</span>
+                          <div key={s.label} className="flex flex-col items-center p-2 bg-text/5 border border-text/10">
+                            <span className="mono text-[7px] text-text/40 mb-1">{s.label}</span>
                             <span className="text-xs font-bold text-accent">{s.score}/5</span>
                           </div>
                         ))}
                       </div>
 
-                      <p className="text-[10px] text-white/40 italic mb-4">
+                      <p className="text-[10px] text-text/40 italic mb-4">
                         {t.aiToolLimitation}
                       </p>
 
@@ -1302,7 +1320,7 @@ export default function App() {
                         </div>
                         <div className="space-y-6">
                           {t.countryWatchItems.map((item, i) => (
-                            <div key={i} className={`border-l-2 ${i === 0 ? 'border-accent' : 'border-white/20'} pl-4`}>
+                            <div key={i} className={`border-l-2 ${i === 0 ? 'border-accent' : 'border-text/20'} pl-4`}>
                               <p className="text-xs leading-snug">
                                 <span className="font-bold">{item.flag} {item.country}</span> — {item.text}
                               </p>
@@ -1313,11 +1331,11 @@ export default function App() {
                     </div>
                     <div className="grid grid-cols-2 gap-4">
                       <div className="bg-surface border border-border p-4 flex flex-col justify-between">
-                        <div className="mono text-[8px] text-white/40 uppercase tracking-widest mb-2">{t.network}</div>
+                        <div className="mono text-[8px] text-text/40 uppercase tracking-widest mb-2">{t.network}</div>
                         <div className="text-2xl font-black tracking-tighter text-accent">23K+</div>
                       </div>
                       <div className="bg-surface border border-border p-4 flex flex-col justify-between">
-                        <div className="mono text-[8px] text-white/40 uppercase tracking-widest mb-2">{t.briefings}</div>
+                        <div className="mono text-[8px] text-text/40 uppercase tracking-widest mb-2">{t.briefings}</div>
                         <div className="text-2xl font-black tracking-tighter text-accent">150+</div>
                       </div>
                     </div>
@@ -1330,12 +1348,12 @@ export default function App() {
                   </div>
                   <div className="space-y-4">
                     {t.fiveLinksItems.map((link, i) => (
-                      <div key={i} className="group cursor-pointer border-b border-white/5 pb-4 last:border-0">
+                      <div key={i} className="group cursor-pointer border-b border-text/5 pb-4 last:border-0">
                         <div className="flex justify-between items-start mb-1">
                           <h5 className="text-sm font-bold group-hover:text-accent transition-colors">{link.title} — {link.source}</h5>
-                          <ArrowUpRight size={14} className="text-white/20 group-hover:text-accent transition-colors" />
+                          <ArrowUpRight size={14} className="text-text/20 group-hover:text-accent transition-colors" />
                         </div>
-                        <p className="text-xs text-white/60 leading-snug">{link.why}</p>
+                        <p className="text-xs text-text/60 leading-snug">{link.why}</p>
                       </div>
                     ))}
                   </div>
@@ -1351,7 +1369,7 @@ export default function App() {
                     <button 
                       onClick={handleGenerateBriefing}
                       disabled={isGenerating}
-                      className="w-full bg-black text-accent py-6 mono font-bold hover:opacity-90 transition-colors flex items-center justify-center gap-3 disabled:opacity-50"
+                      className="w-full bg-bg text-accent py-6 mono font-bold hover:opacity-90 transition-colors flex items-center justify-center gap-3 disabled:opacity-50"
                     >
                       {isGenerating ? (
                         <>
@@ -1365,7 +1383,7 @@ export default function App() {
                         </>
                       )}
                     </button>
-                    <div className="h-px bg-black/10 w-full" />
+                    <div className="h-px bg-border w-full" />
                     <p className="mono text-[10px] text-black/60 leading-relaxed">
                       Select a category above to generate specific intelligence on Jobs, AI Impact, or HR.
                     </p>
@@ -1388,7 +1406,7 @@ export default function App() {
           <div className="flex flex-col md:flex-row justify-between items-center gap-8 mb-12">
             <div className="flex flex-col gap-2">
               <h5 className="mono text-[10px] text-accent font-bold uppercase tracking-widest">Newsletter</h5>
-              <p className="text-sm text-white/60">Get the daily signal directly in your inbox.</p>
+              <p className="text-sm text-text/60">Get the daily signal directly in your inbox.</p>
             </div>
             <form onSubmit={handleNewsletterSubscribe} className="flex w-full max-w-md border border-border overflow-hidden rounded-sm">
               <input 
@@ -1396,7 +1414,7 @@ export default function App() {
                 placeholder="Enter your email"
                 value={newsletterEmail}
                 onChange={(e) => setNewsletterEmail(e.target.value)}
-                className="flex-1 bg-bg px-4 py-3 text-xs mono outline-none focus:bg-white/5 transition-colors"
+                className="flex-1 bg-bg px-4 py-3 text-xs mono outline-none focus:bg-text/5 transition-colors"
               />
               <button 
                 type="submit"
@@ -1410,15 +1428,15 @@ export default function App() {
             {newsletterStatus === 'error' && <span className="text-red-500 mono text-[10px]">Error. Try again.</span>}
           </div>
 
-          <div className="flex flex-col md:flex-row justify-between items-center gap-4 pt-8 border-t border-white/5">
+          <div className="flex flex-col md:flex-row justify-between items-center gap-4 pt-8 border-t border-text/5">
             <div className="flex items-center gap-6">
-              <div className="mono text-[9px] text-white/20">© 2026 LATAM INTEL // {t.rights}</div>
+              <div className="mono text-[9px] text-text/20">© 2026 LATAM INTEL // {t.rights}</div>
               <div className="flex items-center gap-2 mono text-[9px] text-green-500/60">
                 <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
                 {t.systemsNominal}
               </div>
             </div>
-            <div className="flex gap-8 mono text-[9px] font-bold text-white/40">
+            <div className="flex gap-8 mono text-[9px] font-bold text-text/40">
               <a href="#" className="hover:text-accent transition-colors">{t.terms}</a>
               <a href="#" className="hover:text-accent transition-colors">{t.privacy}</a>
               <a href="#" className="hover:text-accent transition-colors">{t.contact}</a>
@@ -1434,7 +1452,7 @@ export default function App() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-8 bg-black/90 backdrop-blur-sm"
+            className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-8 bg-bg/90 backdrop-blur-sm"
           >
             <motion.div 
               initial={{ scale: 0.9, opacity: 0 }}
@@ -1453,7 +1471,7 @@ export default function App() {
                 <header className="mb-16">
                   <div className="flex items-center gap-3 mb-6">
                     <span className="px-3 py-1 bg-accent text-black text-[10px] font-mono font-bold">{selectedBriefing.region}</span>
-                    <span className="mono text-[10px] text-white/40">{selectedBriefing.date}</span>
+                    <span className="mono text-[10px] text-text/40">{selectedBriefing.date}</span>
                   </div>
                   <h2 className="text-4xl md:text-6xl font-black tracking-tighter uppercase leading-[0.9] mb-8">
                     {selectedBriefing.content[lang].title}
@@ -1467,7 +1485,7 @@ export default function App() {
                       <div className="mono text-accent mb-6 flex items-center gap-2">
                         <Crosshair size={12} /> SECTION 0{idx + 1} // {section.heading}
                       </div>
-                      <div className="space-y-6 text-lg leading-snug font-medium text-white/80">
+                      <div className="space-y-6 text-lg leading-snug font-medium text-text/80">
                         {section.paragraphs.map((p, pIdx) => (
                           <p key={pIdx}>{p}</p>
                         ))}

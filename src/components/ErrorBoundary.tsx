@@ -47,19 +47,19 @@ export class ErrorBoundary extends Component<Props, State> {
       }
 
       return (
-        <div className="min-h-screen bg-black flex items-center justify-center p-6">
+        <div className="min-h-screen bg-bg flex items-center justify-center p-6">
           <div className="max-w-md w-full bg-surface border border-red-500/30 p-8 rounded-sm text-center">
             <div className="w-16 h-16 bg-red-500/10 rounded-full flex items-center justify-center mx-auto mb-6">
               <AlertCircle className="text-red-500" size={32} />
             </div>
-            <h2 className="text-xl font-black uppercase tracking-tighter text-white mb-2">System Error Detected</h2>
-            <p className="text-white/60 text-sm mb-6 leading-relaxed">
+            <h2 className="text-xl font-black uppercase tracking-tighter text-text mb-2">System Error Detected</h2>
+            <p className="text-text/60 text-sm mb-6 leading-relaxed">
               {errorMessage}
               {errorDetails && <span className="block mt-2 opacity-50 mono text-[10px]">{errorDetails}</span>}
             </p>
             <button
               onClick={this.handleReset}
-              className="w-full py-4 bg-white text-black font-bold uppercase tracking-widest text-xs flex items-center justify-center gap-2 hover:bg-gray-200 transition-colors"
+              className="w-full py-4 bg-text text-bg font-bold uppercase tracking-widest text-xs flex items-center justify-center gap-2 hover:opacity-90 transition-colors"
             >
               <RefreshCw size={14} /> Restart System
             </button>
