@@ -604,7 +604,13 @@ export default function App() {
   const [intelBriefs, setIntelBriefs] = useState<IntelligenceBrief[]>([]);
   const [newsletterEmail, setNewsletterEmail] = useState('');
   const [newsletterStatus, setNewsletterStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
-  const [theme, setTheme] = useState<'dark' | 'light'>('dark');
+  // Initialize theme from localStorage or default to 'dark'
+  const [theme, setTheme] = useState<'dark' | 'light'>(() => {
+    if (typeof window !== 'undefined') {
+      return (localStorage.getItem('wpro-theme') as 'dark' | 'light') || 'dark';
+    }
+    return 'dark';
+  });
   const [marketIntelData, setMarketIntelData] = useState<MarketIntelData>({
     news: [],
     cryptoNews: [],
@@ -640,12 +646,19 @@ export default function App() {
     return () => unsubscribe();
   }, [user]);
 
+  // Unified Theme Effect
   useEffect(() => {
+    const root = document.documentElement;
     if (theme === 'light') {
+      root.classList.add('light');
       document.body.classList.add('light');
+      root.style.colorScheme = 'light';
     } else {
+      root.classList.remove('light');
       document.body.classList.remove('light');
+      root.style.colorScheme = 'dark';
     }
+    localStorage.setItem('wpro-theme', theme);
   }, [theme]);
 
   useEffect(() => {
@@ -706,16 +719,6 @@ export default function App() {
       console.error("Failed to fetch market intel:", error);
     }
   };
-
-  useEffect(() => {
-    if (theme === 'light') {
-      document.body.classList.add('light');
-      document.documentElement.style.colorScheme = 'light';
-    } else {
-      document.body.classList.remove('light');
-      document.documentElement.style.colorScheme = 'dark';
-    }
-  }, [theme]);
 
   const handleSyncIntelligence = async () => {
     setIsSyncing(true);
