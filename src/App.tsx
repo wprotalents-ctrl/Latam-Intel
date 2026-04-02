@@ -26,6 +26,7 @@ import {
   Volume2,
   VolumeX,
   Clock,
+  Moon,
   Settings,
   LayoutDashboard,
   Cpu,
@@ -40,6 +41,7 @@ import {
   RefreshCw,
   Bitcoin,
   Newspaper,
+  Sun,
   Copy
 } from 'lucide-react';
 import { 
@@ -602,6 +604,7 @@ export default function App() {
   const [intelBriefs, setIntelBriefs] = useState<IntelligenceBrief[]>([]);
   const [newsletterEmail, setNewsletterEmail] = useState('');
   const [newsletterStatus, setNewsletterStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+  const [theme, setTheme] = useState<'dark' | 'light'>('dark');
   const [marketIntelData, setMarketIntelData] = useState<MarketIntelData>({
     news: [],
     cryptoNews: [],
@@ -636,6 +639,14 @@ export default function App() {
 
     return () => unsubscribe();
   }, [user]);
+
+  useEffect(() => {
+    if (theme === 'light') {
+      document.body.classList.add('light');
+    } else {
+      document.body.classList.remove('light');
+    }
+  }, [theme]);
 
   useEffect(() => {
     if (!user) return;
@@ -695,6 +706,16 @@ export default function App() {
       console.error("Failed to fetch market intel:", error);
     }
   };
+
+  useEffect(() => {
+    if (theme === 'light') {
+      document.body.classList.add('light');
+      document.documentElement.style.colorScheme = 'light';
+    } else {
+      document.body.classList.remove('light');
+      document.documentElement.style.colorScheme = 'dark';
+    }
+  }, [theme]);
 
   const handleSyncIntelligence = async () => {
     setIsSyncing(true);
@@ -758,7 +779,7 @@ export default function App() {
   const t = TRANSLATIONS[lang];
 
   return (
-    <div className="h-screen flex flex-col bg-bg text-text selection:bg-accent selection:text-black font-sans relative">
+    <div className={`h-screen flex flex-col bg-bg text-text selection:bg-accent selection:text-black font-sans relative transition-colors duration-300 ${theme === 'light' ? 'light' : ''}`}>
       <div className="scanline pointer-events-none fixed inset-0 z-[200]" />
       {/* Top Bar / OSINT Header */}
       <header className="border-b border-border bg-surface flex items-center justify-between px-6 py-2">
@@ -812,6 +833,14 @@ export default function App() {
               </button>
             ))}
           </div>
+          
+          <button
+            onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+            className="p-2 border border-border hover:bg-text/5 rounded-sm text-text/40 hover:text-accent transition-colors"
+            title={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+          >
+            {theme === 'dark' ? <Sun size={16} /> : <Moon size={16} />}
+          </button>
           
           <div className="flex items-center gap-4">
             {isAdmin && (
@@ -1575,7 +1604,7 @@ export default function App() {
                 {selectedIntelBrief.subject_line}
               </h2>
 
-              <div className="prose prose-invert max-w-none">
+              <div className={`prose ${theme === 'dark' ? 'prose-invert' : ''} max-w-none`}>
                 <div className="p-6 bg-bg border-l-4 border-accent mb-12">
                   <h4 className="mono text-[10px] text-accent uppercase tracking-widest mb-4">The Teaser</h4>
                   <p className="text-lg text-text/80 italic leading-relaxed">
