@@ -15,13 +15,15 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     const sb = getSupabase();
     if (sb) {
-      await sb.from("subscribers").upsert(
+      // Cast to any to avoid Supabase generated-types mismatch
+      await (sb.from("subscribers") as any).upsert(
         { email, subscriber_type: subscriber_type || "reader", language: language || "EN" },
         { onConflict: "email" }
       );
-      // Save as WPro lead if they flagged as hiring
       if (subscriber_type === "hiring_manager" || subscriber_type === "company") {
-        await sb.from("leads").insert({ email, subscriber_type, source: "newsletter", status: "new" });
+        await (sb.from("leads") as any).insert({
+          email, subscriber_type, source: "newsletter", status: "new",
+        });
       }
     }
 
