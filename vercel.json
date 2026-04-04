@@ -2,28 +2,7 @@
   "buildCommand": "vite build",
   "outputDirectory": "dist",
   "rewrites": [
-    { "source": "/api/(.*)", "destination": "/api/$1" },
-    { "source": "/members",  "destination": "/index.html" },
-    { "source": "/(.*)",     "destination": "/index.html" }
-  ],
-  "functions": {
-    "api/**/*.ts": {
-      "memory": 512,
-      "maxDuration": 30
-    },
-    "api/newsletter/generate.ts": {
-      "memory": 1024,
-      "maxDuration": 60
-    }
-  },
-  "headers": [
-    {
-      "source": "/api/(.*)",
-      "headers": [
-        { "key": "Access-Control-Allow-Origin",  "value": "*" },
-        { "key": "Access-Control-Allow-Methods", "value": "GET,POST,OPTIONS" },
-        { "key": "Access-Control-Allow-Headers", "value": "Content-Type,Authorization,x-cron-secret" }
-      ]
-    }
+    { "source": "/members", "destination": "/index.html" },
+    { "source": "/((?!api/).*)", "destination": "/index.html" }
   ]
 }
