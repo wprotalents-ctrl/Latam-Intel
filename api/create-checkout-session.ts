@@ -1,29 +1,50 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
-import Stripe from "stripe";
 import { handleCors } from "./_lib/cors.js";
 
+// Lemon Squeezy checkout
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (handleCors(req, res)) return;
   if (req.method !== "POST") return res.status(405).end();
 
-  const { priceId, userId, customerEmail } = req.body;
-  if (!priceId) return res.status(400).json({ error: "priceId required" });
+  const { userId, customerEmail } = req.body;
+  const apiKey    = process.env.LEMON_SQUEEZY_API_KEY;
+  const variantId = process.env.LEMON_SQUEEZY_VARIANT_ID;
+  const storeId   = process.env.LEMON_SQUEEZY_STORE_ID;
 
-  const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-    apiVersion: "2025-01-27.acacia" as any,
-  });
+  if (!apiKey || !variantId || !storeId)
+    return res.status(500).json({ error: "Lemon Squeezy not configured" });
 
   try {
-    const session = await stripe.checkout.sessions.create({
-      payment_method_types: ["card"],
-      line_items: [{ price: priceId, quantity: 1 }],
-      mode: "subscription",
-      success_url: `https://intel.wprotalents.lat/members?success=true`,
-      cancel_url:  `https://intel.wprotalents.lat/?canceled=true`,
-      customer_email: customerEmail,
-      client_reference_id: userId,
+    const r = await fetch("https://api.lemonsqueezy.com/v1/checkouts", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        "Content-Type": "application/vnd.api+json",
+        Accept: "application/vnd.api+json",
+      },
+      body: JSON.stringify({
+        data: {
+          type: "checkouts",
+          attributes: {
+            checkout_data: {
+              email: customerEmail,
+              custom: { user_id: userId },
+            },
+            product_options: {
+              redirect_url: "https://intel.wprotalents.lat/members?success=true",
+            },
+          },
+          relationships: {
+            store:   { data: { type: "stores",  id: storeId } },
+            variant: { data: { type: "variants", id: variantId } },
+          },
+        },
+      }),
     });
-    res.json({ id: session.id });
+    const data = await r.json();
+    const url = data?.data?.attributes?.url;
+    if (!url) return res.status(500).json({ error: "No checkout URL", data });
+    res.json({ url });
   } catch (e: any) {
     res.status(500).json({ error: e.message });
   }

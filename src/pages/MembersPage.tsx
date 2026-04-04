@@ -9,14 +9,12 @@ import {
   Check, Shield, Clock, ChevronDown, ChevronUp
 } from 'lucide-react';
 import { auth } from '../firebase';
-import { loadStripe } from '@stripe/stripe-js';
+
 import { getUserProfile, getNewsletterIssues, getMemberResources } from '../lib/supabase';
 import type { SupabaseUser, NewsletterIssue, MemberResource } from '../lib/supabase';
 import type { User } from 'firebase/auth';
 
 // @ts-ignore
-const STRIPE_KEY = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY;
-const stripePromise = STRIPE_KEY ? loadStripe(STRIPE_KEY) : Promise.resolve(null);
 
 // ─── Category colors ───────────────────────────────────────────────────────────
 const CATEGORY_CONFIG: Record<string, { color: string; bg: string; label: string }> = {
@@ -37,25 +35,19 @@ const RESOURCE_ICONS: Record<string, any> = {
 
 // ─── Paywall Component ────────────────────────────────────────────────────────
 function PaywallGate({ user }: { user: User | null }) {
-  const [loading, setLoading] = useState<'stripe' | 'crypto' | null>(null);
+  const [loading, setLoading] = useState<'card' | 'crypto' | null>(null);
 
-  const handleStripe = async () => {
+  const handleCard = async () => {
     if (!user) return;
-    setLoading('stripe');
+    setLoading('card');
     try {
       const res = await fetch('/api/create-checkout-session', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          // @ts-ignore
-          priceId: import.meta.env.VITE_STRIPE_PRO_PRICE_ID,
-          userId: user.uid,
-          customerEmail: user.email,
-        }),
+        body: JSON.stringify({ userId: user.uid, customerEmail: user.email }),
       });
-      const { id } = await res.json();
-      const stripe = await stripePromise;
-      if (stripe) await stripe.redirectToCheckout({ sessionId: id });
+      const { url } = await res.json();
+      if (url) window.location.href = url;
     } catch (e) { console.error(e); }
     finally { setLoading(null); }
   };
@@ -126,12 +118,12 @@ function PaywallGate({ user }: { user: User | null }) {
         {user ? (
           <div className="space-y-3">
             <button
-              onClick={handleStripe}
+              onClick={handleCard}
               disabled={loading !== null}
               className="w-full py-4 bg-accent text-black font-bold hover:opacity-90 transition flex items-center justify-center gap-2 disabled:opacity-50"
             >
               <CreditCard size={18} />
-              {loading === 'stripe' ? 'Connecting to Stripe...' : 'Subscribe — $29/mo with Card'}
+              {loading === 'card' ? 'Connecting...' : 'Subscribe — $29/mo with Card'}
             </button>
             <button
               onClick={handleCrypto}
