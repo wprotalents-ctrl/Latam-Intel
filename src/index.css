@@ -9,6 +9,17 @@
   --grid-color: rgba(255, 255, 255, 0.02);
 }
 
+/* ── Light mode overrides ── */
+:root.light,
+.light {
+  --bg: #f5f4f0;
+  --surface: #ffffff;
+  --border: #d8d5ce;
+  --text: #1a1816;
+  --accent: #e05500;
+  --grid-color: rgba(0, 0, 0, 0.04);
+}
+
 @theme {
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
