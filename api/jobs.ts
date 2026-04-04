@@ -1,6 +1,6 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
-import { handleCors } from "./_lib/cors";
-import { getGemini, GEMINI_FLASH_L } from "./_lib/gemini";
+import { handleCors } from "./_lib/cors.js";
+import { getGemini, GEMINI_FLASH_L } from "./_lib/gemini.js";
 
 // Inline job fetchers (avoids importing your service files which import Vite)
 async function fetchRemotive() {

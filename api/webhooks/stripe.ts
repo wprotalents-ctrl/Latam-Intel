@@ -1,9 +1,9 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 import Stripe from "stripe";
 import { Resend } from "resend";
-import { db, admin } from "../_lib/firebase";
-import { syncUserToSupabase, getSupabase } from "../_lib/supabase";
-import { subscribeToBeehiiv } from "../_lib/beehiiv";
+import { db, admin } from "../_lib/firebase.js";
+import { syncUserToSupabase, getSupabase } from "../_lib/supabase.js";
+import { subscribeToBeehiiv } from "../_lib/beehiiv.js";
 
 // Raw body needed for Stripe signature verification
 export const config = { api: { bodyParser: false } };

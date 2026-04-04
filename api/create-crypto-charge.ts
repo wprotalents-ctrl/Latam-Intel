@@ -1,6 +1,6 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 import coinbase from "coinbase-commerce-node";
-import { handleCors } from "./_lib/cors";
+import { handleCors } from "./_lib/cors.js";
 
 const { Client, resources } = coinbase;
 

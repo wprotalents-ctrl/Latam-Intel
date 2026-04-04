@@ -1,8 +1,8 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 import { Resend } from "resend";
-import { db, admin } from "../_lib/firebase";
-import { syncUserToSupabase } from "../_lib/supabase";
-import { subscribeToBeehiiv } from "../_lib/beehiiv";
+import { db, admin } from "../_lib/firebase.js";
+import { syncUserToSupabase } from "../_lib/supabase.js";
+import { subscribeToBeehiiv } from "../_lib/beehiiv.js";
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== "POST") return res.status(405).end();

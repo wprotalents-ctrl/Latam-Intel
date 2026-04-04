@@ -1,10 +1,10 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 import axios from "axios";
-import { handleCors } from "./_lib/cors";
-import { getGemini, GEMINI_FLASH } from "./_lib/gemini";
-import { fetchFreshNews } from "./_lib/news";
-import { getSupabase } from "./_lib/supabase";
-import { db, admin } from "./_lib/firebase";
+import { handleCors } from "./_lib/cors.js";
+import { getGemini, GEMINI_FLASH } from "./_lib/gemini.js";
+import { fetchFreshNews } from "./_lib/news.js";
+import { getSupabase } from "./_lib/supabase.js";
+import { db, admin } from "./_lib/firebase.js";
 import { Type } from "@google/genai";
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {

@@ -1,8 +1,8 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
-import { handleCors } from "./_lib/cors";
-import { getGemini, GEMINI_FLASH_L } from "./_lib/gemini";
-import { fetchFreshNews } from "./_lib/news";
-import { db, admin } from "./_lib/firebase";
+import { handleCors } from "./_lib/cors.js";
+import { getGemini, GEMINI_FLASH_L } from "./_lib/gemini.js";
+import { fetchFreshNews } from "./_lib/news.js";
+import { db, admin } from "./_lib/firebase.js";
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (handleCors(req, res)) return;

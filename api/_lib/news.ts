@@ -1,5 +1,5 @@
 import axios from "axios";
-import { db, admin } from "./firebase";
+import { db, admin } from "./firebase.js";
 
 const QUERIES = [
   "AI jobs Latin America",
