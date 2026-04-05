@@ -21,10 +21,6 @@ import {
   Share2,
   MoreHorizontal,
   Eye,
-  Play,
-  Pause,
-  Volume2,
-  VolumeX,
   Clock,
   Moon,
   Settings,
@@ -593,11 +589,10 @@ export default function App() {
   const [lang, setLang] = useState<Language>('EN');
   const [viewMode, setViewMode] = useState<'Dashboard' | 'Jobs'>('Dashboard');
   const [currentTime, setCurrentTime] = useState(new Date());
-  const [isPaused, setIsPaused] = useState(false);
-  const [isMuted, setIsMuted] = useState(true);
   const [isGenerating, setIsGenerating] = useState(false);
   const [isSyncing, setIsSyncing] = useState(false);
   const [isCustomizeOpen, setIsCustomizeOpen] = useState(false);
+  const [showUpgrade, setShowUpgrade] = useState(false);
   const [widgets, setWidgets] = useState<Record<string, boolean>>(() => {
     try {
       const saved = localStorage.getItem('wpro-widgets');
@@ -904,89 +899,6 @@ export default function App() {
           </div>
         </div>
       </header>
-
-      {/* Control Bar (Cinema Style) */}
-      <div className="border-b border-border bg-surface/50 backdrop-blur-md flex items-center px-6 py-2 gap-6 overflow-x-auto no-scrollbar">
-        <div className="flex items-center gap-4">
-          <button className="flex items-center gap-2 mono text-[9px] text-text/40 hover:text-text transition-colors">
-            <Activity size={12} /> {t.rotation}
-          </button>
-          <button 
-            onClick={() => setIsPaused(!isPaused)}
-            className="flex items-center gap-2 mono text-[9px] text-text/40 hover:text-text transition-colors"
-          >
-            {isPaused ? <Play size={12} /> : <Pause size={12} />} {isPaused ? t.resume : t.pause}
-          </button>
-          <button 
-            onClick={() => setIsMuted(!isMuted)}
-            className="flex items-center gap-2 mono text-[9px] text-text/40 hover:text-text transition-colors"
-          >
-            {isMuted ? <VolumeX size={12} /> : <Volume2 size={12} />} {isMuted ? t.muted : t.unmuted}
-          </button>
-        </div>
-        <div className="w-px h-4 bg-border" />
-        <div className="flex-1 flex items-center gap-4 min-w-[200px]">
-          <span className="mono text-[8px] text-text/20">00:00</span>
-          <div className="flex-1 h-1 bg-text/5 rounded-full relative overflow-hidden group cursor-pointer">
-            <div className="absolute inset-0 bg-accent/20 w-1/3" />
-            <div className="absolute top-0 bottom-0 left-1/3 w-0.5 bg-accent shadow-[0_0_5px_var(--accent)]" />
-          </div>
-          <span className="mono text-[8px] text-text/20">23:59</span>
-        </div>
-        <div className="w-px h-4 bg-border" />
-        <div className="flex items-center gap-4">
-          <button
-            onClick={() => setIsCustomizeOpen(v => !v)}
-            className={`flex items-center gap-2 mono text-[9px] transition-colors ${isCustomizeOpen ? 'text-accent' : 'text-text/40 hover:text-text'}`}
-          >
-            <Settings size={12} /> {t.customize}
-          </button>
-        </div>
-        <div className="ml-auto flex items-center gap-4">
-          <div className="mono text-[9px] text-text/20">{t.total} <span className="text-text">{briefings.length || 0}</span></div>
-          <div className="mono text-[9px] text-text/20">{t.feeds} <span className="text-text">{marketIntelData.news.length || 0}</span></div>
-          <div className="mono text-[9px] text-text/20">{t.queue} <span className={marketIntelData.news.length > 0 ? "text-green-400" : "text-text/40"}>{marketIntelData.news.length > 0 ? "LIVE" : "—"}</span></div>
-        </div>
-      </div>
-
-      {/* Customize Panel */}
-      <AnimatePresence>
-        {isCustomizeOpen && (
-          <motion.div
-            initial={{ opacity: 0, y: -8 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -8 }}
-            transition={{ duration: 0.15 }}
-            className="absolute top-[88px] left-1/2 -translate-x-1/2 z-50 bg-surface border border-border shadow-2xl w-80"
-          >
-            <div className="flex items-center justify-between px-4 py-2 border-b border-border">
-              <span className="mono text-[9px] text-accent font-bold flex items-center gap-2"><Settings size={10} /> {t.customize}</span>
-              <button onClick={() => setIsCustomizeOpen(false)} className="text-text/40 hover:text-text"><X size={12} /></button>
-            </div>
-            <div className="p-4 space-y-2">
-              {[
-                { key: 'map',   label: 'Global Talent Map' },
-                { key: 'radar', label: 'WPro Talent Radar' },
-                { key: 'pulse', label: 'Talent Pulse' },
-                { key: 'log',   label: 'WPro Log' },
-                { key: 'fx',    label: 'Market Rates (FX)' },
-              ].map(({ key, label }) => (
-                <button
-                  key={key}
-                  onClick={() => toggleWidget(key)}
-                  className="w-full flex items-center justify-between px-3 py-2 bg-bg border border-border hover:border-accent/40 transition-colors group"
-                >
-                  <span className="mono text-[9px] text-text/60 group-hover:text-text">{label}</span>
-                  <div className={`w-6 h-3 rounded-full transition-colors flex items-center px-0.5 ${widgets[key] ? 'bg-accent' : 'bg-text/20'}`}>
-                    <div className={`w-2 h-2 rounded-full bg-white transition-transform ${widgets[key] ? 'translate-x-3' : 'translate-x-0'}`} />
-                  </div>
-                </button>
-              ))}
-            </div>
-            <div className="px-4 py-2 border-t border-border mono text-[8px] text-text/20">Settings saved to browser</div>
-          </motion.div>
-        )}
-      </AnimatePresence>
 
       <main className="flex-1 relative overflow-hidden grid-bg">
         <AnimatePresence mode="wait">
@@ -1516,26 +1428,21 @@ export default function App() {
                 </section>
               </div>
 
-              {/* Upgrade banner — compact strip */}
-              <div className="col-span-12" id="subscription-section">
-                <div className="border-t border-border px-6 py-3 flex items-center justify-between gap-4 bg-surface/40">
-                  <span className="mono text-[9px] text-text/30">
-                    <span className="text-accent font-bold">EXECUTIVE</span>
+              {/* Upgrade strip */}
+              <div className="col-span-12">
+                <div className="border-t border-border px-6 py-2 flex items-center justify-between gap-4 bg-surface/30">
+                  <span className="mono text-[8px] text-text/25">
+                    <span className="text-accent/70 font-bold">EXECUTIVE</span>
                     {' · '}Daily briefings · AI job impact reports · Salary data
                   </span>
                   <button
-                    onClick={() => {
-                      const m = document.getElementById('upgrade-modal');
-                      if (m) m.style.display = m.style.display === 'none' ? 'block' : 'none';
-                    }}
-                    className="mono text-[9px] border border-accent/40 text-accent px-4 py-1 hover:bg-accent hover:text-black transition-all whitespace-nowrap shrink-0"
+                    onClick={() => setShowUpgrade(v => !v)}
+                    className="mono text-[8px] border border-accent/30 text-accent/70 px-3 py-1 hover:bg-accent hover:text-black hover:border-accent transition-all whitespace-nowrap shrink-0"
                   >
-                    UPGRADE $29 →
+                    {showUpgrade ? 'CLOSE ✕' : 'UPGRADE $29 →'}
                   </button>
                 </div>
-                <div id="upgrade-modal" style={{ display: 'none' }}>
-                  <SubscriptionSection />
-                </div>
+                {showUpgrade && <SubscriptionSection />}
               </div>
             </motion.div>
           )}
