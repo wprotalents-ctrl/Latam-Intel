@@ -64,7 +64,7 @@ const TRANSLATIONS = {
     marketIntel: "Market Intel",
     tagline: "WProTalents: Strategic Talent Acquisition & AI Market Intelligence",
     signal: "WPro Signal",
-    heroDesc: "Founder-led headhunting. We bypass the open market to connect US and EU firms with 23,000+ vetted global professionals — with unmatched depth in LATAM.",
+    heroDesc: "Founder-led headhunting. We bypass the open market to connect US and EU firms with 23,000+ global professionals — with unmatched depth in LATAM.",
     viewIntel: "Access Talent Intelligence",
     backToFeed: "Back to Intelligence Feed",
     actionable: "Hiring Signal?",
@@ -73,7 +73,7 @@ const TRANSLATIONS = {
     theVeteran: "The Founder",
     authorBio: "20 years recruiting C-level talent globally. Founder of WProTalents. We hunt for high-stakes tech roles across USA, EU, and LATAM.",
     network: "WPro Network",
-    directConn: "23,000+ Vetted Global Professionals",
+    directConn: "23,000+ Global Professionals",
     briefings: "Talent Briefings",
     intelReports: "Strategic Intelligence",
     joinNetwork: "Initiate Search",
@@ -110,7 +110,7 @@ const TRANSLATIONS = {
     generatingSignal: "ANALYZING TALENT MARKET...",
     generateNewBriefing: "GENERATE INTEL BRIEFING",
     systemsNominal: "WPRO NOMINAL",
-    total: "VETTED",
+    total: "TALENT",
     queue: "SEARCHES",
     feeds: "INTEL FEEDS",
     night: "Night",
@@ -136,7 +136,7 @@ const TRANSLATIONS = {
       "System Nominal: All Talent Nodes Active",
       "WPro Recruitment Tool Integrated: IP_88.1.2.3"
     ],
-    sent: "VETTED",
+    sent: "TALENT",
     marketPulseItems: [
       { label: 'AI Talent USA', value: 'High', trend: '+15.2%', sentiment: '+2.5' },
       { label: 'Tech Talent EU', value: 'Steady', trend: '+2.1%', sentiment: '+0.5' },
@@ -158,7 +158,7 @@ const TRANSLATIONS = {
     aiToolTitle: "AI-Powered Recruitment at Scale",
     aiToolDesc: "WProTalents uses AI-assisted sourcing combined with relationship-based recruiting. The speed of modern data mapping with the discretion of old-school headhunting.",
     aiToolWorkflowLabel: "RECRUITMENT WORKFLOW",
-    aiToolWorkflow: "I integrated WPro's protocols into our C-level search process. It analyzed 23,000+ vetted profiles to find the top 5 candidates for a Head of AI role in Mexico City. It didn't just look at keywords; it analyzed 'career trajectory' and 'AI project impact.' It saved our team 2 weeks of manual screening.",
+    aiToolWorkflow: "I integrated WPro's protocols into our C-level search process. It analyzed 23,000+ profiles to find the top 5 candidates for a Head of AI role in Mexico City. It didn't just look at keywords; it analyzed 'career trajectory' and 'AI project impact.' It saved our team 2 weeks of manual screening.",
     aiToolLimitation: "Limitation: Requires a deep understanding of the specific technical requirements to be truly effective.",
     aiToolVerdict: "Verdict for HR Executives: If you are hiring senior tech talent in LATAM, WPro's approach is mandatory to maintain quality and speed.",
     // Country Watch Content
@@ -174,7 +174,7 @@ const TRANSLATIONS = {
     ],
     // News Feed Content
     newsFeedItems: [
-      { title: "WProTalents expands network to 25,000+ vetted professionals", source: "WPRO_NEWS", time: "2h" },
+      { title: "WProTalents expands network to 25,000+ professionals", source: "WPRO_NEWS", time: "2h" },
       { title: "EU AI Act creates 50,000 new compliance roles across Europe", source: "BBC", time: "4h" },
       { title: "Brazil's AI talent pool grows by 30% in Q1 2026", source: "LATAM_TECH", time: "6h" },
       { title: "Oil prices dip, but energy demand for AI data centers remains high", source: "CNBC", time: "8h" },

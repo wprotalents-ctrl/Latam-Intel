@@ -432,7 +432,7 @@ function WProCTA() {
         <div>
           <h3 className="font-black text-xl tracking-tighter uppercase mb-1">Hiring in LATAM?</h3>
           <p className="text-text/60 text-sm">
-            23,000+ vetted AI/tech professionals. We fill senior roles in 21 days or less.
+            23,000+ AI/tech professionals. We fill senior roles in 21 days or less.
             US & EU firms only.
           </p>
         </div>
@@ -441,7 +441,7 @@ function WProCTA() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
         {[
           { stat: '21 days', label: 'Avg. time to fill' },
-          { stat: '23K+', label: 'Vetted professionals' },
+          { stat: '23K+', label: 'Professionals' },
           { stat: '94%', label: 'Offer acceptance rate' },
         ].map(({ stat, label }) => (
           <div key={label} className="text-center py-4 border border-border">

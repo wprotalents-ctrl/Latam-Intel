@@ -3,8 +3,10 @@ import { motion, AnimatePresence } from 'motion/react';
 import {
   Search, MapPin, Building2, ExternalLink, Briefcase,
   Loader2, AlertCircle, Clock, Newspaper, TrendingUp,
-  TrendingDown, ChevronRight, Radio, Users, Globe, RefreshCw
+  TrendingDown, ChevronRight, Radio, Users, Globe, RefreshCw, Linkedin
 } from 'lucide-react';
+import LinkedInBoostModal from '../components/LinkedInBoostModal';
+import PostVacancyModal from '../components/PostVacancyModal';
 
 interface Job {
   id: string;
@@ -101,7 +103,7 @@ function timeAgo(d?: string) {
 }
 
 // ── Client news panel ─────────────────────────────────────────────────────────
-function NewsPanel({ t }: { t: typeof T.EN }) {
+function NewsPanel({ t, onPostVacancy }: { t: typeof T.EN; onPostVacancy: () => void }) {
   const [news, setNews] = useState<NewsItem[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -168,6 +170,20 @@ function NewsPanel({ t }: { t: typeof T.EN }) {
             ))}
           </div>
         )}
+
+        {/* Client CTA */}
+        <div className="mt-4 flex items-center gap-3 border border-accent/20 bg-accent/5 px-4 py-3">
+          <Briefcase size={14} className="text-accent shrink-0" />
+          <span className="mono text-[9px] text-text/50 flex-1">
+            <span className="text-accent font-bold">Hiring LATAM tech talent?</span> Post your vacancy — we match you with candidates from our 23K+ network. Free.
+          </span>
+          <button
+            onClick={onPostVacancy}
+            className="mono text-[8px] font-bold bg-accent text-black px-3 py-1.5 hover:opacity-90 transition-opacity whitespace-nowrap"
+          >
+            POST VACANCY →
+          </button>
+        </div>
       </div>
     </section>
   );
@@ -182,6 +198,7 @@ function JobPortal({ lang, t }: { lang: string; t: typeof T.EN }) {
   const [region, setRegion] = useState('All');
   const [page, setPage] = useState(1);
   const PAGE = 30;
+  const [showLinkedIn, setShowLinkedIn] = useState(false);
 
   const load = () => {
     setLoading(true);
@@ -229,7 +246,19 @@ function JobPortal({ lang, t }: { lang: string; t: typeof T.EN }) {
         </button>
       </div>
 
-      <p className="mono text-[9px] text-text/25 mb-5">{t.candidateDesc}</p>
+      <p className="mono text-[9px] text-text/25 mb-4">{t.candidateDesc}</p>
+
+      {/* LinkedIn Boost CTA */}
+      <div className="mb-5 flex items-center gap-3 border border-[#0077B5]/20 bg-[#0077B5]/5 px-4 py-3">
+        <Linkedin size={14} className="text-[#0077B5] shrink-0" />
+        <span className="mono text-[9px] text-text/50 flex-1">Get featured to <span className="text-[#0077B5] font-bold">23K+ hiring managers</span> on LinkedIn — free, posted within 48h</span>
+        <button
+          onClick={() => setShowLinkedIn(true)}
+          className="mono text-[8px] font-bold bg-[#0077B5] text-white px-3 py-1.5 hover:opacity-90 transition-opacity whitespace-nowrap"
+        >
+          GET FEATURED →
+        </button>
+      </div>
 
       {/* Quick filters */}
       <div className="flex flex-wrap gap-1.5 mb-4">
@@ -365,16 +394,19 @@ function JobPortal({ lang, t }: { lang: string; t: typeof T.EN }) {
           )}
         </>
       )}
+      <LinkedInBoostModal isOpen={showLinkedIn} onClose={() => setShowLinkedIn(false)} lang={lang} />
     </section>
   );
 }
 
 export default function JobsPage({ lang = 'EN' }: { lang?: string }) {
   const t = T[lang as keyof typeof T] || T.EN;
+  const [showVacancy, setShowVacancy] = useState(false);
   return (
     <div className="min-h-screen bg-bg">
-      <NewsPanel t={t} />
+      <NewsPanel t={t} onPostVacancy={() => setShowVacancy(true)} />
       <JobPortal lang={lang} t={t} />
+      <PostVacancyModal isOpen={showVacancy} onClose={() => setShowVacancy(false)} lang={lang} />
     </div>
   );
 }
