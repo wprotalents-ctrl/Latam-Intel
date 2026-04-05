@@ -1,51 +1,21 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 import { handleCors } from "./_lib/cors.js";
 
-// Lemon Squeezy checkout
+// Lemon Squeezy checkout — builds URL directly (no API call needed)
+const CHECKOUT_BASE =
+  "https://wprotalentslatamintel.lemonsqueezy.com/checkout/buy/480f510e-92ae-46f8-b238-da14e7cfe44f";
+
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (handleCors(req, res)) return;
   if (req.method !== "POST") return res.status(405).end();
 
   const { userId, customerEmail } = req.body;
-  const apiKey    = process.env.LEMON_SQUEEZY_API_KEY;
-  const variantId = process.env.LEMON_SQUEEZY_VARIANT_ID;
-  const storeId   = process.env.LEMON_SQUEEZY_STORE_ID;
+  if (!userId) return res.status(400).json({ error: "userId required" });
 
-  if (!apiKey || !variantId || !storeId)
-    return res.status(500).json({ error: "Lemon Squeezy not configured" });
+  const params = new URLSearchParams();
+  if (customerEmail) params.set("checkout[email]", customerEmail);
+  params.set("checkout[custom][user_id]", userId);
 
-  try {
-    const r = await fetch("https://api.lemonsqueezy.com/v1/checkouts", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${apiKey}`,
-        "Content-Type": "application/vnd.api+json",
-        Accept: "application/vnd.api+json",
-      },
-      body: JSON.stringify({
-        data: {
-          type: "checkouts",
-          attributes: {
-            checkout_data: {
-              email: customerEmail,
-              custom: { user_id: userId },
-            },
-            product_options: {
-              redirect_url: "https://intel.wprotalents.lat/members?success=true",
-            },
-          },
-          relationships: {
-            store:   { data: { type: "stores",  id: storeId } },
-            variant: { data: { type: "variants", id: variantId } },
-          },
-        },
-      }),
-    });
-    const data = await r.json();
-    const url = data?.data?.attributes?.url;
-    if (!url) return res.status(500).json({ error: "No checkout URL", data });
-    res.json({ url });
-  } catch (e: any) {
-    res.status(500).json({ error: e.message });
-  }
+  const url = `${CHECKOUT_BASE}?${params.toString()}`;
+  res.json({ url });
 }
