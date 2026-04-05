@@ -791,7 +791,7 @@ export default function App() {
             <div className="w-8 h-8 bg-accent flex items-center justify-center text-black font-black text-xl">W</div>
             <div className="flex flex-col text-left">
               <h1 className="text-sm font-black uppercase tracking-tighter leading-none">WProTalents Intel</h1>
-              <span className="mono text-[8px] text-accent/60">{t.beta}</span>
+              <span className="mono text-[8px] text-accent/60">WPRO INTEL BETA</span>
             </div>
           </a>
 
@@ -821,7 +821,7 @@ export default function App() {
             <div className="w-px h-4 bg-border" />
             <div className="flex items-center gap-2 text-text/40">
               <Activity size={12} />
-              <span className="text-green-500 font-bold">{t.data}</span>
+              <span className="text-green-500 font-bold">WPRO</span>
             </div>
           </div>
           
@@ -926,9 +926,9 @@ export default function App() {
           </button>
         </div>
         <div className="ml-auto flex items-center gap-4">
-          <div className="mono text-[9px] text-text/20">{t.total} <span className="text-text">60</span></div>
-          <div className="mono text-[9px] text-text/20">{t.queue} <span className="text-text">0</span></div>
-          <div className="mono text-[9px] text-text/20">{t.feeds} <span className="text-text">0</span></div>
+          <div className="mono text-[9px] text-text/20">{t.total} <span className="text-text">{briefings.length || 0}</span></div>
+          <div className="mono text-[9px] text-text/20">{t.feeds} <span className="text-text">{marketIntelData.news.length || 0}</span></div>
+          <div className="mono text-[9px] text-text/20">{t.queue} <span className={marketIntelData.news.length > 0 ? "text-green-400" : "text-text/40"}>{marketIntelData.news.length > 0 ? "LIVE" : "—"}</span></div>
         </div>
       </div>
 
