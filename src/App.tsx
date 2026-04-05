@@ -480,7 +480,7 @@ const WorldMap = () => (
   </div>
 );
 
-const RadarWidget = ({ lang }: { lang: Language }) => {
+const RadarWidget = ({ lang, count }: { lang: Language; count: number }) => {
   const t = TRANSLATIONS[lang];
   const [blips, setBlips] = useState<{ id: number; x: number; y: number; opacity: number }[]>([]);
 
@@ -528,7 +528,7 @@ const RadarWidget = ({ lang }: { lang: Language }) => {
       </div>
       <div className="z-10 flex flex-col items-center bg-surface/40 p-2 backdrop-blur-sm border border-text/5">
         <div className="mono text-[8px] text-accent font-bold mb-1">{t.scanning}</div>
-        <div className="mono text-[12px] font-black text-text">177 {t.aircraft}</div>
+        <div className="mono text-[12px] font-black text-text">{count > 0 ? count : '—'} {t.aircraft}</div>
       </div>
     </div>
   );
@@ -597,6 +597,20 @@ export default function App() {
   const [isMuted, setIsMuted] = useState(true);
   const [isGenerating, setIsGenerating] = useState(false);
   const [isSyncing, setIsSyncing] = useState(false);
+  const [isCustomizeOpen, setIsCustomizeOpen] = useState(false);
+  const [widgets, setWidgets] = useState<Record<string, boolean>>(() => {
+    try {
+      const saved = localStorage.getItem('wpro-widgets');
+      return saved ? JSON.parse(saved) : { map: true, radar: true, pulse: true, log: true, fx: true };
+    } catch { return { map: true, radar: true, pulse: true, log: true, fx: true }; }
+  });
+  const toggleWidget = (key: string) => {
+    setWidgets(prev => {
+      const next = { ...prev, [key]: !prev[key] };
+      localStorage.setItem('wpro-widgets', JSON.stringify(next));
+      return next;
+    });
+  };
   const [user, setUser] = useState<User | null>(null);
   const [subscriptionStatus, setSubscriptionStatus] = useState<'free' | 'premium'>('free');
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
@@ -921,7 +935,10 @@ export default function App() {
         </div>
         <div className="w-px h-4 bg-border" />
         <div className="flex items-center gap-4">
-          <button className="flex items-center gap-2 mono text-[9px] text-text/40 hover:text-text transition-colors">
+          <button
+            onClick={() => setIsCustomizeOpen(v => !v)}
+            className={`flex items-center gap-2 mono text-[9px] transition-colors ${isCustomizeOpen ? 'text-accent' : 'text-text/40 hover:text-text'}`}
+          >
             <Settings size={12} /> {t.customize}
           </button>
         </div>
@@ -931,6 +948,45 @@ export default function App() {
           <div className="mono text-[9px] text-text/20">{t.queue} <span className={marketIntelData.news.length > 0 ? "text-green-400" : "text-text/40"}>{marketIntelData.news.length > 0 ? "LIVE" : "—"}</span></div>
         </div>
       </div>
+
+      {/* Customize Panel */}
+      <AnimatePresence>
+        {isCustomizeOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: -8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.15 }}
+            className="absolute top-[88px] left-1/2 -translate-x-1/2 z-50 bg-surface border border-border shadow-2xl w-80"
+          >
+            <div className="flex items-center justify-between px-4 py-2 border-b border-border">
+              <span className="mono text-[9px] text-accent font-bold flex items-center gap-2"><Settings size={10} /> {t.customize}</span>
+              <button onClick={() => setIsCustomizeOpen(false)} className="text-text/40 hover:text-text"><X size={12} /></button>
+            </div>
+            <div className="p-4 space-y-2">
+              {[
+                { key: 'map',   label: 'Global Talent Map' },
+                { key: 'radar', label: 'WPro Talent Radar' },
+                { key: 'pulse', label: 'Talent Pulse' },
+                { key: 'log',   label: 'WPro Log' },
+                { key: 'fx',    label: 'Market Rates (FX)' },
+              ].map(({ key, label }) => (
+                <button
+                  key={key}
+                  onClick={() => toggleWidget(key)}
+                  className="w-full flex items-center justify-between px-3 py-2 bg-bg border border-border hover:border-accent/40 transition-colors group"
+                >
+                  <span className="mono text-[9px] text-text/60 group-hover:text-text">{label}</span>
+                  <div className={`w-6 h-3 rounded-full transition-colors flex items-center px-0.5 ${widgets[key] ? 'bg-accent' : 'bg-text/20'}`}>
+                    <div className={`w-2 h-2 rounded-full bg-white transition-transform ${widgets[key] ? 'translate-x-3' : 'translate-x-0'}`} />
+                  </div>
+                </button>
+              ))}
+            </div>
+            <div className="px-4 py-2 border-t border-border mono text-[8px] text-text/20">Settings saved to browser</div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       <main className="flex-1 relative overflow-hidden grid-bg">
         <AnimatePresence mode="wait">
@@ -956,36 +1012,40 @@ export default function App() {
               <div className="col-span-12 lg:col-span-8 flex flex-col gap-px bg-border">
                 {/* Top Row: Map and Radar */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-px bg-border">
+                  {widgets.map !== false && (
                   <div className="md:col-span-2 bg-bg relative min-h-[400px]">
                     <div className="absolute top-4 left-4 z-20 flex items-center gap-2 mono text-[9px] bg-surface/80 p-2 border border-border">
                       <Globe size={10} className="text-accent" /> {t.worldMap}
                     </div>
                     <WorldMap />
                   </div>
-                  <div className="bg-bg relative p-4 flex flex-col">
+                  )}
+                  {widgets.radar !== false && (
+                  <div className={`bg-bg relative p-4 flex flex-col ${widgets.map === false ? 'md:col-span-3' : ''}`}>
                     <div className="flex items-center justify-between mb-4">
                       <div className="mono text-[9px] text-text/40 flex items-center gap-2">
                         <Activity size={10} className="text-accent" /> {t.radar}
                       </div>
                     </div>
-                    <RadarWidget lang={lang} />
+                    <RadarWidget lang={lang} count={briefings.length + intelBriefs.length} />
                     <div className="mt-4 space-y-2">
                       {[
-                        { label: 'Commercial', color: 'bg-green-500' },
-                        { label: 'Military', color: 'bg-red-500' },
-                        { label: 'Helicopter', color: 'bg-blue-500' },
-                        { label: 'VIP', color: 'bg-yellow-500' }
+                        { label: 'Executive / C-Level', color: 'bg-yellow-500', pct: 12 },
+                        { label: 'Senior Individual Contributor', color: 'bg-green-500', pct: 38 },
+                        { label: 'Mid-Level', color: 'bg-blue-400', pct: 35 },
+                        { label: 'Emerging / Rising Talent', color: 'bg-accent', pct: 15 }
                       ].map(item => (
                         <div key={item.label} className="flex items-center justify-between mono text-[8px]">
                           <div className="flex items-center gap-2">
                             <div className={`w-1.5 h-1.5 rounded-full ${item.color}`} />
                             {item.label}
                           </div>
-                          <span className="text-text/40">{Math.floor(Math.random() * 50)}</span>
+                          <span className="text-text/40">{item.pct}%</span>
                         </div>
                       ))}
                     </div>
                   </div>
+                  )}
                 </div>
 
                 {/* Middle Row: Conflict Monitor and News */}
@@ -1190,11 +1250,14 @@ export default function App() {
 
               {/* Sidebar */}
               <div className="col-span-12 lg:col-span-4 flex flex-col gap-px bg-border">
-                <section className="p-8 bg-bg">
+                {widgets.pulse !== false && <section className="p-8 bg-bg">
                   <div className="flex items-center justify-between mb-8">
                     <div className="mono text-[9px] text-text/40 flex items-center gap-2">
                       <TrendingUp size={10} className="text-accent" /> {t.marketPulse}
                     </div>
+                    <span className={`mono text-[7px] px-1.5 py-0.5 border ${marketIntelData.news.length > 0 ? 'border-green-500/30 text-green-500' : 'border-text/10 text-text/20'}`}>
+                      {marketIntelData.news.length > 0 ? '● LIVE' : '○ CACHED'}
+                    </span>
                   </div>
                   <div className="space-y-6">
                     {marketIntelData.cryptoNews.length > 0 && (
@@ -1232,9 +1295,9 @@ export default function App() {
                       </div>
                     ))}
                   </div>
-                </section>
+                </section>}
 
-                <section className="p-8 bg-bg">
+                {widgets.fx !== false && <section className="p-8 bg-bg">
                   <div className="mono text-[9px] text-text/40 mb-4 flex items-center gap-2">
                     <Activity size={10} className="text-accent" /> {t.fxRates}
                   </div>
@@ -1251,7 +1314,7 @@ export default function App() {
                       </div>
                     ))}
                   </div>
-                </section>
+                </section>}
 
                 {/* Market Intel Charts */}
                 {marketIntelData.trends.sectors.length > 0 && (
