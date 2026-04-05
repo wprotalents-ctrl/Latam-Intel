@@ -1,7 +1,11 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { X, ShieldCheck } from 'lucide-react';
-import { auth, googleProvider, signInWithPopup, db, handleFirestoreError, FirestoreOperation } from '../firebase';
+import { X, ShieldCheck, Mail, Lock, Eye, EyeOff, ArrowRight, RotateCcw } from 'lucide-react';
+import {
+  auth, googleProvider, signInWithPopup, db,
+  createUserWithEmailAndPassword, signInWithEmailAndPassword,
+  sendPasswordResetEmail
+} from '../firebase';
 import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore';
 
 interface AuthModalProps {
@@ -9,43 +13,93 @@ interface AuthModalProps {
   onClose: () => void;
 }
 
-export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
-  const [loading, setLoading] = useState(false);
+type Mode = 'signin' | 'signup' | 'reset';
 
-  const handleGoogleSignIn = async () => {
+async function ensureUserDoc(user: { uid: string; email: string | null; displayName: string | null; photoURL: string | null }) {
+  const ref = doc(db, 'users', user.uid);
+  const snap = await getDoc(ref).catch(() => null);
+  if (!snap || !snap.exists()) {
+    await setDoc(ref, {
+      uid: user.uid,
+      email: user.email,
+      displayName: user.displayName || user.email?.split('@')[0] || 'User',
+      photoURL: user.photoURL,
+      subscriptionStatus: 'free',
+      createdAt: serverTimestamp(),
+      updatedAt: serverTimestamp(),
+    }).catch(() => {});
+  }
+}
+
+export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
+  const [mode, setMode] = useState<Mode>('signin');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [showPw, setShowPw] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [resetSent, setResetSent] = useState(false);
+
+  const reset = () => { setEmail(''); setPassword(''); setError(''); setResetSent(false); };
+
+  const friendlyError = (code: string) => {
+    const map: Record<string, string> = {
+      'auth/email-already-in-use': 'That email already has an account. Sign in instead.',
+      'auth/invalid-email': 'Please enter a valid email address.',
+      'auth/weak-password': 'Password must be at least 6 characters.',
+      'auth/user-not-found': 'No account with that email. Sign up instead.',
+      'auth/wrong-password': 'Incorrect password.',
+      'auth/invalid-credential': 'Incorrect email or password.',
+      'auth/too-many-requests': 'Too many attempts. Try again later.',
+      'auth/unauthorized-domain': 'Google sign-in is temporarily unavailable. Use email & password below.',
+      'auth/popup-closed-by-user': 'Sign-in cancelled.',
+    };
+    return map[code] || 'Something went wrong. Please try again.';
+  };
+
+  const handleEmail = async (e: React.FormEvent) => {
+    e.preventDefault();
     setLoading(true);
+    setError('');
+    try {
+      let result;
+      if (mode === 'signup') {
+        result = await createUserWithEmailAndPassword(auth, email, password);
+      } else {
+        result = await signInWithEmailAndPassword(auth, email, password);
+      }
+      await ensureUserDoc(result.user);
+      onClose();
+    } catch (err: any) {
+      setError(friendlyError(err.code));
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleReset = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setError('');
+    try {
+      await sendPasswordResetEmail(auth, email);
+      setResetSent(true);
+    } catch (err: any) {
+      setError(friendlyError(err.code));
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleGoogle = async () => {
+    setLoading(true);
+    setError('');
     try {
       const result = await signInWithPopup(auth, googleProvider);
-      const user = result.user;
-
-      // Initialize user profile in Firestore if it doesn't exist
-      const userRef = doc(db, 'users', user.uid);
-      let userSnap;
-      try {
-        userSnap = await getDoc(userRef);
-      } catch (error) {
-        handleFirestoreError(error, FirestoreOperation.GET, `users/${user.uid}`);
-      }
-
-      if (userSnap && !userSnap.exists()) {
-        try {
-          await setDoc(userRef, {
-            uid: user.uid,
-            email: user.email,
-            displayName: user.displayName,
-            photoURL: user.photoURL,
-            subscriptionStatus: 'free',
-            createdAt: serverTimestamp(),
-            updatedAt: serverTimestamp(),
-          });
-        } catch (error) {
-          handleFirestoreError(error, FirestoreOperation.CREATE, `users/${user.uid}`);
-        }
-      }
-
+      await ensureUserDoc(result.user);
       onClose();
-    } catch (error) {
-      console.error('Auth error:', error);
+    } catch (err: any) {
+      setError(friendlyError(err.code));
     } finally {
       setLoading(false);
     }
@@ -56,51 +110,125 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
       {isOpen && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-bg/80 backdrop-blur-sm">
           <motion.div
-            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+            initial={{ opacity: 0, scale: 0.95, y: 16 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.95, y: 20 }}
-            className="w-full max-w-md bg-surface border border-accent/20 rounded-xl overflow-hidden shadow-2xl shadow-accent/10"
+            exit={{ opacity: 0, scale: 0.95, y: 16 }}
+            transition={{ duration: 0.15 }}
+            className="w-full max-w-sm bg-surface border border-border shadow-2xl"
           >
-            <div className="relative p-8">
-              <button
-                onClick={onClose}
-                className="absolute top-4 right-4 p-2 text-text/40 hover:text-text transition-colors"
-              >
-                <X size={20} />
-              </button>
-
-              <div className="flex flex-col items-center text-center space-y-4">
-                <div className="w-16 h-16 rounded-full bg-accent/10 flex items-center justify-center mb-2">
-                  <ShieldCheck className="text-accent" size={32} />
-                </div>
-                
-                <h2 className="text-2xl font-bold tracking-tight text-text">
-                  Join WProTalents
-                </h2>
-                <p className="text-text/60 text-sm leading-relaxed">
-                  Access premium talent intelligence, salary data, and AI impact reports across Latin America.
-                </p>
+            {/* Header */}
+            <div className="flex items-center justify-between px-6 py-4 border-b border-border">
+              <div className="flex items-center gap-2">
+                <ShieldCheck size={14} className="text-accent" />
+                <span className="mono text-[10px] text-accent font-bold tracking-widest">
+                  {mode === 'reset' ? 'RESET PASSWORD' : mode === 'signup' ? 'CREATE ACCOUNT' : 'SIGN IN'}
+                </span>
               </div>
+              <button onClick={onClose} className="text-text/30 hover:text-text transition-colors">
+                <X size={16} />
+              </button>
+            </div>
 
-              <div className="mt-8 space-y-4">
+            <div className="p-6">
+              {/* Google button */}
+              {mode !== 'reset' && (
                 <button
-                  onClick={handleGoogleSignIn}
+                  onClick={handleGoogle}
                   disabled={loading}
-                  className="w-full flex items-center justify-center gap-3 bg-text text-bg font-semibold py-3 px-4 rounded-lg hover:opacity-90 transition-all disabled:opacity-50"
+                  className="w-full flex items-center justify-center gap-3 border border-border bg-bg hover:border-accent/40 py-2.5 mono text-[10px] text-text/60 hover:text-text transition-all mb-4 disabled:opacity-40"
                 >
-                  <img src="https://www.google.com/favicon.ico" alt="Google" className="w-5 h-5" />
-                  {loading ? 'Connecting...' : 'Continue with Google'}
+                  <img src="https://www.google.com/favicon.ico" alt="" className="w-3.5 h-3.5" />
+                  Continue with Google
                 </button>
+              )}
 
-                <div className="relative flex items-center py-4">
-                  <div className="flex-grow border-t border-border"></div>
-                  <span className="flex-shrink mx-4 text-text/40 text-xs uppercase tracking-widest">Secure Access</span>
-                  <div className="flex-grow border-t border-border"></div>
+              {/* Divider */}
+              {mode !== 'reset' && (
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="flex-1 h-px bg-border" />
+                  <span className="mono text-[8px] text-text/20">OR</span>
+                  <div className="flex-1 h-px bg-border" />
+                </div>
+              )}
+
+              {/* Error */}
+              {error && (
+                <div className="mb-4 px-3 py-2 border border-red-500/20 bg-red-500/5 mono text-[9px] text-red-400">
+                  {error}
+                </div>
+              )}
+
+              {/* Reset sent */}
+              {resetSent && (
+                <div className="mb-4 px-3 py-2 border border-green-500/20 bg-green-500/5 mono text-[9px] text-green-400">
+                  Reset link sent — check your inbox.
+                </div>
+              )}
+
+              {/* Form */}
+              <form onSubmit={mode === 'reset' ? handleReset : handleEmail} className="space-y-3">
+                <div className="relative">
+                  <Mail size={12} className="absolute left-3 top-1/2 -translate-y-1/2 text-text/25" />
+                  <input
+                    type="email"
+                    placeholder="Email address"
+                    value={email}
+                    onChange={e => setEmail(e.target.value)}
+                    required
+                    className="w-full bg-bg border border-border pl-9 pr-4 py-2.5 mono text-[11px] text-text placeholder:text-text/20 focus:outline-none focus:border-accent/40 transition-colors"
+                  />
                 </div>
 
-                <p className="text-center text-xs text-text/40">
-                  By continuing, you agree to our Terms of Service and Privacy Policy.
-                </p>
+                {mode !== 'reset' && (
+                  <div className="relative">
+                    <Lock size={12} className="absolute left-3 top-1/2 -translate-y-1/2 text-text/25" />
+                    <input
+                      type={showPw ? 'text' : 'password'}
+                      placeholder="Password"
+                      value={password}
+                      onChange={e => setPassword(e.target.value)}
+                      required
+                      minLength={6}
+                      className="w-full bg-bg border border-border pl-9 pr-10 py-2.5 mono text-[11px] text-text placeholder:text-text/20 focus:outline-none focus:border-accent/40 transition-colors"
+                    />
+                    <button type="button" onClick={() => setShowPw(v => !v)} className="absolute right-3 top-1/2 -translate-y-1/2 text-text/25 hover:text-text/60">
+                      {showPw ? <EyeOff size={12} /> : <Eye size={12} />}
+                    </button>
+                  </div>
+                )}
+
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="w-full flex items-center justify-center gap-2 bg-accent text-black py-2.5 mono text-[10px] font-bold hover:opacity-90 transition-opacity disabled:opacity-50"
+                >
+                  {loading ? '...' : mode === 'reset' ? 'SEND RESET LINK' : mode === 'signup' ? 'CREATE ACCOUNT' : 'SIGN IN'}
+                  {!loading && <ArrowRight size={11} />}
+                </button>
+              </form>
+
+              {/* Footer links */}
+              <div className="mt-4 flex items-center justify-between">
+                {mode === 'signin' && (
+                  <>
+                    <button onClick={() => { setMode('signup'); reset(); }} className="mono text-[9px] text-text/30 hover:text-accent transition-colors">
+                      No account? Sign up
+                    </button>
+                    <button onClick={() => { setMode('reset'); reset(); }} className="mono text-[9px] text-text/30 hover:text-text/60 transition-colors">
+                      Forgot password?
+                    </button>
+                  </>
+                )}
+                {mode === 'signup' && (
+                  <button onClick={() => { setMode('signin'); reset(); }} className="mono text-[9px] text-text/30 hover:text-accent transition-colors">
+                    Already have an account? Sign in
+                  </button>
+                )}
+                {mode === 'reset' && (
+                  <button onClick={() => { setMode('signin'); reset(); }} className="flex items-center gap-1 mono text-[9px] text-text/30 hover:text-text/60 transition-colors">
+                    <RotateCcw size={9} /> Back to sign in
+                  </button>
+                )}
               </div>
             </div>
           </motion.div>
