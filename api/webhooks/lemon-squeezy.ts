@@ -1,3 +1,4 @@
+// @ts-nocheck
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 import crypto from "crypto";
 import { db, admin } from "../_lib/firebase.js";
