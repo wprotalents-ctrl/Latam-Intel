@@ -1,21 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import {
-  Search,
-  MapPin,
-  Building2,
-  ExternalLink,
-  Briefcase,
-  Globe,
-  Filter,
-  Loader2,
-  AlertCircle,
-  Users,
-  Zap,
-  TrendingUp,
-  ArrowRight,
-  CheckCircle2,
-  Clock
+  Search, MapPin, Building2, ExternalLink, Briefcase, Globe,
+  Loader2, AlertCircle, Clock, Newspaper, TrendingUp, TrendingDown,
+  ChevronRight, Radio, Users
 } from 'lucide-react';
 
 interface Job {
@@ -30,166 +18,209 @@ interface Job {
   postedAt?: string;
 }
 
+interface NewsItem {
+  title: string;
+  link: string;
+  pubDate?: string;
+  source_id?: string;
+  description?: string;
+}
+
 const REGIONS = ['All', 'LATAM', 'USA', 'Europe', 'Worldwide'];
 
-const JOBS_TRANSLATIONS = {
+const T = {
   EN: {
-    // Client section
-    clientBadge: "FOR COMPANIES",
-    clientHeadline: "Hire LATAM AI Talent — Faster.",
-    clientSubheadline: "Access pre-vetted AI engineers, data scientists & ML practitioners from Latin America at 40–60% lower cost than US equivalents. Same quality. Better timezone overlap.",
-    stat1Label: "Avg time-to-hire",
-    stat1Value: "18 days",
-    stat2Label: "Cost vs. US market",
-    stat2Value: "−52%",
-    stat3Label: "Senior AI roles filled",
-    stat3Value: "340+",
-    stat4Label: "Countries covered",
-    stat4Value: "12",
-    offer1: "Sourcing & shortlisting in 72h",
-    offer2: "Pre-vetted technical skills",
-    offer3: "Compliance & payroll handled",
-    offer4: "Dedicated talent intelligence",
-    ctaButton: "REQUEST TALENT →",
-    ctaNote: "No commitment. Response in 24h.",
-    // Candidate section
-    candidateBadge: "FOR CANDIDATES",
-    candidateHeadline: "AI Job Intelligence",
-    candidateTagline: "Live feed of AI, engineering & data roles across LATAM, USA and Europe.",
-    searchPlaceholder: "Search by title or company...",
-    scanning: "Scanning AI global markets...",
-    failed: "Intelligence Retrieval Failed",
-    retry: "RETRY SCAN",
-    viewJob: "APPLY",
-    noJobs: "No matching AI opportunities found in current scan.",
-    salary: "COMP",
-    source: "VIA",
-    liveRoles: "live roles",
-    filtered: "filtered",
-    justPosted: "RECENT",
+    clientBadge: "MARKET INTEL · FOR COMPANIES",
+    clientDesc: "AI workforce intelligence — what's happening now with hiring, automation and LATAM talent.",
+    loadingNews: "Fetching live intel...",
+    noNews: "No intel available.",
+    readMore: "READ",
+    candidateBadge: "JOB PORTAL · FOR CANDIDATES",
+    candidateDesc: "Live remote roles across US, EU & LATAM. Updated every 30 min.",
+    search: "Search title or company...",
+    apply: "APPLY",
+    via: "via",
+    scanning: "Loading jobs...",
+    failed: "Feed unavailable",
+    retry: "RETRY",
+    noJobs: "No matching roles found.",
+    liveRoles: "roles",
+    all: "All",
   },
   ES: {
-    clientBadge: "PARA EMPRESAS",
-    clientHeadline: "Contrata Talento de IA LATAM — Rápido.",
-    clientSubheadline: "Accede a ingenieros de IA, científicos de datos y especialistas en ML de América Latina a un costo 40–60% menor que equivalentes en EE. UU. Misma calidad. Mejor zona horaria.",
-    stat1Label: "Tiempo promedio de contratación",
-    stat1Value: "18 días",
-    stat2Label: "Costo vs. mercado US",
-    stat2Value: "−52%",
-    stat3Label: "Roles senior de IA cubiertos",
-    stat3Value: "340+",
-    stat4Label: "Países cubiertos",
-    stat4Value: "12",
-    offer1: "Búsqueda y selección en 72h",
-    offer2: "Habilidades técnicas pre-evaluadas",
-    offer3: "Cumplimiento y nómina gestionados",
-    offer4: "Inteligencia de talento dedicada",
-    ctaButton: "SOLICITAR TALENTO →",
-    ctaNote: "Sin compromiso. Respuesta en 24h.",
-    candidateBadge: "PARA CANDIDATOS",
-    candidateHeadline: "Inteligencia de Empleos IA",
-    candidateTagline: "Feed en vivo de roles de IA, ingeniería y datos en LATAM, EE. UU. y Europa.",
-    searchPlaceholder: "Buscar por título o empresa...",
-    scanning: "Escaneando mercados globales de IA...",
-    failed: "Fallo en la Recuperación de Inteligencia",
-    retry: "REINTENTAR ESCANEO",
-    viewJob: "APLICAR",
-    noJobs: "No se encontraron oportunidades de IA en el escaneo actual.",
-    salary: "COMP",
-    source: "VÍA",
-    liveRoles: "roles en vivo",
-    filtered: "filtrados",
-    justPosted: "RECIENTE",
+    clientBadge: "INTELIGENCIA DE MERCADO · PARA EMPRESAS",
+    clientDesc: "Inteligencia laboral de IA — qué pasa ahora con la contratación, automatización y talento LATAM.",
+    loadingNews: "Cargando inteligencia en vivo...",
+    noNews: "Sin inteligencia disponible.",
+    readMore: "LEER",
+    candidateBadge: "PORTAL DE EMPLEO · PARA CANDIDATOS",
+    candidateDesc: "Roles remotos en vivo en EE.UU., UE y LATAM. Actualizado cada 30 min.",
+    search: "Buscar por título o empresa...",
+    apply: "APLICAR",
+    via: "vía",
+    scanning: "Cargando empleos...",
+    failed: "Feed no disponible",
+    retry: "REINTENTAR",
+    noJobs: "No se encontraron roles.",
+    liveRoles: "roles",
+    all: "Todo",
   },
   PT: {
-    clientBadge: "PARA EMPRESAS",
-    clientHeadline: "Contrate Talentos de IA LATAM — Rápido.",
-    clientSubheadline: "Acesse engenheiros de IA, cientistas de dados e especialistas em ML da América Latina com custo 40–60% menor que equivalentes nos EUA. Mesma qualidade. Fuso horário melhor.",
-    stat1Label: "Tempo médio de contratação",
-    stat1Value: "18 dias",
-    stat2Label: "Custo vs. mercado EUA",
-    stat2Value: "−52%",
-    stat3Label: "Vagas sênior de IA preenchidas",
-    stat3Value: "340+",
-    stat4Label: "Países cobertos",
-    stat4Value: "12",
-    offer1: "Seleção e triagem em 72h",
-    offer2: "Habilidades técnicas pré-avaliadas",
-    offer3: "Conformidade e folha de pagamento geridas",
-    offer4: "Inteligência de talentos dedicada",
-    ctaButton: "SOLICITAR TALENTOS →",
-    ctaNote: "Sem compromisso. Resposta em 24h.",
-    candidateBadge: "PARA CANDIDATOS",
-    candidateHeadline: "Inteligência de Vagas de IA",
-    candidateTagline: "Feed ao vivo de vagas de IA, engenharia e dados no LATAM, EUA e Europa.",
-    searchPlaceholder: "Pesquisar por título ou empresa...",
-    scanning: "Escaneando mercados globais de IA...",
-    failed: "Falha na Recuperação de Inteligência",
-    retry: "REPETIR VARREDURA",
-    viewJob: "CANDIDATAR",
-    noJobs: "Nenhuma oportunidade de IA encontrada na varredura atual.",
-    salary: "COMP",
-    source: "VIA",
-    liveRoles: "vagas ao vivo",
-    filtered: "filtradas",
-    justPosted: "RECENTE",
-  }
+    clientBadge: "INTELIGÊNCIA DE MERCADO · PARA EMPRESAS",
+    clientDesc: "Inteligência de força de trabalho IA — o que está acontecendo agora com contratação, automação e talentos LATAM.",
+    loadingNews: "Carregando inteligência ao vivo...",
+    noNews: "Sem inteligência disponível.",
+    readMore: "LER",
+    candidateBadge: "PORTAL DE VAGAS · PARA CANDIDATOS",
+    candidateDesc: "Vagas remotas ao vivo nos EUA, UE e LATAM. Atualizado a cada 30 min.",
+    search: "Buscar por título ou empresa...",
+    apply: "CANDIDATAR",
+    via: "via",
+    scanning: "Carregando vagas...",
+    failed: "Feed indisponível",
+    retry: "TENTAR NOVAMENTE",
+    noJobs: "Nenhuma vaga encontrada.",
+    liveRoles: "vagas",
+    all: "Tudo",
+  },
+};
+
+const REGION_STYLE: Record<string, string> = {
+  LATAM: 'text-emerald-400 border-emerald-500/30',
+  USA: 'text-blue-400 border-blue-500/30',
+  Europe: 'text-violet-400 border-violet-500/30',
+  Worldwide: 'text-accent border-accent/30',
 };
 
 function timeAgo(dateStr?: string): string | null {
   if (!dateStr) return null;
   const d = new Date(dateStr);
   if (isNaN(d.getTime())) return null;
-  const diffMs = Date.now() - d.getTime();
-  const diffDays = Math.floor(diffMs / 86400000);
-  if (diffDays === 0) return 'Today';
-  if (diffDays === 1) return '1d ago';
-  if (diffDays < 7) return `${diffDays}d ago`;
-  if (diffDays < 30) return `${Math.floor(diffDays / 7)}w ago`;
+  const diff = Math.floor((Date.now() - d.getTime()) / 86400000);
+  if (diff === 0) return 'Today';
+  if (diff === 1) return '1d';
+  if (diff < 7) return `${diff}d`;
+  if (diff < 30) return `${Math.floor(diff / 7)}w`;
   return null;
 }
 
-const REGION_COLORS: Record<string, string> = {
-  LATAM: 'text-emerald-400 border-emerald-400/30 bg-emerald-400/5',
-  USA: 'text-blue-400 border-blue-400/30 bg-blue-400/5',
-  Europe: 'text-violet-400 border-violet-400/30 bg-violet-400/5',
-  Worldwide: 'text-accent border-accent/30 bg-accent/5',
-};
-
-export default function JobsPage({ lang = 'EN' }: { lang?: string }) {
-  const [jobs, setJobs] = useState<Job[]>([]);
+// ── CLIENT: News Intel Panel ──────────────────────────────────────────────────
+function NewsIntelPanel({ lang, t }: { lang: string; t: typeof T.EN }) {
+  const [news, setNews] = useState<NewsItem[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [selectedRegion, setSelectedRegion] = useState('All');
-
-  const t = JOBS_TRANSLATIONS[lang as keyof typeof JOBS_TRANSLATIONS] || JOBS_TRANSLATIONS.EN;
 
   useEffect(() => {
-    fetchJobs();
+    setLoading(true);
+    fetch('/api/market-intel/news')
+      .then(r => r.json())
+      .then(d => {
+        const items = Array.isArray(d) ? d : (d.results || d.articles || []);
+        setNews(items.slice(0, 12));
+      })
+      .catch(() => setNews([]))
+      .finally(() => setLoading(false));
+  }, []);
+
+  // Fallback headline topics if news API fails
+  const topics = [
+    { label: "AI Replacing Jobs", icon: <TrendingDown size={12} className="text-red-400" /> },
+    { label: "AI Creating Roles", icon: <TrendingUp size={12} className="text-emerald-400" /> },
+    { label: "LATAM Tech Hiring", icon: <Users size={12} className="text-accent" /> },
+    { label: "Remote EU Demand", icon: <Globe size={12} className="text-violet-400" /> },
+  ];
+
+  return (
+    <section className="border-b border-border bg-surface/30">
+      <div className="px-6 md:px-12 py-8 max-w-7xl mx-auto">
+        {/* Section header */}
+        <div className="flex items-center gap-3 mb-6">
+          <Radio size={12} className="text-accent animate-pulse" />
+          <span className="mono text-[9px] text-accent tracking-widest font-bold">{t.clientBadge}</span>
+          <div className="h-px flex-1 bg-border" />
+          <span className="mono text-[9px] text-text/20">{t.candidateDesc.split('.')[0]}</span>
+        </div>
+
+        {/* Topic pills */}
+        <div className="flex flex-wrap gap-2 mb-6">
+          {topics.map(topic => (
+            <div key={topic.label} className="flex items-center gap-1.5 border border-border bg-surface px-3 py-1.5 mono text-[9px] text-text/50">
+              {topic.icon}
+              {topic.label}
+            </div>
+          ))}
+        </div>
+
+        {loading ? (
+          <div className="flex items-center gap-3 py-8 text-text/20 mono text-[10px]">
+            <Loader2 size={14} className="animate-spin text-accent" />
+            {t.loadingNews}
+          </div>
+        ) : news.length === 0 ? (
+          <p className="mono text-[10px] text-text/20 py-4">{t.noNews}</p>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
+            {news.map((item, i) => (
+              <motion.a
+                key={i}
+                href={item.link}
+                target="_blank"
+                rel="noopener noreferrer"
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: i * 0.04 }}
+                className="group border border-border bg-bg hover:border-accent/30 p-4 flex flex-col gap-2 transition-colors"
+              >
+                <div className="mono text-[8px] text-text/20 flex items-center gap-1.5 truncate">
+                  <Newspaper size={8} />
+                  {item.source_id || 'Intel'}
+                  {item.pubDate && (
+                    <span className="ml-auto">{timeAgo(item.pubDate)}</span>
+                  )}
+                </div>
+                <p className="text-xs font-medium leading-snug line-clamp-3 group-hover:text-accent transition-colors">
+                  {item.title}
+                </p>
+                <div className="flex items-center gap-1 mono text-[8px] text-accent/50 mt-auto">
+                  {t.readMore} <ChevronRight size={8} />
+                </div>
+              </motion.a>
+            ))}
+          </div>
+        )}
+      </div>
+    </section>
+  );
+}
+
+// ── CANDIDATE: Job Portal ─────────────────────────────────────────────────────
+function JobPortal({ lang, t }: { lang: string; t: typeof T.EN }) {
+  const [jobs, setJobs] = useState<Job[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
+  const [search, setSearch] = useState('');
+  const [region, setRegion] = useState('All');
+  const [page, setPage] = useState(1);
+  const PAGE_SIZE = 30;
+
+  useEffect(() => {
+    setLoading(true);
+    setError(false);
+    fetch(`/api/jobs?lang=${lang}`)
+      .then(r => r.json())
+      .then(d => setJobs(Array.isArray(d) ? d : []))
+      .catch(() => setError(true))
+      .finally(() => setLoading(false));
   }, [lang]);
 
-  const fetchJobs = async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const response = await fetch(`/api/jobs?lang=${lang}`);
-      if (!response.ok) throw new Error('Failed to fetch jobs');
-      const data = await response.json();
-      setJobs(Array.isArray(data) ? data : []);
-    } catch (err: any) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
-    }
-  };
+  // Reset pagination on filter change
+  useEffect(() => { setPage(1); }, [search, region]);
 
-  const filteredJobs = jobs.filter(job => {
-    const matchesSearch =
-      job.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      job.company.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesRegion = selectedRegion === 'All' || job.region === selectedRegion;
-    return matchesSearch && matchesRegion;
+  const filtered = jobs.filter(j => {
+    const matchSearch = !search ||
+      j.title.toLowerCase().includes(search.toLowerCase()) ||
+      j.company.toLowerCase().includes(search.toLowerCase());
+    const matchRegion = region === 'All' || j.region === region;
+    return matchSearch && matchRegion;
   });
 
   const regionCounts = REGIONS.reduce((acc, r) => {
@@ -197,221 +228,157 @@ export default function JobsPage({ lang = 'EN' }: { lang?: string }) {
     return acc;
   }, {} as Record<string, number>);
 
+  const paginated = filtered.slice(0, page * PAGE_SIZE);
+  const hasMore = paginated.length < filtered.length;
+
   return (
-    <div className="min-h-screen bg-bg">
+    <section className="px-6 md:px-12 py-8 max-w-7xl mx-auto">
+      {/* Header */}
+      <div className="flex items-center gap-3 mb-6">
+        <Briefcase size={12} className="text-text/30" />
+        <span className="mono text-[9px] text-text/40 tracking-widest font-bold">{t.candidateBadge}</span>
+        <div className="h-px flex-1 bg-border" />
+        {!loading && (
+          <span className="mono text-[9px] text-text/20">
+            <span className="text-accent font-bold">{filtered.length}</span> {t.liveRoles}
+          </span>
+        )}
+      </div>
 
-      {/* ── CLIENT SECTION ──────────────────────────────────────── */}
-      <section className="border-b border-border">
-        <div className="p-6 md:p-12 max-w-7xl mx-auto">
-
-          {/* Badge */}
-          <div className="flex items-center gap-2 mb-8">
-            <span className="mono text-[9px] bg-accent text-black px-2 py-1 font-bold tracking-widest">{t.clientBadge}</span>
-            <div className="h-px flex-1 bg-accent/20" />
-          </div>
-
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            {/* Left: headline + offer list */}
-            <div>
-              <h1 className="text-4xl md:text-5xl font-black tracking-tighter uppercase leading-none mb-6">
-                {t.clientHeadline}
-              </h1>
-              <p className="text-text/60 text-lg leading-relaxed mb-8 max-w-lg">
-                {t.clientSubheadline}
-              </p>
-
-              <ul className="space-y-3 mb-8">
-                {[t.offer1, t.offer2, t.offer3, t.offer4].map((offer, i) => (
-                  <li key={i} className="flex items-center gap-3 text-text/80">
-                    <CheckCircle2 size={16} className="text-accent shrink-0" />
-                    <span className="text-sm">{offer}</span>
-                  </li>
-                ))}
-              </ul>
-
-              <div className="flex items-center gap-4">
-                <a
-                  href="mailto:juan@wprotalents.com?subject=LATAM AI Talent Request"
-                  className="inline-flex items-center gap-2 bg-accent text-black px-8 py-4 font-black text-sm tracking-wider hover:opacity-90 transition-opacity"
-                >
-                  {t.ctaButton}
-                </a>
-                <span className="mono text-[9px] text-text/30">{t.ctaNote}</span>
-              </div>
-            </div>
-
-            {/* Right: stats grid */}
-            <div className="grid grid-cols-2 gap-4">
-              {[
-                { label: t.stat1Label, value: t.stat1Value, icon: <Clock size={20} /> },
-                { label: t.stat2Label, value: t.stat2Value, icon: <TrendingUp size={20} /> },
-                { label: t.stat3Label, value: t.stat3Value, icon: <Briefcase size={20} /> },
-                { label: t.stat4Label, value: t.stat4Value, icon: <Globe size={20} /> },
-              ].map((stat, i) => (
-                <motion.div
-                  key={i}
-                  initial={{ opacity: 0, y: 16 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: i * 0.1 }}
-                  className="bg-surface border border-border p-6 relative overflow-hidden group hover:border-accent/30 transition-colors"
-                >
-                  <div className="text-accent/20 mb-3 group-hover:text-accent/40 transition-colors">{stat.icon}</div>
-                  <div className="text-3xl font-black tracking-tighter text-accent mb-1">{stat.value}</div>
-                  <div className="mono text-[9px] text-text/30 uppercase tracking-widest">{stat.label}</div>
-                </motion.div>
-              ))}
-            </div>
-          </div>
+      {/* Filters row */}
+      <div className="flex flex-col sm:flex-row gap-3 mb-6">
+        <div className="relative flex-1">
+          <Search size={13} className="absolute left-3 top-1/2 -translate-y-1/2 text-text/25" />
+          <input
+            type="text"
+            placeholder={t.search}
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+            className="w-full bg-surface border border-border pl-9 pr-4 py-2.5 mono text-[11px] text-text placeholder:text-text/20 focus:outline-none focus:border-accent/40 transition-colors"
+          />
         </div>
-      </section>
-
-      {/* ── CANDIDATE SECTION ───────────────────────────────────── */}
-      <section className="p-6 md:p-12 max-w-7xl mx-auto">
-
-        {/* Badge */}
-        <div className="flex items-center gap-2 mb-8">
-          <span className="mono text-[9px] border border-text/20 text-text/50 px-2 py-1 tracking-widest">{t.candidateBadge}</span>
-          <div className="h-px flex-1 bg-text/5" />
-          {!loading && (
-            <span className="mono text-[9px] text-text/20">
-              <span className="text-accent">{filteredJobs.length}</span> {selectedRegion !== 'All' ? t.filtered : t.liveRoles}
-            </span>
-          )}
-        </div>
-
-        <div className="mb-8">
-          <h2 className="text-3xl font-black tracking-tighter uppercase mb-2">{t.candidateHeadline}</h2>
-          <p className="text-text/40 mono text-[11px]">{t.candidateTagline}</p>
-        </div>
-
-        {/* Filters */}
-        <div className="flex flex-col md:flex-row gap-3 mb-10">
-          <div className="relative flex-1">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-text/30" size={16} />
-            <input
-              type="text"
-              placeholder={t.searchPlaceholder}
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full bg-surface border border-border pl-11 pr-4 py-3 focus:outline-none focus:border-accent transition-colors mono text-[11px] text-text placeholder:text-text/20"
-            />
-          </div>
-          <div className="flex items-center gap-2 overflow-x-auto no-scrollbar">
-            {REGIONS.map(region => (
-              <button
-                key={region}
-                onClick={() => setSelectedRegion(region)}
-                className={`px-4 py-3 mono text-[9px] border transition-all whitespace-nowrap flex items-center gap-1.5 ${
-                  selectedRegion === region
-                    ? 'bg-accent text-black border-accent font-bold'
-                    : 'bg-surface text-text/40 border-border hover:border-text/20 hover:text-text/60'
-                }`}
-              >
-                {region}
-                {regionCounts[region] > 0 && (
-                  <span className={`${selectedRegion === region ? 'text-black/60' : 'text-text/20'}`}>
-                    {regionCounts[region]}
-                  </span>
-                )}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Job Grid */}
-        {loading ? (
-          <div className="flex flex-col items-center justify-center py-32 gap-4">
-            <Loader2 className="text-accent animate-spin" size={36} />
-            <span className="mono text-accent/60 text-[11px] animate-pulse tracking-widest">{t.scanning}</span>
-          </div>
-        ) : error ? (
-          <div className="flex flex-col items-center justify-center py-24 gap-4 bg-surface border border-red-500/20">
-            <AlertCircle className="text-red-500" size={36} />
-            <p className="text-red-500 font-bold uppercase tracking-tighter text-sm">{t.failed}</p>
-            <p className="text-text/30 mono text-[10px]">{error}</p>
+        <div className="flex gap-1.5 overflow-x-auto no-scrollbar">
+          {REGIONS.map(r => (
             <button
-              onClick={fetchJobs}
-              className="mt-2 px-6 py-2 border border-text/20 text-text/60 mono text-[10px] hover:border-accent hover:text-accent transition-colors"
+              key={r}
+              onClick={() => setRegion(r)}
+              className={`px-3 py-2.5 mono text-[9px] border whitespace-nowrap transition-all flex items-center gap-1 ${
+                region === r
+                  ? 'bg-accent text-black border-accent font-bold'
+                  : 'bg-surface text-text/30 border-border hover:text-text/60 hover:border-text/20'
+              }`}
             >
-              {t.retry}
+              {r}
+              <span className={region === r ? 'text-black/50' : 'text-text/15'}>
+                {regionCounts[r] || 0}
+              </span>
             </button>
-          </div>
-        ) : (
-          <>
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-              <AnimatePresence mode="popLayout">
-                {filteredJobs.map((job, idx) => {
-                  const ago = timeAgo(job.postedAt);
-                  const regionStyle = REGION_COLORS[job.region] || 'text-text/40 border-text/10 bg-transparent';
-                  return (
-                    <motion.div
-                      key={job.id}
-                      initial={{ opacity: 0, y: 16 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, scale: 0.97 }}
-                      transition={{ delay: Math.min(idx * 0.03, 0.3) }}
-                      className="group bg-surface border border-border hover:border-accent/30 transition-all relative overflow-hidden flex flex-col"
-                    >
-                      {/* Top bar: region + time */}
-                      <div className="flex items-center justify-between px-4 pt-3 pb-0">
-                        <span className={`mono text-[8px] border px-1.5 py-0.5 ${regionStyle}`}>
+          ))}
+        </div>
+      </div>
+
+      {/* Content */}
+      {loading ? (
+        <div className="flex items-center gap-3 py-20 justify-center mono text-[10px] text-text/20">
+          <Loader2 size={18} className="animate-spin text-accent" />
+          {t.scanning}
+        </div>
+      ) : error ? (
+        <div className="flex flex-col items-center gap-3 py-16 border border-dashed border-red-500/20">
+          <AlertCircle size={24} className="text-red-500/60" />
+          <span className="mono text-[10px] text-red-500/60">{t.failed}</span>
+          <button
+            onClick={() => { setError(false); setLoading(true); fetch(`/api/jobs?lang=${lang}`).then(r => r.json()).then(d => setJobs(Array.isArray(d) ? d : [])).catch(() => setError(true)).finally(() => setLoading(false)); }}
+            className="mono text-[9px] border border-border px-4 py-2 hover:border-accent hover:text-accent transition-colors"
+          >
+            {t.retry}
+          </button>
+        </div>
+      ) : (
+        <>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
+            <AnimatePresence mode="popLayout">
+              {paginated.map((job, idx) => {
+                const ago = timeAgo(job.postedAt);
+                const rs = REGION_STYLE[job.region] || 'text-text/30 border-text/10';
+                return (
+                  <motion.div
+                    key={job.id}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: Math.min(idx * 0.02, 0.4) }}
+                    className="group border border-border bg-surface hover:border-accent/25 transition-colors flex flex-col"
+                  >
+                    <div className="p-4 flex flex-col flex-1 gap-2">
+                      <div className="flex items-center justify-between">
+                        <span className={`mono text-[7px] border px-1.5 py-0.5 ${rs}`}>
                           {job.region}
                         </span>
                         {ago && (
-                          <span className="mono text-[8px] text-text/20 flex items-center gap-1">
-                            <Clock size={8} /> {ago}
+                          <span className="mono text-[7px] text-text/15 flex items-center gap-0.5">
+                            <Clock size={7} />{ago}
                           </span>
                         )}
                       </div>
-
-                      {/* Body */}
-                      <div className="p-4 flex flex-col flex-1">
-                        <div className="mono text-[9px] text-accent/70 mb-1.5 flex items-center gap-1.5 truncate">
-                          <Building2 size={9} className="shrink-0" />
-                          <span className="truncate">{job.company}</span>
-                        </div>
-                        <h3 className="text-sm font-bold leading-snug group-hover:text-accent transition-colors mb-3 line-clamp-2">
-                          {job.title}
-                        </h3>
-
-                        <div className="flex items-center gap-1.5 text-text/40 text-xs mb-auto">
-                          <MapPin size={10} className="text-accent/40 shrink-0" />
-                          <span className="truncate mono text-[9px]">{job.location}</span>
-                        </div>
-
-                        {job.salary && (
-                          <div className="mt-2 mono text-[9px] text-text/50">
-                            {job.salary}
-                          </div>
-                        )}
+                      <div className="mono text-[8px] text-accent/60 truncate flex items-center gap-1">
+                        <Building2 size={8} className="shrink-0" />{job.company}
                       </div>
-
-                      {/* Footer */}
-                      <div className="flex items-center justify-between px-4 py-3 border-t border-text/5">
-                        <span className="mono text-[8px] text-text/15">{t.source}: {job.source}</span>
-                        <a
-                          href={job.url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="flex items-center gap-1.5 bg-text/10 hover:bg-accent text-text/60 hover:text-black px-3 py-1.5 mono text-[8px] font-bold transition-all"
-                        >
-                          {t.viewJob} <ExternalLink size={9} />
-                        </a>
+                      <h3 className="text-xs font-bold leading-snug line-clamp-2 group-hover:text-accent transition-colors flex-1">
+                        {job.title}
+                      </h3>
+                      <div className="mono text-[8px] text-text/30 flex items-center gap-1 truncate">
+                        <MapPin size={8} className="shrink-0" />{job.location}
                       </div>
-                    </motion.div>
-                  );
-                })}
-              </AnimatePresence>
+                      {job.salary && (
+                        <div className="mono text-[8px] text-text/40">{job.salary}</div>
+                      )}
+                    </div>
+                    <div className="flex items-center justify-between px-4 py-2.5 border-t border-text/5">
+                      <span className="mono text-[7px] text-text/10">{t.via} {job.source}</span>
+                      <a
+                        href={job.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="mono text-[8px] font-bold flex items-center gap-1 text-text/30 hover:text-accent transition-colors"
+                      >
+                        {t.apply} <ExternalLink size={8} />
+                      </a>
+                    </div>
+                  </motion.div>
+                );
+              })}
+            </AnimatePresence>
+          </div>
+
+          {filtered.length === 0 && (
+            <div className="text-center py-16 border border-dashed border-border">
+              <p className="mono text-[10px] text-text/20">{t.noJobs}</p>
             </div>
+          )}
 
-            {filteredJobs.length === 0 && (
-              <div className="text-center py-24 border border-dashed border-border">
-                <p className="mono text-text/20 text-[11px]">{t.noJobs}</p>
-              </div>
-            )}
-          </>
-        )}
-      </section>
+          {hasMore && (
+            <div className="mt-8 flex justify-center">
+              <button
+                onClick={() => setPage(p => p + 1)}
+                className="mono text-[9px] border border-border px-8 py-3 text-text/40 hover:border-accent hover:text-accent transition-colors"
+              >
+                LOAD MORE · {filtered.length - paginated.length} remaining
+              </button>
+            </div>
+          )}
+        </>
+      )}
+    </section>
+  );
+}
+
+// ── Main Page ─────────────────────────────────────────────────────────────────
+export default function JobsPage({ lang = 'EN' }: { lang?: string }) {
+  const t = T[lang as keyof typeof T] || T.EN;
+  return (
+    <div className="min-h-screen bg-bg">
+      <NewsIntelPanel lang={lang} t={t} />
+      <JobPortal lang={lang} t={t} />
     </div>
   );
 }

@@ -1516,44 +1516,36 @@ export default function App() {
                 </section>
               </div>
 
-              {/* Subscription Section */}
+              {/* Upgrade banner — compact strip */}
               <div className="col-span-12" id="subscription-section">
-                <SubscriptionSection />
+                <div className="border-t border-border px-6 py-3 flex items-center justify-between gap-4 bg-surface/40">
+                  <span className="mono text-[9px] text-text/30">
+                    <span className="text-accent font-bold">EXECUTIVE</span>
+                    {' · '}Daily briefings · AI job impact reports · Salary data
+                  </span>
+                  <button
+                    onClick={() => {
+                      const m = document.getElementById('upgrade-modal');
+                      if (m) m.style.display = m.style.display === 'none' ? 'block' : 'none';
+                    }}
+                    className="mono text-[9px] border border-accent/40 text-accent px-4 py-1 hover:bg-accent hover:text-black transition-all whitespace-nowrap shrink-0"
+                  >
+                    UPGRADE $29 →
+                  </button>
+                </div>
+                <div id="upgrade-modal" style={{ display: 'none' }}>
+                  <SubscriptionSection />
+                </div>
               </div>
             </motion.div>
           )}
         </AnimatePresence>
       </main>
 
-      {/* OSINT Footer / Status Bar */}
-      <footer className="border-t border-border bg-surface px-6 py-12">
+      {/* Footer */}
+      <footer className="border-t border-border bg-surface px-6 py-4">
         <div className="max-w-7xl mx-auto">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-8 mb-12">
-            <div className="flex flex-col gap-2">
-              <h5 className="mono text-[10px] text-accent font-bold uppercase tracking-widest">Newsletter</h5>
-              <p className="text-sm text-text/60">Get the daily signal directly in your inbox.</p>
-            </div>
-            <form onSubmit={handleNewsletterSubscribe} className="flex w-full max-w-md border border-border overflow-hidden rounded-sm">
-              <input 
-                type="email" 
-                placeholder="Enter your email"
-                value={newsletterEmail}
-                onChange={(e) => setNewsletterEmail(e.target.value)}
-                className="flex-1 bg-bg px-4 py-3 text-xs mono outline-none focus:bg-text/5 transition-colors"
-              />
-              <button 
-                type="submit"
-                disabled={newsletterStatus === 'loading'}
-                className="bg-accent text-black px-6 py-3 text-xs font-bold mono hover:opacity-90 transition-opacity disabled:opacity-50"
-              >
-                {newsletterStatus === 'loading' ? '...' : 'Subscribe'}
-              </button>
-            </form>
-            {newsletterStatus === 'success' && <span className="text-green-500 mono text-[10px]">Subscribed!</span>}
-            {newsletterStatus === 'error' && <span className="text-red-500 mono text-[10px]">Error. Try again.</span>}
-          </div>
-
-          <div className="flex flex-col md:flex-row justify-between items-center gap-4 pt-8 border-t border-text/5">
+          <div className="flex flex-col md:flex-row justify-between items-center gap-4">
             <div className="flex items-center gap-6">
               <div className="mono text-[9px] text-text/20">WProTalents // {t.rights}</div>
               <div className="flex items-center gap-2 mono text-[9px] text-green-500/60">
