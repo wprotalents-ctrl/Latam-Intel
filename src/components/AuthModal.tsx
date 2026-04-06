@@ -51,10 +51,14 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
       'auth/wrong-password': 'Incorrect password.',
       'auth/invalid-credential': 'Incorrect email or password.',
       'auth/too-many-requests': 'Too many attempts. Try again later.',
-      'auth/unauthorized-domain': 'Google sign-in is temporarily unavailable. Use email & password below.',
+      'auth/unauthorized-domain': 'Google sign-in is not enabled for this domain. Use email & password below.',
       'auth/popup-closed-by-user': 'Sign-in cancelled.',
+      'auth/operation-not-allowed': 'This sign-in method is not enabled. Please contact the administrator.',
+      'auth/popup-blocked': 'Popup was blocked by your browser. Please allow popups for this site.',
+      'auth/network-request-failed': 'Network error. Check your connection and try again.',
+      'auth/internal-error': 'An internal error occurred. Try again or use email & password.',
     };
-    return map[code] || 'Something went wrong. Please try again.';
+    return map[code] || `Something went wrong (${code}). Please try again.`;
   };
 
   const handleEmail = async (e: React.FormEvent) => {

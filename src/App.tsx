@@ -681,16 +681,7 @@ export default function App() {
     };
     fetchBriefings();
 
-    // Fetch new intelligence briefs
-    const q = query(collection(db, "intelligence_briefs"), orderBy("createdAt", "desc"), limit(10));
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      const briefs = snapshot.docs.map(doc => doc.data() as IntelligenceBrief);
-      setIntelBriefs(briefs);
-    }, (error) => {
-      handleFirestoreError(error, FirestoreOperation.LIST, "intelligence_briefs");
-    });
-
-    return () => unsubscribe();
+    return () => {};
   }, [user, subscriptionStatus, isAdmin]);
 
   useEffect(() => {
@@ -939,7 +930,7 @@ export default function App() {
                         <Activity size={10} className="text-accent" /> {t.radar}
                       </div>
                     </div>
-                    <RadarWidget lang={lang} count={briefings.length + intelBriefs.length} />
+                    <RadarWidget lang={lang} count={briefings.length} />
                     <div className="mt-4 space-y-2">
                       {[
                         { label: 'Executive / C-Level', color: 'bg-yellow-500', pct: 12 },
@@ -1083,42 +1074,8 @@ export default function App() {
                   </div>
                   
                     <div className="space-y-4">
-                      {/* Workforce Daily Intelligence Briefs */}
-                      {intelBriefs.filter(b => b.category === category || category === 'Workforce Daily').map((brief) => (
-                        <article 
-                          key={brief.id}
-                          onClick={() => setSelectedIntelBrief(brief)}
-                          className="p-6 bg-surface border border-accent/20 hover:border-accent transition-all cursor-pointer group relative overflow-hidden"
-                        >
-                          <div className="absolute top-0 right-0 px-3 py-1 bg-accent text-black mono text-[8px] font-bold uppercase tracking-widest">
-                            {brief.category}
-                          </div>
-                          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                            <div className="flex-1">
-                              <div className="flex items-center gap-3 mb-3">
-                                <span className="px-2 py-0.5 bg-text text-bg text-[8px] font-mono font-bold">{brief.country_code}</span>
-                                {brief.is_hiring_signal && (
-                                  <span className="px-2 py-0.5 bg-green-500 text-black text-[8px] font-mono font-bold flex items-center gap-1">
-                                    <Zap size={8} /> HIRING SIGNAL
-                                  </span>
-                                )}
-                                <span className="mono text-[8px] text-text/40 uppercase tracking-widest">{brief.target_persona}</span>
-                              </div>
-                              <h3 className="text-xl font-black uppercase tracking-tight group-hover:text-accent transition-colors">
-                                {brief.subject_line}
-                              </h3>
-                              <p className="mt-2 text-sm text-text/60 line-clamp-2">
-                                {brief.free_teaser}
-                              </p>
-                            </div>
-                            <div className="flex items-center gap-2 mono text-[9px] font-bold text-accent opacity-0 group-hover:opacity-100 transition-opacity">
-                              Read Full Analysis <ArrowUpRight size={14} />
-                            </div>
-                          </div>
-                        </article>
-                      ))}
-
-                      {filteredBriefings.filter(b => b.category === category).map((briefing) => (
+                      {/* Intelligence feed — Workforce Daily shows all, other tabs filter by category */}
+                      {(category === 'Workforce Daily' ? filteredBriefings : filteredBriefings.filter(b => b.category === category)).map((briefing) => (
                         <article 
                           key={briefing.id}
                           onClick={() => {
