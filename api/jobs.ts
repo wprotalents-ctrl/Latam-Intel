@@ -1,6 +1,8 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 import { handleCors } from "./_lib/cors.js";
 
+export const config = { maxDuration: 45 };
+
 // Region detection only — no title filter, let frontend search/filter
 const LATAM = /latin america|latam|brazil|brasil|mexico|colombia|argentina|chile|peru|ecuador|uruguay|costa rica|panama|bogot|lima|santiago|buenos aires|são paulo|remote.*latam/i;
 const EU = /europe|eu |uk|united kingdom|germany|france|spain|netherlands|portugal|italy|ireland|sweden|poland|denmark|austria|belgium|switzerland|norway|finland/i;
