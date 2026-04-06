@@ -2,11 +2,18 @@ import admin from "firebase-admin";
 import { getFirestore } from "firebase-admin/firestore";
 
 if (!admin.apps.length) {
-  admin.initializeApp({ projectId: "gen-lang-client-0410385668" });
+  const serviceAccountJson = process.env.FIREBASE_SERVICE_ACCOUNT;
+  if (serviceAccountJson) {
+    const serviceAccount = JSON.parse(serviceAccountJson);
+    admin.initializeApp({
+      credential: admin.credential.cert(serviceAccount),
+      projectId: "ai-studio-applet-webapp-b5093",
+    });
+  } else {
+    // Fallback for local dev with ADC
+    admin.initializeApp({ projectId: "ai-studio-applet-webapp-b5093" });
+  }
 }
 
-export const db = getFirestore(
-  admin.app(),
-  "ai-studio-9279f702-e40c-457b-b350-29aa2957fe9a"
-);
+export const db = getFirestore(admin.app(), "ai-studio-98e74f83-a378-445d-baa9-3c954d2762c7");
 export { admin };
