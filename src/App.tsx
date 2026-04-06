@@ -900,8 +900,125 @@ export default function App() {
 
       <main className="flex-1 relative overflow-hidden grid-bg">
         <AnimatePresence mode="wait">
-          {viewMode === 'Jobs' ? (
-            <motion.div 
+          {!user ? (
+            /* ── PUBLIC TEASER ── */
+            <motion.div
+              key="teaser"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="absolute inset-0 overflow-y-auto"
+            >
+              <div className="flex flex-col items-center justify-center px-6 py-16 min-h-full max-w-4xl mx-auto w-full">
+                {/* Hero */}
+                <div className="text-center mb-16 w-full">
+                  <div className="inline-flex items-center gap-2 px-3 py-1 border border-accent/30 bg-accent/5 mono text-[9px] text-accent mb-6">
+                    <div className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse" />
+                    VIP INTEL — MEMBERS ONLY
+                  </div>
+                  <h1 className="text-4xl md:text-6xl font-black uppercase tracking-tighter leading-none mb-6">
+                    Talent Intelligence<br />
+                    <span className="text-accent">For the Few</span>
+                  </h1>
+                  <p className="text-sm text-text/60 max-w-xl mx-auto leading-relaxed mb-8">
+                    {t.heroDesc}
+                  </p>
+                  <button
+                    onClick={() => setIsAuthModalOpen(true)}
+                    className="inline-flex items-center gap-3 px-8 py-4 bg-accent text-black mono font-bold text-[11px] hover:opacity-90 transition-opacity"
+                  >
+                    <LogIn size={14} /> ACCESS VIP INTEL
+                  </button>
+                </div>
+
+                {/* Blurred preview cards */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-px bg-border w-full mb-px">
+                  {/* Candidate teaser */}
+                  <div className="bg-bg p-8 relative overflow-hidden">
+                    <div className="absolute inset-0 flex items-center justify-center z-10 bg-bg/70 backdrop-blur-[3px]">
+                      <div className="text-center">
+                        <Lock size={22} className="text-accent mx-auto mb-3" />
+                        <div className="mono text-[9px] text-accent font-bold tracking-widest mb-3">CANDIDATE PORTAL</div>
+                        <button
+                          onClick={() => setIsAuthModalOpen(true)}
+                          className="px-5 py-2 bg-accent text-black mono text-[9px] font-bold hover:opacity-90 transition-opacity"
+                        >
+                          LOGIN TO BROWSE JOBS
+                        </button>
+                      </div>
+                    </div>
+                    <div className="opacity-25 pointer-events-none select-none">
+                      <div className="mono text-[9px] text-accent mb-4 flex items-center gap-2">
+                        <Briefcase size={10} /> AI &amp; TECH JOBS // LATAM · USA · EU
+                      </div>
+                      <div className="space-y-3">
+                        {['Senior AI Engineer — LATAM Remote', 'Head of Data Science — USA', 'ML Platform Lead — EU Remote', 'VP Engineering — Colombia'].map((j, i) => (
+                          <div key={i} className="p-3 bg-surface border border-border">
+                            <div className="text-sm font-bold">{j}</div>
+                            <div className="mono text-[8px] text-text/40 mt-1">$90K–$140K · Remote · Full-time</div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Company teaser */}
+                  <div className="bg-bg p-8 relative overflow-hidden">
+                    <div className="absolute inset-0 flex items-center justify-center z-10 bg-bg/70 backdrop-blur-[3px]">
+                      <div className="text-center">
+                        <Lock size={22} className="text-accent mx-auto mb-3" />
+                        <div className="mono text-[9px] text-accent font-bold tracking-widest mb-3">COMPANY INTEL</div>
+                        <button
+                          onClick={() => setIsAuthModalOpen(true)}
+                          className="px-5 py-2 bg-accent text-black mono text-[9px] font-bold hover:opacity-90 transition-opacity"
+                        >
+                          LOGIN TO ACCESS INTEL
+                        </button>
+                      </div>
+                    </div>
+                    <div className="opacity-25 pointer-events-none select-none">
+                      <div className="mono text-[9px] text-accent mb-4 flex items-center gap-2">
+                        <Brain size={10} /> MARKET INTEL // EXCLUSIVE
+                      </div>
+                      <div className="space-y-3">
+                        <div className="p-3 bg-surface border border-border">
+                          <div className="mono text-[8px] text-text/40 mb-1">AI HIRING SIGNAL</div>
+                          <div className="text-sm font-bold">LATAM AI Engineers in high demand — salaries up 18% QoQ</div>
+                        </div>
+                        <div className="p-3 bg-surface border border-border">
+                          <div className="mono text-[8px] text-text/40 mb-1">TOOL REVIEW</div>
+                          <div className="text-sm font-bold">WPro Intelligence Suite: 4.8/5 · Deploy-ready</div>
+                        </div>
+                        <div className="p-3 bg-surface border border-border">
+                          <div className="mono text-[8px] text-text/40 mb-1">GLOBAL TALENT WATCH</div>
+                          <div className="text-sm font-bold">Colombia · Brazil · Argentina · Mexico</div>
+                        </div>
+                        <div className="p-3 bg-surface border border-border">
+                          <div className="mono text-[8px] text-text/40 mb-1">FIVE INSIGHTS // CURATED</div>
+                          <div className="text-sm font-bold">Weekly reading list for talent leaders</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Stats strip */}
+                <div className="grid grid-cols-3 gap-px bg-border w-full">
+                  {[
+                    { value: '23K+', label: 'Global Professionals' },
+                    { value: '150+', label: 'Intel Briefings' },
+                    { value: '12', label: 'Countries Covered' },
+                  ].map((stat, i) => (
+                    <div key={i} className="bg-bg p-6 text-center">
+                      <div className="text-3xl font-black text-accent mb-1">{stat.value}</div>
+                      <div className="mono text-[8px] text-text/40 uppercase tracking-widest">{stat.label}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </motion.div>
+          ) : viewMode === 'Jobs' ? (
+            <motion.div
               key="jobs"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
