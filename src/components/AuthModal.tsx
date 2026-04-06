@@ -131,10 +131,28 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
   };
 
   const handleRoleSelect = async (role: 'candidate' | 'company') => {
-    const uid = auth.currentUser?.uid;
-    if (!uid) return;
+    const user = auth.currentUser;
+    if (!user) return;
     setLoading(true);
-    await saveUserRole(uid, role);
+    await saveUserRole(user.uid, role);
+
+    // Fire-and-forget: append to Google Sheet via Apps Script webhook
+    try {
+      await fetch('/api/track-signup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          uid: user.uid,
+          email: user.email ?? '',
+          displayName: user.displayName ?? '',
+          role,
+          timestamp: new Date().toISOString(),
+        }),
+      });
+    } catch (_) {
+      // Never block signup over a sheet error
+    }
+
     setLoading(false);
     handleClose();
   };
