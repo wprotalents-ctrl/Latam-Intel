@@ -608,6 +608,7 @@ export default function App() {
   };
   const [user, setUser] = useState<User | null>(null);
   const [subscriptionStatus, setSubscriptionStatus] = useState<'free' | 'premium'>('free');
+  const [userRole, setUserRole] = useState<'candidate' | 'company' | null>(null);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [briefings, setBriefings] = useState<Briefing[]>(MOCK_BRIEFINGS);
   const [intelBriefs, setIntelBriefs] = useState<IntelligenceBrief[]>([]);
@@ -635,6 +636,8 @@ export default function App() {
       setUser(user);
       if (!user) {
         setSubscriptionStatus('free');
+        setUserRole(null);
+        setViewMode('Dashboard');
       }
     });
     return () => unsubscribe();
@@ -647,6 +650,10 @@ export default function App() {
       if (snapshot.exists()) {
         const data = snapshot.data();
         setSubscriptionStatus(data.subscriptionStatus || 'free');
+        const role = data.role as 'candidate' | 'company' | undefined;
+        setUserRole(role || null);
+        if (role === 'candidate') setViewMode('Jobs');
+        else if (role === 'company') setViewMode('Dashboard');
       }
     }, (error) => {
       handleFirestoreError(error, FirestoreOperation.GET, `users/${user.uid}`);
