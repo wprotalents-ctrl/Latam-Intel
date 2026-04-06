@@ -12,11 +12,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  const webhookUrl = process.env.GOOGLE_SHEETS_WEBHOOK;
-  if (!webhookUrl) {
-    // Not configured — skip silently so signup still works
-    return res.status(200).json({ skipped: true });
-  }
+  // Public Apps Script webhook — not a secret, safe to hardcode
+  const webhookUrl = 'https://script.google.com/macros/s/AKfycbxulk1Fvmyd5JaZdYYmPLJoX9Rb0Uok5XlFyLSze9AV4-XBBZukH4RCIhpPxe-SIceAVQ/exec';
 
   try {
     const { email, displayName, role, uid, timestamp } = req.body as {
