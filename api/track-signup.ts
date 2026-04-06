@@ -12,8 +12,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  // Public Apps Script webhook — not a secret, safe to hardcode
-  const webhookUrl = 'https://script.google.com/macros/s/AKfycbxulk1Fvmyd5JaZdYYmPLJoX9Rb0Uok5XlFyLSze9AV4-XBBZukH4RCIhpPxe-SIceAVQ/exec';
+  // Public Apps Script webhook (Intel Signups tab) — not a secret, safe to hardcode
+  const webhookUrl = 'https://script.google.com/macros/s/AKfycbwIe4Hd_UA7IpnNlIcLPUHwKA3PqEHgRtwZFXMdltSs_Q9AxYj9YLOeW0yALdFHz9LrfA/exec';
 
   try {
     const { email, displayName, role, uid, timestamp } = req.body as {
