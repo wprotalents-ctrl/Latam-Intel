@@ -336,12 +336,15 @@ function JobPortal({ lang, t }: { lang: string; t: typeof T.EN }) {
                 const ago = timeAgo(job.postedAt);
                 const rs = REGION_STYLE[job.region] || 'text-text/30 border-text/10';
                 return (
-                  <motion.div
+                  <motion.a
                     key={job.id}
+                    href={job.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
                     initial={{ opacity: 0, y: 8 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: Math.min(idx * 0.015, 0.3) }}
-                    className="group border border-border bg-surface hover:border-accent/25 transition-colors flex flex-col"
+                    className="group border border-border bg-surface hover:border-accent/40 hover:bg-surface/80 transition-colors flex flex-col cursor-pointer"
                   >
                     <div className="p-4 flex flex-col flex-1 gap-2">
                       <div className="flex items-center justify-between">
@@ -361,16 +364,11 @@ function JobPortal({ lang, t }: { lang: string; t: typeof T.EN }) {
                     </div>
                     <div className="flex items-center justify-between px-4 py-2.5 border-t border-text/5">
                       <span className="mono text-[7px] text-text/10">{t.via} {job.source}</span>
-                      <a
-                        href={job.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="mono text-[8px] font-bold flex items-center gap-1 text-text/30 hover:text-accent transition-colors"
-                      >
+                      <span className="mono text-[8px] font-bold flex items-center gap-1 text-text/30 group-hover:text-accent transition-colors">
                         {t.apply} <ExternalLink size={8} />
-                      </a>
+                      </span>
                     </div>
-                  </motion.div>
+                  </motion.a>
                 );
               })}
             </AnimatePresence>

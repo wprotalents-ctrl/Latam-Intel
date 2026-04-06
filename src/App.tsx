@@ -169,16 +169,16 @@ const TRANSLATIONS = {
     ],
     // Five Links Content
     fiveLinksItems: [
-      { title: "AI's Impact on the 2026 Job Market", source: "WPRO_INSIGHTS", why: "A comprehensive look at which roles are being automated and where the new 'AI-Native' jobs are appearing." },
-      { title: "Commodity Prices & AI Infrastructure", source: "WPRO_INTEL", why: "How the demand for copper and energy for AI data centers is impacting global markets and job creation in mining." }
+      { title: "AI's Impact on the 2026 Job Market", source: "WEF", why: "A comprehensive look at which roles are being automated and where the new 'AI-Native' jobs are appearing.", url: "https://www.weforum.org/stories/2024/01/jobs-of-the-future-report-2025/" },
+      { title: "Commodity Prices & AI Infrastructure", source: "IEA", why: "How the demand for copper and energy for AI data centers is impacting global markets and job creation in mining.", url: "https://www.iea.org/reports/electricity-2024" }
     ],
     // News Feed Content
     newsFeedItems: [
-      { title: "WProTalents expands network to 25,000+ professionals", source: "WPRO_NEWS", time: "2h" },
-      { title: "EU AI Act creates 50,000 new compliance roles across Europe", source: "BBC", time: "4h" },
-      { title: "Brazil's AI talent pool grows by 30% in Q1 2026", source: "LATAM_TECH", time: "6h" },
-      { title: "Oil prices dip, but energy demand for AI data centers remains high", source: "CNBC", time: "8h" },
-      { title: "WProTalents maps top 100 AI engineers in Mexico City", source: "WPRO_INTEL", time: "10h" }
+      { title: "WProTalents expands network to 25,000+ professionals", source: "WPRO_NEWS", time: "2h", url: "https://wprotalents.lat" },
+      { title: "EU AI Act creates 50,000 new compliance roles across Europe", source: "BBC", time: "4h", url: "https://www.bbc.com/news/technology" },
+      { title: "Brazil's AI talent pool grows by 30% in Q1 2026", source: "REUTERS", time: "6h", url: "https://www.reuters.com/technology/" },
+      { title: "Oil prices dip, but energy demand for AI data centers remains high", source: "CNBC", time: "8h", url: "https://www.cnbc.com/energy/" },
+      { title: "WProTalents maps top 100 AI engineers in Mexico City", source: "WPRO_INTEL", time: "10h", url: "https://wprotalents.lat" }
     ]
 
   },
@@ -293,16 +293,16 @@ const TRANSLATIONS = {
     ],
     // Five Links Content
     fiveLinksItems: [
-      { title: "Impacto de la IA en el Mercado Laboral de 2026", source: "FORBES", why: "Una mirada completa a qué roles se están automatizando y dónde están apareciendo los nuevos empleos 'Nativos de IA'." },
-      { title: "Precios de Materias Primas e Infraestructura de IA", source: "BLOOMBERG", why: "Cómo la demanda de cobre y energía para los centros de datos de IA está impactando los mercados globales y la creación de empleo en la minería." }
+      { title: "Impacto de la IA en el Mercado Laboral de 2026", source: "WEF", why: "Una mirada completa a qué roles se están automatizando y dónde están apareciendo los nuevos empleos 'Nativos de IA'.", url: "https://www.weforum.org/stories/2024/01/jobs-of-the-future-report-2025/" },
+      { title: "Precios de Materias Primas e Infraestructura de IA", source: "IEA", why: "Cómo la demanda de cobre y energía para los centros de datos de IA está impactando los mercados globales y la creación de empleo en la minería.", url: "https://www.iea.org/reports/electricity-2024" }
     ],
     // News Feed Content
     newsFeedItems: [
-      { title: "NVIDIA alcanza nuevo máximo mientras surge la demanda de empleos de IA en EE. UU.", source: "REUTERS", time: "2h" },
-      { title: "La Ley de IA de la UE crea 50,000 nuevos roles de cumplimiento en toda Europa", source: "BBC", time: "4h" },
-      { title: "El pool de talento de IA de Brasil crece un 30% en el primer trimestre de 2026", source: "LATAM_TECH", time: "6h" },
-      { title: "Los precios del petróleo bajan, pero la demanda de energía para centros de datos de IA sigue siendo alta", source: "CNBC", time: "8h" },
-      { title: "Nueva herramienta de reclutamiento IA 'HiredScore' recauda $100M en Serie C", source: "TECHCRUNCH", time: "10h" }
+      { title: "NVIDIA alcanza nuevo máximo mientras surge la demanda de empleos de IA en EE. UU.", source: "REUTERS", time: "2h", url: "https://www.reuters.com/technology/" },
+      { title: "La Ley de IA de la UE crea 50,000 nuevos roles de cumplimiento en toda Europa", source: "BBC", time: "4h", url: "https://www.bbc.com/news/technology" },
+      { title: "El pool de talento de IA de Brasil crece un 30% en el primer trimestre de 2026", source: "LATAM_TECH", time: "6h", url: "https://www.reuters.com/technology/" },
+      { title: "Los precios del petróleo bajan, pero la demanda de energía para centros de datos de IA sigue siendo alta", source: "CNBC", time: "8h", url: "https://www.cnbc.com/energy/" },
+      { title: "Nueva herramienta de reclutamiento IA 'HiredScore' recauda $100M en Serie C", source: "TECHCRUNCH", time: "10h", url: "https://techcrunch.com/category/artificial-intelligence/" }
     ]
   },
   PT: {
@@ -416,16 +416,16 @@ const TRANSLATIONS = {
     ],
     // Five Links Content
     fiveLinksItems: [
-      { title: "Impacto da IA no Mercado de Trabalho de 2026", source: "FORBES", why: "Uma visão abrangente de quais funções estão sendo automatizadas e onde os novos empregos 'Nativos de IA' estão surgindo." },
-      { title: "Preços de Commodities e Infraestrutura de IA", source: "BLOOMBERG", why: "Como a demanda por cobre e energia para data centers de IA está impactando os mercados globais e a criação de empregos na mineração." }
+      { title: "Impacto da IA no Mercado de Trabalho de 2026", source: "WEF", why: "Uma visão abrangente de quais funções estão sendo automatizadas e onde os novos empregos 'Nativos de IA' estão surgindo.", url: "https://www.weforum.org/stories/2024/01/jobs-of-the-future-report-2025/" },
+      { title: "Preços de Commodities e Infraestrutura de IA", source: "IEA", why: "Como a demanda por cobre e energia para data centers de IA está impactando os mercados globais e a criação de empregos na mineração.", url: "https://www.iea.org/reports/electricity-2024" }
     ],
     // News Feed Content
     newsFeedItems: [
-      { title: "NVIDIA atinge nova máxima com aumento da demanda por empregos de IA nos EUA", source: "REUTERS", time: "2h" },
-      { title: "AI Act da UE cria 50.000 novas funções de conformidade em toda a Europa", source: "BBC", time: "4h" },
-      { title: "Pool de talentos de IA do Brasil cresce 30% no 1º trimestre de 2026", source: "LATAM_TECH", time: "6h" },
-      { title: "Preços do petróleo caem, mas demanda de energia para data centers de IA permanece alta", source: "CNBC", time: "8h" },
-      { title: "Nova ferramenta de recrutamento de IA 'HiredScore' arrecada US$ 100 milhões na Série C", source: "TECHCRUNCH", time: "10h" }
+      { title: "NVIDIA atinge nova máxima com aumento da demanda por empregos de IA nos EUA", source: "REUTERS", time: "2h", url: "https://www.reuters.com/technology/" },
+      { title: "AI Act da UE cria 50.000 novas funções de conformidade em toda a Europa", source: "BBC", time: "4h", url: "https://www.bbc.com/news/technology" },
+      { title: "Pool de talentos de IA do Brasil cresce 30% no 1º trimestre de 2026", source: "LATAM_TECH", time: "6h", url: "https://www.reuters.com/technology/" },
+      { title: "Preços do petróleo caem, mas demanda de energia para data centers de IA permanece alta", source: "CNBC", time: "8h", url: "https://www.cnbc.com/energy/" },
+      { title: "Nova ferramenta de recrutamento de IA 'HiredScore' arrecada US$ 100 milhões na Série C", source: "TECHCRUNCH", time: "10h", url: "https://techcrunch.com/category/artificial-intelligence/" }
     ]
   }
 };
@@ -994,13 +994,16 @@ export default function App() {
                     </div>
                     <div className="space-y-6">
                       {t.newsFeedItems.map((news, i) => (
-                        <div key={i} className="group cursor-pointer">
-                          <h5 className="text-sm font-bold group-hover:text-accent transition-colors mb-1">{news.title}</h5>
+                        <a key={i} href={news.url} target="_blank" rel="noopener noreferrer" className="group block">
+                          <h5 className="text-sm font-bold group-hover:text-accent transition-colors mb-1 flex items-start gap-1">
+                            {news.title}
+                            <ArrowUpRight size={11} className="shrink-0 mt-0.5 text-text/20 group-hover:text-accent transition-colors" />
+                          </h5>
                           <div className="flex gap-3 mono text-[8px] text-text/40">
                             <span className="text-accent">{news.source}</span>
                             <span>{news.time} {t.ago}</span>
                           </div>
-                        </div>
+                        </a>
                       ))}
                     </div>
                   </div>
@@ -1349,13 +1352,13 @@ export default function App() {
                   </div>
                   <div className="space-y-4">
                     {t.fiveLinksItems.map((link, i) => (
-                      <div key={i} className="group cursor-pointer border-b border-text/5 pb-4 last:border-0">
+                      <a key={i} href={link.url} target="_blank" rel="noopener noreferrer" className="group block border-b border-text/5 pb-4 last:border-0">
                         <div className="flex justify-between items-start mb-1">
                           <h5 className="text-sm font-bold group-hover:text-accent transition-colors">{link.title} — {link.source}</h5>
-                          <ArrowUpRight size={14} className="text-text/20 group-hover:text-accent transition-colors" />
+                          <ArrowUpRight size={14} className="shrink-0 text-text/20 group-hover:text-accent transition-colors" />
                         </div>
                         <p className="text-xs text-text/60 leading-snug">{link.why}</p>
-                      </div>
+                      </a>
                     ))}
                   </div>
                 </section>
