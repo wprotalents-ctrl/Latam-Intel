@@ -1170,6 +1170,37 @@ export default function App() {
                   </div>
                 )}
 
+                {/* Company Resources // Curated Articles */}
+                <div className="bg-bg p-6 border-b border-border">
+                  <div className="flex items-center gap-2 mb-5">
+                    <Briefcase size={10} className="text-accent" />
+                    <div className="mono text-[9px] text-accent font-bold uppercase tracking-widest">Company Resources // Curated for You</div>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    {[
+                      { tag: 'TALENT STRATEGY', color: 'text-violet-400', title: 'How to Build a High-Performance Distributed Team in LATAM', desc: 'Hiring frameworks, onboarding, and culture for remote-first tech companies.', url: 'https://hbr.org/topic/subject/hiring', source: 'Harvard Business Review' },
+                      { tag: 'AI & HIRING', color: 'text-accent', title: 'How AI Is Transforming Talent Acquisition in 2026', desc: 'From sourcing automation to AI-assisted screening — what actually works.', url: 'https://www.linkedin.com/business/talent/blog', source: 'LinkedIn Talent Blog' },
+                      { tag: 'MARKET DATA', color: 'text-emerald-400', title: 'LATAM Salary Benchmarks for Tech Roles — 2026 Report', desc: 'Up-to-date compensation data across Colombia, Brazil, Argentina, and Mexico.', url: 'https://www.levels.fyi/t/software-engineer/locations/latin-america', source: 'Levels.fyi' },
+                      { tag: 'RETENTION', color: 'text-blue-400', title: 'Why Senior Engineers Leave — And How to Keep Them', desc: 'The real reasons your best people walk, and what actually retains top talent.', url: 'https://hbr.org/2023/06/why-your-best-employees-leave-and-how-to-keep-them', source: 'HBR' },
+                      { tag: 'JOB DESCRIPTIONS', color: 'text-yellow-400', title: 'How to Write Job Descriptions That Attract Senior Talent', desc: 'Most JDs repel the best candidates. Here\'s what top companies do differently.', url: 'https://www.linkedin.com/business/talent/blog/talent-acquisition/how-to-write-a-job-description', source: 'LinkedIn Talent' },
+                      { tag: 'REMOTE TEAMS', color: 'text-violet-400', title: 'Managing Across Time Zones: A Playbook for LATAM Remote Teams', desc: 'Async communication, performance reviews, and trust-building across cultures.', url: 'https://www.mckinsey.com/capabilities/people-and-organizational-performance/our-insights', source: 'McKinsey' },
+                    ].map((a, i) => (
+                      <a key={i} href={a.url} target="_blank" rel="noopener noreferrer"
+                        className="group flex flex-col gap-1.5 p-4 bg-surface border border-border hover:border-accent/30 transition-colors">
+                        <div className="flex items-center justify-between">
+                          <span className={`mono text-[7px] font-bold ${a.color}`}>{a.tag}</span>
+                          <span className="mono text-[7px] text-text/20">{a.source}</span>
+                        </div>
+                        <h5 className="text-xs font-bold leading-snug group-hover:text-accent transition-colors">{a.title}</h5>
+                        <p className="mono text-[9px] text-text/40 leading-snug line-clamp-2">{a.desc}</p>
+                        <span className="mono text-[7px] text-accent/40 group-hover:text-accent transition-colors flex items-center gap-1 mt-auto">
+                          READ <ArrowUpRight size={8} />
+                        </span>
+                      </a>
+                    ))}
+                  </div>
+                </div>
+
                 {/* Bottom Row: Intelligence Feed */}
                 <div className="bg-bg p-6 flex-1">
                   <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8">
