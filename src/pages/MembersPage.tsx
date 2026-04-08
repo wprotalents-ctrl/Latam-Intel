@@ -575,6 +575,10 @@ function WProCTA() {
 type Tab = 'intel' | 'archive' | 'salary' | 'resources' | 'wpro';
 
 export default function MembersPage() {
+  const lang = (() => {
+    const saved = typeof localStorage !== 'undefined' ? localStorage.getItem('wpro_lang') : null;
+    return (saved === 'EN' || saved === 'ES' || saved === 'PT') ? saved as 'EN' | 'ES' | 'PT' : 'EN';
+  })();
   const [user, setUser] = useState<User | null>(null);
   const [profile, setProfile] = useState<SupabaseUser | null>(null);
   const [loading, setLoading] = useState(true);
@@ -624,12 +628,43 @@ export default function MembersPage() {
     return <PaywallGate user={user} />;
   }
 
+  const TAB_LABELS: Record<'EN'|'ES'|'PT', Record<Tab, string>> = {
+    EN: { intel: 'My Market Value', archive: 'Newsletter Archive', salary: 'Salary Intel', resources: 'Resources', wpro: 'Hire with WPro' },
+    ES: { intel: 'Mi Valor de Mercado', archive: 'Archivo Newsletter', salary: 'Intel Salarial', resources: 'Recursos', wpro: 'Contratar con WPro' },
+    PT: { intel: 'Meu Valor de Mercado', archive: 'Arquivo Newsletter', salary: 'Intel Salarial', resources: 'Recursos', wpro: 'Contratar com WPro' },
+  };
+  const SECTION_LABELS: Record<'EN'|'ES'|'PT', Record<Tab, { title: string; desc: string }>> = {
+    EN: {
+      intel:     { title: 'My Market Value',        desc: 'Enter your profile — see your real market salary, best opportunities, and skills to learn for maximum ROI.' },
+      archive:   { title: 'Workforce Daily Archive', desc: '' },
+      salary:    { title: 'LATAM Salary Intelligence', desc: 'AI & tech roles, 5 countries. Updated Q1 2026.' },
+      resources: { title: 'WPro Resources',          desc: 'Playbooks, templates, and tools — built from 20 years of LATAM recruiting.' },
+      wpro:      { title: 'Hire with WProTalents',   desc: 'As a member, you get priority access to our founder-led search service.' },
+    },
+    ES: {
+      intel:     { title: 'Mi Valor de Mercado',     desc: 'Ingresa tu perfil — ve tu salario real de mercado, mejores oportunidades y habilidades a aprender para máximo ROI.' },
+      archive:   { title: 'Archivo Workforce Daily', desc: '' },
+      salary:    { title: 'Inteligencia Salarial LATAM', desc: 'Roles AI y tech, 5 países. Actualizado Q1 2026.' },
+      resources: { title: 'Recursos WPro',           desc: 'Playbooks, plantillas y herramientas — construidos desde 20 años de reclutamiento LATAM.' },
+      wpro:      { title: 'Contratar con WProTalents', desc: 'Como miembro, tienes acceso prioritario a nuestro servicio de búsqueda liderado por el fundador.' },
+    },
+    PT: {
+      intel:     { title: 'Meu Valor de Mercado',   desc: 'Insira seu perfil — veja seu salário real de mercado, melhores oportunidades e habilidades a aprender para máximo ROI.' },
+      archive:   { title: 'Arquivo Workforce Daily', desc: '' },
+      salary:    { title: 'Inteligência Salarial LATAM', desc: 'Funções de AI e tech, 5 países. Atualizado Q1 2026.' },
+      resources: { title: 'Recursos WPro',           desc: 'Playbooks, templates e ferramentas — construídos a partir de 20 anos de recrutamento no LATAM.' },
+      wpro:      { title: 'Contratar com WProTalents', desc: 'Como membro, você tem acesso prioritário ao nosso serviço de busca liderado pelo fundador.' },
+    },
+  };
+  const tl = TAB_LABELS[lang];
+  const sl = SECTION_LABELS[lang];
+
   const TABS: { id: Tab; label: string; icon: any; badge?: string }[] = [
-    { id: 'intel',     label: 'My Market Value',    icon: TrendingUp, badge: 'NEW' },
-    { id: 'archive',   label: 'Newsletter Archive', icon: FileText },
-    { id: 'salary',    label: 'Salary Intel',       icon: BarChart2 },
-    { id: 'resources', label: 'Resources',          icon: BookOpen },
-    { id: 'wpro',      label: 'Hire with WPro',     icon: Users },
+    { id: 'intel',     label: tl.intel,     icon: TrendingUp, badge: 'NEW' },
+    { id: 'archive',   label: tl.archive,   icon: FileText },
+    { id: 'salary',    label: tl.salary,    icon: BarChart2 },
+    { id: 'resources', label: tl.resources, icon: BookOpen },
+    { id: 'wpro',      label: tl.wpro,      icon: Users },
   ];
 
   return (
@@ -715,7 +750,7 @@ export default function MembersPage() {
                       <h2 className="text-xl font-black uppercase tracking-tighter mb-1">My Market Value</h2>
                       <p className="text-sm text-text/50">Enter your profile — see your real market salary, best opportunities, and exact skills to learn for maximum ROI.</p>
                     </div>
-                    <CandidateIntel />
+                    <CandidateIntel lang={lang} />
                   </div>
                 )}
                 {activeTab === 'archive' && (

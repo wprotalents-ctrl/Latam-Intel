@@ -586,7 +586,10 @@ export default function App() {
   const [selectedIntelBrief, setSelectedIntelBrief] = useState<IntelligenceBrief | null>(null);
   const [filter, setFilter] = useState('All');
   const [category, setCategory] = useState<Category>('Workforce Daily');
-  const [lang, setLang] = useState<Language>('EN');
+  const [lang, setLang] = useState<Language>(() => {
+    const saved = localStorage.getItem('wpro_lang');
+    return (saved === 'EN' || saved === 'ES' || saved === 'PT') ? saved as Language : 'EN';
+  });
   const [viewMode, setViewMode] = useState<'Dashboard' | 'Jobs'>('Dashboard');
   const [currentTime, setCurrentTime] = useState(new Date());
   const [isGenerating, setIsGenerating] = useState(false);
@@ -836,7 +839,7 @@ export default function App() {
             {(['EN', 'ES', 'PT'] as Language[]).map((l) => (
               <button
                 key={l}
-                onClick={() => setLang(l)}
+                onClick={() => { setLang(l); localStorage.setItem('wpro_lang', l); }}
                 className={`px-2 py-1 text-[9px] font-mono font-bold transition-colors ${lang === l ? 'bg-accent text-black' : 'bg-surface text-text/40 hover:bg-text/5'}`}
               >
                 {l}
