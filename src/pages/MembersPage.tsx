@@ -11,6 +11,7 @@ import {
 import { auth } from '../firebase';
 
 import { getUserProfile, getNewsletterIssues, getMemberResources } from '../lib/supabase';
+import CandidateIntel from '../components/CandidateIntel';
 import type { SupabaseUser, NewsletterIssue, MemberResource } from '../lib/supabase';
 import type { User } from 'firebase/auth';
 
@@ -571,13 +572,13 @@ function WProCTA() {
 }
 
 // ─── Main MembersPage ─────────────────────────────────────────────────────────
-type Tab = 'archive' | 'salary' | 'resources' | 'wpro';
+type Tab = 'intel' | 'archive' | 'salary' | 'resources' | 'wpro';
 
 export default function MembersPage() {
   const [user, setUser] = useState<User | null>(null);
   const [profile, setProfile] = useState<SupabaseUser | null>(null);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<Tab>('archive');
+  const [activeTab, setActiveTab] = useState<Tab>('intel');
   const [issues, setIssues] = useState<NewsletterIssue[]>([]);
   const [resources, setResources] = useState<MemberResource[]>([]);
   const [dataLoading, setDataLoading] = useState(false);
@@ -623,7 +624,8 @@ export default function MembersPage() {
     return <PaywallGate user={user} />;
   }
 
-  const TABS: { id: Tab; label: string; icon: any }[] = [
+  const TABS: { id: Tab; label: string; icon: any; badge?: string }[] = [
+    { id: 'intel',     label: 'My Market Value',    icon: TrendingUp, badge: 'NEW' },
     { id: 'archive',   label: 'Newsletter Archive', icon: FileText },
     { id: 'salary',    label: 'Salary Intel',       icon: BarChart2 },
     { id: 'resources', label: 'Resources',          icon: BookOpen },
@@ -671,7 +673,7 @@ export default function MembersPage() {
 
         {/* Tabs */}
         <div className="flex items-center gap-1 border-b border-border mb-8 overflow-x-auto">
-          {TABS.map(({ id, label, icon: Icon }) => (
+          {TABS.map(({ id, label, icon: Icon, badge }) => (
             <button
               key={id}
               onClick={() => setActiveTab(id)}
@@ -683,6 +685,11 @@ export default function MembersPage() {
             >
               <Icon size={14} />
               {label.toUpperCase()}
+              {badge && (
+                <span className="bg-accent text-black mono text-[6px] font-black px-1 py-0.5 leading-none">
+                  {badge}
+                </span>
+              )}
             </button>
           ))}
         </div>
@@ -702,6 +709,15 @@ export default function MembersPage() {
               </div>
             ) : (
               <>
+                {activeTab === 'intel' && (
+                  <div>
+                    <div className="mb-6">
+                      <h2 className="text-xl font-black uppercase tracking-tighter mb-1">My Market Value</h2>
+                      <p className="text-sm text-text/50">Enter your profile — see your real market salary, best opportunities, and exact skills to learn for maximum ROI.</p>
+                    </div>
+                    <CandidateIntel />
+                  </div>
+                )}
                 {activeTab === 'archive' && (
                   <div>
                     <div className="flex items-center justify-between mb-6">

@@ -6,8 +6,10 @@ import {
   TrendingDown, ChevronRight, Radio, Users, Globe, RefreshCw, Linkedin,
   Zap, BookOpen, DollarSign, Compass, Award, Target, Rocket, ArrowUpRight,
   FileText, Mic2, Star, Lightbulb, Bookmark, BookmarkCheck, Copy, Check,
-  Newspaper, Mail
+  Newspaper, Mail, Lock, BarChart2
 } from 'lucide-react';
+import { computeMarketValue } from '../lib/intelligence';
+import type { RoleKey, CountryCode, EnglishLevel } from '../lib/intelligence';
 import LinkedInBoostModal from '../components/LinkedInBoostModal';
 import PostVacancyModal from '../components/PostVacancyModal';
 
@@ -232,6 +234,131 @@ const PORTAL_SECTIONS: Record<SectionKey, PortalSection> = {
 };
 
 const SECTION_ORDER: SectionKey[] = ['kickoff', 'resume', 'interview', 'negotiate', 'remote', 'career', 'ai'];
+
+// ── Market Value Teaser (free users) ─────────────────────────────────────────
+function MarketValueTeaser() {
+  const [role, setRole] = useState<RoleKey>('backend');
+  const [country, setCountry] = useState<CountryCode>('BR');
+  const [yearsExp, setYearsExp] = useState(4);
+  const [shown, setShown] = useState(false);
+
+  const ROLE_OPTS: { value: RoleKey; label: string }[] = [
+    { value: 'ai_ml', label: 'AI / ML Engineer' }, { value: 'llm', label: 'LLM Engineer' },
+    { value: 'data', label: 'Data Scientist' }, { value: 'backend', label: 'Backend Engineer' },
+    { value: 'frontend', label: 'Frontend Engineer' }, { value: 'fullstack', label: 'Full Stack' },
+    { value: 'devops', label: 'DevOps / SRE' }, { value: 'product', label: 'Product Manager' },
+    { value: 'data_eng', label: 'Data Engineer' }, { value: 'eng_manager', label: 'Eng. Manager' },
+  ];
+  const COUNTRY_OPTS: { value: CountryCode; flag: string; label: string }[] = [
+    { value: 'BR', flag: '🇧🇷', label: 'Brazil' }, { value: 'MX', flag: '🇲🇽', label: 'Mexico' },
+    { value: 'CO', flag: '🇨🇴', label: 'Colombia' }, { value: 'AR', flag: '🇦🇷', label: 'Argentina' },
+    { value: 'CL', flag: '🇨🇱', label: 'Chile' },
+  ];
+
+  const preview = computeMarketValue({
+    role, country, yearsExp,
+    englishLevel: 'conversational' as EnglishLevel,
+    skills: [], hasRemoteExp: false, hasPortfolio: false,
+  });
+
+  const fmt = (n: number) => '$' + n.toLocaleString();
+
+  return (
+    <div className="border-b border-border bg-surface/30">
+      <div className="px-6 md:px-10 py-6 max-w-7xl mx-auto">
+        <div className="border border-accent/20 bg-accent/5">
+          {/* Header */}
+          <div className="flex items-center gap-3 px-5 py-3 border-b border-accent/10">
+            <BarChart2 size={12} className="text-accent" />
+            <span className="mono text-[9px] font-bold text-accent tracking-widest">MARKET VALUE CALCULATOR · FREE PREVIEW</span>
+            <div className="h-px flex-1 bg-accent/10" />
+            <span className="mono text-[7px] text-text/30">Full dashboard → Executive Members</span>
+          </div>
+
+          <div className="p-5">
+            {/* Quick inputs */}
+            <div className="grid grid-cols-3 gap-2 mb-4">
+              <div>
+                <label className="mono text-[7px] text-text/30 block mb-1">ROLE</label>
+                <select value={role} onChange={e => { setRole(e.target.value as RoleKey); setShown(false); }}
+                  className="w-full bg-bg border border-border px-2 py-2 mono text-[10px] focus:outline-none focus:border-accent/50 transition-colors">
+                  {ROLE_OPTS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
+                </select>
+              </div>
+              <div>
+                <label className="mono text-[7px] text-text/30 block mb-1">COUNTRY</label>
+                <select value={country} onChange={e => { setCountry(e.target.value as CountryCode); setShown(false); }}
+                  className="w-full bg-bg border border-border px-2 py-2 mono text-[10px] focus:outline-none focus:border-accent/50 transition-colors">
+                  {COUNTRY_OPTS.map(o => <option key={o.value} value={o.value}>{o.flag} {o.label}</option>)}
+                </select>
+              </div>
+              <div>
+                <label className="mono text-[7px] text-text/30 block mb-1">YEARS EXP</label>
+                <input type="number" min={0} max={30} value={yearsExp}
+                  onChange={e => { setYearsExp(Number(e.target.value)); setShown(false); }}
+                  className="w-full bg-bg border border-border px-2 py-2 mono text-[10px] focus:outline-none focus:border-accent/50 transition-colors" />
+              </div>
+            </div>
+
+            <button
+              onClick={() => setShown(true)}
+              className="w-full py-2.5 bg-accent text-black mono text-[9px] font-bold hover:opacity-90 transition-opacity flex items-center justify-center gap-2 mb-4"
+            >
+              <BarChart2 size={11} /> CALCULATE →
+            </button>
+
+            <AnimatePresence>
+              {shown && (
+                <motion.div
+                  initial={{ opacity: 0, y: 4 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0 }}
+                  className="space-y-3"
+                >
+                  {/* Market mid — visible */}
+                  <div className="grid grid-cols-2 gap-px bg-border">
+                    <div className="bg-bg p-4 text-center">
+                      <p className="mono text-[7px] text-text/30 mb-1">LOCAL MARKET MID</p>
+                      <p className="text-xl font-black text-text">{fmt(preview.marketMid)}</p>
+                      <p className="mono text-[7px] text-text/20 mt-0.5">{preview.seniorityLabel} · /year</p>
+                    </div>
+                    <div className="bg-accent/5 p-4 text-center">
+                      <p className="mono text-[7px] text-accent mb-1">REMOTE (USD)</p>
+                      <p className="text-xl font-black text-accent">{fmt(preview.remoteMid)}</p>
+                      <p className="mono text-[7px] text-text/20 mt-0.5">+{preview.remoteUplift}% uplift · /year</p>
+                    </div>
+                  </div>
+
+                  {/* Locked sections */}
+                  <div className="relative">
+                    <div className="grid grid-cols-3 gap-px bg-border opacity-30 blur-[2px] pointer-events-none select-none">
+                      {['Salary by English Level', 'Best Markets for You', 'Skills ROI'].map(label => (
+                        <div key={label} className="bg-surface p-4 text-center">
+                          <p className="mono text-[7px] text-text/30 mb-1">{label.toUpperCase()}</p>
+                          <p className="text-lg font-black text-text">$••,•••</p>
+                        </div>
+                      ))}
+                    </div>
+                    <div className="absolute inset-0 flex flex-col items-center justify-center gap-2">
+                      <Lock size={16} className="text-accent" />
+                      <p className="mono text-[8px] font-bold text-text">Full dashboard · Executive Members</p>
+                      <a
+                        href="/members"
+                        className="mono text-[8px] bg-accent text-black px-4 py-1.5 font-bold hover:opacity-90 transition-opacity flex items-center gap-1"
+                      >
+                        Unlock for $29/mo <ChevronRight size={9} />
+                      </a>
+                    </div>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 function CandidateResourcesPanel({ onLinkedInBoost }: { onLinkedInBoost: () => void }) {
   const [activeSection, setActiveSection] = useState<SectionKey>('kickoff');
@@ -664,6 +791,7 @@ export default function JobsPage({ lang = 'EN' }: { lang?: string }) {
   const [showLinkedIn, setShowLinkedIn] = useState(false);
   return (
     <div className="min-h-screen bg-bg">
+      <MarketValueTeaser />
       <CandidateResourcesPanel onLinkedInBoost={() => setShowLinkedIn(true)} />
       <JobPortal lang={lang} t={t} onPostVacancy={() => setShowVacancy(true)} />
       <PostVacancyModal isOpen={showVacancy} onClose={() => setShowVacancy(false)} lang={lang} />
