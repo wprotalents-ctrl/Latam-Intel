@@ -424,53 +424,148 @@ function SalaryTable() {
 // ─── WPro CTA ─────────────────────────────────────────────────────────────────
 function WProCTA() {
   return (
-    <div className="bg-surface border border-accent/20 p-8">
-      <div className="flex items-start gap-4 mb-6">
-        <div className="w-12 h-12 bg-accent/10 border border-accent/20 flex items-center justify-center shrink-0">
-          <Users size={24} className="text-accent" />
-        </div>
-        <div>
-          <h3 className="font-black text-xl tracking-tighter uppercase mb-1">Hiring in LATAM?</h3>
-          <p className="text-text/60 text-sm">
-            23,000+ AI/tech professionals. We fill senior roles in 21 days or less.
-            US & EU firms only.
-          </p>
-        </div>
-      </div>
+    <div className="space-y-6">
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-        {[
-          { stat: '21 days', label: 'Avg. time to fill' },
-          { stat: '23K+', label: 'Professionals' },
-          { stat: '94%', label: 'Offer acceptance rate' },
-        ].map(({ stat, label }) => (
-          <div key={label} className="text-center py-4 border border-border">
-            <div className="text-2xl font-black text-accent">{stat}</div>
-            <div className="mono text-[9px] text-text/40 mt-1">{label}</div>
+      {/* Hero CTA block */}
+      <div className="bg-surface border border-accent/20 p-8">
+        <div className="flex items-start gap-4 mb-6">
+          <div className="w-12 h-12 bg-accent/10 border border-accent/20 flex items-center justify-center shrink-0">
+            <Users size={24} className="text-accent" />
           </div>
-        ))}
+          <div>
+            <h3 className="font-black text-xl tracking-tighter uppercase mb-1">Hire LATAM Tech Talent — Fast</h3>
+            <p className="text-text/60 text-sm">
+              23,000+ vetted AI & tech professionals. Senior roles filled in 21 days or less.
+              US & EU companies only. Founder-led. No junior recruiters.
+            </p>
+          </div>
+        </div>
+
+        {/* Stats */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-px bg-border mb-6">
+          {[
+            { stat: '21 days', label: 'Avg. time to fill' },
+            { stat: '23K+', label: 'Vetted professionals' },
+            { stat: '94%', label: 'Offer acceptance' },
+            { stat: '40–60%', label: 'Cost vs US hiring' },
+          ].map(({ stat, label }) => (
+            <div key={label} className="bg-surface text-center py-5">
+              <div className="text-2xl font-black text-accent">{stat}</div>
+              <div className="mono text-[9px] text-text/40 mt-1">{label}</div>
+            </div>
+          ))}
+        </div>
+
+        {/* What's included */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-6">
+          {[
+            { title: 'Retained Search', desc: 'Dedicated search for your role — not posted on job boards.' },
+            { title: '3–5 Qualified Profiles', desc: 'In your inbox within 5 business days. No noise, no spray & pray.' },
+            { title: 'LATAM Market Intelligence', desc: 'Comp data, candidate availability, and hiring benchmarks included.' },
+            { title: 'Direct Hire — No Middlemen', desc: 'You interview and hire directly. We structure the deal.' },
+          ].map((item) => (
+            <div key={item.title} className="border border-border p-4 bg-bg">
+              <p className="mono text-[8px] font-bold text-accent mb-1">{item.title}</p>
+              <p className="text-xs text-text/50 leading-relaxed">{item.desc}</p>
+            </div>
+          ))}
+        </div>
+
+        {/* CTAs */}
+        <div className="flex flex-col sm:flex-row gap-3 mb-4">
+          <a
+            href="https://wprotalents.lat"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex-1 py-4 bg-accent text-black font-bold text-center hover:opacity-90 transition flex items-center justify-center gap-2"
+          >
+            Start a Search <ChevronRight size={16} />
+          </a>
+          <a
+            href="mailto:info@wprotalents.lat?subject=Discovery Call Request — LATAM Intel Member&body=Hi Juan,%0A%0AI'd like to schedule a discovery call to discuss a hiring need.%0A%0ARole: %0ATimeline: %0ALocation/remote: "
+            className="flex-1 py-4 border border-border font-bold text-center hover:border-accent/40 transition flex items-center justify-center gap-2"
+          >
+            <Mail size={16} /> Book a Discovery Call
+          </a>
+        </div>
+
+        <p className="mono text-[9px] text-text/30 text-center">
+          Founder-led · Retained search · Senior roles only · US & EU firms · 20yr LATAM track record
+        </p>
       </div>
 
-      <div className="flex flex-col sm:flex-row gap-3">
-        <a
-          href="https://wprotalents.lat"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="flex-1 py-4 bg-accent text-black font-bold text-center hover:opacity-90 transition flex items-center justify-center gap-2"
-        >
-          Start a Search <ChevronRight size={16} />
-        </a>
-        <a
-          href="mailto:info@wprotalents.lat"
-          className="flex-1 py-4 border border-border font-bold text-center hover:border-accent/40 transition flex items-center justify-center gap-2"
-        >
-          <Mail size={16} /> Email Juan Directly
-        </a>
+      {/* Testimonials */}
+      <div>
+        <div className="flex items-center gap-2 mb-4">
+          <Star size={12} className="text-accent" />
+          <span className="mono text-[9px] font-bold text-text/50 uppercase tracking-widest">What Clients Say</span>
+          <div className="h-px flex-1 bg-border" />
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {[
+            {
+              quote: 'We hired a senior ML engineer in 18 days. The candidate was exactly what we described — better than anyone we found through LinkedIn.',
+              author: 'VP Engineering',
+              company: 'US SaaS Company',
+              role: 'ML Engineer hire',
+            },
+            {
+              quote: 'Juan\'s understanding of the LATAM market is unmatched. We\'ve now made 4 hires through WPro and every single one has been a success.',
+              author: 'Head of Talent',
+              company: 'EU Fintech',
+              role: '4 senior hires',
+            },
+            {
+              quote: 'We reduced our hiring cost by 52% without compromising on quality. The engineers WPro placed are some of our best performers.',
+              author: 'CTO',
+              company: 'US AI Startup',
+              role: 'Full engineering team',
+            },
+            {
+              quote: 'Fast, transparent, and founder-led. Juan is personally involved in every search — that\'s rare in recruiting.',
+              author: 'CEO',
+              company: 'EU Tech Scale-up',
+              role: 'Data Science lead',
+            },
+          ].map((t, i) => (
+            <div key={i} className="bg-surface border border-border p-5">
+              <p className="text-sm text-text/70 leading-relaxed italic mb-4">"{t.quote}"</p>
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-xs font-bold text-text">{t.author}</p>
+                  <p className="mono text-[9px] text-text/40">{t.company}</p>
+                </div>
+                <span className="mono text-[8px] bg-accent/10 text-accent px-2 py-0.5">{t.role}</span>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
 
-      <p className="mono text-[9px] text-text/30 text-center mt-4">
-        Founder-led · Retained search · Senior roles only · 20yr LATAM track record
-      </p>
+      {/* Roles we fill */}
+      <div className="border border-border p-6 bg-surface">
+        <p className="mono text-[9px] font-bold text-text/50 uppercase tracking-widest mb-4">Roles We Specialize In</p>
+        <div className="flex flex-wrap gap-2">
+          {[
+            'AI / ML Engineer', 'LLM Engineer', 'Data Scientist', 'MLOps', 'Head of AI',
+            'Backend Engineer', 'Full Stack', 'DevOps / SRE', 'Data Engineer',
+            'AI Product Manager', 'Engineering Manager', 'CTO-as-a-Service',
+          ].map(role => (
+            <span key={role} className="mono text-[8px] border border-border px-2 py-1 text-text/50 hover:border-accent/30 hover:text-accent/70 transition-colors">
+              {role}
+            </span>
+          ))}
+        </div>
+        <div className="mt-4 pt-4 border-t border-border">
+          <a
+            href="mailto:info@wprotalents.lat?subject=Custom role inquiry"
+            className="mono text-[9px] text-accent hover:underline flex items-center gap-1"
+          >
+            Don't see your role? Email us — we search for any senior tech role. <ChevronRight size={10} />
+          </a>
+        </div>
+      </div>
+
     </div>
   );
 }

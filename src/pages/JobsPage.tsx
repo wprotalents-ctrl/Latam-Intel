@@ -5,7 +5,8 @@ import {
   Loader2, AlertCircle, Clock, TrendingUp,
   TrendingDown, ChevronRight, Radio, Users, Globe, RefreshCw, Linkedin,
   Zap, BookOpen, DollarSign, Compass, Award, Target, Rocket, ArrowUpRight,
-  FileText, Mic2, Star, Lightbulb
+  FileText, Mic2, Star, Lightbulb, Bookmark, BookmarkCheck, Copy, Check,
+  Newspaper, Mail
 } from 'lucide-react';
 import LinkedInBoostModal from '../components/LinkedInBoostModal';
 import PostVacancyModal from '../components/PostVacancyModal';
@@ -23,10 +24,8 @@ interface Job {
   postedAt?: string;
 }
 
-
 const REGIONS = ['All', 'LATAM', 'USA', 'Europe', 'Worldwide'];
 
-// Quick-filter chips for common searches
 const QUICK_FILTERS = ['AI / ML', 'Software Engineer', 'Data', 'DevOps', 'Product', 'Design', 'Remote LATAM'];
 
 const T = {
@@ -107,6 +106,7 @@ interface PortalArticle {
   desc: string;
   url: string;
   tag: string;
+  wpro?: boolean;
 }
 
 interface PortalSection {
@@ -128,11 +128,11 @@ const PORTAL_SECTIONS: Record<SectionKey, PortalSection> = {
     accent: 'bg-accent text-black',
     desc: 'Build your strategy before you send a single application.',
     articles: [
-      { title: 'Define Your Dream Job', desc: 'Start with what you actually want — the foundation of any successful search.', url: 'https://medium.com/@deluca.gabi/setting-up-your-job-search-strategy-start-with-your-dream-job-4a10c065b24f', tag: 'STRATEGY' },
-      { title: 'Create Your SSoT (Single Source of Truth)', desc: 'Stay organised during your search with one central document.', url: 'https://medium.com/@deluca.gabi/stay-organized-during-your-job-search-80d651270dda', tag: 'ORGANISATION' },
-      { title: 'Must-Have Tools During Your Job Search', desc: 'The best free websites to land the right job at the right salary.', url: 'https://medium.com/@deluca.gabi/excellent-websites-to-help-you-get-the-right-job-and-the-right-salary-6b677431eb1a', tag: 'TOOLS' },
-      { title: 'The Job Search Canvas', desc: 'A visual framework to map your job search like a product launch.', url: 'https://medium.com/@deluca.gabi/d393e1fd3e0e', tag: 'FRAMEWORK' },
-      { title: 'Start (and Keep) a Brag Book', desc: 'Document your wins continuously — your future interview prep will thank you.', url: 'https://medium.com/@deluca.gabi/personal-brag-book-what-is-and-how-to-use-it-2827782db4ce', tag: 'CAREER INTEL' },
+      { title: 'Identify Your Job Search North Star', desc: 'Clarify what you\'re actually looking for — role, comp, culture — before spending a single hour applying.', url: 'https://hbr.org/2021/01/figuring-out-your-career-goals', tag: 'STRATEGY' },
+      { title: 'Build Your Job Search Command Center', desc: 'Track every application, follow-up, and contact in one organised system so nothing falls through the cracks.', url: 'https://www.notion.com/templates/job-search-tracker', tag: 'ORGANISATION' },
+      { title: 'LATAM to Global: Your USD Remote Roadmap', desc: 'The exact steps LATAM professionals take to transition from local pay to USD/EUR remote compensation.', url: 'https://remote.com/blog/employer-of-record-latin-america', tag: 'LATAM' },
+      { title: 'Subscribe to Workforce Daily — Free', desc: 'Weekly AI hiring signals, LATAM salary moves, and market intel delivered to your inbox. Curated by WProTalents.', url: 'https://latam-intel.vercel.app', tag: 'WPRO INTEL', wpro: true },
+      { title: 'Brag Doc: Track Your Wins Continuously', desc: 'The single habit that makes every resume update, performance review, and salary negotiation dramatically easier.', url: 'https://hbr.org/2022/01/how-to-build-a-brag-document', tag: 'CAREER INTEL' },
     ],
   },
   resume: {
@@ -141,14 +141,14 @@ const PORTAL_SECTIONS: Record<SectionKey, PortalSection> = {
     Icon: FileText,
     color: 'text-emerald-400',
     accent: 'bg-emerald-500 text-black',
-    desc: 'Stand out from hundreds of applicants with a sharp application.',
+    desc: 'Stand out from hundreds of applicants with a sharp, ATS-optimised application.',
     articles: [
-      { title: 'Free Tools to Tweak Your Resumé', desc: 'The best free tools to polish your resume before applying anywhere.', url: 'https://medium.com/@deluca.gabi/free-tools-to-tweak-your-resume-abebb4e10f2f', tag: 'TOOLS' },
-      { title: 'Review Your Resumé — Keywords', desc: 'Get past ATS filters by optimising for the right keywords before you apply.', url: 'https://medium.com/@deluca.gabi/before-you-apply-review-your-resume-c4c4d5f51d66', tag: 'ATS' },
-      { title: 'Review Your Resumé — Grammar', desc: 'Grammar and translation tools to make your resume internationally polished.', url: 'https://medium.com/@deluca.gabi/tools-to-tweak-your-resume-translation-and-grammar-edition-8e8893c12cf9', tag: 'QUALITY' },
-      { title: 'How to Write a Cover Letter #1', desc: 'If you decide to write one — read this first. The essentials explained.', url: 'https://medium.com/@deluca.gabi/if-you-decide-to-write-a-cover-letter-then-read-this-8ed083f0345c', tag: 'WRITING' },
-      { title: 'How to Write a Cover Letter #2', desc: 'The 3 Whys framework that will guide every cover letter you ever write.', url: 'https://medium.com/@deluca.gabi/the-3-whys-that-will-guide-you-when-writing-your-cover-letter-c7da7f495674', tag: 'WRITING' },
-      { title: 'How to Write a LinkedIn Profile That Gets Inbound', desc: 'Optimise every section of your LinkedIn to attract recruiters passively.', url: 'https://www.linkedin.com/business/talent/blog/talent-acquisition/linkedin-profile-tips-for-job-seekers', tag: 'LINKEDIN' },
+      { title: 'ATS-Proof Your Resume: The 10-Step Checklist', desc: 'Over 75% of resumes never reach a human. Use these steps to get through the filter first.', url: 'https://www.jobscan.co/blog/beat-applicant-tracking-system/', tag: 'ATS' },
+      { title: 'Resume Keywords That Get You Past the Filter', desc: 'How to identify the right keywords for each role and embed them naturally in your resume.', url: 'https://www.linkedin.com/pulse/how-use-keywords-your-resume-get-noticed-recruiters-linkedin-news/', tag: 'KEYWORDS' },
+      { title: 'The LinkedIn Profile Formula That Attracts Inbound', desc: 'Optimise every section — headline, about, experience — to appear in recruiter searches passively.', url: 'https://www.linkedin.com/business/talent/blog/talent-acquisition/linkedin-profile-tips-for-job-seekers', tag: 'LINKEDIN' },
+      { title: 'How to Write a Cover Letter That Gets Read', desc: 'When to write one, what to include, and the structure that makes hiring managers stop scrolling.', url: 'https://hbr.org/2014/02/how-to-write-a-cover-letter', tag: 'WRITING' },
+      { title: 'Get Your Profile in Front of 23K+ Hiring Managers', desc: 'WProTalents features vetted LATAM candidates to our network of US & EU companies — free, within 48h.', url: '#linkedin-boost', tag: 'WPRO EXCLUSIVE', wpro: true },
+      { title: 'Free Resume Review Tools Ranked by Recruiters', desc: 'The best free tools to check your resume for ATS compliance, grammar, and impact before you apply.', url: 'https://resume.io', tag: 'TOOLS' },
     ],
   },
   interview: {
@@ -159,12 +159,12 @@ const PORTAL_SECTIONS: Record<SectionKey, PortalSection> = {
     accent: 'bg-blue-500 text-white',
     desc: 'Walk into every interview prepared, confident, and strategic.',
     articles: [
-      { title: 'How to Prepare for ANY Interview', desc: 'A simple, repeatable method that works for any role at any company.', url: 'https://medium.com/@deluca.gabi/a-simple-method-to-prepare-for-a-job-interview-and-more-d935862c89de', tag: 'FRAMEWORK' },
-      { title: 'How to Prepare for a Remote Interview', desc: 'Practical tips on tech setup, body language, and async follow-up.', url: 'https://medium.com/@deluca.gabi/how-to-prepare-for-a-remote-interview-practical-tips-for-candidates-944d0d05f38e', tag: 'REMOTE' },
-      { title: 'How to Prepare for Your FIRST Interview', desc: 'Just got your first interview invite? This step-by-step guide is for you.', url: 'https://medium.com/@deluca.gabi/i-just-got-my-first-interview-now-what-c80daa9f5130', tag: 'BEGINNERS' },
-      { title: 'Free Tools for a TECH Interview', desc: 'System design, coding challenges, and behavioural prep — all free.', url: 'https://medium.com/@deluca.gabi/technical-interview-free-tools-that-will-help-you-prepare-for-it-a05239e2618b', tag: 'TECH' },
-      { title: 'Free Tools to Better Prepare for Any Interview', desc: 'Research, roleplay, and confidence tools for every type of interview.', url: 'https://medium.com/@deluca.gabi/free-tools-to-better-prepare-for-a-job-interview-aa9bcdfa1798', tag: 'TOOLS' },
-      { title: 'Great Questions to Ask at the End', desc: 'The best questions to ask at the end — organised by interview type.', url: 'https://medium.com/@deluca.gabi/great-questions-to-ask-during-different-types-of-job-interviews-5f9044bf2ad0', tag: 'TACTICS' },
+      { title: 'How to Research Any Company Before an Interview', desc: 'The 30-minute research framework that makes you sound like an insider — and earns the offer.', url: 'https://hbr.org/2019/10/how-to-prepare-for-any-type-of-job-interview', tag: 'RESEARCH' },
+      { title: 'The STAR Method: Master Behavioural Questions', desc: 'Situation, Task, Action, Result — the one framework that works for every behavioural interview question.', url: 'https://www.themuse.com/advice/star-interview-method', tag: 'FRAMEWORK' },
+      { title: 'Remote Interview Mastery: Setup, Presence & Follow-Up', desc: 'Camera angles, lighting, async follow-up templates, and the nuances of remote-first hiring panels.', url: 'https://www.toptal.com/remote/how-to-ace-a-remote-job-interview', tag: 'REMOTE' },
+      { title: 'Tech Interview Handbook (Free, Open Source)', desc: 'The most comprehensive free guide to algorithms, system design, and behavioural prep for tech roles.', url: 'https://www.techinterviewhandbook.org/', tag: 'TECH' },
+      { title: '30 Questions to Ask at the End of Any Interview', desc: 'The questions that signal intellectual curiosity, preparation, and genuine interest — sorted by interview type.', url: 'https://www.glassdoor.com/blog/good-questions-to-ask-in-an-interview/', tag: 'TACTICS' },
+      { title: 'Pramp: Free Mock Interview Practice', desc: 'Practice real technical and behavioural interviews with peers. Free, live, and brutally honest feedback.', url: 'https://www.pramp.com/', tag: 'PRACTICE' },
     ],
   },
   negotiate: {
@@ -175,10 +175,11 @@ const PORTAL_SECTIONS: Record<SectionKey, PortalSection> = {
     accent: 'bg-yellow-500 text-black',
     desc: 'Never leave money on the table. Know your worth, own the conversation.',
     articles: [
-      { title: 'What Is Your Salary Expectation?', desc: 'How to answer the most stressful question without underselling yourself.', url: 'https://medium.com/@deluca.gabi/what-is-your-salary-expectation-be744cf8255f', tag: 'SALARY' },
-      { title: 'How to Choose Between 2+ Job Offers', desc: 'A clear framework for deciding when you\'re lucky enough to have options.', url: 'https://medium.com/@deluca.gabi/how-to-choose-between-multiple-job-offers-9984104997df', tag: 'DECISION' },
-      { title: 'Salary Benchmarks: What Are Engineers Earning?', desc: 'Real comp data for tech roles across LATAM, USA, and EU. Updated 2026.', url: 'https://www.levels.fyi/', tag: 'DATA' },
-      { title: 'LATAM Salary in USD: The Full Guide', desc: 'USD remote salaries vs local — the real gap and how to position yourself.', url: 'https://remote.com/blog/employer-of-record-latin-america', tag: 'LATAM' },
+      { title: '15 Rules for Negotiating a Job Offer (HBR)', desc: 'The definitive Harvard Business Review playbook for salary negotiation — used by professionals worldwide.', url: 'https://hbr.org/2014/06/15-rules-for-negotiating-a-job-offer', tag: 'NEGOTIATION' },
+      { title: 'Real Compensation Data for Tech & AI Roles', desc: 'Verified salary, equity, and total comp data for hundreds of roles across global tech companies.', url: 'https://www.levels.fyi/', tag: 'DATA' },
+      { title: 'LATAM Salary in USD: The Full Picture', desc: 'USD remote pay vs local rates — the real gap, how companies calculate it, and how to close it.', url: 'https://remote.com/blog/employer-of-record-latin-america', tag: 'LATAM' },
+      { title: 'How to Choose Between Multiple Job Offers', desc: 'A structured decision framework for when you\'re lucky enough to have options and need to choose wisely.', url: 'https://www.glassdoor.com/blog/evaluate-job-offer/', tag: 'DECISION' },
+      { title: 'Salary Negotiation Scripts That Actually Work', desc: 'Word-for-word email and call scripts for countering an offer, asking for more, and not blinking first.', url: 'https://www.glassdoor.com/blog/guide/salary-negotiation-scripts/', tag: 'SCRIPTS' },
     ],
   },
   remote: {
@@ -189,11 +190,11 @@ const PORTAL_SECTIONS: Record<SectionKey, PortalSection> = {
     accent: 'bg-violet-500 text-white',
     desc: 'Win at remote — from landing your first role to thriving long-term.',
     articles: [
-      { title: 'Guides and Tools for Remote Work', desc: 'The essential guide to working remotely in 2026 — tools, culture, async.', url: 'https://medium.com/@deluca.gabi/guides-and-tools-about-remote-work-bd65dc1046c', tag: 'GUIDE' },
-      { title: 'Best Websites to Find Remote Work', desc: 'The two best platforms for finding legitimately remote tech roles.', url: 'https://medium.com/@deluca.gabi/2-great-platforms-to-find-remote-work-a66ad2e07a8a', tag: 'JOB BOARDS' },
-      { title: 'How to Approach Anyone on LinkedIn', desc: 'Message templates for reaching out to recruiters and hiring managers cold.', url: 'https://medium.com/@deluca.gabi/how-to-approach-a-recruiter-or-literally-anyone-on-linkedin-with-templates-dba6811e74be', tag: 'NETWORKING' },
-      { title: 'Communicate Clearly with BLUF', desc: 'Bottom Line Up Front — the async written communication method that gets replies.', url: 'https://medium.com/@deluca.gabi/bluf-the-method-for-better-and-effective-written-communication-179f46827d34', tag: 'COMMUNICATION' },
-      { title: 'How to Make the Best of Remote Work', desc: 'Productivity, structure, and mental health for full-time remote professionals.', url: 'https://drive.google.com/file/d/12fpRf0663UHEifdLYIHXlOhcoN3cq8mv/view?usp=sharing', tag: 'WELLBEING' },
+      { title: 'GitLab\'s All-Remote Work Guide (Best in Class)', desc: 'The most detailed, battle-tested remote work guide on the internet — built by a 2,000-person remote company.', url: 'https://about.gitlab.com/company/culture/all-remote/guide/', tag: 'GUIDE' },
+      { title: 'Best Job Boards for Remote LATAM Roles in 2026', desc: 'The top platforms where US and EU companies actively search for LATAM remote talent — ranked by quality.', url: 'https://remotive.com', tag: 'JOB BOARDS' },
+      { title: 'How to Cold Message Recruiters on LinkedIn', desc: 'Message frameworks and templates for reaching out to US/EU recruiters and hiring managers without being ignored.', url: 'https://www.linkedin.com/pulse/how-message-recruiter-linkedin-get-response-job-search-guide/', tag: 'NETWORKING' },
+      { title: 'Military Precision: Write Emails That Get Responses', desc: 'The BLUF (Bottom Line Up Front) method for async written communication — used by top remote teams.', url: 'https://hbr.org/2016/11/how-to-write-email-with-military-precision', tag: 'COMMUNICATION' },
+      { title: 'Remote Work Toolkit: Productivity & Wellbeing', desc: 'Structure, tools, and routines for sustainable full-time remote work — without burning out or disappearing.', url: 'https://www.notion.com/templates/remote-work-toolkit', tag: 'WELLBEING' },
     ],
   },
   career: {
@@ -204,12 +205,12 @@ const PORTAL_SECTIONS: Record<SectionKey, PortalSection> = {
     accent: 'bg-pink-500 text-white',
     desc: 'Think beyond the next job. Build the career you actually want.',
     articles: [
-      { title: 'Understand Yourself Professionally', desc: 'Websites and tools to figure out your strengths, values, and working style.', url: 'https://medium.com/@deluca.gabi/helpful-resources-to-understand-who-you-are-professionally-680b409aa42e', tag: 'SELF-DISCOVERY' },
-      { title: '16 Personalities Test (Free)', desc: 'One of the most-used free personality assessments — great for career planning.', url: 'https://www.16personalities.com/', tag: 'ASSESSMENT' },
-      { title: 'Career Transition: A New Perspective', desc: 'Why a career transition isn\'t as scary as it looks — using an algebra analogy.', url: 'https://medium.com/@deluca.gabi/how-algebra-can-help-you-understand-that-a-career-transition-isnt-that-big-of-a-change-d59ecebeb6a7', tag: 'MINDSET' },
-      { title: 'How to Make a Career Transition', desc: 'Make a career change without starting from zero — a practical roadmap.', url: 'https://medium.com/@deluca.gabi/how-to-make-a-career-transition-without-starting-over-6b6f6129d0a3', tag: 'TRANSITION' },
-      { title: 'How to Build Trust at Work', desc: 'What trust actually is and how to earn it with your team and managers.', url: 'https://medium.com/@deluca.gabi/ready-how-do-you-build-trust-26406398fc57', tag: 'CULTURE' },
-      { title: 'What IS Trust?', desc: 'A deeper look at the psychology of trust — and why it\'s your most valuable asset.', url: 'https://medium.com/@deluca.gabi/what-is-trust-be7f2eb3d639', tag: 'CULTURE' },
+      { title: 'CliftonStrengths: Discover What You\'re Best At', desc: 'One of the most widely-used strengths assessments. Understand your natural talents before your next move.', url: 'https://www.gallup.com/cliftonstrengths/en/strengthsquest.aspx', tag: 'SELF-DISCOVERY' },
+      { title: '16 Personalities — Free Career Planning Assessment', desc: 'One of the most-used free personality assessments. Great for understanding your working style and fit.', url: 'https://www.16personalities.com/', tag: 'ASSESSMENT' },
+      { title: 'How to Pivot Careers Without Starting From Zero', desc: 'The HBR framework for making a career transition that builds on existing experience rather than erasing it.', url: 'https://hbr.org/2021/07/how-to-make-a-career-pivot', tag: 'TRANSITION' },
+      { title: 'Build Credibility Fast in the First 90 Days', desc: 'What to do — and avoid — in your first 3 months to establish trust and set the tone for your tenure.', url: 'https://hbr.org/2018/01/how-to-build-trust-in-the-first-90-days-of-a-new-job', tag: 'CULTURE' },
+      { title: 'AI Upskilling for Long-Term Career Resilience', desc: 'The skills that separate candidates who thrive in the AI era from those who get left behind. Plan accordingly.', url: 'https://www.coursera.org/articles/ai-skills', tag: 'FUTURE-PROOF' },
+      { title: 'WPro Workforce Daily — LATAM Market Intel', desc: 'Subscribe for weekly hiring signals, salary trends, and AI workforce data. Built for LATAM professionals.', url: 'https://latam-intel.vercel.app', tag: 'WPRO INTEL', wpro: true },
     ],
   },
   ai: {
@@ -220,19 +221,19 @@ const PORTAL_SECTIONS: Record<SectionKey, PortalSection> = {
     accent: 'bg-violet-500 text-white',
     desc: 'The skills that separate the hired from the overlooked in 2026.',
     articles: [
-      { title: 'Top AI & ML Skills Every Tech Pro Needs in 2026', desc: 'Prompt engineering, RAG, fine-tuning — now table stakes for senior roles.', url: 'https://www.coursera.org/articles/ai-skills', tag: 'SKILLS' },
-      { title: 'Prompt Engineering for Developers (Free Course)', desc: 'Learn to write effective prompts for GPT-4, Claude, and Gemini — 1 hour.', url: 'https://www.deeplearning.ai/short-courses/chatgpt-prompt-engineering-for-developers/', tag: 'FREE COURSE' },
-      { title: 'System Design Primer (GitHub)', desc: 'The most-starred system design guide on GitHub — essential for senior interviews.', url: 'https://github.com/donnemartin/system-design-primer', tag: 'INTERVIEWS' },
-      { title: 'WEF Future of Jobs Report 2025', desc: 'Which roles are growing, which are declining, and what skills matter most.', url: 'https://www.weforum.org/publications/the-future-of-jobs-report-2025/', tag: 'MARKET DATA' },
-      { title: 'AI-Assisted Coding: GitHub Copilot Guide', desc: 'How to use AI pair-programming tools effectively — and put it on your CV.', url: 'https://docs.github.com/en/copilot', tag: 'TOOLS' },
-      { title: 'Kaggle: Free ML Courses', desc: 'Free hands-on machine learning courses from beginner to advanced.', url: 'https://www.kaggle.com/learn', tag: 'FREE COURSE' },
+      { title: 'Top AI & ML Skills Every Tech Pro Needs in 2026', desc: 'Prompt engineering, RAG, fine-tuning, and agentic systems — now table stakes for senior roles globally.', url: 'https://www.coursera.org/articles/ai-skills', tag: 'SKILLS' },
+      { title: 'Prompt Engineering for Developers (Free Course)', desc: 'Andrew Ng\'s 1-hour course on writing effective prompts for GPT-4, Claude, and Gemini. Career-changing.', url: 'https://www.deeplearning.ai/short-courses/chatgpt-prompt-engineering-for-developers/', tag: 'FREE COURSE' },
+      { title: 'System Design Primer (Most-Starred GitHub Guide)', desc: 'The go-to open-source system design guide for senior engineering interviews at top companies worldwide.', url: 'https://github.com/donnemartin/system-design-primer', tag: 'INTERVIEWS' },
+      { title: 'WEF Future of Jobs Report 2025', desc: 'Which roles are growing, which are declining, and the exact skills that will define hiring in 2025–2030.', url: 'https://www.weforum.org/publications/the-future-of-jobs-report-2025/', tag: 'MARKET DATA' },
+      { title: 'GitHub Copilot: AI-Assisted Coding Guide', desc: 'How to use AI pair-programming tools effectively, improve your output, and put it convincingly on your CV.', url: 'https://docs.github.com/en/copilot', tag: 'TOOLS' },
+      { title: 'Kaggle: Free Machine Learning Courses', desc: 'Hands-on ML courses from beginner to advanced — with certificates, datasets, and a global community.', url: 'https://www.kaggle.com/learn', tag: 'FREE COURSE' },
     ],
   },
 };
 
 const SECTION_ORDER: SectionKey[] = ['kickoff', 'resume', 'interview', 'negotiate', 'remote', 'career', 'ai'];
 
-function CandidateResourcesPanel() {
+function CandidateResourcesPanel({ onLinkedInBoost }: { onLinkedInBoost: () => void }) {
   const [activeSection, setActiveSection] = useState<SectionKey>('kickoff');
   const section = PORTAL_SECTIONS[activeSection];
 
@@ -241,14 +242,22 @@ function CandidateResourcesPanel() {
       <div className="px-6 md:px-10 pt-8 pb-6 max-w-7xl mx-auto">
 
         {/* Header */}
-        <div className="flex items-center gap-3 mb-6">
+        <div className="flex items-center gap-3 mb-5">
           <Radio size={10} className="text-accent animate-pulse" />
-          <span className="mono text-[9px] text-accent tracking-widest font-bold">CANDIDATE INTELLIGENCE // YOUR VIP PORTAL</span>
+          <span className="mono text-[9px] text-accent tracking-widest font-bold">CANDIDATE INTELLIGENCE // WPRO CAREER PORTAL</span>
           <div className="h-px flex-1 bg-border" />
+          <a
+            href="https://wprotalents.lat"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mono text-[8px] text-text/30 hover:text-accent transition-colors flex items-center gap-1"
+          >
+            wprotalents.lat <ArrowUpRight size={8} />
+          </a>
         </div>
 
-        {/* Stats strip */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-px bg-border mb-6">
+        {/* Stats + Join CTA strip */}
+        <div className="grid grid-cols-2 sm:grid-cols-5 gap-px bg-border mb-6">
           {[
             { icon: <Users size={10} />, value: '23K+', label: 'Network' },
             { icon: <Award size={10} />, value: '500+', label: 'Placed' },
@@ -261,6 +270,18 @@ function CandidateResourcesPanel() {
               <span className="mono text-[8px] text-text/30 uppercase tracking-widest">{s.label}</span>
             </div>
           ))}
+          {/* Get featured CTA as 5th stat */}
+          <button
+            onClick={onLinkedInBoost}
+            className="bg-accent/10 border-l border-accent/20 px-4 py-3 flex items-center gap-2 hover:bg-accent/20 transition-colors group col-span-2 sm:col-span-1"
+          >
+            <Linkedin size={12} className="text-[#0077B5] shrink-0" />
+            <div className="text-left">
+              <div className="mono text-[8px] font-bold text-accent group-hover:text-accent">GET FEATURED</div>
+              <div className="mono text-[7px] text-text/30">Free · 48h</div>
+            </div>
+            <ArrowUpRight size={9} className="text-accent ml-auto" />
+          </button>
         </div>
 
         {/* Tab navigation */}
@@ -294,7 +315,7 @@ function CandidateResourcesPanel() {
             exit={{ opacity: 0 }}
             transition={{ duration: 0.15 }}
           >
-            {/* Section desc */}
+            {/* Section header */}
             <div className="flex items-center gap-3 mb-4">
               <span className={`mono text-[8px] font-bold ${section.color}`}>{section.tag}</span>
               <span className="mono text-[9px] text-text/30">{section.desc}</span>
@@ -305,15 +326,23 @@ function CandidateResourcesPanel() {
               {section.articles.map((a, i) => (
                 <motion.a
                   key={i}
-                  href={a.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
+                  href={a.url === '#linkedin-boost' ? undefined : a.url}
+                  onClick={a.url === '#linkedin-boost' ? (e) => { e.preventDefault(); onLinkedInBoost(); } : undefined}
+                  target={a.url === '#linkedin-boost' ? undefined : '_blank'}
+                  rel={a.url === '#linkedin-boost' ? undefined : 'noopener noreferrer'}
                   initial={{ opacity: 0, y: 4 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: i * 0.05 }}
-                  className="group border border-border bg-bg hover:border-accent/30 p-4 flex flex-col gap-2 transition-colors"
+                  className={`group border bg-bg hover:border-accent/30 p-4 flex flex-col gap-2 transition-colors cursor-pointer ${
+                    a.wpro ? 'border-accent/20 bg-accent/5' : 'border-border'
+                  }`}
                 >
-                  <span className={`mono text-[7px] font-bold ${section.color}`}>{a.tag}</span>
+                  <div className="flex items-center justify-between">
+                    <span className={`mono text-[7px] font-bold ${a.wpro ? 'text-accent' : section.color}`}>{a.tag}</span>
+                    {a.wpro && (
+                      <span className="mono text-[6px] bg-accent text-black px-1.5 py-0.5 font-black">WPRO</span>
+                    )}
+                  </div>
                   <p className="text-xs font-bold leading-snug group-hover:text-accent transition-colors flex-1">
                     {a.title}
                   </p>
@@ -321,7 +350,7 @@ function CandidateResourcesPanel() {
                     {a.desc}
                   </p>
                   <span className="mono text-[7px] text-text/20 group-hover:text-accent transition-colors flex items-center gap-1 mt-1">
-                    READ <ArrowUpRight size={8} />
+                    {a.url === '#linkedin-boost' ? 'SUBMIT' : 'READ'} <ArrowUpRight size={8} />
                   </span>
                 </motion.a>
               ))}
@@ -332,20 +361,36 @@ function CandidateResourcesPanel() {
         {/* Career signal strip */}
         <div className="mt-6 border border-border bg-bg p-4">
           <div className="mono text-[8px] text-accent font-bold mb-3 flex items-center gap-2">
-            <Lightbulb size={9} /> CAREER SIGNAL // WEEKLY INTEL
+            <Lightbulb size={9} /> CAREER SIGNAL // WPRO WEEKLY INTEL
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
             {[
-              { icon: <TrendingUp size={11} className="text-accent shrink-0 mt-0.5" />, tip: 'Add AI / ML to your LinkedIn — searches for "prompt engineering" are up 400% YoY.' },
-              { icon: <Globe size={11} className="text-emerald-400 shrink-0 mt-0.5" />, tip: 'USD/EUR remote roles pay 3–5× local rates for senior LATAM engineers. Target them first.' },
-              { icon: <Target size={11} className="text-blue-400 shrink-0 mt-0.5" />, tip: 'Recruiters spend ~7 sec on a resume. Lead with measurable impact, not job duties.' },
-              { icon: <TrendingDown size={11} className="text-red-400 shrink-0 mt-0.5" />, tip: 'Roles most at risk from AI: manual QA, data entry, basic content, junior frontend.' },
+              { icon: <TrendingUp size={11} className="text-accent shrink-0 mt-0.5" />, tip: 'Add AI / ML to your LinkedIn — searches for "prompt engineering" are up 400% YoY among US & EU recruiters.' },
+              { icon: <Globe size={11} className="text-emerald-400 shrink-0 mt-0.5" />, tip: 'USD/EUR remote roles pay 3–5× local rates for senior LATAM engineers. Prioritise global-first companies.' },
+              { icon: <Target size={11} className="text-blue-400 shrink-0 mt-0.5" />, tip: 'Recruiters spend ~7 seconds on a resume. Lead with measurable impact, not duties. Numbers > everything.' },
+              { icon: <TrendingDown size={11} className="text-red-400 shrink-0 mt-0.5" />, tip: 'Roles most at risk from AI: manual QA, data entry, basic content writing, and junior frontend (2026 WEF).' },
             ].map((tip, i) => (
               <div key={i} className="flex items-start gap-2">
                 {tip.icon}
                 <p className="mono text-[9px] text-text/50 leading-relaxed">{tip.tip}</p>
               </div>
             ))}
+          </div>
+
+          {/* Newsletter CTA */}
+          <div className="mt-4 pt-4 border-t border-border flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+            <div className="flex items-center gap-2">
+              <Newspaper size={11} className="text-accent" />
+              <p className="mono text-[9px] text-text/50">
+                Get this intel weekly — <span className="text-accent font-bold">Workforce Daily</span> by WProTalents. Free.
+              </p>
+            </div>
+            <a
+              href="https://latam-intel.vercel.app"
+              className="mono text-[8px] font-bold border border-accent text-accent px-4 py-1.5 hover:bg-accent hover:text-black transition-colors whitespace-nowrap flex items-center gap-1.5"
+            >
+              <Mail size={9} /> SUBSCRIBE FREE →
+            </a>
           </div>
         </div>
 
@@ -364,6 +409,7 @@ function JobPortal({ lang, t, onPostVacancy }: { lang: string; t: typeof T.EN; o
   const [page, setPage] = useState(1);
   const PAGE = 30;
   const [showLinkedIn, setShowLinkedIn] = useState(false);
+  const [saved, setSaved] = useState<Set<string>>(new Set());
 
   const load = () => {
     setLoading(true);
@@ -377,6 +423,16 @@ function JobPortal({ lang, t, onPostVacancy }: { lang: string; t: typeof T.EN; o
 
   useEffect(() => { load(); }, [lang]);
   useEffect(() => { setPage(1); }, [search, region]);
+
+  const toggleSave = (id: string, e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setSaved(prev => {
+      const next = new Set(prev);
+      next.has(id) ? next.delete(id) : next.add(id);
+      return next;
+    });
+  };
 
   const regionCounts = REGIONS.reduce((a, r) => {
     a[r] = r === 'All' ? jobs.length : jobs.filter(j => j.region === r).length;
@@ -413,16 +469,25 @@ function JobPortal({ lang, t, onPostVacancy }: { lang: string; t: typeof T.EN; o
 
       <p className="mono text-[9px] text-text/25 mb-4">{t.candidateDesc}</p>
 
-      {/* LinkedIn Boost CTA */}
-      <div className="mb-5 flex items-center gap-3 border border-[#0077B5]/20 bg-[#0077B5]/5 px-4 py-3">
-        <Linkedin size={14} className="text-[#0077B5] shrink-0" />
-        <span className="mono text-[9px] text-text/50 flex-1">Get featured to <span className="text-[#0077B5] font-bold">23K+ hiring managers</span> on LinkedIn — free, posted within 48h</span>
-        <button
-          onClick={() => setShowLinkedIn(true)}
-          className="mono text-[8px] font-bold bg-[#0077B5] text-white px-3 py-1.5 hover:opacity-90 transition-opacity whitespace-nowrap"
-        >
-          GET FEATURED →
-        </button>
+      {/* LinkedIn Boost CTA — enhanced */}
+      <div className="mb-5 border border-[#0077B5]/30 bg-[#0077B5]/5">
+        <div className="flex items-center gap-3 px-4 py-3">
+          <div className="w-8 h-8 bg-[#0077B5]/10 flex items-center justify-center shrink-0">
+            <Linkedin size={16} className="text-[#0077B5]" />
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="mono text-[9px] font-bold text-text/70">
+              Get featured to <span className="text-[#0077B5]">23K+ US & EU hiring managers</span>
+            </p>
+            <p className="mono text-[8px] text-text/30 mt-0.5">WProTalents posts your profile on LinkedIn · Free · Within 48h · No recruiter fees</p>
+          </div>
+          <button
+            onClick={() => setShowLinkedIn(true)}
+            className="mono text-[8px] font-bold bg-[#0077B5] text-white px-4 py-2 hover:opacity-90 transition-opacity whitespace-nowrap flex items-center gap-1.5"
+          >
+            GET FEATURED <ArrowUpRight size={9} />
+          </button>
+        </div>
       </div>
 
       {/* Quick filters */}
@@ -444,6 +509,11 @@ function JobPortal({ lang, t, onPostVacancy }: { lang: string; t: typeof T.EN; o
           <button onClick={() => setSearch('')} className="mono text-[8px] px-2.5 py-1 border border-red-500/30 text-red-400 hover:bg-red-500/10 transition-all">
             ✕ clear
           </button>
+        )}
+        {saved.size > 0 && (
+          <span className="mono text-[8px] px-2.5 py-1 border border-accent/20 text-accent/60">
+            <BookmarkCheck size={9} className="inline mr-1" />{saved.size} saved
+          </span>
         )}
       </div>
 
@@ -500,6 +570,7 @@ function JobPortal({ lang, t, onPostVacancy }: { lang: string; t: typeof T.EN; o
               {shown.map((job, idx) => {
                 const ago = timeAgo(job.postedAt);
                 const rs = REGION_STYLE[job.region] || 'text-text/30 border-text/10';
+                const isSaved = saved.has(job.id);
                 return (
                   <motion.a
                     key={job.id}
@@ -509,23 +580,32 @@ function JobPortal({ lang, t, onPostVacancy }: { lang: string; t: typeof T.EN; o
                     initial={{ opacity: 0, y: 8 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: Math.min(idx * 0.015, 0.3) }}
-                    className="group border border-border bg-surface hover:border-accent/40 hover:bg-surface/80 transition-colors flex flex-col cursor-pointer"
+                    className="group border border-border bg-surface hover:border-accent/40 hover:bg-surface/80 transition-colors flex flex-col cursor-pointer relative"
                   >
+                    {/* Save button */}
+                    <button
+                      onClick={(e) => toggleSave(job.id, e)}
+                      className={`absolute top-3 right-3 z-10 transition-colors ${isSaved ? 'text-accent' : 'text-text/10 group-hover:text-text/30 hover:!text-accent'}`}
+                      title={isSaved ? 'Saved' : 'Save job'}
+                    >
+                      {isSaved ? <BookmarkCheck size={13} /> : <Bookmark size={13} />}
+                    </button>
+
                     <div className="p-4 flex flex-col flex-1 gap-2">
-                      <div className="flex items-center justify-between">
+                      <div className="flex items-center justify-between pr-5">
                         <span className={`mono text-[7px] border px-1.5 py-0.5 ${rs}`}>{job.region}</span>
                         {ago && <span className="mono text-[7px] text-text/15 flex items-center gap-0.5"><Clock size={7} />{ago}</span>}
                       </div>
-                      <div className="mono text-[8px] text-accent/60 truncate flex items-center gap-1">
+                      <div className="mono text-[8px] text-accent/60 truncate flex items-center gap-1 pr-5">
                         <Building2 size={8} className="shrink-0" />{job.company}
                       </div>
-                      <h3 className="text-xs font-bold leading-snug line-clamp-2 group-hover:text-accent transition-colors flex-1">
+                      <h3 className="text-xs font-bold leading-snug line-clamp-2 group-hover:text-accent transition-colors flex-1 pr-5">
                         {job.title}
                       </h3>
                       <div className="mono text-[8px] text-text/25 flex items-center gap-1 truncate">
                         <MapPin size={8} className="shrink-0" />{job.location}
                       </div>
-                      {job.salary && <div className="mono text-[8px] text-text/40">{job.salary}</div>}
+                      {job.salary && <div className="mono text-[8px] text-accent/70 font-bold">{job.salary}</div>}
                     </div>
                     <div className="flex items-center justify-between px-4 py-2.5 border-t border-text/5">
                       <span className="mono text-[7px] text-text/10">{t.via} {job.source}</span>
@@ -555,6 +635,22 @@ function JobPortal({ lang, t, onPostVacancy }: { lang: string; t: typeof T.EN; o
               </button>
             </div>
           )}
+
+          {/* Bottom CTA after jobs */}
+          {!loading && !error && filtered.length > 0 && (
+            <div className="mt-8 border border-accent/10 bg-accent/5 p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+              <div>
+                <p className="mono text-[9px] font-bold text-accent mb-1">WANT COMPANIES TO FIND YOU FIRST?</p>
+                <p className="mono text-[8px] text-text/40">WProTalents features vetted LATAM candidates to US & EU hiring managers. Free.</p>
+              </div>
+              <button
+                onClick={() => setShowLinkedIn(true)}
+                className="mono text-[8px] font-bold bg-accent text-black px-5 py-2.5 hover:opacity-90 transition-opacity whitespace-nowrap flex items-center gap-2"
+              >
+                <Linkedin size={11} /> GET FEATURED →
+              </button>
+            </div>
+          )}
         </>
       )}
       <LinkedInBoostModal isOpen={showLinkedIn} onClose={() => setShowLinkedIn(false)} lang={lang} />
@@ -565,11 +661,13 @@ function JobPortal({ lang, t, onPostVacancy }: { lang: string; t: typeof T.EN; o
 export default function JobsPage({ lang = 'EN' }: { lang?: string }) {
   const t = T[lang as keyof typeof T] || T.EN;
   const [showVacancy, setShowVacancy] = useState(false);
+  const [showLinkedIn, setShowLinkedIn] = useState(false);
   return (
     <div className="min-h-screen bg-bg">
-      <CandidateResourcesPanel />
+      <CandidateResourcesPanel onLinkedInBoost={() => setShowLinkedIn(true)} />
       <JobPortal lang={lang} t={t} onPostVacancy={() => setShowVacancy(true)} />
       <PostVacancyModal isOpen={showVacancy} onClose={() => setShowVacancy(false)} lang={lang} />
+      <LinkedInBoostModal isOpen={showLinkedIn} onClose={() => setShowLinkedIn(false)} lang={lang} />
     </div>
   );
 }
