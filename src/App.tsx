@@ -1042,13 +1042,91 @@ export default function App() {
               <JobsPage lang={lang} />
             </motion.div>
           ) : (
-            <motion.div 
-              key="dashboard"
+            <motion.div
+              key={userRole === 'company' ? 'client-portal' : 'dashboard'}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="absolute inset-0 grid grid-cols-12 gap-px bg-border overflow-y-auto"
+              className="absolute inset-0 overflow-y-auto"
             >
+            {userRole === 'company' ? (
+              /* ── Company Client Portal ───────────────────────────────── */
+              <div className="max-w-3xl mx-auto px-6 py-10">
+                {/* Header */}
+                <div className="flex items-center gap-3 mb-8 pb-6 border-b border-border">
+                  <div className="w-10 h-10 bg-accent/10 border border-accent/20 flex items-center justify-center">
+                    <Briefcase size={16} className="text-accent" />
+                  </div>
+                  <div>
+                    <h2 className="font-black text-lg uppercase tracking-tighter">Client Portal</h2>
+                    <p className="mono text-[8px] text-text/40">Post roles · Get instant hiring intelligence · Featured on wprotalents.lat</p>
+                  </div>
+                </div>
+
+                {/* Job Post Form */}
+                <div className="border border-border bg-surface/30 p-6 mb-6">
+                  <div className="flex items-center gap-2 mb-5">
+                    <span className="mono text-[9px] font-bold text-accent tracking-widest uppercase">Post a Role</span>
+                    <div className="h-px flex-1 bg-border" />
+                    <span className="mono text-[8px] text-text/30">Featured on wprotalents.lat</span>
+                  </div>
+                  <ClientJobPostForm
+                    loading={clientInsightsLoading}
+                    onSubmit={(data) => {
+                      setClientInsightsLoading(true);
+                      const roleKey = data.role
+                        .toLowerCase()
+                        .replace(/\s*\/\s*/g, '_')
+                        .replace(/\s+/g, '_')
+                        .replace(/[^a-z_]/g, '');
+                      const plan = generateHiringPlan(data, {});
+                      const reach = estimateNetworkReach({ role: roleKey, seniority: data.seniority });
+                      setClientHiringPlan(plan);
+                      setClientNetworkReach(reach);
+                      setClientFormData(data);
+                      setClientInsightsLoading(false);
+                    }}
+                  />
+                  {clientHiringPlan && clientNetworkReach && clientFormData && (
+                    <ClientInsightsCard
+                      plan={clientHiringPlan}
+                      reach={clientNetworkReach}
+                      role={clientFormData.role}
+                      seniority={clientFormData.seniority}
+                      planType={clientFormData.planType}
+                    />
+                  )}
+                </div>
+
+                {/* Company Resources */}
+                <div className="border border-border bg-surface/30 p-6">
+                  <div className="flex items-center gap-2 mb-5">
+                    <span className="mono text-[9px] font-bold text-accent tracking-widest uppercase">Resources for Hiring Managers</span>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    {[
+                      { tag: 'TALENT STRATEGY', color: 'text-violet-400', title: 'How to Build a High-Performance Distributed Team in LATAM', desc: 'Hiring frameworks, onboarding, and culture for remote-first tech companies.', url: 'https://hbr.org/topic/subject/hiring', source: 'HBR' },
+                      { tag: 'AI & HIRING', color: 'text-accent', title: 'How AI Is Transforming Talent Acquisition in 2026', desc: 'From sourcing automation to AI-assisted screening — what actually works.', url: 'https://www.linkedin.com/business/talent/blog', source: 'LinkedIn Talent' },
+                      { tag: 'MARKET DATA', color: 'text-emerald-400', title: 'LATAM Salary Benchmarks for Tech Roles — 2026', desc: 'Up-to-date compensation data across Colombia, Brazil, Argentina, and Mexico.', url: 'https://www.levels.fyi/t/software-engineer/locations/latin-america', source: 'Levels.fyi' },
+                      { tag: 'RETENTION', color: 'text-blue-400', title: 'Why Senior Engineers Leave — And How to Keep Them', desc: 'The real reasons your best people walk, and what actually retains top talent.', url: 'https://hbr.org/2023/06/why-your-best-employees-leave-and-how-to-keep-them', source: 'HBR' },
+                    ].map((a, i) => (
+                      <a key={i} href={a.url} target="_blank" rel="noopener noreferrer"
+                        className="group flex flex-col gap-1.5 p-4 bg-bg border border-border hover:border-accent/30 transition-colors">
+                        <div className="flex items-center justify-between">
+                          <span className={`mono text-[7px] font-bold ${a.color}`}>{a.tag}</span>
+                          <span className="mono text-[7px] text-text/20">{a.source}</span>
+                        </div>
+                        <h5 className="text-xs font-bold leading-snug group-hover:text-accent transition-colors">{a.title}</h5>
+                        <p className="mono text-[9px] text-text/40 leading-snug line-clamp-2">{a.desc}</p>
+                        <span className="mono text-[7px] text-accent/40 group-hover:text-accent transition-colors flex items-center gap-1 mt-auto">READ <ArrowUpRight size={8} /></span>
+                      </a>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            ) : (
+              /* ── Intelligence Dashboard ──────────────────────────────── */
+              <div className="grid grid-cols-12 gap-px bg-border min-h-full">
               {/* Dashboard Content (Grid of Widgets) */}
               <div className="col-span-12 lg:col-span-8 flex flex-col gap-px bg-border">
                 {/* Top Row: Map and Radar */}
@@ -1181,44 +1259,6 @@ export default function App() {
                         </a>
                       ))}
                     </div>
-                  </div>
-                )}
-
-                {/* Client: Post a Role */}
-                {userRole === 'company' && (
-                  <div className="bg-bg p-6 border-b border-border">
-                    <div className="flex items-center gap-2 mb-5">
-                      <Briefcase size={10} className="text-accent" />
-                      <div className="mono text-[9px] text-accent font-bold uppercase tracking-widest">Post a Role — Get Instant Hiring Intelligence</div>
-                      <div className="h-px flex-1 bg-border" />
-                      <span className="mono text-[8px] text-text/30">Featured on wprotalents.lat</span>
-                    </div>
-                    <ClientJobPostForm
-                      loading={clientInsightsLoading}
-                      onSubmit={(data) => {
-                        setClientInsightsLoading(true);
-                        const roleKey = data.role
-                          .toLowerCase()
-                          .replace(/\s*\/\s*/g, '_')
-                          .replace(/\s+/g, '_')
-                          .replace(/[^a-z_]/g, '');
-                        const plan = generateHiringPlan(data, {});
-                        const reach = estimateNetworkReach({ role: roleKey, seniority: data.seniority });
-                        setClientHiringPlan(plan);
-                        setClientNetworkReach(reach);
-                        setClientFormData(data);
-                        setClientInsightsLoading(false);
-                      }}
-                    />
-                    {clientHiringPlan && clientNetworkReach && clientFormData && (
-                      <ClientInsightsCard
-                        plan={clientHiringPlan}
-                        reach={clientNetworkReach}
-                        role={clientFormData.role}
-                        seniority={clientFormData.seniority}
-                        planType={clientFormData.planType}
-                      />
-                    )}
                   </div>
                 )}
 
@@ -1611,6 +1651,8 @@ export default function App() {
                 </div>
                 {showUpgrade && <SubscriptionSection />}
               </div>
+              </div>{/* end grid cols-12 */}
+            )}{/* end candidate branch */}
             </motion.div>
           )}
         </AnimatePresence>
