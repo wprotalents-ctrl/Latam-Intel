@@ -56,6 +56,10 @@ import { onSnapshot, doc, collection, query, orderBy, limit } from 'firebase/fir
 import { AuthModal } from './components/AuthModal';
 import { SubscriptionSection } from './components/SubscriptionSection';
 import JobsPage from './pages/JobsPage';
+import ClientJobPostForm, { type ClientJobPostData } from './components/ClientJobPostForm';
+import ClientInsightsCard from './components/ClientInsightsCard';
+import { generateHiringPlan, type HiringPlan } from './lib/hiringPlan';
+import { estimateNetworkReach, type NetworkReach } from './lib/networkReach';
 
 const TRANSLATIONS = {
   EN: {
@@ -612,6 +616,11 @@ export default function App() {
   const [user, setUser] = useState<User | null>(null);
   const [subscriptionStatus, setSubscriptionStatus] = useState<'free' | 'premium'>('free');
   const [userRole, setUserRole] = useState<'candidate' | 'company' | null>(null);
+  // Client hiring intelligence
+  const [clientHiringPlan, setClientHiringPlan] = useState<HiringPlan | null>(null);
+  const [clientNetworkReach, setClientNetworkReach] = useState<NetworkReach | null>(null);
+  const [clientFormData, setClientFormData] = useState<ClientJobPostData | null>(null);
+  const [clientInsightsLoading, setClientInsightsLoading] = useState(false);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [briefings, setBriefings] = useState<Briefing[]>(MOCK_BRIEFINGS);
   const [intelBriefs, setIntelBriefs] = useState<IntelligenceBrief[]>([]);
@@ -812,12 +821,14 @@ export default function App() {
             >
               <LayoutDashboard size={14} /> {t.dashboard}
             </button>
-            <button 
-              onClick={() => setViewMode('Jobs')}
-              className={`px-4 py-2 mono text-[10px] transition-all flex items-center gap-2 ${viewMode === 'Jobs' ? 'text-accent bg-text/5' : 'text-text/40 hover:text-text'}`}
-            >
-              <Briefcase size={14} /> {t.jobs}
-            </button>
+            {userRole !== 'company' && (
+              <button
+                onClick={() => setViewMode('Jobs')}
+                className={`px-4 py-2 mono text-[10px] transition-all flex items-center gap-2 ${viewMode === 'Jobs' ? 'text-accent bg-text/5' : 'text-text/40 hover:text-text'}`}
+              >
+                <Briefcase size={14} /> {t.jobs}
+              </button>
+            )}
           </nav>
         </div>
 
@@ -1020,7 +1031,7 @@ export default function App() {
                 </div>
               </div>
             </motion.div>
-          ) : viewMode === 'Jobs' ? (
+          ) : viewMode === 'Jobs' && userRole !== 'company' ? (
             <motion.div
               key="jobs"
               initial={{ opacity: 0 }}
@@ -1170,6 +1181,44 @@ export default function App() {
                         </a>
                       ))}
                     </div>
+                  </div>
+                )}
+
+                {/* Client: Post a Role */}
+                {userRole === 'company' && (
+                  <div className="bg-bg p-6 border-b border-border">
+                    <div className="flex items-center gap-2 mb-5">
+                      <Briefcase size={10} className="text-accent" />
+                      <div className="mono text-[9px] text-accent font-bold uppercase tracking-widest">Post a Role — Get Instant Hiring Intelligence</div>
+                      <div className="h-px flex-1 bg-border" />
+                      <span className="mono text-[8px] text-text/30">Featured on wprotalents.lat</span>
+                    </div>
+                    <ClientJobPostForm
+                      loading={clientInsightsLoading}
+                      onSubmit={(data) => {
+                        setClientInsightsLoading(true);
+                        const roleKey = data.role
+                          .toLowerCase()
+                          .replace(/\s*\/\s*/g, '_')
+                          .replace(/\s+/g, '_')
+                          .replace(/[^a-z_]/g, '');
+                        const plan = generateHiringPlan(data, {});
+                        const reach = estimateNetworkReach({ role: roleKey, seniority: data.seniority });
+                        setClientHiringPlan(plan);
+                        setClientNetworkReach(reach);
+                        setClientFormData(data);
+                        setClientInsightsLoading(false);
+                      }}
+                    />
+                    {clientHiringPlan && clientNetworkReach && clientFormData && (
+                      <ClientInsightsCard
+                        plan={clientHiringPlan}
+                        reach={clientNetworkReach}
+                        role={clientFormData.role}
+                        seniority={clientFormData.seniority}
+                        planType={clientFormData.planType}
+                      />
+                    )}
                   </div>
                 )}
 
