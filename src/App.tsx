@@ -665,7 +665,7 @@ export default function App() {
         const role = data.role as 'candidate' | 'company' | undefined;
         setUserRole(role || null);
         if (role === 'candidate') setViewMode('Jobs');
-        else if (role === 'company') setViewMode('Dashboard');
+        else setViewMode('Dashboard'); // company or unknown → always Dashboard, never Jobs
       }
     }, (error) => {
       handleFirestoreError(error, FirestoreOperation.GET, `users/${user.uid}`);
@@ -821,7 +821,7 @@ export default function App() {
             >
               <LayoutDashboard size={14} /> {t.dashboard}
             </button>
-            {userRole !== 'company' && (
+            {userRole === 'candidate' && (
               <button
                 onClick={() => setViewMode('Jobs')}
                 className={`px-4 py-2 mono text-[10px] transition-all flex items-center gap-2 ${viewMode === 'Jobs' ? 'text-accent bg-text/5' : 'text-text/40 hover:text-text'}`}
@@ -1031,7 +1031,7 @@ export default function App() {
                 </div>
               </div>
             </motion.div>
-          ) : viewMode === 'Jobs' && userRole !== 'company' ? (
+          ) : viewMode === 'Jobs' && userRole === 'candidate' ? (
             <motion.div
               key="jobs"
               initial={{ opacity: 0 }}
