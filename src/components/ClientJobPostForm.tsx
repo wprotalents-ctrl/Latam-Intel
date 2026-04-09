@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ChevronRight, Loader2 } from 'lucide-react';
+import { ChevronRight, Loader2, Zap, Tag } from 'lucide-react';
 
 export interface ClientJobPostData {
   role: string;
@@ -7,6 +7,7 @@ export interface ClientJobPostData {
   country: string;
   salary: number | undefined;
   description: string;
+  planType: 'free' | 'promoted';
 }
 
 interface Props {
@@ -25,12 +26,28 @@ const COUNTRIES = [
   'Peru', 'Uruguay', 'Ecuador', 'Remote (Worldwide)',
 ];
 
+const PLANS: { value: 'free' | 'promoted'; label: string; desc: string; Icon: React.ElementType }[] = [
+  {
+    value: 'free',
+    label: 'Free',
+    desc: 'Basic match — profiles from our existing pipeline.',
+    Icon: Tag,
+  },
+  {
+    value: 'promoted',
+    label: 'Promoted',
+    desc: 'Active outreach to 23K+ network. Faster, wider reach.',
+    Icon: Zap,
+  },
+];
+
 export default function ClientJobPostForm({ onSubmit, loading = false }: Props) {
   const [role, setRole] = useState('');
   const [seniority, setSeniority] = useState<'junior' | 'mid' | 'senior'>('mid');
   const [country, setCountry] = useState('');
   const [salary, setSalary] = useState('');
   const [description, setDescription] = useState('');
+  const [planType, setPlanType] = useState<'free' | 'promoted'>('free');
   const [error, setError] = useState('');
 
   function handleSubmit(e: React.FormEvent) {
@@ -44,6 +61,7 @@ export default function ClientJobPostForm({ onSubmit, loading = false }: Props) 
       country,
       salary: salary ? Number(salary) : undefined,
       description: description.trim(),
+      planType,
     });
   }
 
@@ -117,9 +135,41 @@ export default function ClientJobPostForm({ onSubmit, loading = false }: Props) 
         />
       </div>
 
-      {error && (
-        <p className="mono text-[9px] text-red-400">{error}</p>
-      )}
+      {/* Plan type */}
+      <div>
+        <label className={lbl}>Posting Plan</label>
+        <div className="grid grid-cols-2 gap-px bg-border">
+          {PLANS.map(({ value, label, desc, Icon }) => (
+            <button
+              key={value}
+              type="button"
+              onClick={() => setPlanType(value)}
+              className={`p-4 text-left border transition-colors ${
+                planType === value
+                  ? value === 'promoted'
+                    ? 'border-accent bg-accent/5'
+                    : 'border-text/20 bg-surface'
+                  : 'border-transparent bg-bg hover:border-border'
+              }`}
+            >
+              <div className="flex items-center gap-1.5 mb-1">
+                <Icon
+                  size={10}
+                  className={planType === value && value === 'promoted' ? 'text-accent' : 'text-text/30'}
+                />
+                <span className={`mono text-[9px] font-bold uppercase tracking-widest ${
+                  planType === value && value === 'promoted' ? 'text-accent' : 'text-text/60'
+                }`}>
+                  {label}
+                </span>
+              </div>
+              <p className="mono text-[8px] text-text/30 leading-relaxed">{desc}</p>
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {error && <p className="mono text-[9px] text-red-400">{error}</p>}
 
       <button
         type="submit"
@@ -128,7 +178,7 @@ export default function ClientJobPostForm({ onSubmit, loading = false }: Props) 
       >
         {loading
           ? <><Loader2 size={12} className="animate-spin" /> Generating plan...</>
-          : <>Generate Hiring Plan <ChevronRight size={12} /></>}
+          : <>Generate Hiring Intelligence <ChevronRight size={12} /></>}
       </button>
     </form>
   );

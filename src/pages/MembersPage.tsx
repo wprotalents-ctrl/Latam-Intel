@@ -825,6 +825,7 @@ export default function MembersPage() {
                           reach={networkReach}
                           role={lastFormData.role}
                           seniority={lastFormData.seniority}
+                          planType={lastFormData.planType}
                         />
                       )}
                     </div>

@@ -1,5 +1,5 @@
 import React from 'react';
-import { MapPin, DollarSign, Clock, Users, Eye, Target } from 'lucide-react';
+import { MapPin, DollarSign, Clock, Users, Eye, Target, Zap } from 'lucide-react';
 import type { HiringPlan } from '../lib/hiringPlan';
 import type { NetworkReach } from '../lib/networkReach';
 
@@ -8,6 +8,7 @@ interface Props {
   reach: NetworkReach;
   role: string;
   seniority: string;
+  planType: 'free' | 'promoted';
 }
 
 function StatCell({
@@ -32,7 +33,7 @@ function StatCell({
   );
 }
 
-export default function ClientInsightsCard({ plan, reach, role, seniority }: Props) {
+export default function ClientInsightsCard({ plan, reach, role, seniority, planType }: Props) {
   const fmt = (n: number) => n.toLocaleString();
 
   return (
@@ -45,6 +46,16 @@ export default function ClientInsightsCard({ plan, reach, role, seniority }: Pro
         </span>
       </div>
 
+      {/* Promoted banner */}
+      {planType === 'promoted' && (
+        <div className="flex items-center gap-2 px-5 py-3 bg-accent/10 border-b border-accent/20">
+          <Zap size={11} className="text-accent shrink-0" />
+          <p className="mono text-[9px] font-bold text-accent">
+            This job will be promoted to our full 23,000+ professional network via active outreach.
+          </p>
+        </div>
+      )}
+
       {/* Summary */}
       <div className="px-5 py-4 border-b border-border">
         <p className="text-sm text-text/60 leading-relaxed">{plan.summary}</p>
@@ -54,22 +65,9 @@ export default function ClientInsightsCard({ plan, reach, role, seniority }: Pro
       <div className="px-5 pt-4 pb-2">
         <p className="mono text-[8px] text-text/30 uppercase tracking-widest mb-2">Hiring Plan</p>
         <div className="grid grid-cols-3 gap-px bg-border">
-          <StatCell
-            icon={MapPin}
-            label="Best Market"
-            value={plan.bestCountry}
-          />
-          <StatCell
-            icon={DollarSign}
-            label="Est. Salary"
-            value={plan.salary > 0 ? `$${fmt(plan.salary)}` : 'TBD'}
-            accent
-          />
-          <StatCell
-            icon={Clock}
-            label="Time to Hire"
-            value={`${plan.timeToHire} days`}
-          />
+          <StatCell icon={MapPin}     label="Best Market"   value={plan.bestCountry} />
+          <StatCell icon={DollarSign} label="Est. Salary"   value={plan.salary > 0 ? `$${fmt(plan.salary)}` : 'TBD'} accent />
+          <StatCell icon={Clock}      label="Time to Hire"  value={`${plan.timeToHire} days`} />
         </div>
       </div>
 
@@ -77,19 +75,21 @@ export default function ClientInsightsCard({ plan, reach, role, seniority }: Pro
       <div className="px-5 pt-4 pb-2">
         <p className="mono text-[8px] text-text/30 uppercase tracking-widest mb-2">Network Reach</p>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-px bg-border">
-          <StatCell icon={Users} label="1st Degree" value={fmt(reach.firstDegree)} />
-          <StatCell icon={Users} label="2nd Degree" value={fmt(reach.secondDegree)} />
-          <StatCell icon={Users} label="3rd Degree" value={fmt(reach.thirdDegree)} />
-          <StatCell icon={Eye} label="Est. Impressions" value={fmt(reach.impressions)} accent />
+          <StatCell icon={Users} label="1st Degree"       value={fmt(reach.firstDegree)} />
+          <StatCell icon={Users} label="2nd Degree"       value={fmt(reach.secondDegree)} />
+          <StatCell icon={Users} label="3rd Degree"       value={fmt(reach.thirdDegree)} />
+          <StatCell icon={Eye}   label="Est. Impressions" value={fmt(reach.impressions)} accent />
         </div>
       </div>
 
-      {/* Applicant estimate */}
+      {/* Applicant range */}
       <div className="px-5 py-4">
         <div className="flex items-center justify-between border border-border bg-bg px-4 py-3">
           <div className="flex items-center gap-2">
             <Target size={12} className="text-accent" />
-            <span className="mono text-[9px] text-text/50 uppercase tracking-widest">Projected Qualified Applicants</span>
+            <span className="mono text-[9px] text-text/50 uppercase tracking-widest">
+              Projected Qualified Applicants
+            </span>
           </div>
           <span className="mono text-base font-black text-accent">
             {reach.applicantsLow}–{reach.applicantsHigh}
