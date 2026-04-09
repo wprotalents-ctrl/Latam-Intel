@@ -12,6 +12,10 @@ import { auth } from '../firebase';
 
 import { getUserProfile, getNewsletterIssues, getMemberResources } from '../lib/supabase';
 import CandidateIntel from '../components/CandidateIntel';
+import ClientJobPostForm, { type ClientJobPostData } from '../components/ClientJobPostForm';
+import ClientInsightsCard from '../components/ClientInsightsCard';
+import { generateHiringPlan, type HiringPlan } from '../lib/hiringPlan';
+import { estimateNetworkReach, type NetworkReach } from '../lib/networkReach';
 import type { SupabaseUser, NewsletterIssue, MemberResource } from '../lib/supabase';
 import type { User } from 'firebase/auth';
 
@@ -586,6 +590,11 @@ export default function MembersPage() {
   const [issues, setIssues] = useState<NewsletterIssue[]>([]);
   const [resources, setResources] = useState<MemberResource[]>([]);
   const [dataLoading, setDataLoading] = useState(false);
+  // Client hiring intelligence
+  const [hiringPlan, setHiringPlan] = useState<HiringPlan | null>(null);
+  const [networkReach, setNetworkReach] = useState<NetworkReach | null>(null);
+  const [lastFormData, setLastFormData] = useState<ClientJobPostData | null>(null);
+  const [insightsLoading, setInsightsLoading] = useState(false);
 
   // Auth listener
   useEffect(() => {
@@ -786,6 +795,40 @@ export default function MembersPage() {
                       <h2 className="text-xl font-black uppercase tracking-tighter mb-1">Hire with WProTalents</h2>
                       <p className="text-sm text-text/50">As a member, you get priority access to our founder-led search service.</p>
                     </div>
+
+                    {/* Job post form + instant insights */}
+                    <div className="border border-border bg-surface/30 p-6 mb-6">
+                      <div className="flex items-center gap-2 mb-5">
+                        <span className="mono text-[9px] font-bold text-accent tracking-widest uppercase">Post a Role — Get Instant Hiring Intelligence</span>
+                      </div>
+                      <ClientJobPostForm
+                        loading={insightsLoading}
+                        onSubmit={(data) => {
+                          setInsightsLoading(true);
+                          const seniority = data.seniority;
+                          const roleKey = data.role
+                            .toLowerCase()
+                            .replace(/\s*\/\s*/g, '_')
+                            .replace(/\s+/g, '_')
+                            .replace(/[^a-z_]/g, '');
+                          const plan = generateHiringPlan(data, {});
+                          const reach = estimateNetworkReach({ role: roleKey, seniority });
+                          setHiringPlan(plan);
+                          setNetworkReach(reach);
+                          setLastFormData(data);
+                          setInsightsLoading(false);
+                        }}
+                      />
+                      {hiringPlan && networkReach && lastFormData && (
+                        <ClientInsightsCard
+                          plan={hiringPlan}
+                          reach={networkReach}
+                          role={lastFormData.role}
+                          seniority={lastFormData.seniority}
+                        />
+                      )}
+                    </div>
+
                     <WProCTA />
                   </div>
                 )}
