@@ -409,7 +409,7 @@ const TRANSLATIONS = {
     aiToolTitle: "Recrutamento Impulsionado por IA em Escala",
     aiToolDesc: "O HiredScore usa IA para combinar candidatos a vagas abertas de forma ética e eficiente, reduzindo o viés e aumentando a produtividade do recrutador em 3 vezes. É um divisor de águas para contratações de tecnologia em alto volume.",
     aiToolWorkflowLabel: "FLUXO DE TRABALHO DE RECRUTAMENTO",
-    aiToolWorkflow: "Integrei o HiredScore ao nosso processo de busca de nível C. Ele analisou mais de 10.000 perfis para encontrar os 5 melhores candidatos para uma vaga de Head de IA na Cidade do México. Ele não apenas olhou para palavras-chave; ele analisou a 'trajetória de carreira' e o 'impacto do projeto de IA'. Economizou para nossa equipe 2 semanas de triagem manual.",
+    aiToolWorkflow: "Integrei o HiredScore ao nosso processo de busca de nível C. Ele analisou mais de 10.000 perfis para encontrar os 5 melhores candidatos para uma vaga de Head de IA na Cidade do México. Ele não apenas olhou para palavras-chave; ele analisou a 'trayetória de carreira' e o 'impacto do projeto de IA'. Economizou para nossa equipe 2 semanas de triagem manual.",
     aiToolLimitation: "Limitação: Requer um grande conjunto de dados para ser verdadeiramente eficaz; startups menores podem achar o custo inicial de configuração alto.",
     aiToolVerdict: "Veredito para Executivos de RH: Se você contrata mais de 50 pessoas por ano, esta ferramenta é obrigatória para manter a qualidade e a velocidade.",
     // Country Watch Content
@@ -1049,610 +1049,610 @@ export default function App() {
               exit={{ opacity: 0 }}
               className="absolute inset-0 overflow-y-auto"
             >
-            {userRole === 'company' ? (
-              /* ── Company Client Portal ───────────────────────────────── */
-              <div className="max-w-3xl mx-auto px-6 py-10">
-                {/* Header */}
-                <div className="flex items-center gap-3 mb-8 pb-6 border-b border-border">
-                  <div className="w-10 h-10 bg-accent/10 border border-accent/20 flex items-center justify-center">
-                    <Briefcase size={16} className="text-accent" />
+              {userRole === 'company' ? (
+                /* ── Company Client Portal ───────────────────────────────── */
+                <div className="max-w-3xl mx-auto px-6 py-10">
+                  {/* Header */}
+                  <div className="flex items-center gap-3 mb-8 pb-6 border-b border-border">
+                    <div className="w-10 h-10 bg-accent/10 border border-accent/20 flex items-center justify-center">
+                      <Briefcase size={16} className="text-accent" />
+                    </div>
+                    <div>
+                      <h2 className="font-black text-lg uppercase tracking-tighter">Client Portal</h2>
+                      <p className="mono text-[8px] text-text/40">Post roles · Get instant hiring intelligence · Featured on wprotalents.lat</p>
+                    </div>
                   </div>
-                  <div>
-                    <h2 className="font-black text-lg uppercase tracking-tighter">Client Portal</h2>
-                    <p className="mono text-[8px] text-text/40">Post roles · Get instant hiring intelligence · Featured on wprotalents.lat</p>
-                  </div>
-                </div>
 
-                {/* Job Post Form */}
-                <div className="border border-border bg-surface/30 p-6 mb-6">
-                  <div className="flex items-center gap-2 mb-5">
-                    <span className="mono text-[9px] font-bold text-accent tracking-widest uppercase">Post a Role</span>
-                    <div className="h-px flex-1 bg-border" />
-                    <span className="mono text-[8px] text-text/30">Featured on wprotalents.lat</span>
-                  </div>
-                  <ClientJobPostForm
-                    loading={clientInsightsLoading}
-                    onSubmit={(data) => {
-                      setClientInsightsLoading(true);
-                      const roleKey = data.role
-                        .toLowerCase()
-                        .replace(/\s*\/\s*/g, '_')
-                        .replace(/\s+/g, '_')
-                        .replace(/[^a-z_]/g, '');
-                      const plan = generateHiringPlan(data, {});
-                      const reach = estimateNetworkReach({ role: roleKey, seniority: data.seniority });
-                      setClientHiringPlan(plan);
-                      setClientNetworkReach(reach);
-                      setClientFormData(data);
-                      setClientInsightsLoading(false);
-                    }}
-                  />
-                  {clientHiringPlan && clientNetworkReach && clientFormData && (
-                    <ClientInsightsCard
-                      plan={clientHiringPlan}
-                      reach={clientNetworkReach}
-                      role={clientFormData.role}
-                      seniority={clientFormData.seniority}
-                      planType={clientFormData.planType}
+                  {/* Job Post Form */}
+                  <div className="border border-border bg-surface/30 p-6 mb-6">
+                    <div className="flex items-center gap-2 mb-5">
+                      <span className="mono text-[9px] font-bold text-accent tracking-widest uppercase">Post a Role</span>
+                      <div className="h-px flex-1 bg-border" />
+                      <span className="mono text-[8px] text-text/30">Featured on wprotalents.lat</span>
+                    </div>
+                    <ClientJobPostForm
+                      loading={clientInsightsLoading}
+                      onSubmit={(data) => {
+                        setClientInsightsLoading(true);
+                        const roleKey = data.role
+                          .toLowerCase()
+                          .replace(/\s*\/\s*/g, '_')
+                          .replace(/\s+/g, '_')
+                          .replace(/[^a-z_]/g, '');
+                        const plan = generateHiringPlan(data, {});
+                        const reach = estimateNetworkReach({ role: roleKey, seniority: data.seniority });
+                        setClientHiringPlan(plan);
+                        setClientNetworkReach(reach);
+                        setClientFormData(data);
+                        setClientInsightsLoading(false);
+                      }}
                     />
-                  )}
-                </div>
+                    {clientHiringPlan && clientNetworkReach && clientFormData && (
+                      <ClientInsightsCard
+                        plan={clientHiringPlan}
+                        reach={clientNetworkReach}
+                        role={clientFormData.role}
+                        seniority={clientFormData.seniority}
+                        planType={clientFormData.planType}
+                      />
+                    )}
+                  </div>
 
-                {/* Company Resources */}
-                <div className="border border-border bg-surface/30 p-6">
-                  <div className="flex items-center gap-2 mb-5">
-                    <span className="mono text-[9px] font-bold text-accent tracking-widest uppercase">Resources for Hiring Managers</span>
-                  </div>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                    {[
-                      { tag: 'TALENT STRATEGY', color: 'text-violet-400', title: 'How to Build a High-Performance Distributed Team in LATAM', desc: 'Hiring frameworks, onboarding, and culture for remote-first tech companies.', url: 'https://hbr.org/topic/subject/hiring', source: 'HBR' },
-                      { tag: 'AI & HIRING', color: 'text-accent', title: 'How AI Is Transforming Talent Acquisition in 2026', desc: 'From sourcing automation to AI-assisted screening — what actually works.', url: 'https://www.linkedin.com/business/talent/blog', source: 'LinkedIn Talent' },
-                      { tag: 'MARKET DATA', color: 'text-emerald-400', title: 'LATAM Salary Benchmarks for Tech Roles — 2026', desc: 'Up-to-date compensation data across Colombia, Brazil, Argentina, and Mexico.', url: 'https://www.levels.fyi/t/software-engineer/locations/latin-america', source: 'Levels.fyi' },
-                      { tag: 'RETENTION', color: 'text-blue-400', title: 'Why Senior Engineers Leave — And How to Keep Them', desc: 'The real reasons your best people walk, and what actually retains top talent.', url: 'https://hbr.org/2023/06/why-your-best-employees-leave-and-how-to-keep-them', source: 'HBR' },
-                    ].map((a, i) => (
-                      <a key={i} href={a.url} target="_blank" rel="noopener noreferrer"
-                        className="group flex flex-col gap-1.5 p-4 bg-bg border border-border hover:border-accent/30 transition-colors">
-                        <div className="flex items-center justify-between">
-                          <span className={`mono text-[7px] font-bold ${a.color}`}>{a.tag}</span>
-                          <span className="mono text-[7px] text-text/20">{a.source}</span>
-                        </div>
-                        <h5 className="text-xs font-bold leading-snug group-hover:text-accent transition-colors">{a.title}</h5>
-                        <p className="mono text-[9px] text-text/40 leading-snug line-clamp-2">{a.desc}</p>
-                        <span className="mono text-[7px] text-accent/40 group-hover:text-accent transition-colors flex items-center gap-1 mt-auto">READ <ArrowUpRight size={8} /></span>
-                      </a>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            ) : (
-              /* ── Intelligence Dashboard ──────────────────────────────── */
-              <div className="grid grid-cols-12 gap-px bg-border min-h-full">
-              {/* Dashboard Content (Grid of Widgets) */}
-              <div className="col-span-12 lg:col-span-8 flex flex-col gap-px bg-border">
-                {/* Top Row: Map and Radar */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-px bg-border">
-                  {widgets.map !== false && (
-                  <div className="md:col-span-2 bg-bg relative min-h-[400px]">
-                    <div className="absolute top-4 left-4 z-20 flex items-center gap-2 mono text-[9px] bg-surface/80 p-2 border border-border">
-                      <Globe size={10} className="text-accent" /> {t.worldMap}
+                  {/* Company Resources */}
+                  <div className="border border-border bg-surface/30 p-6">
+                    <div className="flex items-center gap-2 mb-5">
+                      <span className="mono text-[9px] font-bold text-accent tracking-widest uppercase">Resources for Hiring Managers</span>
                     </div>
-                    <WorldMap />
-                  </div>
-                  )}
-                  {widgets.radar !== false && (
-                  <div className={`bg-bg relative p-4 flex flex-col ${widgets.map === false ? 'md:col-span-3' : ''}`}>
-                    <div className="flex items-center justify-between mb-4">
-                      <div className="mono text-[9px] text-text/40 flex items-center gap-2">
-                        <Activity size={10} className="text-accent" /> {t.radar}
-                      </div>
-                    </div>
-                    <RadarWidget lang={lang} count={briefings.length} />
-                    <div className="mt-4 space-y-2">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                       {[
-                        { label: 'Executive / C-Level', color: 'bg-yellow-500', pct: 12 },
-                        { label: 'Senior Individual Contributor', color: 'bg-green-500', pct: 38 },
-                        { label: 'Mid-Level', color: 'bg-blue-400', pct: 35 },
-                        { label: 'Emerging / Rising Talent', color: 'bg-accent', pct: 15 }
-                      ].map(item => (
-                        <div key={item.label} className="flex items-center justify-between mono text-[8px]">
-                          <div className="flex items-center gap-2">
-                            <div className={`w-1.5 h-1.5 rounded-full ${item.color}`} />
-                            {item.label}
+                        { tag: 'TALENT STRATEGY', color: 'text-violet-400', title: 'How to Build a High-Performance Distributed Team in LATAM', desc: 'Hiring frameworks, onboarding, and culture for remote-first tech companies.', url: 'https://hbr.org/topic/subject/hiring', source: 'HBR' },
+                        { tag: 'AI & HIRING', color: 'text-accent', title: 'How AI Is Transforming Talent Acquisition in 2026', desc: 'From sourcing automation to AI-assisted screening — what actually works.', url: 'https://www.linkedin.com/business/talent/blog', source: 'LinkedIn Talent' },
+                        { tag: 'MARKET DATA', color: 'text-emerald-400', title: 'LATAM Salary Benchmarks for Tech Roles — 2026', desc: 'Up-to-date compensation data across Colombia, Brazil, Argentina, and Mexico.', url: 'https://www.levels.fyi/t/software-engineer/locations/latin-america', source: 'Levels.fyi' },
+                        { tag: 'RETENTION', color: 'text-blue-400', title: 'Why Senior Engineers Leave — And How to Keep Them', desc: 'The real reasons your best people walk, and what actually retains top talent.', url: 'https://hbr.org/2023/06/why-your-best-employees-leave-and-how-to-keep-them', source: 'HBR' },
+                      ].map((a, i) => (
+                        <a key={i} href={a.url} target="_blank" rel="noopener noreferrer"
+                          className="group flex flex-col gap-1.5 p-4 bg-bg border border-border hover:border-accent/30 transition-colors">
+                          <div className="flex items-center justify-between">
+                            <span className={`mono text-[7px] font-bold ${a.color}`}>{a.tag}</span>
+                            <span className="mono text-[7px] text-text/20">{a.source}</span>
                           </div>
-                          <span className="text-text/40">{item.pct}%</span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                  )}
-                </div>
-
-                {/* Middle Row: Conflict Monitor and News */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-px bg-border">
-                  <div className="bg-bg p-6 flex flex-col">
-                    <div className="flex items-center justify-between mb-6">
-                      <div className="mono text-[9px] text-accent flex items-center gap-2">
-                        <Zap size={10} /> {t.latAmSignal} // FEATURED
-                      </div>
-                      <div className="mono text-[8px] text-text/20">WEEK 13 // 2026</div>
-                    </div>
-                    <div className="flex-1">
-                      <h4 className="text-xl font-black uppercase tracking-tight mb-4 text-text">
-                        {t.signalTitle}
-                      </h4>
-                      <p className="text-xs leading-relaxed text-text/70 mb-4">
-                        {t.signalDesc1}
-                      </p>
-                      <p className="text-xs leading-relaxed text-text/70 mb-6">
-                        {t.signalDesc2}
-                      </p>
-                      <div className="so-what !my-0 !py-3">
-                        <span className="mono font-bold text-accent block mb-1 tracking-widest">{t.actionable.toUpperCase()}</span>
-                        <p className="text-xs italic">
-                          {t.signalSoWhat}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="bg-bg p-6">
-                    <div className="flex items-center justify-between mb-6">
-                      <div className="mono text-[9px] text-text/40 flex items-center gap-2">
-                        <Radio size={10} className="text-accent" /> {t.newsFeed}
-                      </div>
-                    </div>
-                    <div className="space-y-6">
-                      {t.newsFeedItems.map((news, i) => (
-                        <a key={i} href={news.url} target="_blank" rel="noopener noreferrer" className="group block">
-                          <h5 className="text-sm font-bold group-hover:text-accent transition-colors mb-1 flex items-start gap-1">
-                            {news.title}
-                            <ArrowUpRight size={11} className="shrink-0 mt-0.5 text-text/20 group-hover:text-accent transition-colors" />
-                          </h5>
-                          <div className="flex gap-3 mono text-[8px] text-text/40">
-                            <span className="text-accent">{news.source}</span>
-                            <span>{news.time} {t.ago}</span>
-                          </div>
+                          <h5 className="text-xs font-bold leading-snug group-hover:text-accent transition-colors">{a.title}</h5>
+                          <p className="mono text-[9px] text-text/40 leading-snug line-clamp-2">{a.desc}</p>
+                          <span className="mono text-[7px] text-accent/40 group-hover:text-accent transition-colors flex items-center gap-1 mt-auto">READ <ArrowUpRight size={8} /></span>
                         </a>
                       ))}
                     </div>
                   </div>
                 </div>
-
-                {/* Market Intel Integration: Brief and Job News */}
-                {marketIntelData.brief && (
-                  <div className="bg-bg p-6 border-b border-border">
-                    <div className="flex items-center gap-2 mb-6">
-                      <Zap size={10} className="text-accent" />
-                      <div className="mono text-[9px] text-accent font-bold uppercase tracking-widest">AI Impact Brief</div>
-                    </div>
-                    <div className="bg-surface border border-accent/20 p-6 relative overflow-hidden">
-                      <div className="absolute top-0 right-0 p-4 opacity-5">
-                        <Zap size={48} className="text-accent" />
-                      </div>
-                      <p className="text-lg font-medium leading-relaxed text-text/90 italic">
-                        "{marketIntelData.brief}"
-                      </p>
-                    </div>
-                  </div>
-                )}
-
-                {marketIntelData.news.length > 0 && (
-                  <div className="bg-bg p-6 border-b border-border">
-                    <div className="flex items-center gap-2 mb-6">
-                      <Newspaper size={10} className="text-accent" />
-                      <div className="mono text-[9px] text-text/40 font-bold uppercase tracking-widest">Today's Job News</div>
-                    </div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      {marketIntelData.news.slice(0, 4).map((item, i) => (
-                        <a 
-                          key={i} 
-                          href={item.url} 
-                          target="_blank" 
-                          rel="noopener noreferrer"
-                          className="p-4 bg-surface border border-border hover:border-accent/40 transition-all group"
-                        >
-                          <div className="flex justify-between items-start gap-2 mb-2">
-                            <span className="mono text-[8px] text-accent uppercase">{item.source}</span>
-                            <span className="mono text-[8px] text-text/20">{new Date(item.publishedAt).toLocaleDateString()}</span>
+              ) : (
+                /* ── Intelligence Dashboard ──────────────────────────────── */
+                <div className="grid grid-cols-12 gap-px bg-border min-h-full">
+                  {/* Dashboard Content (Grid of Widgets) */}
+                  <div className="col-span-12 lg:col-span-8 flex flex-col gap-px bg-border">
+                    {/* Top Row: Map and Radar */}
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-px bg-border">
+                      {widgets.map !== false && (
+                        <div className="md:col-span-2 bg-bg relative min-h-[400px]">
+                          <div className="absolute top-4 left-4 z-20 flex items-center gap-2 mono text-[9px] bg-surface/80 p-2 border border-border">
+                            <Globe size={10} className="text-accent" /> {t.worldMap}
                           </div>
-                          <h5 className="text-sm font-bold group-hover:text-accent transition-colors line-clamp-2">{item.title}</h5>
-                        </a>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {/* Company Resources // Curated Articles */}
-                <div className="bg-bg p-6 border-b border-border">
-                  <div className="flex items-center gap-2 mb-5">
-                    <Briefcase size={10} className="text-accent" />
-                    <div className="mono text-[9px] text-accent font-bold uppercase tracking-widest">Company Resources // Curated for You</div>
-                  </div>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                    {[
-                      { tag: 'TALENT STRATEGY', color: 'text-violet-400', title: 'How to Build a High-Performance Distributed Team in LATAM', desc: 'Hiring frameworks, onboarding, and culture for remote-first tech companies.', url: 'https://hbr.org/topic/subject/hiring', source: 'Harvard Business Review' },
-                      { tag: 'AI & HIRING', color: 'text-accent', title: 'How AI Is Transforming Talent Acquisition in 2026', desc: 'From sourcing automation to AI-assisted screening — what actually works.', url: 'https://www.linkedin.com/business/talent/blog', source: 'LinkedIn Talent Blog' },
-                      { tag: 'MARKET DATA', color: 'text-emerald-400', title: 'LATAM Salary Benchmarks for Tech Roles — 2026 Report', desc: 'Up-to-date compensation data across Colombia, Brazil, Argentina, and Mexico.', url: 'https://www.levels.fyi/t/software-engineer/locations/latin-america', source: 'Levels.fyi' },
-                      { tag: 'RETENTION', color: 'text-blue-400', title: 'Why Senior Engineers Leave — And How to Keep Them', desc: 'The real reasons your best people walk, and what actually retains top talent.', url: 'https://hbr.org/2023/06/why-your-best-employees-leave-and-how-to-keep-them', source: 'HBR' },
-                      { tag: 'JOB DESCRIPTIONS', color: 'text-yellow-400', title: 'How to Write Job Descriptions That Attract Senior Talent', desc: 'Most JDs repel the best candidates. Here\'s what top companies do differently.', url: 'https://www.linkedin.com/business/talent/blog/talent-acquisition/how-to-write-a-job-description', source: 'LinkedIn Talent' },
-                      { tag: 'REMOTE TEAMS', color: 'text-violet-400', title: 'Managing Across Time Zones: A Playbook for LATAM Remote Teams', desc: 'Async communication, performance reviews, and trust-building across cultures.', url: 'https://www.mckinsey.com/capabilities/people-and-organizational-performance/our-insights', source: 'McKinsey' },
-                    ].map((a, i) => (
-                      <a key={i} href={a.url} target="_blank" rel="noopener noreferrer"
-                        className="group flex flex-col gap-1.5 p-4 bg-surface border border-border hover:border-accent/30 transition-colors">
-                        <div className="flex items-center justify-between">
-                          <span className={`mono text-[7px] font-bold ${a.color}`}>{a.tag}</span>
-                          <span className="mono text-[7px] text-text/20">{a.source}</span>
+                          <WorldMap />
                         </div>
-                        <h5 className="text-xs font-bold leading-snug group-hover:text-accent transition-colors">{a.title}</h5>
-                        <p className="mono text-[9px] text-text/40 leading-snug line-clamp-2">{a.desc}</p>
-                        <span className="mono text-[7px] text-accent/40 group-hover:text-accent transition-colors flex items-center gap-1 mt-auto">
-                          READ <ArrowUpRight size={8} />
-                        </span>
-                      </a>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Bottom Row: Intelligence Feed */}
-                <div className="bg-bg p-6 flex-1">
-                  <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8">
-                    <div className="mono text-[9px] text-text/40 flex items-center gap-2">
-                      <Activity size={10} className="text-accent" /> {t.dailyBriefing}
-                    </div>
-                    
-                    <div className="flex flex-wrap gap-2">
-                      {[
-                        { id: 'Workforce Daily', icon: Cpu, label: 'Workforce' },
-                        { id: 'TechJobs', icon: Briefcase, label: 'TechJobs' },
-                        { id: 'AI Impact', icon: Brain, label: 'AI Impact' },
-                        { id: 'Recruitment', icon: SearchCode, label: 'Recruitment' },
-                        { id: 'HR', icon: UserCheck, label: 'HR' }
-                      ].map((cat) => (
-                        <button
-                          key={cat.id}
-                          onClick={() => setCategory(cat.id as Category)}
-                          className={`px-3 py-1.5 mono text-[9px] font-bold border transition-all flex items-center gap-2 ${
-                            category === cat.id 
-                              ? 'bg-accent border-accent text-black' 
-                              : 'bg-surface border-border text-text/40 hover:border-text/20'
-                          }`}
-                        >
-                          <cat.icon size={12} /> {cat.label}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                  
-                    <div className="space-y-4">
-                      {/* Intelligence feed — Workforce Daily shows all, other tabs filter by category */}
-                      {(category === 'Workforce Daily' ? filteredBriefings : filteredBriefings.filter(b => b.category === category)).map((briefing) => (
-                        <article 
-                          key={briefing.id}
-                          onClick={() => {
-                            if (briefing.isPremium && subscriptionStatus !== 'premium') {
-                              document.getElementById('subscription-section')?.scrollIntoView({ behavior: 'smooth' });
-                              return;
-                            }
-                            setSelectedBriefing(briefing);
-                          }}
-                          className={`p-6 bg-surface border border-border hover:border-accent/30 transition-all cursor-pointer group relative overflow-hidden ${
-                            briefing.isPremium && subscriptionStatus !== 'premium' ? 'opacity-75' : ''
-                          }`}
-                        >
-                          {briefing.isPremium && (
-                          <div className="absolute top-0 right-0 px-3 py-1 bg-accent text-black mono text-[8px] font-bold uppercase tracking-widest">
-                              Premium
+                      )}
+                      {widgets.radar !== false && (
+                        <div className={`bg-bg relative p-4 flex flex-col ${widgets.map === false ? 'md:col-span-3' : ''}`}>
+                          <div className="flex items-center justify-between mb-4">
+                            <div className="mono text-[9px] text-text/40 flex items-center gap-2">
+                              <Activity size={10} className="text-accent" /> {t.radar}
                             </div>
-                          )}
-                          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                            <div className="flex-1">
-                              <div className="flex items-center gap-3 mb-3">
-                                <span className="px-2 py-0.5 bg-accent text-black text-[8px] font-mono font-bold">{briefing.region}</span>
-                                <span className="mono text-[8px] text-text/40">ID: {briefing.id.padStart(4, '0')}</span>
-                                <span className="mono text-[8px] text-text/40">{briefing.date}</span>
-                                <span className="mono text-[8px] text-accent/60 uppercase tracking-widest">{briefing.category}</span>
+                          </div>
+                          <RadarWidget lang={lang} count={briefings.length} />
+                          <div className="mt-4 space-y-2">
+                            {[
+                              { label: 'Executive / C-Level', color: 'bg-yellow-500', pct: 12 },
+                              { label: 'Senior Individual Contributor', color: 'bg-green-500', pct: 38 },
+                              { label: 'Mid-Level', color: 'bg-blue-400', pct: 35 },
+                              { label: 'Emerging / Rising Talent', color: 'bg-accent', pct: 15 }
+                            ].map(item => (
+                              <div key={item.label} className="flex items-center justify-between mono text-[8px]">
+                                <div className="flex items-center gap-2">
+                                  <div className={`w-1.5 h-1.5 rounded-full ${item.color}`} />
+                                  {item.label}
+                                </div>
+                                <span className="text-text/40">{item.pct}%</span>
                               </div>
-                              <h3 className="text-xl font-black uppercase tracking-tight group-hover:text-accent transition-colors flex items-center gap-2">
-                                {briefing.content[lang].title}
-                                {briefing.isPremium && subscriptionStatus !== 'premium' && <Lock size={14} className="text-accent" />}
-                              </h3>
-                            </div>
-                            <div className="flex items-center gap-2 mono text-[9px] font-bold text-accent opacity-0 group-hover:opacity-100 transition-opacity">
-                              {briefing.isPremium && subscriptionStatus !== 'premium' ? 'Upgrade to Unlock' : t.openReport} <ArrowUpRight size={14} />
-                            </div>
+                            ))}
                           </div>
-                        </article>
-                      ))}
-                    </div>
-                </div>
-              </div>
-
-              {/* Sidebar */}
-              <div className="col-span-12 lg:col-span-4 flex flex-col gap-px bg-border">
-                {widgets.pulse !== false && <section className="p-8 bg-bg">
-                  <div className="flex items-center justify-between mb-8">
-                    <div className="mono text-[9px] text-text/40 flex items-center gap-2">
-                      <TrendingUp size={10} className="text-accent" /> {t.marketPulse}
-                    </div>
-                    <span className={`mono text-[7px] px-1.5 py-0.5 border ${marketIntelData.news.length > 0 ? 'border-green-500/30 text-green-500' : 'border-text/10 text-text/20'}`}>
-                      {marketIntelData.news.length > 0 ? '● LIVE' : '○ CACHED'}
-                    </span>
-                  </div>
-                  <div className="space-y-6">
-                    {marketIntelData.cryptoNews.length > 0 && (
-                      <div className="p-4 bg-surface border border-border">
-                        <div className="flex items-center gap-2 mb-4">
-                          <Bitcoin size={12} className="text-accent" />
-                          <span className="mono font-bold text-[10px] uppercase tracking-widest">Crypto & Web3 Pulse</span>
                         </div>
-                        <div className="space-y-3">
-                          {marketIntelData.cryptoNews.slice(0, 3).map((item, i) => (
-                            <a key={i} href={item.url} target="_blank" rel="noopener noreferrer" className="block group">
-                              <h6 className="text-[10px] font-bold group-hover:text-accent transition-colors line-clamp-1">{item.title}</h6>
-                              <span className="mono text-[7px] text-text/40 uppercase">{item.source}</span>
+                      )}
+                    </div>
+
+                    {/* Middle Row: Conflict Monitor and News */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-px bg-border">
+                      <div className="bg-bg p-6 flex flex-col">
+                        <div className="flex items-center justify-between mb-6">
+                          <div className="mono text-[9px] text-accent flex items-center gap-2">
+                            <Zap size={10} /> {t.latAmSignal} // FEATURED
+                          </div>
+                          <div className="mono text-[8px] text-text/20">WEEK 13 // 2026</div>
+                        </div>
+                        <div className="flex-1">
+                          <h4 className="text-xl font-black uppercase tracking-tight mb-4 text-text">
+                            {t.signalTitle}
+                          </h4>
+                          <p className="text-xs leading-relaxed text-text/70 mb-4">
+                            {t.signalDesc1}
+                          </p>
+                          <p className="text-xs leading-relaxed text-text/70 mb-6">
+                            {t.signalDesc2}
+                          </p>
+                          <div className="so-what !my-0 !py-3">
+                            <span className="mono font-bold text-accent block mb-1 tracking-widest">{t.actionable.toUpperCase()}</span>
+                            <p className="text-xs italic">
+                              {t.signalSoWhat}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="bg-bg p-6">
+                        <div className="flex items-center justify-between mb-6">
+                          <div className="mono text-[9px] text-text/40 flex items-center gap-2">
+                            <Radio size={10} className="text-accent" /> {t.newsFeed}
+                          </div>
+                        </div>
+                        <div className="space-y-6">
+                          {t.newsFeedItems.map((news, i) => (
+                            <a key={i} href={news.url} target="_blank" rel="noopener noreferrer" className="group block">
+                              <h5 className="text-sm font-bold group-hover:text-accent transition-colors mb-1 flex items-start gap-1">
+                                {news.title}
+                                <ArrowUpRight size={11} className="shrink-0 mt-0.5 text-text/20 group-hover:text-accent transition-colors" />
+                              </h5>
+                              <div className="flex gap-3 mono text-[8px] text-text/40">
+                                <span className="text-accent">{news.source}</span>
+                                <span>{news.time} {t.ago}</span>
+                              </div>
+                            </a>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Market Intel Integration: Brief and Job News */}
+                    {marketIntelData.brief && (
+                      <div className="bg-bg p-6 border-b border-border">
+                        <div className="flex items-center gap-2 mb-6">
+                          <Zap size={10} className="text-accent" />
+                          <div className="mono text-[9px] text-accent font-bold uppercase tracking-widest">AI Impact Brief</div>
+                        </div>
+                        <div className="bg-surface border border-accent/20 p-6 relative overflow-hidden">
+                          <div className="absolute top-0 right-0 p-4 opacity-5">
+                            <Zap size={48} className="text-accent" />
+                          </div>
+                          <p className="text-lg font-medium leading-relaxed text-text/90 italic">
+                            "{marketIntelData.brief}"
+                          </p>
+                        </div>
+                      </div>
+                    )}
+
+                    {marketIntelData.news.length > 0 && (
+                      <div className="bg-bg p-6 border-b border-border">
+                        <div className="flex items-center gap-2 mb-6">
+                          <Newspaper size={10} className="text-accent" />
+                          <div className="mono text-[9px] text-text/40 font-bold uppercase tracking-widest">Today's Job News</div>
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          {marketIntelData.news.slice(0, 4).map((item, i) => (
+                            <a 
+                              key={i} 
+                              href={item.url} 
+                              target="_blank" 
+                              rel="noopener noreferrer"
+                              className="p-4 bg-surface border border-border hover:border-accent/40 transition-all group"
+                            >
+                              <div className="flex justify-between items-start gap-2 mb-2">
+                                <span className="mono text-[8px] text-accent uppercase">{item.source}</span>
+                                <span className="mono text-[8px] text-text/20">{new Date(item.publishedAt).toLocaleDateString()}</span>
+                              </div>
+                              <h5 className="text-sm font-bold group-hover:text-accent transition-colors line-clamp-2">{item.title}</h5>
                             </a>
                           ))}
                         </div>
                       </div>
                     )}
 
-                    {t.marketPulseItems.map((item, i) => (
-                      <div key={item.label} className="flex justify-between items-center p-4 bg-surface border border-border">
-                        <div className="flex items-center gap-3">
-                          <div className="p-2 bg-surface text-accent">
-                            {i === 0 ? <TrendingUp size={12} /> : i === 1 ? <Users size={12} /> : <Globe size={12} />}
-                          </div>
-                          <div className="flex flex-col">
-                            <span className="mono font-bold text-[10px]">{item.label}</span>
-                            <div className="flex items-center gap-2">
-                              <span className="text-[8px] text-green-500 font-mono">{item.trend}</span>
-                              <span className="text-[8px] text-text/40 font-mono">{t.sent}: {item.sentiment}</span>
+                    {/* Company Resources // Curated Articles */}
+                    <div className="bg-bg p-6 border-b border-border">
+                      <div className="flex items-center gap-2 mb-5">
+                        <Briefcase size={10} className="text-accent" />
+                        <div className="mono text-[9px] text-accent font-bold uppercase tracking-widest">Company Resources // Curated for You</div>
+                      </div>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        {[
+                          { tag: 'TALENT STRATEGY', color: 'text-violet-400', title: 'How to Build a High-Performance Distributed Team in LATAM', desc: 'Hiring frameworks, onboarding, and culture for remote-first tech companies.', url: 'https://hbr.org/topic/subject/hiring', source: 'Harvard Business Review' },
+                          { tag: 'AI & HIRING', color: 'text-accent', title: 'How AI Is Transforming Talent Acquisition in 2026', desc: 'From sourcing automation to AI-assisted screening — what actually works.', url: 'https://www.linkedin.com/business/talent/blog', source: 'LinkedIn Talent Blog' },
+                          { tag: 'MARKET DATA', color: 'text-emerald-400', title: 'LATAM Salary Benchmarks for Tech Roles — 2026 Report', desc: 'Up-to-date compensation data across Colombia, Brazil, Argentina, and Mexico.', url: 'https://www.levels.fyi/t/software-engineer/locations/latin-america', source: 'Levels.fyi' },
+                          { tag: 'RETENTION', color: 'text-blue-400', title: 'Why Senior Engineers Leave — And How to Keep Them', desc: 'The real reasons your best people walk, and what actually retains top talent.', url: 'https://hbr.org/2023/06/why-your-best-employees-leave-and-how-to-keep-them', source: 'HBR' },
+                          { tag: 'JOB DESCRIPTIONS', color: 'text-yellow-400', title: 'How to Write Job Descriptions That Attract Senior Talent', desc: 'Most JDs repel the best candidates. Here\'s what top companies do differently.', url: 'https://www.linkedin.com/business/talent/blog/talent-acquisition/how-to-write-a-job-description', source: 'LinkedIn Talent' },
+                          { tag: 'REMOTE TEAMS', color: 'text-violet-400', title: 'Managing Across Time Zones: A Playbook for LATAM Remote Teams', desc: 'Async communication, performance reviews, and trust-building across cultures.', url: 'https://www.mckinsey.com/capabilities/people-and-organizational-performance/our-insights', source: 'McKinsey' },
+                        ].map((a, i) => (
+                          <a key={i} href={a.url} target="_blank" rel="noopener noreferrer"
+                            className="group flex flex-col gap-1.5 p-4 bg-surface border border-border hover:border-accent/30 transition-colors">
+                            <div className="flex items-center justify-between">
+                              <span className={`mono text-[7px] font-bold ${a.color}`}>{a.tag}</span>
+                              <span className="mono text-[7px] text-text/20">{a.source}</span>
                             </div>
-                          </div>
-                        </div>
-                        <span className="px-2 py-0.5 bg-surface text-accent text-[8px] font-mono border border-accent/20">{item.value}</span>
-                      </div>
-                    ))}
-                  </div>
-                </section>}
-
-                {widgets.fx !== false && <section className="p-8 bg-bg">
-                  <div className="mono text-[9px] text-text/40 mb-4 flex items-center gap-2">
-                    <Activity size={10} className="text-accent" /> {t.fxRates}
-                  </div>
-                  <div className="grid grid-cols-3 gap-2">
-                    {[
-                      { pair: 'COP/USD', rate: '4287', change: '-0.2%' },
-                      { pair: 'BRL/USD', rate: '5.81', change: '+0.5%' },
-                      { pair: 'ARS/USD', rate: '1042', change: '-1.1%' }
-                    ].map(fx => (
-                      <div key={fx.pair} className="bg-surface border border-border p-3 flex flex-col items-center">
-                        <span className="mono text-[7px] text-text/40 mb-1">{fx.pair}</span>
-                        <span className="text-sm font-black text-text">{fx.rate}</span>
-                        <span className={`text-[7px] font-mono ${fx.change.startsWith('+') ? 'text-green-500' : 'text-red-500'}`}>{fx.change}</span>
-                      </div>
-                    ))}
-                  </div>
-                </section>}
-
-                {/* Market Intel Charts */}
-                {marketIntelData.trends.sectors.length > 0 && (
-                  <section className="p-8 bg-bg border-t border-border">
-                    <div className="mono text-[9px] text-text/40 mb-6 flex items-center gap-2">
-                      <TrendingUp size={10} className="text-accent" /> TOP HIRING SECTORS
-                    </div>
-                    <div className="h-[200px] w-full">
-                      <ResponsiveContainer width="100%" height="100%">
-                        <BarChart data={marketIntelData.trends.sectors} layout="vertical">
-                          <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" horizontal={false} />
-                          <XAxis type="number" hide />
-                          <YAxis 
-                            dataKey="name" 
-                            type="category" 
-                            width={80} 
-                            stroke="var(--text)" 
-                            fontSize={8}
-                            tick={{ fill: 'var(--text)', opacity: 0.4 }}
-                          />
-                          <Tooltip 
-                            contentStyle={{ backgroundColor: 'var(--surface)', border: '1px solid var(--border)', fontSize: '10px' }}
-                            itemStyle={{ color: 'var(--accent)' }}
-                          />
-                          <Bar dataKey="count" fill="var(--accent)" radius={[0, 2, 2, 0]} />
-                        </BarChart>
-                      </ResponsiveContainer>
-                    </div>
-                  </section>
-                )}
-
-                {marketIntelData.volume.length > 0 && (
-                  <section className="p-8 bg-bg border-t border-border">
-                    <div className="mono text-[9px] text-text/40 mb-6 flex items-center gap-2">
-                      <Globe size={10} className="text-accent" /> LATAM JOB VOLUME
-                    </div>
-                    <div className="h-[200px] w-full">
-                      <ResponsiveContainer width="100%" height="100%">
-                        <BarChart data={marketIntelData.volume}>
-                          <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" vertical={false} />
-                          <XAxis 
-                            dataKey="country" 
-                            stroke="var(--text)" 
-                            fontSize={8}
-                            tick={{ fill: 'var(--text)', opacity: 0.4 }}
-                          />
-                          <YAxis 
-                            stroke="var(--text)" 
-                            fontSize={8}
-                            tick={{ fill: 'var(--text)', opacity: 0.4 }}
-                          />
-                          <Tooltip 
-                            contentStyle={{ backgroundColor: 'var(--surface)', border: '1px solid var(--border)', fontSize: '10px' }}
-                            itemStyle={{ color: 'var(--accent)' }}
-                          />
-                          <Bar dataKey="count" fill="var(--accent)" radius={[2, 2, 0, 0]} />
-                        </BarChart>
-                      </ResponsiveContainer>
-                    </div>
-                  </section>
-                )}
-
-                {marketIntelData.trends.companies.length > 0 && (
-                  <section className="p-8 bg-bg border-t border-border">
-                    <div className="mono text-[9px] text-text/40 mb-6 flex items-center gap-2">
-                      <Users size={10} className="text-accent" /> MOST ACTIVE COMPANIES
-                    </div>
-                    <div className="space-y-2">
-                      {marketIntelData.trends.companies.slice(0, 5).map((company, idx) => (
-                        <div key={idx} className="flex items-center justify-between p-2 bg-surface border border-border">
-                          <span className="font-bold text-[10px]">{company.name}</span>
-                          <span className="mono text-[8px] text-accent">{company.count} roles</span>
-                        </div>
-                      ))}
-                    </div>
-                  </section>
-                )}
-
-                <section className="p-8 bg-bg grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="bg-surface border border-border p-6 flex flex-col justify-between">
-                    <div>
-                      <div className="flex items-center justify-between mb-6">
-                        <div className="mono text-[9px] text-accent flex items-center gap-2">
-                          <Cpu size={10} /> {t.aiToolOfWeek} // REVIEW
-                        </div>
-                        <div className="mono text-[8px] text-text/20">{t.aiToolName}</div>
-                      </div>
-                      
-                      <h4 className="text-lg font-black uppercase tracking-tight mb-3">
-                        {t.aiToolTitle}
-                      </h4>
-                      
-                      <p className="text-xs text-text/70 leading-relaxed mb-4">
-                        {t.aiToolDesc}
-                      </p>
-                      
-                      <div className="bg-surface/40 p-3 border-l-2 border-accent mb-4">
-                        <span className="mono text-[8px] text-accent block mb-1 uppercase">{t.aiToolWorkflowLabel}</span>
-                        <p className="text-[11px] leading-snug">
-                          {t.aiToolWorkflow}
-                        </p>
-                      </div>
-
-                      <div className="grid grid-cols-4 gap-2 mb-4">
-                        {t.aiToolScores.map(s => (
-                          <div key={s.label} className="flex flex-col items-center p-2 bg-text/5 border border-text/10">
-                            <span className="mono text-[7px] text-text/40 mb-1">{s.label}</span>
-                            <span className="text-xs font-bold text-accent">{s.score}/5</span>
-                          </div>
+                            <h5 className="text-xs font-bold leading-snug group-hover:text-accent transition-colors">{a.title}</h5>
+                            <p className="mono text-[9px] text-text/40 leading-snug line-clamp-2">{a.desc}</p>
+                            <span className="mono text-[7px] text-accent/40 group-hover:text-accent transition-colors flex items-center gap-1 mt-auto">
+                              READ <ArrowUpRight size={8} />
+                            </span>
+                          </a>
                         ))}
                       </div>
-
-                      <p className="text-[10px] text-text/40 italic mb-4">
-                        {t.aiToolLimitation}
-                      </p>
-
-                      <p className="text-xs font-bold">
-                        {t.aiToolVerdict}
-                      </p>
                     </div>
-                  </div>
 
-                  <div className="grid grid-cols-1 gap-4">
-                    <div className="bg-surface border border-border p-6 flex flex-col justify-between">
-                      <div>
-                        <div className="mono text-[9px] text-accent flex items-center gap-2 mb-6">
-                          <Globe size={10} /> {t.countryWatch} // WEEKLY
+                    {/* Bottom Row: Intelligence Feed */}
+                    <div className="bg-bg p-6 flex-1">
+                      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8">
+                        <div className="mono text-[9px] text-text/40 flex items-center gap-2">
+                          <Activity size={10} className="text-accent" /> {t.dailyBriefing}
                         </div>
-                        <div className="space-y-6">
-                          {t.countryWatchItems.map((item, i) => (
-                            <div key={i} className={`border-l-2 ${i === 0 ? 'border-accent' : 'border-text/20'} pl-4`}>
-                              <p className="text-xs leading-snug">
-                                <span className="font-bold">{item.flag} {item.country}</span> — {item.text}
-                              </p>
-                            </div>
+                        
+                        <div className="flex flex-wrap gap-2">
+                          {[
+                            { id: 'Workforce Daily', icon: Cpu, label: 'Workforce' },
+                            { id: 'TechJobs', icon: Briefcase, label: 'TechJobs' },
+                            { id: 'AI Impact', icon: Brain, label: 'AI Impact' },
+                            { id: 'Recruitment', icon: SearchCode, label: 'Recruitment' },
+                            { id: 'HR', icon: UserCheck, label: 'HR' }
+                          ].map((cat) => (
+                            <button
+                              key={cat.id}
+                              onClick={() => setCategory(cat.id as Category)}
+                              className={`px-3 py-1.5 mono text-[9px] font-bold border transition-all flex items-center gap-2 ${
+                                category === cat.id 
+                                  ? 'bg-accent border-accent text-black' 
+                                  : 'bg-surface border-border text-text/40 hover:border-text/20'
+                              }`}
+                            >
+                              <cat.icon size={12} /> {cat.label}
+                            </button>
                           ))}
                         </div>
                       </div>
-                    </div>
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="bg-surface border border-border p-4 flex flex-col justify-between">
-                        <div className="mono text-[8px] text-text/40 uppercase tracking-widest mb-2">{t.network}</div>
-                        <div className="text-2xl font-black tracking-tighter text-accent">23K+</div>
-                      </div>
-                      <div className="bg-surface border border-border p-4 flex flex-col justify-between">
-                        <div className="mono text-[8px] text-text/40 uppercase tracking-widest mb-2">{t.briefings}</div>
-                        <div className="text-2xl font-black tracking-tighter text-accent">150+</div>
+                      
+                      <div className="space-y-4">
+                        {/* Intelligence feed — Workforce Daily shows all, other tabs filter by category */}
+                        {(category === 'Workforce Daily' ? filteredBriefings : filteredBriefings.filter(b => b.category === category)).map((briefing) => (
+                          <article 
+                            key={briefing.id}
+                            onClick={() => {
+                              if (briefing.isPremium && subscriptionStatus !== 'premium') {
+                                document.getElementById('subscription-section')?.scrollIntoView({ behavior: 'smooth' });
+                                return;
+                              }
+                              setSelectedBriefing(briefing);
+                            }}
+                            className={`p-6 bg-surface border border-border hover:border-accent/30 transition-all cursor-pointer group relative overflow-hidden ${
+                              briefing.isPremium && subscriptionStatus !== 'premium' ? 'opacity-75' : ''
+                            }`}
+                          >
+                            {briefing.isPremium && (
+                              <div className="absolute top-0 right-0 px-3 py-1 bg-accent text-black mono text-[8px] font-bold uppercase tracking-widest">
+                                Premium
+                              </div>
+                            )}
+                            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                              <div className="flex-1">
+                                <div className="flex items-center gap-3 mb-3">
+                                  <span className="px-2 py-0.5 bg-accent text-black text-[8px] font-mono font-bold">{briefing.region}</span>
+                                  <span className="mono text-[8px] text-text/40">ID: {briefing.id.padStart(4, '0')}</span>
+                                  <span className="mono text-[8px] text-text/40">{briefing.date}</span>
+                                  <span className="mono text-[8px] text-accent/60 uppercase tracking-widest">{briefing.category}</span>
+                                </div>
+                                <h3 className="text-xl font-black uppercase tracking-tight group-hover:text-accent transition-colors flex items-center gap-2">
+                                  {briefing.content[lang].title}
+                                  {briefing.isPremium && subscriptionStatus !== 'premium' && <Lock size={14} className="text-accent" />}
+                                </h3>
+                              </div>
+                              <div className="flex items-center gap-2 mono text-[9px] font-bold text-accent opacity-0 group-hover:opacity-100 transition-opacity">
+                                {briefing.isPremium && subscriptionStatus !== 'premium' ? 'Upgrade to Unlock' : t.openReport} <ArrowUpRight size={14} />
+                              </div>
+                            </div>
+                          </article>
+                        ))}
                       </div>
                     </div>
                   </div>
-                </section>
 
-                <section className="p-8 bg-bg">
-                  <div className="mono text-[9px] text-accent mb-6 flex items-center gap-2">
-                    <Linkedin size={10} /> {t.fiveLinks} // CURATED
-                  </div>
-                  <div className="space-y-4">
-                    {t.fiveLinksItems.map((link, i) => (
-                      <a key={i} href={link.url} target="_blank" rel="noopener noreferrer" className="group block border-b border-text/5 pb-4 last:border-0">
-                        <div className="flex justify-between items-start mb-1">
-                          <h5 className="text-sm font-bold group-hover:text-accent transition-colors">{link.title} — {link.source}</h5>
-                          <ArrowUpRight size={14} className="shrink-0 text-text/20 group-hover:text-accent transition-colors" />
+                  {/* Sidebar */}
+                  <div className="col-span-12 lg:col-span-4 flex flex-col gap-px bg-border">
+                    {widgets.pulse !== false && <section className="p-8 bg-bg">
+                      <div className="flex items-center justify-between mb-8">
+                        <div className="mono text-[9px] text-text/40 flex items-center gap-2">
+                          <TrendingUp size={10} className="text-accent" /> {t.marketPulse}
                         </div>
-                        <p className="text-xs text-text/60 leading-snug">{link.why}</p>
-                      </a>
-                    ))}
-                  </div>
-                </section>
+                        <span className={`mono text-[7px] px-1.5 py-0.5 border ${marketIntelData.news.length > 0 ? 'border-green-500/30 text-green-500' : 'border-text/10 text-text/20'}`}>
+                          {marketIntelData.news.length > 0 ? '● LIVE' : '○ CACHED'}
+                        </span>
+                      </div>
+                      <div className="space-y-6">
+                        {marketIntelData.cryptoNews.length > 0 && (
+                          <div className="p-4 bg-surface border border-border">
+                            <div className="flex items-center gap-2 mb-4">
+                              <Bitcoin size={12} className="text-accent" />
+                              <span className="mono font-bold text-[10px] uppercase tracking-widest">Crypto & Web3 Pulse</span>
+                            </div>
+                            <div className="space-y-3">
+                              {marketIntelData.cryptoNews.slice(0, 3).map((item, i) => (
+                                <a key={i} href={item.url} target="_blank" rel="noopener noreferrer" className="block group">
+                                  <h6 className="text-[10px] font-bold group-hover:text-accent transition-colors line-clamp-1">{item.title}</h6>
+                                  <span className="mono text-[7px] text-text/40 uppercase">{item.source}</span>
+                                </a>
+                              ))}
+                            </div>
+                          </div>
+                        )}
 
-                <section className="p-8 bg-accent text-black flex-1">
-                  <div className="mono text-black/60 mb-8 font-bold">{t.joinNetwork}</div>
-                  <h4 className="text-3xl font-black uppercase tracking-tighter leading-none mb-8">
-                    {t.getSignal.split(' ').slice(0, 3).join(' ')} <br />
-                    {t.getSignal.split(' ').slice(3).join(' ')}
-                  </h4>
-                  <div className="space-y-4">
-                    <button 
-                      onClick={handleGenerateBriefing}
-                      disabled={isGenerating}
-                      className="w-full bg-bg text-accent py-6 mono font-bold hover:opacity-90 transition-colors flex items-center justify-center gap-3 disabled:opacity-50"
-                    >
-                      {isGenerating ? (
-                        <>
-                          <Activity size={16} className="animate-spin" />
-                          {t.generatingSignal}
-                        </>
-                      ) : (
-                        <>
-                          <Zap size={16} />
-                          {t.generateNewBriefing}
-                        </>
-                      )}
-                    </button>
-                    <div className="h-px bg-border w-full" />
-                    <p className="mono text-[10px] text-black/60 leading-relaxed">
-                      Select a category above to generate specific intelligence on Jobs, AI Impact, or HR.
-                    </p>
-                  </div>
-                </section>
-              </div>
+                        {t.marketPulseItems.map((item, i) => (
+                          <div key={item.label} className="flex justify-between items-center p-4 bg-surface border border-border">
+                            <div className="flex items-center gap-3">
+                              <div className="p-2 bg-surface text-accent">
+                                {i === 0 ? <TrendingUp size={12} /> : i === 1 ? <Users size={12} /> : <Globe size={12} />}
+                              </div>
+                              <div className="flex flex-col">
+                                <span className="mono font-bold text-[10px]">{item.label}</span>
+                                <div className="flex items-center gap-2">
+                                  <span className="text-[8px] text-green-500 font-mono">{item.trend}</span>
+                                  <span className="text-[8px] text-text/40 font-mono">Sent: {item.sentiment}</span>
+                                </div>
+                              </div>
+                            </div>
+                            <span className="px-2 py-0.5 bg-surface text-accent text-[8px] font-mono border border-accent/20">{item.value}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </section>}
 
-              {/* Upgrade strip */}
-              <div className="col-span-12">
-                <div className="border-t border-border px-6 py-2 flex items-center justify-between gap-4 bg-surface/30">
-                  <span className="mono text-[8px] text-text/25">
-                    <span className="text-accent/70 font-bold">EXECUTIVE</span>
-                    {' · '}Daily briefings · AI job impact reports · Salary data
-                  </span>
-                  <button
-                    onClick={() => setShowUpgrade(v => !v)}
-                    className="mono text-[8px] border border-accent/30 text-accent/70 px-3 py-1 hover:bg-accent hover:text-black hover:border-accent transition-all whitespace-nowrap shrink-0"
-                  >
-                    {showUpgrade ? 'CLOSE ✕' : 'UPGRADE $29 →'}
-                  </button>
+                    {widgets.fx !== false && <section className="p-8 bg-bg">
+                      <div className="mono text-[9px] text-text/40 mb-4 flex items-center gap-2">
+                        <Activity size={10} className="text-accent" /> {t.fxRates}
+                      </div>
+                      <div className="grid grid-cols-3 gap-2">
+                        {[
+                          { pair: 'COP/USD', rate: '4287', change: '-0.2%' },
+                          { pair: 'BRL/USD', rate: '5.81', change: '+0.5%' },
+                          { pair: 'ARS/USD', rate: '1042', change: '-1.1%' }
+                        ].map(fx => (
+                          <div key={fx.pair} className="bg-surface border border-border p-3 flex flex-col items-center">
+                            <span className="mono text-[7px] text-text/40 mb-1">{fx.pair}</span>
+                            <span className="text-sm font-black text-text">{fx.rate}</span>
+                            <span className={`text-[7px] font-mono ${fx.change.startsWith('+') ? 'text-green-500' : 'text-red-500'}`}>{fx.change}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </section>}
+
+                    {/* Market Intel Charts */}
+                    {marketIntelData.trends.sectors.length > 0 && (
+                      <section className="p-8 bg-bg border-t border-border">
+                        <div className="mono text-[9px] text-text/40 mb-6 flex items-center gap-2">
+                          <TrendingUp size={10} className="text-accent" /> TOP HIRING SECTORS
+                        </div>
+                        <div className="h-[200px] w-full">
+                          <ResponsiveContainer width="100%" height="100%">
+                            <BarChart data={marketIntelData.trends.sectors} layout="vertical">
+                              <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" horizontal={false} />
+                              <XAxis type="number" hide />
+                              <YAxis 
+                                dataKey="name" 
+                                type="category" 
+                                width={80} 
+                                stroke="var(--text)" 
+                                fontSize={8}
+                                tick={{ fill: 'var(--text)', opacity: 0.4 }}
+                              />
+                              <Tooltip 
+                                contentStyle={{ backgroundColor: 'var(--surface)', border: '1px solid var(--border)', fontSize: '10px' }}
+                                itemStyle={{ color: 'var(--accent)' }}
+                              />
+                              <Bar dataKey="count" fill="var(--accent)" radius={[0, 2, 2, 0]} />
+                            </BarChart>
+                          </ResponsiveContainer>
+                        </div>
+                      </section>
+                    )}
+
+                    {marketIntelData.volume.length > 0 && (
+                      <section className="p-8 bg-bg border-t border-border">
+                        <div className="mono text-[9px] text-text/40 mb-6 flex items-center gap-2">
+                          <Globe size={10} className="text-accent" /> LATAM JOB VOLUME
+                        </div>
+                        <div className="h-[200px] w-full">
+                          <ResponsiveContainer width="100%" height="100%">
+                            <BarChart data={marketIntelData.volume}>
+                              <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" vertical={false} />
+                              <XAxis 
+                                dataKey="country" 
+                                stroke="var(--text)" 
+                                fontSize={8}
+                                tick={{ fill: 'var(--text)', opacity: 0.4 }}
+                              />
+                              <YAxis 
+                                stroke="var(--text)" 
+                                fontSize={8}
+                                tick={{ fill: 'var(--text)', opacity: 0.4 }}
+                              />
+                              <Tooltip 
+                                contentStyle={{ backgroundColor: 'var(--surface)', border: '1px solid var(--border)', fontSize: '10px' }}
+                                itemStyle={{ color: 'var(--accent)' }}
+                              />
+                              <Bar dataKey="count" fill="var(--accent)" radius={[2, 2, 0, 0]} />
+                            </BarChart>
+                          </ResponsiveContainer>
+                        </div>
+                      </section>
+                    )}
+
+                    {marketIntelData.trends.companies.length > 0 && (
+                      <section className="p-8 bg-bg border-t border-border">
+                        <div className="mono text-[9px] text-text/40 mb-6 flex items-center gap-2">
+                          <Users size={10} className="text-accent" /> MOST ACTIVE COMPANIES
+                        </div>
+                        <div className="space-y-2">
+                          {marketIntelData.trends.companies.slice(0, 5).map((company, idx) => (
+                            <div key={idx} className="flex items-center justify-between p-2 bg-surface border border-border">
+                              <span className="font-bold text-[10px]">{company.name}</span>
+                              <span className="mono text-[8px] text-accent">{company.count} roles</span>
+                            </div>
+                          ))}
+                        </div>
+                      </section>
+                    )}
+
+                    <section className="p-8 bg-bg grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="bg-surface border border-border p-6 flex flex-col justify-between">
+                        <div>
+                          <div className="flex items-center justify-between mb-6">
+                            <div className="mono text-[9px] text-accent flex items-center gap-2">
+                              <Cpu size={10} /> {t.aiToolOfWeek} // REVIEW
+                            </div>
+                            <div className="mono text-[8px] text-text/20">{t.aiToolName}</div>
+                          </div>
+                          
+                          <h4 className="text-lg font-black uppercase tracking-tight mb-3">
+                            {t.aiToolTitle}
+                          </h4>
+                          
+                          <p className="text-xs text-text/70 leading-relaxed mb-4">
+                            {t.aiToolDesc}
+                          </p>
+                          
+                          <div className="bg-surface/40 p-3 border-l-2 border-accent mb-4">
+                            <span className="mono text-[8px] text-accent block mb-1 uppercase">{t.aiToolWorkflowLabel}</span>
+                            <p className="text-[11px] leading-snug">
+                              {t.aiToolWorkflow}
+                            </p>
+                          </div>
+
+                          <div className="grid grid-cols-4 gap-2 mb-4">
+                            {t.aiToolScores.map(s => (
+                              <div key={s.label} className="flex flex-col items-center p-2 bg-text/5 border border-text/10">
+                                <span className="mono text-[7px] text-text/40 mb-1">{s.label}</span>
+                                <span className="text-xs font-bold text-accent">{s.score}/5</span>
+                              </div>
+                            ))}
+                          </div>
+
+                          <p className="text-[10px] text-text/40 italic mb-4">
+                            {t.aiToolLimitation}
+                          </p>
+
+                          <p className="text-xs font-bold">
+                            {t.aiToolVerdict}
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-1 gap-4">
+                        <div className="bg-surface border border-border p-6 flex flex-col justify-between">
+                          <div>
+                            <div className="mono text-[9px] text-accent flex items-center gap-2 mb-6">
+                              <Globe size={10} /> {t.countryWatch} // WEEKLY
+                            </div>
+                            <div className="space-y-6">
+                              {t.countryWatchItems.map((item, i) => (
+                                <div key={i} className={`border-l-2 ${i === 0 ? 'border-accent' : 'border-text/20'} pl-4`}>
+                                  <p className="text-xs leading-snug">
+                                    <span className="font-bold">{item.flag} {item.country}</span> — {item.text}
+                                  </p>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        </div>
+                        <div className="grid grid-cols-2 gap-4">
+                          <div className="bg-surface border border-border p-4 flex flex-col justify-between">
+                            <div className="mono text-[8px] text-text/40 uppercase tracking-widest mb-2">{t.network}</div>
+                            <div className="text-2xl font-black tracking-tighter text-accent">23K+</div>
+                          </div>
+                          <div className="bg-surface border border-border p-4 flex flex-col justify-between">
+                            <div className="mono text-[8px] text-text/40 uppercase tracking-widest mb-2">{t.briefings}</div>
+                            <div className="text-2xl font-black tracking-tighter text-accent">150+</div>
+                          </div>
+                        </div>
+                      </div>
+                    </section>
+
+                    <section className="p-8 bg-bg">
+                      <div className="mono text-[9px] text-accent mb-6 flex items-center gap-2">
+                        <Linkedin size={10} /> {t.fiveLinks} // CURATED
+                      </div>
+                      <div className="space-y-4">
+                        {t.fiveLinksItems.map((link, i) => (
+                          <a key={i} href={link.url} target="_blank" rel="noopener noreferrer" className="group block border-b border-text/5 pb-4 last:border-0">
+                            <div className="flex justify-between items-start mb-1">
+                              <h5 className="text-sm font-bold group-hover:text-accent transition-colors">{link.title} — {link.source}</h5>
+                              <ArrowUpRight size={14} className="shrink-0 text-text/20 group-hover:text-accent transition-colors" />
+                            </div>
+                            <p className="text-xs text-text/60 leading-snug">{link.why}</p>
+                          </a>
+                        ))}
+                      </div>
+                    </section>
+
+                    <section className="p-8 bg-accent text-black flex-1">
+                      <div className="mono text-black/60 mb-8 font-bold">{t.joinNetwork}</div>
+                      <h4 className="text-3xl font-black uppercase tracking-tighter leading-none mb-8">
+                        {t.getSignal.split(' ').slice(0, 3).join(' ')} <br />
+                        {t.getSignal.split(' ').slice(3).join(' ')}
+                      </h4>
+                      <div className="space-y-4">
+                        <button 
+                          onClick={handleGenerateBriefing}
+                          disabled={isGenerating}
+                          className="w-full bg-bg text-accent py-6 mono font-bold hover:opacity-90 transition-colors flex items-center justify-center gap-3 disabled:opacity-50"
+                        >
+                          {isGenerating ? (
+                            <>
+                              <Activity size={16} className="animate-spin" />
+                              {t.generatingSignal}
+                            </>
+                          ) : (
+                            <>
+                              <Zap size={16} />
+                              {t.generateNewBriefing}
+                            </>
+                          )}
+                        </button>
+                        <div className="h-px bg-border w-full" />
+                        <p className="mono text-[10px] text-black/60 leading-relaxed">
+                          Select a category above to generate specific intelligence on Jobs, AI Impact, or HR.
+                        </p>
+                      </div>
+                    </section>
+                  </div>
+
+                  {/* Upgrade strip */}
+                  <div className="col-span-12">
+                    <div className="border-t border-border px-6 py-2 flex items-center justify-between gap-4 bg-surface/30">
+                      <span className="mono text-[8px] text-text/25">
+                        <span className="text-accent/70 font-bold">EXECUTIVE</span>
+                        {' · '}Daily briefings · AI job impact reports · Salary data
+                      </span>
+                      <button
+                        onClick={() => setShowUpgrade(v => !v)}
+                        className="mono text-[8px] border border-accent/30 text-accent/70 px-3 py-1 hover:bg-accent hover:text-black hover:border-accent transition-all whitespace-nowrap shrink-0"
+                      >
+                        {showUpgrade ? 'CLOSE ✕' : 'UPGRADE $29 →'}
+                      </button>
+                    </div>
+                    {showUpgrade && <SubscriptionSection />}
+                  </div>
                 </div>
-                {showUpgrade && <SubscriptionSection />}
-              </div>
-              </div>{/* end grid cols-12 */}
-            )}{/* end candidate branch */}
+              )}
             </motion.div>
           )}
         </AnimatePresence>
@@ -1838,4 +1838,3 @@ export default function App() {
     </div>
   );
 }
-
