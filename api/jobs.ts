@@ -136,17 +136,91 @@ async function themuse(): Promise<any[]> {
   } catch { return []; }
 }
 
+// ── Extra Sources ──────────────────────────────────────────────────────────────
+
+async function weworkremotely(): Promise<any[]> {
+  // We Work Remotely — free RSS, no auth required
+  const feeds = [
+    'https://weworkremotely.com/categories/remote-programming-jobs.rss',
+    'https://weworkremotely.com/categories/remote-devops-sysadmin-jobs.rss',
+    'https://weworkremotely.com/categories/remote-management-product-jobs.rss',
+    'https://weworkremotely.com/categories/remote-data-science-jobs.rss',
+  ];
+  try {
+    const results = await Promise.allSettled(
+      feeds.map(url => timed(url, { headers: { 'User-Agent': 'Mozilla/5.0' } }).then(r => r.text()))
+    );
+    const jobs: any[] = [];
+    let autoId = 0;
+    for (const r of results) {
+      if (r.status !== 'fulfilled') continue;
+      const xml = r.value;
+      // Extract <item> blocks
+      const items = xml.match(/<item>([\s\S]*?)<\/item>/g) || [];
+      for (const item of items) {
+        const get = (tag: string) => {
+          const m = item.match(new RegExp(`<${tag}[^>]*><!\\[CDATA\\[([\\s\\S]*?)\\]\\]><\/${tag}>|<${tag}[^>]*>([^<]*)<\/${tag}>`));
+          return m ? (m[1] || m[2] || '').trim() : '';
+        };
+        const title = get('title');
+        const link  = get('link');
+        const company = get('region'); // WWR uses <region> for company
+        const pubDate = get('pubDate');
+        if (!title) continue;
+        jobs.push({
+          id: `wwr-${autoId++}`,
+          title,
+          company: company || 'Unknown',
+          location: 'Remote',
+          url: link || 'https://weworkremotely.com',
+          salary: null,
+          tags: '',
+          source: 'We Work Remotely',
+          region: 'Worldwide',
+          postedAt: pubDate ? new Date(pubDate).toISOString() : null,
+        });
+      }
+    }
+    return jobs;
+  } catch { return []; }
+}
+
+async function findwork(): Promise<any[]> {
+  const key = process.env.FINDWORK_API_KEY;
+  if (!key) return [];
+  try {
+    const r = await timed('https://findwork.dev/api/jobs/?format=json&remote=true', {
+      headers: { Authorization: `Token ${key}` },
+    });
+    const data = await r.json() as any;
+    return (data.results || []).map((j: any, i: number) => ({
+      id: `findwork-${j.id ?? i}`,
+      title: j.role,
+      company: j.company_name,
+      location: j.location || 'Remote',
+      url: j.url,
+      salary: null,
+      tags: (j.keywords || []).join(', '),
+      source: 'Findwork',
+      region: region(j.location || ''),
+      postedAt: j.date_posted || null,
+    }));
+  } catch { return []; }
+}
+
 // ── Handler ────────────────────────────────────────────────────────────────────
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (handleCors(req, res)) return;
 
-  const [r1, r2, r3, r4, r5] = await Promise.allSettled([
+  const [r1, r2, r3, r4, r5, r6, r7] = await Promise.allSettled([
     remotive(),
     arbeitnow(),
     remoteok(),
     jobicy(),
     themuse(),
+    weworkremotely(),
+    findwork(),
   ]);
 
   const all = [
@@ -155,6 +229,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     ...(r3.status === "fulfilled" ? r3.value : []),
     ...(r4.status === "fulfilled" ? r4.value : []),
     ...(r5.status === "fulfilled" ? r5.value : []),
+    ...(r6.status === "fulfilled" ? r6.value : []),
+    ...(r7.status === "fulfilled" ? r7.value : []),
   ];
 
   // Deduplicate by title+company

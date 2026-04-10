@@ -1,5 +1,5 @@
 import React from 'react';
-import { MapPin, DollarSign, Clock, Users, Eye, Target, Zap } from 'lucide-react';
+import { MapPin, DollarSign, Clock, Users, Eye, Target, Zap, MessageCircle } from 'lucide-react';
 import type { HiringPlan } from '../lib/hiringPlan';
 import type { NetworkReach } from '../lib/networkReach';
 
@@ -33,8 +33,23 @@ function StatCell({
   );
 }
 
+// Replace with your WhatsApp business number (international format, no + or spaces)
+const WHATSAPP_NUMBER = '573243132500';
+
 export default function ClientInsightsCard({ plan, reach, role, seniority, planType }: Props) {
   const fmt = (n: number) => n.toLocaleString();
+
+  function buildWhatsAppLink() {
+    const msg = encodeURIComponent(
+      `Hi WProTalents! I just submitted a PROMOTED job post:\n\n` +
+      `• Role: ${seniority} ${role}\n` +
+      `• Market: ${plan.bestCountry}\n` +
+      `• Est. salary: ${plan.salary > 0 ? `$${plan.salary.toLocaleString()}/yr` : 'Open'}\n` +
+      `• Timeline: ${plan.timeToHire} days\n\n` +
+      `Please reach out to activate my post and start the outreach. Thank you!`
+    );
+    return `https://wa.me/${WHATSAPP_NUMBER}?text=${msg}`;
+  }
 
   return (
     <div className="border border-accent/20 bg-surface/50 mt-6">
@@ -99,6 +114,24 @@ export default function ClientInsightsCard({ plan, reach, role, seniority, planT
           Based on WProTalents network · {(23000).toLocaleString()} vetted professionals
         </p>
       </div>
+
+      {/* WhatsApp CTA — promoted only */}
+      {planType === 'promoted' && (
+        <div className="px-5 pb-5">
+          <a
+            href={buildWhatsAppLink()}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="w-full py-3 bg-[#25D366] text-black mono text-[10px] font-bold hover:opacity-90 transition-opacity flex items-center justify-center gap-2"
+          >
+            <MessageCircle size={13} />
+            ACTIVATE PROMOTED POST · WHATSAPP
+          </a>
+          <p className="mono text-[7px] text-text/20 mt-2 text-center">
+            Tap to message WProTalents and start the active outreach to 23K+ professionals
+          </p>
+        </div>
+      )}
     </div>
   );
 }

@@ -284,6 +284,10 @@ function MarketValueTeaser({ lang = 'EN' }: { lang?: string }) {
   const [country, setCountry] = useState<CountryCode>('BR');
   const [yearsExp, setYearsExp] = useState(4);
   const [shown, setShown] = useState(false);
+  // Email gate
+  const [email, setEmail] = useState('');
+  const [captured, setCaptured] = useState(false);
+  const [capturing, setCapturing] = useState(false);
 
   const ROLE_OPTS: Record<string, { value: RoleKey; label: string }[]> = {
     EN: [
@@ -323,6 +327,29 @@ function MarketValueTeaser({ lang = 'EN' }: { lang?: string }) {
   }, lang as 'EN' | 'ES' | 'PT');
 
   const fmt = (n: number) => '$' + n.toLocaleString();
+
+  async function captureEmail(e: React.FormEvent) {
+    e.preventDefault();
+    if (!email || capturing) return;
+    setCapturing(true);
+    try {
+      await Promise.allSettled([
+        fetch('https://leads.wprotalents.lat/', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, role, country, yearsExp, source: 'market-value-teaser' }),
+        }),
+        fetch('/api/subscribe-newsletter', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email }),
+        }),
+      ]);
+    } finally {
+      setCaptured(true);
+      setCapturing(false);
+    }
+  }
 
   return (
     <div className="border-b border-border bg-surface/30">
@@ -376,18 +403,45 @@ function MarketValueTeaser({ lang = 'EN' }: { lang?: string }) {
                   exit={{ opacity: 0 }}
                   className="space-y-3"
                 >
-                  {/* Market mid — visible */}
+                  {/* Market mid — local free, remote gated */}
                   <div className="grid grid-cols-2 gap-px bg-border">
                     <div className="bg-bg p-4 text-center">
                       <p className="mono text-[7px] text-text/30 mb-1">{tt.teaserLocalMid}</p>
                       <p className="text-xl font-black text-text">{fmt(preview.marketMid)}</p>
                       <p className="mono text-[7px] text-text/20 mt-0.5">{preview.seniorityLabel} · {tt.teaserPerYear}</p>
                     </div>
-                    <div className="bg-accent/5 p-4 text-center">
-                      <p className="mono text-[7px] text-accent mb-1">{tt.teaserRemote}</p>
-                      <p className="text-xl font-black text-accent">{fmt(preview.remoteMid)}</p>
-                      <p className="mono text-[7px] text-text/20 mt-0.5">+{preview.remoteUplift}% {tt.teaserUplift}</p>
-                    </div>
+                    {captured ? (
+                      <div className="bg-accent/5 p-4 text-center">
+                        <p className="mono text-[7px] text-accent mb-1">{tt.teaserRemote}</p>
+                        <p className="text-xl font-black text-accent">{fmt(preview.remoteMid)}</p>
+                        <p className="mono text-[7px] text-text/20 mt-0.5">+{preview.remoteUplift}% {tt.teaserUplift}</p>
+                      </div>
+                    ) : (
+                      <div className="bg-accent/5 p-4 flex flex-col items-center justify-center gap-2 relative">
+                        {/* Blurred remote value behind the gate */}
+                        <p className="mono text-[7px] text-accent mb-0.5">{tt.teaserRemote}</p>
+                        <p className="text-xl font-black text-accent opacity-20 blur-[5px] select-none">{fmt(preview.remoteMid)}</p>
+                        <form onSubmit={captureEmail} className="absolute inset-0 flex flex-col items-center justify-center gap-1.5 px-3">
+                          <Mail size={11} className="text-accent" />
+                          <p className="mono text-[7px] text-text/50 text-center leading-tight">Enter email to unlock</p>
+                          <input
+                            type="email"
+                            required
+                            value={email}
+                            onChange={e => setEmail(e.target.value)}
+                            placeholder="you@example.com"
+                            className="w-full bg-bg border border-accent/40 px-2 py-1 mono text-[9px] focus:outline-none focus:border-accent text-center placeholder:text-text/20"
+                          />
+                          <button
+                            type="submit"
+                            disabled={capturing}
+                            className="w-full py-1 bg-accent text-black mono text-[8px] font-bold hover:opacity-90 transition-opacity flex items-center justify-center gap-1 disabled:opacity-50"
+                          >
+                            {capturing ? <Loader2 size={9} className="animate-spin" /> : <><ChevronRight size={9} /> {lang === 'PT' ? 'VER SALÁRIO' : lang === 'ES' ? 'VER SALARIO' : 'SEE REMOTE'}</>}
+                          </button>
+                        </form>
+                      </div>
+                    )}
                   </div>
 
                   {/* Locked sections */}
