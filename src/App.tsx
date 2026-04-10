@@ -32,8 +32,6 @@ import {
   Lock,
   Briefcase,
   Brain,
-  SearchCode,
-  UserCheck,
   RefreshCw,
   Bitcoin,
   Newspaper,
@@ -49,8 +47,8 @@ import {
   Tooltip, 
   ResponsiveContainer 
 } from 'recharts';
-import { MOCK_BRIEFINGS, generateBriefing, saveBriefing, getRecentBriefings } from './services/intelService';
-import { Language, Briefing, Category, IntelligenceBrief } from './types';
+import { MOCK_BRIEFINGS, getRecentBriefings } from './services/intelService';
+import { Language, Briefing, IntelligenceBrief } from './types';
 import { auth, onAuthStateChanged, User, signOut, db, handleFirestoreError, FirestoreOperation } from './firebase';
 import { onSnapshot, doc, collection, query, orderBy, limit } from 'firebase/firestore';
 import { AuthModal } from './components/AuthModal';
@@ -588,15 +586,12 @@ interface MarketIntelData {
 export default function App() {
   const [selectedBriefing, setSelectedBriefing] = useState<Briefing | null>(null);
   const [selectedIntelBrief, setSelectedIntelBrief] = useState<IntelligenceBrief | null>(null);
-  const [filter, setFilter] = useState('All');
-  const [category, setCategory] = useState<Category>('Workforce Daily');
   const [lang, setLang] = useState<Language>(() => {
     const saved = localStorage.getItem('wpro_lang');
     return (saved === 'EN' || saved === 'ES' || saved === 'PT') ? saved as Language : 'EN';
   });
   const [viewMode, setViewMode] = useState<'Dashboard' | 'Jobs'>('Dashboard');
   const [currentTime, setCurrentTime] = useState(new Date());
-  const [isGenerating, setIsGenerating] = useState(false);
   const [isSyncing, setIsSyncing] = useState(false);
   const [isCustomizeOpen, setIsCustomizeOpen] = useState(false);
   const [showUpgrade, setShowUpgrade] = useState(false);
@@ -759,20 +754,6 @@ export default function App() {
     }
   };
 
-  const handleGenerateBriefing = async () => {
-    setIsGenerating(true);
-    try {
-      const newBriefing = await generateBriefing(lang, category);
-      await saveBriefing(newBriefing);
-      setBriefings(prev => [newBriefing, ...prev]);
-      setSelectedBriefing(newBriefing);
-    } catch (error) {
-      console.error("Failed to generate briefing:", error);
-    } finally {
-      setIsGenerating(false);
-    }
-  };
-
   const handleNewsletterSubscribe = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newsletterEmail) return;
@@ -793,10 +774,6 @@ export default function App() {
       setNewsletterStatus('error');
     }
   };
-
-  const filteredBriefings = filter === 'All' 
-    ? briefings 
-    : briefings.filter(b => b.region === filter);
 
   const t = TRANSLATIONS[lang];
 

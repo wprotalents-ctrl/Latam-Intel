@@ -143,7 +143,7 @@ function timeAgo(d?: string) {
 
 // ── Candidate Portal ──────────────────────────────────────────────────────────
 
-type SectionKey = 'kickoff' | 'resume' | 'interview' | 'negotiate' | 'remote' | 'career' | 'ai';
+type SectionKey = 'launch' | 'strike' | 'roomread' | 'ratecard' | 'zerocommute' | 'compound' | 'aileverage';
 
 interface PortalArticle {
   title: string;
@@ -164,8 +164,8 @@ interface PortalSection {
 }
 
 const PORTAL_SECTIONS: Record<SectionKey, PortalSection> = {
-  kickoff: {
-    label: 'Kick Off',
+  launch: {
+    label: 'Launch Protocol',
     tag: 'START HERE',
     Icon: Rocket,
     color: 'text-accent',
@@ -179,9 +179,9 @@ const PORTAL_SECTIONS: Record<SectionKey, PortalSection> = {
       { title: 'Brag Doc: Track Your Wins Continuously', desc: 'The single habit that makes every resume update, performance review, and salary negotiation dramatically easier.', url: 'https://hbr.org/2022/01/how-to-build-a-brag-document', tag: 'CAREER INTEL' },
     ],
   },
-  resume: {
-    label: 'Resume & Apply',
-    tag: 'APPLICATIONS',
+  strike: {
+    label: 'Strike Package',
+    tag: 'GET HIRED',
     Icon: FileText,
     color: 'text-emerald-400',
     accent: 'bg-emerald-500 text-black',
@@ -195,9 +195,9 @@ const PORTAL_SECTIONS: Record<SectionKey, PortalSection> = {
       { title: 'Free Resume Review Tools Ranked by Recruiters', desc: 'The best free tools to check your resume for ATS compliance, grammar, and impact before you apply.', url: 'https://resume.io', tag: 'TOOLS' },
     ],
   },
-  interview: {
-    label: 'Interview',
-    tag: 'PREP',
+  roomread: {
+    label: 'Room Read',
+    tag: 'INTERVIEW',
     Icon: Mic2,
     color: 'text-blue-400',
     accent: 'bg-blue-500 text-white',
@@ -211,9 +211,9 @@ const PORTAL_SECTIONS: Record<SectionKey, PortalSection> = {
       { title: 'Pramp: Free Mock Interview Practice', desc: 'Practice real technical and behavioural interviews with peers. Free, live, and brutally honest feedback.', url: 'https://www.pramp.com/', tag: 'PRACTICE' },
     ],
   },
-  negotiate: {
-    label: 'Negotiate',
-    tag: 'OFFERS',
+  ratecard: {
+    label: 'Rate Card',
+    tag: 'NEGOTIATE',
     Icon: DollarSign,
     color: 'text-yellow-400',
     accent: 'bg-yellow-500 text-black',
@@ -226,8 +226,8 @@ const PORTAL_SECTIONS: Record<SectionKey, PortalSection> = {
       { title: 'Salary Negotiation Scripts That Actually Work', desc: 'Word-for-word email and call scripts for countering an offer, asking for more, and not blinking first.', url: 'https://www.glassdoor.com/blog/guide/salary-negotiation-scripts/', tag: 'SCRIPTS' },
     ],
   },
-  remote: {
-    label: 'Remote Work',
+  zerocommute: {
+    label: 'Zero-Commute Stack',
     tag: 'REMOTE',
     Icon: Globe,
     color: 'text-violet-400',
@@ -241,8 +241,8 @@ const PORTAL_SECTIONS: Record<SectionKey, PortalSection> = {
       { title: 'Remote Work Toolkit: Productivity & Wellbeing', desc: 'Structure, tools, and routines for sustainable full-time remote work — without burning out or disappearing.', url: 'https://www.notion.com/templates/remote-work-toolkit', tag: 'WELLBEING' },
     ],
   },
-  career: {
-    label: 'Career Growth',
+  compound: {
+    label: 'Compound Career',
     tag: 'LONG GAME',
     Icon: Compass,
     color: 'text-pink-400',
@@ -257,8 +257,8 @@ const PORTAL_SECTIONS: Record<SectionKey, PortalSection> = {
       { title: 'WPro Workforce Daily — LATAM Market Intel', desc: 'Subscribe for weekly hiring signals, salary trends, and AI workforce data. Built for LATAM professionals.', url: 'https://latam-intel.vercel.app', tag: 'WPRO INTEL', wpro: true },
     ],
   },
-  ai: {
-    label: 'AI Skills',
+  aileverage: {
+    label: 'AI Leverage',
     tag: 'FUTURE-PROOF',
     Icon: Zap,
     color: 'text-violet-400',
@@ -275,7 +275,7 @@ const PORTAL_SECTIONS: Record<SectionKey, PortalSection> = {
   },
 };
 
-const SECTION_ORDER: SectionKey[] = ['kickoff', 'resume', 'interview', 'negotiate', 'remote', 'career', 'ai'];
+const SECTION_ORDER: SectionKey[] = ['launch', 'strike', 'roomread', 'ratecard', 'zerocommute', 'compound', 'aileverage'];
 
 // ── Market Value Teaser (free users) ─────────────────────────────────────────
 function MarketValueTeaser({ lang = 'EN' }: { lang?: string }) {
@@ -476,7 +476,7 @@ function MarketValueTeaser({ lang = 'EN' }: { lang?: string }) {
 }
 
 function CandidateResourcesPanel({ onLinkedInBoost }: { onLinkedInBoost: () => void }) {
-  const [activeSection, setActiveSection] = useState<SectionKey>('kickoff');
+  const [activeSection, setActiveSection] = useState<SectionKey>('launch');
   const section = PORTAL_SECTIONS[activeSection];
 
   return (
