@@ -1,337 +1,90 @@
-import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
-import { X, ShieldCheck, Mail, Lock, Eye, EyeOff, ArrowRight, RotateCcw, Briefcase, User as UserIcon } from 'lucide-react';
-import {
-  auth, googleProvider, signInWithPopup, db,
-  createUserWithEmailAndPassword, signInWithEmailAndPassword,
-  sendPasswordResetEmail
-} from '../firebase';
-import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore';
+// src/components/AuthModal.tsx
+import { useState } from 'react';
+import { auth, db } from '../firebase';
+import { signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
+import { doc, setDoc } from 'firebase/firestore';
+import { X } from 'lucide-react';
 
 interface AuthModalProps {
   isOpen: boolean;
   onClose: () => void;
 }
 
-type Mode = 'signin' | 'signup' | 'reset' | 'role';
+export function AuthModal({ isOpen, onClose }: AuthModalProps) {
+  const [role, setRole] = useState<'candidate' | 'company' | null>(null);
+  const [step, setStep] = useState<'role' | 'auth'>('role');
 
-async function ensureUserDoc(user: { uid: string; email: string | null; displayName: string | null; photoURL: string | null }) {
-  const ref = doc(db, 'users', user.uid);
-  const snap = await getDoc(ref).catch(() => null);
-  if (!snap || !snap.exists()) {
-    await setDoc(ref, {
-      uid: user.uid,
-      email: user.email,
-      displayName: user.displayName || user.email?.split('@')[0] || 'User',
-      photoURL: user.photoURL,
-      subscriptionStatus: 'free',
-      createdAt: serverTimestamp(),
-      updatedAt: serverTimestamp(),
-    }).catch(() => {});
-    return null; // new user, no role yet
-  }
-  return snap.data()?.role || null; // existing user, return their role
-}
-
-async function saveUserRole(uid: string, role: 'candidate' | 'company') {
-  const ref = doc(db, 'users', uid);
-  await setDoc(ref, { role, updatedAt: serverTimestamp() }, { merge: true }).catch(() => {});
-}
-
-export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
-  const [mode, setMode] = useState<Mode>('signin');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [showPw, setShowPw] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
-  const [resetSent, setResetSent] = useState(false);
-
-  const reset = () => { setEmail(''); setPassword(''); setError(''); setResetSent(false); };
-
-  const handleClose = () => {
-    setMode('signin');
-    reset();
-    onClose();
-  };
-
-  const friendlyError = (code: string) => {
-    const map: Record<string, string> = {
-      'auth/email-already-in-use': 'That email already has an account. Sign in instead.',
-      'auth/invalid-email': 'Please enter a valid email address.',
-      'auth/weak-password': 'Password must be at least 6 characters.',
-      'auth/user-not-found': 'No account with that email. Sign up instead.',
-      'auth/wrong-password': 'Incorrect password.',
-      'auth/invalid-credential': 'Incorrect email or password.',
-      'auth/too-many-requests': 'Too many attempts. Try again later.',
-      'auth/unauthorized-domain': 'Google sign-in is not enabled for this domain. Use email & password below.',
-      'auth/popup-closed-by-user': 'Sign-in cancelled.',
-      'auth/operation-not-allowed': 'This sign-in method is not enabled. Please contact the administrator.',
-      'auth/popup-blocked': 'Popup was blocked by your browser. Please allow popups for this site.',
-      'auth/network-request-failed': 'Network error. Check your connection and try again.',
-      'auth/internal-error': 'An internal error occurred. Try again or use email & password.',
-    };
-    return map[code] || `Something went wrong (${code}). Please try again.`;
-  };
-
-  // After auth success: check role. If none, show role picker; otherwise close.
-  const afterAuth = async (user: { uid: string; email: string | null; displayName: string | null; photoURL: string | null }) => {
-    const role = await ensureUserDoc(user);
-    if (!role) {
-      setMode('role');
-    } else {
-      handleClose();
-    }
-  };
-
-  const handleEmail = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    setError('');
+  const handleGoogleSignIn = async () => {
+    if (!role) return;
+    const provider = new GoogleAuthProvider();
     try {
-      let result;
-      if (mode === 'signup') {
-        result = await createUserWithEmailAndPassword(auth, email, password);
-      } else {
-        result = await signInWithEmailAndPassword(auth, email, password);
-      }
-      await afterAuth(result.user);
-    } catch (err: any) {
-      setError(friendlyError(err.code));
-    } finally {
-      setLoading(false);
+      const result = await signInWithPopup(auth, provider);
+      const user = result.user;
+
+      // Write role to Firestore
+      await setDoc(doc(db, 'users', user.uid), {
+        email: user.email,
+        role: role,
+        subscriptionStatus: 'free',
+        createdAt: new Date().toISOString(),
+        displayName: user.displayName || '',
+        photoURL: user.photoURL || '',
+      }, { merge: true });
+
+      onClose();
+    } catch (error) {
+      console.error('Auth error:', error);
     }
   };
 
-  const handleReset = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    setError('');
-    try {
-      await sendPasswordResetEmail(auth, email);
-      setResetSent(true);
-    } catch (err: any) {
-      setError(friendlyError(err.code));
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleGoogle = async () => {
-    setLoading(true);
-    setError('');
-    try {
-      const result = await signInWithPopup(auth, googleProvider);
-      await afterAuth(result.user);
-    } catch (err: any) {
-      setError(friendlyError(err.code));
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleRoleSelect = async (role: 'candidate' | 'company') => {
-    const user = auth.currentUser;
-    if (!user) return;
-    setLoading(true);
-    await saveUserRole(user.uid, role);
-
-    // Fire-and-forget: append to Google Sheet via Apps Script webhook
-    try {
-      await fetch('/api/track-signup', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          uid: user.uid,
-          email: user.email ?? '',
-          displayName: user.displayName ?? '',
-          role,
-          timestamp: new Date().toISOString(),
-        }),
-      });
-    } catch (_) {
-      // Never block signup over a sheet error
-    }
-
-    setLoading(false);
-    handleClose();
-  };
+  if (!isOpen) return null;
 
   return (
-    <AnimatePresence>
-      {isOpen && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-bg/80 backdrop-blur-sm">
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95, y: 16 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.95, y: 16 }}
-            transition={{ duration: 0.15 }}
-            className="w-full max-w-sm bg-surface border border-border shadow-2xl"
-          >
-            {/* Header */}
-            <div className="flex items-center justify-between px-6 py-4 border-b border-border">
-              <div className="flex items-center gap-2">
-                <ShieldCheck size={14} className="text-accent" />
-                <span className="mono text-[10px] text-accent font-bold tracking-widest">
-                  {mode === 'role' ? 'ONE MORE THING' : mode === 'reset' ? 'RESET PASSWORD' : mode === 'signup' ? 'CREATE ACCOUNT' : 'SIGN IN'}
-                </span>
-              </div>
-              <button onClick={handleClose} className="text-text/30 hover:text-text transition-colors">
-                <X size={16} />
-              </button>
-            </div>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm">
+      <div className="bg-surface border border-border p-6 max-w-md w-full relative">
+        <button onClick={onClose} className="absolute top-4 right-4 text-text/40 hover:text-text">
+          <X size={20} />
+        </button>
 
-            <div className="p-6">
-              {/* ── ROLE SELECTION SCREEN ── */}
-              {mode === 'role' && (
-                <div>
-                  <p className="mono text-[10px] text-text/50 mb-6 leading-relaxed">
-                    How are you joining WProTalents? This helps us show you the right experience.
-                  </p>
-                  <div className="flex flex-col gap-3">
-                    <button
-                      onClick={() => handleRoleSelect('candidate')}
-                      disabled={loading}
-                      className="flex items-center gap-4 w-full border border-border hover:border-accent/60 bg-bg hover:bg-text/5 p-4 text-left transition-all group disabled:opacity-50"
-                    >
-                      <div className="w-9 h-9 border border-border group-hover:border-accent/40 flex items-center justify-center flex-shrink-0 transition-colors">
-                        <UserIcon size={16} className="text-text/40 group-hover:text-accent transition-colors" />
-                      </div>
-                      <div>
-                        <div className="mono text-[11px] text-text font-bold mb-0.5">I'm a Candidate</div>
-                        <div className="mono text-[9px] text-text/40">Browse AI & tech roles across LATAM, USA & EU</div>
-                      </div>
-                    </button>
-
-                    <button
-                      onClick={() => handleRoleSelect('company')}
-                      disabled={loading}
-                      className="flex items-center gap-4 w-full border border-border hover:border-accent/60 bg-bg hover:bg-text/5 p-4 text-left transition-all group disabled:opacity-50"
-                    >
-                      <div className="w-9 h-9 border border-border group-hover:border-accent/40 flex items-center justify-center flex-shrink-0 transition-colors">
-                        <Briefcase size={16} className="text-text/40 group-hover:text-accent transition-colors" />
-                      </div>
-                      <div>
-                        <div className="mono text-[11px] text-text font-bold mb-0.5">I'm a Company</div>
-                        <div className="mono text-[9px] text-text/40">Access market intel and talent acquisition tools</div>
-                      </div>
-                    </button>
-                  </div>
-                  {loading && (
-                    <p className="mt-4 mono text-[9px] text-text/30 text-center">Saving your preference...</p>
-                  )}
-                </div>
-              )}
-
-              {/* ── AUTH SCREENS ── */}
-              {mode !== 'role' && (
-                <>
-                  {/* Google button */}
-                  {mode !== 'reset' && (
-                    <button
-                      onClick={handleGoogle}
-                      disabled={loading}
-                      className="w-full flex items-center justify-center gap-3 border border-border bg-bg hover:border-accent/40 py-2.5 mono text-[10px] text-text/60 hover:text-text transition-all mb-4 disabled:opacity-40"
-                    >
-                      <img src="https://www.google.com/favicon.ico" alt="" className="w-3.5 h-3.5" />
-                      Continue with Google
-                    </button>
-                  )}
-
-                  {/* Divider */}
-                  {mode !== 'reset' && (
-                    <div className="flex items-center gap-3 mb-4">
-                      <div className="flex-1 h-px bg-border" />
-                      <span className="mono text-[8px] text-text/20">OR</span>
-                      <div className="flex-1 h-px bg-border" />
-                    </div>
-                  )}
-
-                  {/* Error */}
-                  {error && (
-                    <div className="mb-4 px-3 py-2 border border-red-500/20 bg-red-500/5 mono text-[9px] text-red-400">
-                      {error}
-                    </div>
-                  )}
-
-                  {/* Reset sent */}
-                  {resetSent && (
-                    <div className="mb-4 px-3 py-2 border border-green-500/20 bg-green-500/5 mono text-[9px] text-green-400">
-                      Reset link sent — check your inbox.
-                    </div>
-                  )}
-
-                  {/* Form */}
-                  <form onSubmit={mode === 'reset' ? handleReset : handleEmail} className="space-y-3">
-                    <div className="relative">
-                      <Mail size={12} className="absolute left-3 top-1/2 -translate-y-1/2 text-text/25" />
-                      <input
-                        type="email"
-                        placeholder="Email address"
-                        value={email}
-                        onChange={e => setEmail(e.target.value)}
-                        required
-                        className="w-full bg-bg border border-border pl-9 pr-4 py-2.5 mono text-[11px] text-text placeholder:text-text/20 focus:outline-none focus:border-accent/40 transition-colors"
-                      />
-                    </div>
-
-                    {mode !== 'reset' && (
-                      <div className="relative">
-                        <Lock size={12} className="absolute left-3 top-1/2 -translate-y-1/2 text-text/25" />
-                        <input
-                          type={showPw ? 'text' : 'password'}
-                          placeholder="Password"
-                          value={password}
-                          onChange={e => setPassword(e.target.value)}
-                          required
-                          minLength={6}
-                          className="w-full bg-bg border border-border pl-9 pr-10 py-2.5 mono text-[11px] text-text placeholder:text-text/20 focus:outline-none focus:border-accent/40 transition-colors"
-                        />
-                        <button type="button" onClick={() => setShowPw(v => !v)} className="absolute right-3 top-1/2 -translate-y-1/2 text-text/25 hover:text-text/60">
-                          {showPw ? <EyeOff size={12} /> : <Eye size={12} />}
-                        </button>
-                      </div>
-                    )}
-
-                    <button
-                      type="submit"
-                      disabled={loading}
-                      className="w-full flex items-center justify-center gap-2 bg-accent text-black py-2.5 mono text-[10px] font-bold hover:opacity-90 transition-opacity disabled:opacity-50"
-                    >
-                      {loading ? '...' : mode === 'reset' ? 'SEND RESET LINK' : mode === 'signup' ? 'CREATE ACCOUNT' : 'SIGN IN'}
-                      {!loading && <ArrowRight size={11} />}
-                    </button>
-                  </form>
-
-                  {/* Footer links */}
-                  <div className="mt-4 flex items-center justify-between">
-                    {mode === 'signin' && (
-                      <>
-                        <button onClick={() => { setMode('signup'); reset(); }} className="mono text-[9px] text-text/30 hover:text-accent transition-colors">
-                          No account? Sign up
-                        </button>
-                        <button onClick={() => { setMode('reset'); reset(); }} className="mono text-[9px] text-text/30 hover:text-text/60 transition-colors">
-                          Forgot password?
-                        </button>
-                      </>
-                    )}
-                    {mode === 'signup' && (
-                      <button onClick={() => { setMode('signin'); reset(); }} className="mono text-[9px] text-text/30 hover:text-accent transition-colors">
-                        Already have an account? Sign in
-                      </button>
-                    )}
-                    {mode === 'reset' && (
-                      <button onClick={() => { setMode('signin'); reset(); }} className="flex items-center gap-1 mono text-[9px] text-text/30 hover:text-text/60 transition-colors">
-                        <RotateCcw size={9} /> Back to sign in
-                      </button>
-                    )}
-                  </div>
-                </>
-              )}
-            </div>
-          </motion.div>
-        </div>
-      )}
-    </AnimatePresence>
+        {step === 'role' ? (
+          <>
+            <h2 className="text-xl font-black mb-6">I am a...</h2>
+            <button
+              onClick={() => { setRole('candidate'); setStep('auth'); }}
+              className="w-full p-4 border border-border mb-3 text-left hover:border-accent/50 transition-colors"
+            >
+              <div className="font-bold">Candidate</div>
+              <div className="text-xs text-text/40">Looking for remote USD jobs</div>
+            </button>
+            <button
+              onClick={() => { setRole('company'); setStep('auth'); }}
+              className="w-full p-4 border border-border text-left hover:border-accent/50 transition-colors"
+            >
+              <div className="font-bold">Company / Hiring Manager</div>
+              <div className="text-xs text-text/40">Hiring LATAM tech talent</div>
+            </button>
+          </>
+        ) : (
+          <>
+            <h2 className="text-xl font-black mb-4">Sign in with Google</h2>
+            <p className="text-sm text-text/60 mb-6">
+              You selected: <span className="text-accent font-bold">{role === 'candidate' ? 'Candidate' : 'Company'}</span>
+            </p>
+            <button
+              onClick={handleGoogleSignIn}
+              className="w-full bg-accent text-black py-3 font-bold hover:opacity-90 transition"
+            >
+              Continue with Google
+            </button>
+            <button
+              onClick={() => setStep('role')}
+              className="w-full mt-3 text-xs text-text/40 hover:text-text"
+            >
+              ← Go back
+            </button>
+          </>
+        )}
+      </div>
+    </div>
   );
-};
+}
