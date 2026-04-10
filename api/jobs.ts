@@ -1,200 +1,182 @@
-import type { VercelRequest, VercelResponse } from "@vercel/node";
-import { handleCors } from "./_lib/cors.js";
+// api/jobs.ts
+import type { VercelRequest, VercelResponse } from '@vercel/node';
 
-export const config = { maxDuration: 45 };
-
-// Region detection only — no title filter, let frontend search/filter
-const LATAM = /latin america|latam|brazil|brasil|mexico|colombia|argentina|chile|peru|ecuador|uruguay|costa rica|panama|bogot|lima|santiago|buenos aires|são paulo|remote.*latam/i;
-const EU = /europe|eu |uk|united kingdom|germany|france|spain|netherlands|portugal|italy|ireland|sweden|poland|denmark|austria|belgium|switzerland|norway|finland/i;
-const USA = /usa|united states|us only|north america|canada|new york|san francisco|seattle|austin|chicago|boston|remote.*us\b|\bus remote/i;
-
-function region(loc: string) {
-  if (LATAM.test(loc)) return "LATAM";
-  if (EU.test(loc))    return "Europe";
-  if (USA.test(loc))   return "USA";
-  return "Worldwide";
+// ---------- Helper: region detection ----------
+function region(location: string): 'LATAM' | 'USA' | 'Europe' | 'Worldwide' {
+  const loc = location.toLowerCase();
+  if (loc.includes('brazil') || loc.includes('mexico') || loc.includes('colombia') || loc.includes('argentina') || loc.includes('chile') || loc.includes('peru') || loc.includes('latam')) return 'LATAM';
+  if (loc.includes('us') || loc.includes('usa') || loc.includes('united states') || loc.includes('new york') || loc.includes('california') || loc.includes('texas') || loc.includes('miami')) return 'USA';
+  if (loc.includes('uk') || loc.includes('germany') || loc.includes('france') || loc.includes('spain') || loc.includes('netherlands') || loc.includes('europe')) return 'Europe';
+  return 'Worldwide';
 }
 
-// Fetch with per-source timeout so one slow API can't kill the whole request
-function timed(url: string, opts: RequestInit = {}, ms = 12000): Promise<Response> {
-  const ctrl = new AbortController();
-  const id = setTimeout(() => ctrl.abort(), ms);
-  return fetch(url, { ...opts, signal: ctrl.signal }).finally(() => clearTimeout(id));
-}
-
-// ── Sources ────────────────────────────────────────────────────────────────────
-
-async function remotive(): Promise<any[]> {
-  // All categories in parallel — Remotive is reliable and fast
-  const cats = ["software-dev","devops-sysadmin","data","product","design","finance-legal","marketing","all-other"];
-  const results = await Promise.allSettled(
-    cats.map(c => timed(`https://remotive.com/api/remote-jobs?category=${c}&limit=100`).then(r => r.json()))
-  );
-  const jobs: any[] = [];
-  for (const r of results) {
-    if (r.status === "fulfilled" && Array.isArray(r.value?.jobs)) jobs.push(...r.value.jobs);
-  }
-  return jobs.map(j => ({
-    id: `remotive-${j.id}`,
-    title: j.title,
-    company: j.company_name,
-    location: j.candidate_required_location || "Remote",
-    url: j.url,
-    salary: j.salary || null,
-    tags: (j.tags || []).join(", "),
-    source: "Remotive",
-    region: region(j.candidate_required_location || ""),
-    postedAt: j.publication_date,
-  }));
-}
-
-async function arbeitnow(): Promise<any[]> {
-  // EU-focused job board, paginate 3 pages (~60 jobs)
-  const pages = await Promise.allSettled(
-    [1,2,3].map(p => timed(`https://www.arbeitnow.com/api/job-board-api?page=${p}`).then(r => r.json()))
-  );
-  const jobs: any[] = [];
-  for (const p of pages) {
-    if (p.status === "fulfilled" && Array.isArray(p.value?.data)) jobs.push(...p.value.data);
-  }
-  return jobs.map(j => ({
-    id: `arbeitnow-${j.slug}`,
-    title: j.title,
-    company: j.company_name,
-    location: j.location || "Europe",
-    url: j.url,
-    salary: null,
-    tags: (j.tags || []).join(", "),
-    source: "Arbeitnow",
-    region: j.remote ? region(j.location || "") : "Europe",
-    postedAt: j.created_at ? new Date(j.created_at * 1000).toISOString() : null,
-  }));
-}
-
-async function remoteok(): Promise<any[]> {
+// ---------- Helper: fetch with timeout ----------
+async function timed(url: string, options?: RequestInit): Promise<Response> {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 8000);
   try {
-    const r = await timed("https://remoteok.com/api", { headers: { "User-Agent": "Mozilla/5.0" } });
-    const data = await r.json() as any[];
-    return (Array.isArray(data) ? data : [])
-      .filter(j => j.id && j.position)
-      .map(j => ({
-        id: `remoteok-${j.id}`,
-        title: j.position,
-        company: j.company || "Unknown",
-        location: j.location || "Remote",
-        url: j.url || `https://remoteok.com/remote-jobs/${j.id}`,
-        salary: j.salary || null,
-        tags: (j.tags || []).join(", "),
-        source: "RemoteOK",
-        region: region(j.location || ""),
-        postedAt: j.date || null,
-      }));
+    const res = await fetch(url, { ...options, signal: controller.signal });
+    clearTimeout(timeout);
+    return res;
+  } catch (err) {
+    clearTimeout(timeout);
+    throw err;
+  }
+}
+
+// ---------- Job sources ----------
+
+// 1. Remotive (remote tech jobs)
+async function remotive(): Promise<any[]> {
+  try {
+    const r = await timed('https://remotive.com/api/remote-jobs?limit=50');
+    const data = await r.json();
+    return (data.jobs || []).map((j: any) => ({
+      id: `remotive-${j.id}`,
+      title: j.title,
+      company: j.company_name,
+      location: j.candidate_required_location || 'Remote',
+      url: j.url,
+      salary: j.salary || null,
+      tags: j.category,
+      source: 'Remotive',
+      region: region(j.candidate_required_location || 'Remote'),
+      postedAt: j.publication_date,
+    }));
   } catch { return []; }
 }
 
+// 2. Arbeitnow (developer jobs)
+async function arbeitnow(): Promise<any[]> {
+  try {
+    const r = await timed('https://www.arbeitnow.com/api/job-board-api');
+    const data = await r.json();
+    return (data.data || []).map((j: any) => ({
+      id: `arbeitnow-${j.slug}`,
+      title: j.title,
+      company: j.company_name,
+      location: j.location || 'Remote',
+      url: j.url,
+      salary: null,
+      tags: j.tags?.join(', ') || '',
+      source: 'Arbeitnow',
+      region: region(j.location || 'Remote'),
+      postedAt: j.created_at,
+    }));
+  } catch { return []; }
+}
+
+// 3. RemoteOK (remote developer jobs)
+async function remoteok(): Promise<any[]> {
+  try {
+    const r = await timed('https://remoteok.com/api');
+    const data = await r.json();
+    // first item is a header, skip it
+    const jobs = Array.isArray(data) ? data.slice(1) : [];
+    return jobs.map((j: any) => ({
+      id: `remoteok-${j.id}`,
+      title: j.position,
+      company: j.company,
+      location: j.location || 'Remote',
+      url: j.url,
+      salary: j.salary_min ? `$${j.salary_min}k–$${j.salary_max}k` : null,
+      tags: j.tags?.join(', ') || '',
+      source: 'RemoteOK',
+      region: region(j.location || 'Remote'),
+      postedAt: j.date,
+    }));
+  } catch { return []; }
+}
+
+// 4. Jobicy (remote jobs, free, no key)
 async function jobicy(): Promise<any[]> {
   try {
-    const r = await timed("https://jobicy.com/api/v2/remote-jobs?count=100");
-    const data = await r.json() as any;
+    const r = await timed('https://jobicy.com/api/v2/remote-jobs?count=50');
+    const data = await r.json();
     return (data.jobs || []).map((j: any) => ({
       id: `jobicy-${j.id}`,
       title: j.jobTitle,
       company: j.companyName,
-      location: j.jobGeo || "Remote",
+      location: 'Remote',
       url: j.url,
-      salary: j.annualSalaryMin ? `$${Math.round(j.annualSalaryMin/1000)}k–$${Math.round(j.annualSalaryMax/1000)}k` : null,
-      tags: (j.jobIndustry || []).join(", "),
-      source: "Jobicy",
-      region: region(j.jobGeo || ""),
-      postedAt: j.pubDate || null,
+      salary: j.salary ? `${j.salaryCurrency} ${j.salaryMin}–${j.salaryMax}` : null,
+      tags: j.tags?.join(', ') || '',
+      source: 'Jobicy',
+      region: 'Worldwide',
+      postedAt: j.publishedDate,
     }));
   } catch { return []; }
 }
 
+// 5. The Muse (requires API key, but they have a free tier)
 async function themuse(): Promise<any[]> {
-  // The Muse has a large free public API — no key needed for basic access
+  const apiKey = process.env.THE_MUSE_API_KEY;
+  if (!apiKey) return [];
   try {
-    const pages = await Promise.allSettled(
-      [1,2,3,4,5].map(p => timed(`https://www.themuse.com/api/public/jobs?page=${p}&api_key=test`).then(r => r.json()))
-    );
-    const jobs: any[] = [];
-    for (const p of pages) {
-      if (p.status === "fulfilled" && Array.isArray(p.value?.results)) jobs.push(...p.value.results);
-    }
-    return jobs.map(j => ({
+    const r = await timed(`https://www.themuse.com/api/public/jobs?page=1&api_key=${apiKey}`);
+    const data = await r.json();
+    return (data.results || []).map((j: any) => ({
       id: `muse-${j.id}`,
       title: j.name,
-      company: j.company?.name || "Unknown",
-      location: j.locations?.map((l: any) => l.name).join(", ") || "Remote",
-      url: j.refs?.landing_page || `https://www.themuse.com/jobs/${j.id}`,
+      company: j.company?.name || 'Unknown',
+      location: j.locations?.map((l: any) => l.name).join(', ') || 'Remote',
+      url: j.refs?.landing_page,
       salary: null,
-      tags: j.categories?.map((c: any) => c.name).join(", ") || "",
-      source: "The Muse",
-      region: region(j.locations?.map((l: any) => l.name).join(" ") || ""),
-      postedAt: j.publication_date || null,
+      tags: j.levels?.join(', ') || '',
+      source: 'The Muse',
+      region: region(j.locations?.map((l: any) => l.name).join(', ') || 'Remote'),
+      postedAt: j.publication_date,
     }));
   } catch { return []; }
 }
 
-// ── Extra Sources ──────────────────────────────────────────────────────────────
-
-async function weworkremotely(): Promise<any[]> {
-  // We Work Remotely — free RSS, no auth required
-  const feeds = [
-    'https://weworkremotely.com/categories/remote-programming-jobs.rss',
-    'https://weworkremotely.com/categories/remote-devops-sysadmin-jobs.rss',
-    'https://weworkremotely.com/categories/remote-management-product-jobs.rss',
-    'https://weworkremotely.com/categories/remote-data-science-jobs.rss',
-  ];
+// 6. Adzuna – uses existing ADZUNA_APP_ID and ADZUNA_APP_KEY (set in Vercel)
+async function adzuna(): Promise<any[]> {
+  const appId = process.env.ADZUNA_APP_ID;
+  const appKey = process.env.ADZUNA_APP_KEY;
+  if (!appId || !appKey) return [];
   try {
+    const countries = [
+      { code: 'us', query: 'software engineer remote' },
+      { code: 'gb', query: 'software engineer remote' },
+      { code: 'br', query: 'desenvolvedor remote' }, // Brazil
+    ];
     const results = await Promise.allSettled(
-      feeds.map(url => timed(url, { headers: { 'User-Agent': 'Mozilla/5.0' } }).then(r => r.text()))
+      countries.map(c =>
+        timed(`https://api.adzuna.com/v1/api/jobs/${c.code}/search/1?app_id=${appId}&app_key=${appKey}&results_per_page=50&what=${encodeURIComponent(c.query)}&content_type=application/json`)
+          .then(r => r.json())
+      )
     );
     const jobs: any[] = [];
-    let autoId = 0;
     for (const r of results) {
-      if (r.status !== 'fulfilled') continue;
-      const xml = r.value;
-      // Extract <item> blocks
-      const items = xml.match(/<item>([\s\S]*?)<\/item>/g) || [];
-      for (const item of items) {
-        const get = (tag: string) => {
-          const m = item.match(new RegExp(`<${tag}[^>]*><!\\[CDATA\\[([\\s\\S]*?)\\]\\]><\/${tag}>|<${tag}[^>]*>([^<]*)<\/${tag}>`));
-          return m ? (m[1] || m[2] || '').trim() : '';
-        };
-        const title = get('title');
-        const link  = get('link');
-        const company = get('region'); // WWR uses <region> for company
-        const pubDate = get('pubDate');
-        if (!title) continue;
-        jobs.push({
-          id: `wwr-${autoId++}`,
-          title,
-          company: company || 'Unknown',
-          location: 'Remote',
-          url: link || 'https://weworkremotely.com',
-          salary: null,
-          tags: '',
-          source: 'We Work Remotely',
-          region: 'Worldwide',
-          postedAt: pubDate ? new Date(pubDate).toISOString() : null,
-        });
-      }
+      if (r.status === 'fulfilled') jobs.push(...(r.value?.results || []));
     }
-    return jobs;
+    return jobs.map((j: any) => ({
+      id: `adzuna-${j.id}`,
+      title: j.title,
+      company: j.company?.display_name || 'Unknown',
+      location: j.location?.display_name || 'Remote',
+      url: j.redirect_url,
+      salary: j.salary_min ? `$${Math.round(j.salary_min/1000)}k–$${Math.round((j.salary_max||j.salary_min)/1000)}k` : null,
+      tags: j.category?.label || '',
+      source: 'Adzuna',
+      region: region(j.location?.display_name || 'Remote'),
+      postedAt: j.created,
+    }));
   } catch { return []; }
 }
 
+// 7. Findwork – requires free API key from findwork.dev
 async function findwork(): Promise<any[]> {
-  const key = process.env.FINDWORK_API_KEY;
-  if (!key) return [];
+  const apiKey = process.env.FINDWORK_API_KEY;
+  if (!apiKey) return [];
   try {
-    const r = await timed('https://findwork.dev/api/jobs/?format=json&remote=true', {
-      headers: { Authorization: `Token ${key}` },
+    const r = await timed('https://findwork.dev/api/jobs/?remote=true&limit=100', {
+      headers: { Authorization: `Token ${apiKey}` }
     });
-    const data = await r.json() as any;
-    return (data.results || []).map((j: any, i: number) => ({
-      id: `findwork-${j.id ?? i}`,
+    const data = await r.json();
+    return (data.results || []).map((j: any) => ({
+      id: `findwork-${j.id}`,
       title: j.role,
       company: j.company_name,
       location: j.location || 'Remote',
@@ -202,54 +184,71 @@ async function findwork(): Promise<any[]> {
       salary: null,
       tags: (j.keywords || []).join(', '),
       source: 'Findwork',
-      region: region(j.location || ''),
-      postedAt: j.date_posted || null,
+      region: region(j.location || 'Remote'),
+      postedAt: j.date_posted,
     }));
   } catch { return []; }
 }
 
-// ── Handler ────────────────────────────────────────────────────────────────────
+// ---------- In‑memory cache (30 minutes) ----------
+let cachedJobs: any[] | null = null;
+let cacheTime = 0;
+const CACHE_DURATION = 30 * 60 * 1000;
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
-  if (handleCors(req, res)) return;
+  // Enable CORS
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
+  if (req.method === 'OPTIONS') return res.status(200).end();
 
-  const [r1, r2, r3, r4, r5, r6, r7] = await Promise.allSettled([
-    remotive(),
-    arbeitnow(),
-    remoteok(),
-    jobicy(),
-    themuse(),
-    weworkremotely(),
-    findwork(),
-  ]);
+  // Return cached data if fresh
+  if (cachedJobs && Date.now() - cacheTime < CACHE_DURATION) {
+    return res.status(200).json(cachedJobs);
+  }
 
-  const all = [
-    ...(r1.status === "fulfilled" ? r1.value : []),
-    ...(r2.status === "fulfilled" ? r2.value : []),
-    ...(r3.status === "fulfilled" ? r3.value : []),
-    ...(r4.status === "fulfilled" ? r4.value : []),
-    ...(r5.status === "fulfilled" ? r5.value : []),
-    ...(r6.status === "fulfilled" ? r6.value : []),
-    ...(r7.status === "fulfilled" ? r7.value : []),
-  ];
+  try {
+    // Fetch from all sources concurrently
+    const [remotiveRes, arbeitnowRes, remoteokRes, jobicyRes, themuseRes, adzunaRes, findworkRes] = await Promise.allSettled([
+      remotive(),
+      arbeitnow(),
+      remoteok(),
+      jobicy(),
+      themuse(),
+      adzuna(),
+      findwork(),
+    ]);
 
-  // Deduplicate by title+company
-  const seen = new Set<string>();
-  const unique = all.filter(j => {
-    const key = `${(j.title||"").toLowerCase().trim()}|${(j.company||"").toLowerCase().trim()}`;
-    if (seen.has(key)) return false;
-    seen.add(key);
-    return true;
-  });
+    const allJobs: any[] = [];
+    const addJobs = (result: PromiseSettledResult<any[]>, sourceName: string) => {
+      if (result.status === 'fulfilled' && Array.isArray(result.value)) {
+        allJobs.push(...result.value);
+      } else {
+        console.warn(`${sourceName} failed`);
+      }
+    };
 
-  // Sort newest first
-  unique.sort((a, b) => {
-    const da = a.postedAt ? new Date(a.postedAt).getTime() : 0;
-    const db = b.postedAt ? new Date(b.postedAt).getTime() : 0;
-    return db - da;
-  });
+    addJobs(remotiveRes, 'Remotive');
+    addJobs(arbeitnowRes, 'Arbeitnow');
+    addJobs(remoteokRes, 'RemoteOK');
+    addJobs(jobicyRes, 'Jobicy');
+    addJobs(themuseRes, 'The Muse');
+    addJobs(adzunaRes, 'Adzuna');
+    addJobs(findworkRes, 'Findwork');
 
-  // 30 min edge cache, 15 min stale-while-revalidate
-  res.setHeader("Cache-Control", "s-maxage=1800, stale-while-revalidate=900");
-  res.json(unique);
+    // Remove duplicates by id (simple)
+    const unique = Array.from(new Map(allJobs.map(job => [job.id, job])).values());
+    // Sort by date (newest first)
+    unique.sort((a, b) => (b.postedAt || '').localeCompare(a.postedAt || ''));
+
+    // Update cache
+    cachedJobs = unique;
+    cacheTime = Date.now();
+
+    return res.status(200).json(unique);
+  } catch (error) {
+    console.error('Job aggregation error:', error);
+    // If we have stale cache, serve it
+    if (cachedJobs) return res.status(200).json(cachedJobs);
+    return res.status(500).json({ error: 'Failed to fetch jobs' });
+  }
 }
