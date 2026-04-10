@@ -1293,76 +1293,33 @@ export default function App() {
                       </div>
                     </div>
 
-                    {/* Bottom Row: Intelligence Feed */}
-                    <div className="bg-bg p-6 flex-1">
-                      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8">
-                        <div className="mono text-[9px] text-text/40 flex items-center gap-2">
-                          <Activity size={10} className="text-accent" /> {t.dailyBriefing}
+                    {/* Subscribe Strip */}
+                    <div className="bg-bg p-6 border-b border-border">
+                      <div className="flex flex-col md:flex-row md:items-center gap-6">
+                        <div className="flex-1">
+                          <div className="mono text-[9px] text-accent font-bold mb-1 flex items-center gap-2">
+                            <Radio size={10} className="animate-pulse" /> WPRO SIGNAL · EVERY THURSDAY
+                          </div>
+                          <p className="text-sm text-text/60">{t.getSignal}</p>
                         </div>
-                        
-                        <div className="flex flex-wrap gap-2">
-                          {[
-                            { id: 'Workforce Daily', icon: Cpu, label: 'Workforce' },
-                            { id: 'TechJobs', icon: Briefcase, label: 'TechJobs' },
-                            { id: 'AI Impact', icon: Brain, label: 'AI Impact' },
-                            { id: 'Recruitment', icon: SearchCode, label: 'Recruitment' },
-                            { id: 'HR', icon: UserCheck, label: 'HR' }
-                          ].map((cat) => (
-                            <button
-                              key={cat.id}
-                              onClick={() => setCategory(cat.id as Category)}
-                              className={`px-3 py-1.5 mono text-[9px] font-bold border transition-all flex items-center gap-2 ${
-                                category === cat.id 
-                                  ? 'bg-accent border-accent text-black' 
-                                  : 'bg-surface border-border text-text/40 hover:border-text/20'
-                              }`}
-                            >
-                              <cat.icon size={12} /> {cat.label}
-                            </button>
-                          ))}
-                        </div>
-                      </div>
-                      
-                      <div className="space-y-4">
-                        {/* Intelligence feed — Workforce Daily shows all, other tabs filter by category */}
-                        {(category === 'Workforce Daily' ? filteredBriefings : filteredBriefings.filter(b => b.category === category)).map((briefing) => (
-                          <article 
-                            key={briefing.id}
-                            onClick={() => {
-                              if (briefing.isPremium && subscriptionStatus !== 'premium') {
-                                document.getElementById('subscription-section')?.scrollIntoView({ behavior: 'smooth' });
-                                return;
-                              }
-                              setSelectedBriefing(briefing);
-                            }}
-                            className={`p-6 bg-surface border border-border hover:border-accent/30 transition-all cursor-pointer group relative overflow-hidden ${
-                              briefing.isPremium && subscriptionStatus !== 'premium' ? 'opacity-75' : ''
-                            }`}
+                        <form onSubmit={handleNewsletterSubscribe} className="flex gap-2 shrink-0">
+                          <input
+                            type="email"
+                            required
+                            value={newsletterEmail}
+                            onChange={e => setNewsletterEmail(e.target.value)}
+                            placeholder="your@email.com"
+                            disabled={newsletterStatus === 'success'}
+                            className="bg-surface border border-border px-3 py-2 mono text-[10px] focus:outline-none focus:border-accent/50 w-48 placeholder:text-text/20 disabled:opacity-50"
+                          />
+                          <button
+                            type="submit"
+                            disabled={newsletterStatus === 'loading' || newsletterStatus === 'success'}
+                            className="px-4 py-2 bg-accent text-black mono text-[9px] font-bold hover:opacity-90 transition-opacity disabled:opacity-50 whitespace-nowrap"
                           >
-                            {briefing.isPremium && (
-                              <div className="absolute top-0 right-0 px-3 py-1 bg-accent text-black mono text-[8px] font-bold uppercase tracking-widest">
-                                Premium
-                              </div>
-                            )}
-                            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                              <div className="flex-1">
-                                <div className="flex items-center gap-3 mb-3">
-                                  <span className="px-2 py-0.5 bg-accent text-black text-[8px] font-mono font-bold">{briefing.region}</span>
-                                  <span className="mono text-[8px] text-text/40">ID: {briefing.id.padStart(4, '0')}</span>
-                                  <span className="mono text-[8px] text-text/40">{briefing.date}</span>
-                                  <span className="mono text-[8px] text-accent/60 uppercase tracking-widest">{briefing.category}</span>
-                                </div>
-                                <h3 className="text-xl font-black uppercase tracking-tight group-hover:text-accent transition-colors flex items-center gap-2">
-                                  {briefing.content[lang].title}
-                                  {briefing.isPremium && subscriptionStatus !== 'premium' && <Lock size={14} className="text-accent" />}
-                                </h3>
-                              </div>
-                              <div className="flex items-center gap-2 mono text-[9px] font-bold text-accent opacity-0 group-hover:opacity-100 transition-opacity">
-                                {briefing.isPremium && subscriptionStatus !== 'premium' ? 'Upgrade to Unlock' : t.openReport} <ArrowUpRight size={14} />
-                              </div>
-                            </div>
-                          </article>
-                        ))}
+                            {newsletterStatus === 'success' ? '✓ SUBSCRIBED' : newsletterStatus === 'loading' ? '...' : t.subscribeBtn.toUpperCase()}
+                          </button>
+                        </form>
                       </div>
                     </div>
                   </div>
@@ -1604,34 +1561,30 @@ export default function App() {
                     </section>
 
                     <section className="p-8 bg-accent text-black flex-1">
-                      <div className="mono text-black/60 mb-8 font-bold">{t.joinNetwork}</div>
-                      <h4 className="text-3xl font-black uppercase tracking-tighter leading-none mb-8">
-                        {t.getSignal.split(' ').slice(0, 3).join(' ')} <br />
-                        {t.getSignal.split(' ').slice(3).join(' ')}
+                      <div className="mono text-black/60 mb-4 font-bold text-[9px] tracking-widest">WPRO INTEL // EXECUTIVE</div>
+                      <h4 className="text-2xl font-black uppercase tracking-tighter leading-tight mb-6">
+                        Unlock Full<br />Market Intelligence
                       </h4>
-                      <div className="space-y-4">
-                        <button 
-                          onClick={handleGenerateBriefing}
-                          disabled={isGenerating}
-                          className="w-full bg-bg text-accent py-6 mono font-bold hover:opacity-90 transition-colors flex items-center justify-center gap-3 disabled:opacity-50"
-                        >
-                          {isGenerating ? (
-                            <>
-                              <Activity size={16} className="animate-spin" />
-                              {t.generatingSignal}
-                            </>
-                          ) : (
-                            <>
-                              <Zap size={16} />
-                              {t.generateNewBriefing}
-                            </>
-                          )}
-                        </button>
-                        <div className="h-px bg-border w-full" />
-                        <p className="mono text-[10px] text-black/60 leading-relaxed">
-                          Select a category above to generate specific intelligence on Jobs, AI Impact, or HR.
-                        </p>
+                      <div className="space-y-3 mb-6">
+                        {[
+                          'Weekly AI hiring signals',
+                          'LATAM salary benchmarks',
+                          'Company hiring forecasts',
+                          'Talent market alerts',
+                        ].map((item, i) => (
+                          <div key={i} className="flex items-center gap-2 mono text-[9px] text-black/70">
+                            <ChevronRight size={10} className="text-black/50 shrink-0" />
+                            {item}
+                          </div>
+                        ))}
                       </div>
+                      <button
+                        onClick={() => setShowUpgrade(v => !v)}
+                        className="w-full bg-bg text-accent py-4 mono font-bold text-[10px] hover:opacity-90 transition-opacity flex items-center justify-center gap-2"
+                      >
+                        <Zap size={13} /> UPGRADE · $29/MO
+                      </button>
+                      <p className="mono text-[8px] text-black/40 mt-3 text-center">Cancel anytime · Instant access</p>
                     </section>
                   </div>
 
