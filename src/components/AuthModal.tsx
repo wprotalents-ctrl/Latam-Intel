@@ -169,7 +169,10 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
   const finalizeAuth = async (user: { uid: string; email: string | null; displayName: string | null; photoURL: string | null }) => {
     await ensureUserDoc(user);
     if (selectedRole) {
-      await saveUserRole(user.uid, selectedRole);
+      // Role save is best-effort — never block login if it fails
+      await saveUserRole(user.uid, selectedRole).catch(err =>
+        console.error('[finalizeAuth] role save failed:', err)
+      );
     }
     handleClose();
   };
