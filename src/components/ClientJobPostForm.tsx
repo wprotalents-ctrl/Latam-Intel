@@ -8,6 +8,7 @@ export interface ClientJobPostData {
   salary: number | undefined;
   description: string;
   planType: 'free' | 'promoted';
+  companyEmail?: string;
 }
 
 interface Props {
@@ -48,22 +49,43 @@ export default function ClientJobPostForm({ onSubmit, loading = false }: Props) 
   const [salary, setSalary] = useState('');
   const [description, setDescription] = useState('');
   const [planType, setPlanType] = useState<'free' | 'promoted'>('free');
+  const [companyEmail, setCompanyEmail] = useState('');
+  const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!role) { setError('Please select a role.'); return; }
     if (!description.trim()) { setError('Please add a short description.'); return; }
     setError('');
-    onSubmit({
+
+    const data: ClientJobPostData = {
       role,
       seniority,
       country,
       salary: salary ? Number(salary) : undefined,
       description: description.trim(),
       planType,
-    });
+      companyEmail: companyEmail.trim() || undefined,
+    };
+
+    setSaving(true);
+    try {
+      const res = await fetch('/api/save-job-post', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      });
+      if (!res.ok) throw new Error('API error');
+      onSubmit(data);
+    } catch {
+      setError('Could not save your post. Please try again.');
+    } finally {
+      setSaving(false);
+    }
   }
+
+  const isSubmitting = saving || loading;
 
   const sel = 'w-full bg-bg border border-border px-3 py-2.5 mono text-[11px] focus:outline-none focus:border-accent/50 transition-colors text-text';
   const inp = 'w-full bg-bg border border-border px-3 py-2.5 mono text-[11px] focus:outline-none focus:border-accent/50 transition-colors placeholder:text-text/20';
@@ -135,6 +157,18 @@ export default function ClientJobPostForm({ onSubmit, loading = false }: Props) 
         />
       </div>
 
+      {/* Contact email */}
+      <div>
+        <label className={lbl}>Your Email (optional — so we can follow up)</label>
+        <input
+          type="email"
+          value={companyEmail}
+          onChange={e => setCompanyEmail(e.target.value)}
+          placeholder="hiring@yourcompany.com"
+          className={inp}
+        />
+      </div>
+
       {/* Plan type */}
       <div>
         <label className={lbl}>Posting Plan</label>
@@ -173,12 +207,12 @@ export default function ClientJobPostForm({ onSubmit, loading = false }: Props) 
 
       <button
         type="submit"
-        disabled={loading}
+        disabled={isSubmitting}
         className="w-full py-3 bg-accent text-black mono text-[10px] font-bold hover:opacity-90 transition-opacity flex items-center justify-center gap-2 disabled:opacity-50"
       >
-        {loading
-          ? <><Loader2 size={12} className="animate-spin" /> Generating plan...</>
-          : <>Generate Hiring Intelligence <ChevronRight size={12} /></>}
+        {isSubmitting
+          ? <><Loader2 size={12} className="animate-spin" /> Saving...</>
+          : <>Post Role &amp; Get Hiring Intelligence <ChevronRight size={12} /></>}
       </button>
     </form>
   );

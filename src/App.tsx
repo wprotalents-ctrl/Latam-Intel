@@ -36,7 +36,8 @@ import {
   Bitcoin,
   Newspaper,
   Sun,
-  Copy
+  Copy,
+  CheckCircle2
 } from 'lucide-react';
 import { 
   BarChart, 
@@ -616,6 +617,7 @@ export default function App() {
   const [clientNetworkReach, setClientNetworkReach] = useState<NetworkReach | null>(null);
   const [clientFormData, setClientFormData] = useState<ClientJobPostData | null>(null);
   const [clientInsightsLoading, setClientInsightsLoading] = useState(false);
+  const [jobPostSaved, setJobPostSaved] = useState(false);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [briefings, setBriefings] = useState<Briefing[]>(MOCK_BRIEFINGS);
   const [intelBriefs, setIntelBriefs] = useState<IntelligenceBrief[]>([]);
@@ -1047,31 +1049,81 @@ export default function App() {
                       <div className="h-px flex-1 bg-border" />
                       <span className="mono text-[8px] text-text/30">Featured on wprotalents.lat</span>
                     </div>
-                    <ClientJobPostForm
-                      loading={clientInsightsLoading}
-                      onSubmit={(data) => {
-                        setClientInsightsLoading(true);
-                        const roleKey = data.role
-                          .toLowerCase()
-                          .replace(/\s*\/\s*/g, '_')
-                          .replace(/\s+/g, '_')
-                          .replace(/[^a-z_]/g, '');
-                        const plan = generateHiringPlan(data, {});
-                        const reach = estimateNetworkReach({ role: roleKey, seniority: data.seniority });
-                        setClientHiringPlan(plan);
-                        setClientNetworkReach(reach);
-                        setClientFormData(data);
-                        setClientInsightsLoading(false);
-                      }}
-                    />
-                    {clientHiringPlan && clientNetworkReach && clientFormData && (
-                      <ClientInsightsCard
-                        plan={clientHiringPlan}
-                        reach={clientNetworkReach}
-                        role={clientFormData.role}
-                        seniority={clientFormData.seniority}
-                        planType={clientFormData.planType}
-                      />
+                    {jobPostSaved && clientFormData ? (
+                      /* ── Confirmation panel ── */
+                      <div className="py-6">
+                        <div className="flex items-center gap-3 mb-5">
+                          <CheckCircle2 size={26} className="text-green-400 shrink-0" />
+                          <div>
+                            <h3 className="font-black text-base uppercase tracking-tighter">Your role is live.</h3>
+                            <p className="mono text-[9px] text-text/40">WProTalents will contact active candidates within 24–48h.</p>
+                          </div>
+                        </div>
+                        <div className="space-y-2 mb-5">
+                          {[
+                            clientFormData.planType === 'promoted'
+                              ? 'Your promoted post is active — expect direct outreach to matching candidates.'
+                              : 'Your free post is live in our pipeline — we match from our active database.',
+                            `Role posted: ${clientFormData.seniority} ${clientFormData.role}${clientFormData.country ? ` · ${clientFormData.country}` : ''}`,
+                            'You will be contacted directly when strong matches are identified.',
+                          ].map((s, i) => (
+                            <div key={i} className="flex items-start gap-2">
+                              <div className="w-4 h-4 bg-accent/10 border border-accent/20 flex items-center justify-center shrink-0 mt-0.5">
+                                <span className="mono text-[7px] text-accent font-bold">{i + 1}</span>
+                              </div>
+                              <p className="mono text-[9px] text-text/60">{s}</p>
+                            </div>
+                          ))}
+                        </div>
+                        {/* WhatsApp CTA — all plans */}
+                        <a
+                          href={`https://wa.me/573243132500?text=${encodeURIComponent(`Hi! I just posted a job for ${clientFormData.role} on WProTalents Intel. I'm on the ${clientFormData.planType} plan — how can I ${clientFormData.planType === 'free' ? 'upgrade or get more visibility' : 'coordinate next steps'}?`)}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center gap-2 w-full justify-center py-3 bg-[#25D366]/10 border border-[#25D366]/30 hover:border-[#25D366] hover:bg-[#25D366]/20 transition-colors mb-3"
+                        >
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="#25D366"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.136.564 4.14 1.534 5.874L0 24l6.294-1.508A11.955 11.955 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.818 9.818 0 01-5.015-1.378l-.36-.213-3.733.895.944-3.617-.234-.373A9.786 9.786 0 012.182 12C2.182 6.578 6.578 2.182 12 2.182S21.818 6.578 21.818 12 17.422 21.818 12 21.818z"/></svg>
+                          <span className="mono text-[9px] font-bold text-[#25D366]">
+                            {clientFormData.planType === 'free' ? 'WhatsApp Juan — upgrade or ask questions' : 'WhatsApp Juan — coordinate outreach'}
+                          </span>
+                        </a>
+                        <button
+                          onClick={() => { setJobPostSaved(false); setClientFormData(null); setClientHiringPlan(null); setClientNetworkReach(null); }}
+                          className="w-full mono text-[9px] border border-border py-2 hover:border-accent hover:text-accent transition-colors"
+                        >
+                          POST ANOTHER ROLE
+                        </button>
+                      </div>
+                    ) : (
+                      <>
+                        <ClientJobPostForm
+                          loading={clientInsightsLoading}
+                          onSubmit={(data) => {
+                            setClientInsightsLoading(true);
+                            const roleKey = data.role
+                              .toLowerCase()
+                              .replace(/\s*\/\s*/g, '_')
+                              .replace(/\s+/g, '_')
+                              .replace(/[^a-z_]/g, '');
+                            const plan = generateHiringPlan(data, {});
+                            const reach = estimateNetworkReach({ role: roleKey, seniority: data.seniority });
+                            setClientHiringPlan(plan);
+                            setClientNetworkReach(reach);
+                            setClientFormData(data);
+                            setClientInsightsLoading(false);
+                            setJobPostSaved(true);
+                          }}
+                        />
+                        {clientHiringPlan && clientNetworkReach && clientFormData && !jobPostSaved && (
+                          <ClientInsightsCard
+                            plan={clientHiringPlan}
+                            reach={clientNetworkReach}
+                            role={clientFormData.role}
+                            seniority={clientFormData.seniority}
+                            planType={clientFormData.planType}
+                          />
+                        )}
+                      </>
                     )}
                   </div>
 
