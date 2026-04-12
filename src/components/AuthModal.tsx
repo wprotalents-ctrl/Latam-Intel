@@ -112,7 +112,11 @@ async function ensureUserDoc(user: { uid: string; email: string | null; displayN
 
 async function saveUserRole(uid: string, role: 'candidate' | 'company') {
   const ref = doc(db, 'users', uid);
-  await setDoc(ref, { role, updatedAt: serverTimestamp() }, { merge: true }).catch(() => {});
+  try {
+    await setDoc(ref, { role, updatedAt: serverTimestamp() }, { merge: true });
+  } catch (err) {
+    console.error('[saveUserRole] failed to save role:', err);
+  }
 }
 
 export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
