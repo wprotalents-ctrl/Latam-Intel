@@ -30,6 +30,13 @@ const REGIONS = ['All', 'LATAM', 'USA', 'Europe', 'Worldwide'];
 
 const QUICK_FILTERS = ['AI / ML', 'Software Engineer', 'Data', 'DevOps', 'Product', 'Design', 'Remote LATAM'];
 
+const MATCH_ROLE_TYPES = ['Software Engineer', 'Data', 'DevOps', 'Design', 'Product', 'Marketing', 'AI / ML'];
+const MATCH_SENIORITIES = ['Junior', 'Mid', 'Senior', 'Lead'];
+const MATCH_REGIONS = ['Worldwide', 'LATAM', 'USA', 'Europe'];
+
+interface MatchPrefs { roleType: string; seniority: string; region: string; }
+const MATCH_KEY = 'wpro_match_prefs';
+
 const T = {
   EN: {
     clientBadge: 'MARKET INTEL · FOR COMPANIES',
@@ -46,6 +53,15 @@ const T = {
     noJobs: 'No jobs match your search.',
     roles: 'roles',
     loadMore: 'LOAD MORE',
+    matchTitle: 'Quick Match',
+    matchRoleType: 'Role type',
+    matchSeniority: 'Seniority',
+    matchRegion: 'Region',
+    matchTopPicks: 'Top picks for you',
+    matchBadge: 'MATCH',
+    matchEmpty: 'Set your preferences above to see personalized picks.',
+    matchCollapse: 'Hide picks',
+    matchExpand: 'Show picks',
     // MarketValueTeaser
     teaserBadge: 'MARKET VALUE CALCULATOR · FREE PREVIEW',
     teaserFullDash: 'Full dashboard → Executive Members',
@@ -76,6 +92,15 @@ const T = {
     noJobs: 'Sin resultados.',
     roles: 'roles',
     loadMore: 'CARGAR MÁS',
+    matchTitle: 'Búsqueda Rápida',
+    matchRoleType: 'Tipo de rol',
+    matchSeniority: 'Nivel',
+    matchRegion: 'Región',
+    matchTopPicks: 'Seleccionados para ti',
+    matchBadge: 'MATCH',
+    matchEmpty: 'Configura tus preferencias arriba para ver picks personalizados.',
+    matchCollapse: 'Ocultar picks',
+    matchExpand: 'Mostrar picks',
     // MarketValueTeaser
     teaserBadge: 'CALCULADORA DE VALOR DE MERCADO · VISTA PREVIA',
     teaserFullDash: 'Dashboard completo → Miembros Ejecutivos',
@@ -106,6 +131,15 @@ const T = {
     noJobs: 'Nenhuma vaga encontrada.',
     roles: 'vagas',
     loadMore: 'CARREGAR MAIS',
+    matchTitle: 'Busca Rápida',
+    matchRoleType: 'Tipo de cargo',
+    matchSeniority: 'Nível',
+    matchRegion: 'Região',
+    matchTopPicks: 'Selecionados para você',
+    matchBadge: 'MATCH',
+    matchEmpty: 'Configure suas preferências acima para ver sugestões personalizadas.',
+    matchCollapse: 'Ocultar sugestões',
+    matchExpand: 'Mostrar sugestões',
     // MarketValueTeaser
     teaserBadge: 'CALCULADORA DE VALOR DE MERCADO · PRÉVIA GRATUITA',
     teaserFullDash: 'Dashboard completo → Membros Executivos',
@@ -652,6 +686,15 @@ function JobPortal({ lang, t, onPostVacancy }: { lang: string; t: typeof T.EN; o
   const PAGE = 30;
   const [showLinkedIn, setShowLinkedIn] = useState(false);
   const [saved, setSaved] = useState<Set<string>>(new Set());
+  const [matchPrefs, setMatchPrefs] = useState<MatchPrefs>(() => {
+    try { return JSON.parse(localStorage.getItem(MATCH_KEY) || '{}'); } catch { return {}; }
+  });
+  const [matchOpen, setMatchOpen] = useState(true);
+
+  const saveMatchPrefs = (prefs: MatchPrefs) => {
+    setMatchPrefs(prefs);
+    localStorage.setItem(MATCH_KEY, JSON.stringify(prefs));
+  };
 
   const load = () => {
     setLoading(true);
@@ -690,6 +733,49 @@ function JobPortal({ lang, t, onPostVacancy }: { lang: string; t: typeof T.EN; o
 
   const shown = filtered.slice(0, page * PAGE);
   const hasMore = shown.length < filtered.length;
+
+  // ── Smart match scoring ───────────────────────────────────────────────────
+  const hasPrefs = matchPrefs.roleType || matchPrefs.seniority || matchPrefs.region;
+  const topMatches = hasPrefs ? (() => {
+    const roleKw: Record<string, string[]> = {
+      'Software Engineer': ['engineer', 'developer', 'software', 'backend', 'frontend', 'fullstack', 'full stack', 'full-stack'],
+      'Data':              ['data', 'analyst', 'scientist', 'analytics', 'bi ', 'business intelligence'],
+      'DevOps':            ['devops', 'sre', 'infrastructure', 'cloud', 'aws', 'platform', 'reliability'],
+      'Design':            ['design', 'ux', 'ui ', 'product design', 'figma'],
+      'Product':           ['product manager', 'product owner', 'pm ', 'p.m.'],
+      'Marketing':         ['marketing', 'growth', 'content', 'seo', 'paid'],
+      'AI / ML':           ['ai ', 'ml ', 'machine learning', 'llm', 'deep learning', 'nlp', 'pytorch', 'tensorflow'],
+    };
+    const seniorKw: Record<string, string[]> = {
+      'Junior':  ['junior', 'jr.', 'jr ', 'entry', 'associate', 'graduate'],
+      'Mid':     ['mid', 'intermediate', 'ii ', 'level 2', 'iii '],
+      'Senior':  ['senior', 'sr.', 'sr ', 'staff', 'principal'],
+      'Lead':    ['lead', 'manager', 'head of', 'director', 'vp '],
+    };
+    return jobs
+      .map(j => {
+        const hay = `${j.title} ${j.tags} ${j.location}`.toLowerCase();
+        let score = 0;
+        if (matchPrefs.roleType) {
+          const kws = roleKw[matchPrefs.roleType] ?? [];
+          if (kws.some(k => hay.includes(k))) score += 3;
+        }
+        if (matchPrefs.seniority) {
+          const kws = seniorKw[matchPrefs.seniority] ?? [];
+          if (kws.some(k => hay.includes(k))) score += 2;
+        }
+        if (matchPrefs.region && matchPrefs.region !== 'Worldwide') {
+          if (j.region === matchPrefs.region) score += 2;
+        } else if (matchPrefs.region === 'Worldwide') {
+          score += 1;
+        }
+        return { job: j, score };
+      })
+      .filter(x => x.score >= 3)
+      .sort((a, b) => b.score - a.score)
+      .slice(0, 10)
+      .map(x => x.job);
+  })() : [];
 
   return (
     <section className="px-6 md:px-10 py-6 max-w-7xl mx-auto">
@@ -731,6 +817,89 @@ function JobPortal({ lang, t, onPostVacancy }: { lang: string; t: typeof T.EN; o
           </button>
         </div>
       </div>
+
+      {/* ── Quick Match bar ─────────────────────────────────────── */}
+      <div className="border border-border bg-surface/30 p-3 mb-4">
+        <div className="flex items-center gap-2 mb-3">
+          <Zap size={10} className="text-accent" />
+          <span className="mono text-[9px] font-bold text-accent tracking-widest uppercase">{t.matchTitle}</span>
+        </div>
+        <div className="grid grid-cols-3 gap-2">
+          {/* Role Type */}
+          <div>
+            <label className="mono text-[7px] text-text/30 uppercase tracking-widest block mb-1">{t.matchRoleType}</label>
+            <select
+              value={matchPrefs.roleType || ''}
+              onChange={e => saveMatchPrefs({ ...matchPrefs, roleType: e.target.value })}
+              className="w-full bg-bg border border-border px-2 py-1.5 mono text-[10px] focus:outline-none focus:border-accent/40 transition-colors text-text"
+            >
+              <option value="">Any</option>
+              {MATCH_ROLE_TYPES.map(r => <option key={r} value={r}>{r}</option>)}
+            </select>
+          </div>
+          {/* Seniority */}
+          <div>
+            <label className="mono text-[7px] text-text/30 uppercase tracking-widest block mb-1">{t.matchSeniority}</label>
+            <select
+              value={matchPrefs.seniority || ''}
+              onChange={e => saveMatchPrefs({ ...matchPrefs, seniority: e.target.value })}
+              className="w-full bg-bg border border-border px-2 py-1.5 mono text-[10px] focus:outline-none focus:border-accent/40 transition-colors text-text"
+            >
+              <option value="">Any</option>
+              {MATCH_SENIORITIES.map(s => <option key={s} value={s}>{s}</option>)}
+            </select>
+          </div>
+          {/* Region */}
+          <div>
+            <label className="mono text-[7px] text-text/30 uppercase tracking-widest block mb-1">{t.matchRegion}</label>
+            <select
+              value={matchPrefs.region || ''}
+              onChange={e => saveMatchPrefs({ ...matchPrefs, region: e.target.value })}
+              className="w-full bg-bg border border-border px-2 py-1.5 mono text-[10px] focus:outline-none focus:border-accent/40 transition-colors text-text"
+            >
+              <option value="">Any</option>
+              {MATCH_REGIONS.map(r => <option key={r} value={r}>{r}</option>)}
+            </select>
+          </div>
+        </div>
+      </div>
+
+      {/* ── Top 10 matches ───────────────────────────────────────── */}
+      {hasPrefs && topMatches.length >= 3 && (
+        <div className="border border-accent/20 bg-accent/5 mb-5">
+          <div className="flex items-center gap-2 px-4 py-2.5 border-b border-accent/10">
+            <Star size={10} className="text-accent" />
+            <span className="mono text-[9px] font-bold text-accent tracking-widest uppercase flex-1">{t.matchTopPicks}</span>
+            <button onClick={() => setMatchOpen(v => !v)} className="mono text-[8px] text-text/30 hover:text-accent transition-colors">
+              {matchOpen ? t.matchCollapse : t.matchExpand}
+            </button>
+          </div>
+          {matchOpen && (
+            <div className="divide-y divide-accent/10">
+              {topMatches.map(job => (
+                <a key={job.id} href={job.url} target="_blank" rel="noopener noreferrer"
+                  className="flex items-start gap-3 px-4 py-3 hover:bg-accent/5 transition-colors group">
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 mb-0.5 flex-wrap">
+                      <span className="mono text-[7px] font-bold text-accent bg-accent/10 px-1.5 py-0.5">{t.matchBadge}</span>
+                      <h4 className="mono text-[10px] font-bold text-text group-hover:text-accent transition-colors truncate">{job.title}</h4>
+                    </div>
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className="mono text-[8px] text-text/40">{job.company}</span>
+                      {job.location && <span className="mono text-[8px] text-text/30">· {job.location}</span>}
+                      {job.salary && <span className="mono text-[8px] text-green-400/70">· {job.salary}</span>}
+                    </div>
+                  </div>
+                  <ExternalLink size={10} className="text-text/20 group-hover:text-accent shrink-0 mt-1 transition-colors" />
+                </a>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+      {hasPrefs && topMatches.length < 3 && !loading && (
+        <p className="mono text-[8px] text-text/30 mb-4">{t.matchEmpty}</p>
+      )}
 
       {/* Quick filters */}
       <div className="flex flex-wrap gap-1.5 mb-4">
