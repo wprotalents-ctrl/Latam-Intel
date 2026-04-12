@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { X, Linkedin, Send, CheckCircle2, Loader2, Sparkles, Copy, Check, ChevronRight, MapPin } from 'lucide-react';
+import { X, Linkedin, Send, CheckCircle2, Loader2, Sparkles, Copy, Check, ChevronRight, MapPin, Users } from 'lucide-react';
 
 interface Props {
   isOpen: boolean;
@@ -10,8 +10,8 @@ interface Props {
 
 const T = {
   EN: {
-    title: 'Get Featured on LinkedIn',
-    subtitle: 'WProTalents posts your profile to our 23K+ network of US & EU hiring managers. Free. Within 48h.',
+    title: 'Join WPro Talent Pool',
+    framing: 'We add you to our active talent database. When a matching role comes in from a US or EU company, we reach out directly.',
     name: 'Full name',
     role: 'Your role / what you do',
     rolePh: 'e.g. Senior React Developer, ML Engineer, Data Scientist',
@@ -26,25 +26,26 @@ const T = {
     contactPh: 'email@you.com or linkedin.com/in/yourname',
     salary: 'Salary expectation (optional)',
     salaryPh: 'e.g. $80k–$100k / year USD',
-    submit: 'FEATURE ME →',
+    submit: 'JOIN THE POOL →',
     sending: 'Sending...',
-    successTitle: 'You\'re in the queue!',
+    successTitle: "You're in the pool!",
     successSteps: [
-      'Your profile is queued for our LinkedIn page',
-      'We post within 48h to 23K+ followers',
-      'Hiring managers reach out to you directly',
+      "You're in our active WPro talent database",
+      'We reach out directly when a matching US/EU role comes in',
+      'Hiring managers contact you — no middleman fees',
       'No fees — ever. WPro earns from the company side.',
     ],
-    ctaLabel: 'Want a faster match?',
-    ctaLink: 'Browse open roles now →',
+    ctaLabel: 'Want to see open roles now?',
+    ctaLink: 'Browse open roles →',
     legal: 'By submitting you agree to WProTalents sharing your info with our hiring network.',
-    preview: 'Preview your post',
+    preview: 'Preview your LinkedIn post',
     copy: 'Copy post',
+    copyShare: 'Copy & Share on LinkedIn',
     copied: 'Copied!',
   },
   ES: {
-    title: 'Aparece en LinkedIn',
-    subtitle: 'WProTalents publica tu perfil a nuestra red de 23K+ gerentes de contratación en EE.UU. y Europa. Gratis. En 48h.',
+    title: 'Únete al WPro Talent Pool',
+    framing: 'Te agregamos a nuestra base de datos activa. Cuando llega una oferta que coincide, te contactamos directamente.',
     name: 'Nombre completo',
     role: 'Tu rol / lo que haces',
     rolePh: 'ej. Desarrollador React Senior, ML Engineer, Data Scientist',
@@ -59,25 +60,26 @@ const T = {
     contactPh: 'email@tu.com o linkedin.com/in/tunombre',
     salary: 'Expectativa salarial (opcional)',
     salaryPh: 'ej. $80k–$100k / año USD',
-    submit: 'PUBLÍCAME →',
+    submit: 'UNIRME AL POOL →',
     sending: 'Enviando...',
-    successTitle: '¡Estás en la cola!',
+    successTitle: '¡Estás en el pool!',
     successSteps: [
-      'Tu perfil está en cola para nuestra página de LinkedIn',
-      'Publicamos en 48h a 23K+ seguidores',
-      'Los hiring managers te contactan directamente',
+      'Estás en nuestra base de datos activa de WPro',
+      'Te contactamos directamente cuando llega una oferta que coincide',
+      'Los hiring managers te contactan — sin intermediarios',
       'Sin comisiones — WPro cobra del lado de la empresa.',
     ],
-    ctaLabel: '¿Quieres resultados más rápidos?',
-    ctaLink: 'Ver roles disponibles ahora →',
+    ctaLabel: '¿Quieres ver roles disponibles ahora?',
+    ctaLink: 'Ver roles disponibles →',
     legal: 'Al enviar aceptas que WProTalents comparta tu info con nuestra red.',
-    preview: 'Vista previa de tu post',
+    preview: 'Vista previa de tu post de LinkedIn',
     copy: 'Copiar post',
+    copyShare: 'Copiar y compartir en LinkedIn',
     copied: '¡Copiado!',
   },
   PT: {
-    title: 'Seja Destaque no LinkedIn',
-    subtitle: 'WProTalents publica seu perfil para nossa rede de 23K+ gestores de contratação nos EUA e Europa. Grátis. Em 48h.',
+    title: 'Entre no WPro Talent Pool',
+    framing: 'Adicionamos você ao nosso banco de talentos. Quando surge uma vaga compatível, entramos em contato diretamente.',
     name: 'Nome completo',
     role: 'Seu cargo / o que você faz',
     rolePh: 'ex. Desenvolvedor React Sênior, ML Engineer, Cientista de Dados',
@@ -92,20 +94,21 @@ const T = {
     contactPh: 'email@voce.com ou linkedin.com/in/seunome',
     salary: 'Expectativa salarial (opcional)',
     salaryPh: 'ex. $80k–$100k / ano USD',
-    submit: 'ME DESTAQUE →',
+    submit: 'ENTRAR NO POOL →',
     sending: 'Enviando...',
-    successTitle: 'Você está na fila!',
+    successTitle: 'Você está no pool!',
     successSteps: [
-      'Seu perfil está na fila para nossa página do LinkedIn',
-      'Publicamos em 48h para 23K+ seguidores',
-      'Gestores de contratação entram em contato diretamente',
+      'Você está no banco de talentos ativo do WPro',
+      'Entramos em contato diretamente quando surge uma vaga compatível',
+      'Gestores de contratação entram em contato — sem intermediários',
       'Sem taxas — WPro cobra do lado da empresa.',
     ],
-    ctaLabel: 'Quer resultados mais rápidos?',
-    ctaLink: 'Ver vagas disponíveis agora →',
+    ctaLabel: 'Quer ver vagas abertas agora?',
+    ctaLink: 'Ver vagas disponíveis →',
     legal: 'Ao enviar você concorda que WProTalents compartilhe suas informações com nossa rede.',
-    preview: 'Pré-visualização do seu post',
+    preview: 'Pré-visualização do seu post no LinkedIn',
     copy: 'Copiar post',
+    copyShare: 'Copiar e compartilhar no LinkedIn',
     copied: 'Copiado!',
   },
 };
@@ -117,6 +120,16 @@ function buildPost(data: { name: string; role: string; location: string; skills:
     ? '🔄 Open to freelance/contract'
     : '👀 Open to new opportunities';
 
+  const flag = data.location?.includes('BR') || data.location?.includes('São Paulo') || data.location?.includes('Rio')
+    ? '🇧🇷'
+    : data.location?.includes('MX') || data.location?.includes('México')
+    ? '🇲🇽'
+    : data.location?.includes('CO') || data.location?.includes('Bogotá')
+    ? '🇨🇴'
+    : data.location?.includes('AR') || data.location?.includes('Buenos Aires')
+    ? '🇦🇷'
+    : '🌎';
+
   return `🚀 ${data.name} — ${data.role}${data.location ? ` · ${data.location}` : ''}
 
 ${avail} | ${data.experience} years experience
@@ -125,13 +138,9 @@ Core skills: ${data.skills}${data.salary ? `\n💰 Expectation: ${data.salary}` 
 
 ${data.contact}
 
-${data.location?.includes('BR') || data.location?.includes('São Paulo') || data.location?.includes('Rio') ? '🇧🇷' : data.location?.includes('MX') || data.location?.includes('México') ? '🇲🇽' : data.location?.includes('CO') || data.location?.includes('Bogotá') ? '🇨🇴' : data.location?.includes('AR') || data.location?.includes('Buenos Aires') ? '🇦🇷' : '🌎'} Senior LATAM tech talent open to US/EU remote opportunities — worth a conversation.
+${flag} LATAM tech professional open to US/EU remote opportunities — let's connect.
 
-We help US & EU companies hire exceptional tech talent from Latin America — faster, smarter, at 40–60% lower cost.
-
-👉 Post a vacancy at latam-intel.vercel.app
-
-#LATAMtech #remotework #hiring #techtalent #WProTalents`;
+#LATAMtech #remotework #techtalent #opentowork`;
 }
 
 export default function LinkedInBoostModal({ isOpen, onClose, lang = 'EN' }: Props) {
@@ -183,7 +192,7 @@ export default function LinkedInBoostModal({ isOpen, onClose, lang = 'EN' }: Pro
             {/* Header */}
             <div className="flex items-center justify-between px-6 py-4 border-b border-border bg-[#0077B5]/10">
               <div className="flex items-center gap-2">
-                <Linkedin size={16} className="text-[#0077B5]" />
+                <Users size={16} className="text-[#0077B5]" />
                 <span className="mono text-[10px] text-[#0077B5] font-bold tracking-widest">{t.title}</span>
               </div>
               <button onClick={onClose} className="text-text/30 hover:text-text"><X size={16} /></button>
@@ -219,7 +228,11 @@ export default function LinkedInBoostModal({ isOpen, onClose, lang = 'EN' }: Pro
                 </div>
               ) : (
                 <>
-                  <p className="mono text-[9px] text-text/40 mb-5">{t.subtitle}</p>
+                  {/* Framing text */}
+                  <div className="flex items-start gap-2 bg-[#0077B5]/5 border border-[#0077B5]/20 p-3 mb-5">
+                    <Linkedin size={12} className="text-[#0077B5] shrink-0 mt-0.5" />
+                    <p className="mono text-[9px] text-text/60 leading-relaxed">{t.framing}</p>
+                  </div>
 
                   <form onSubmit={handleSubmit} className="space-y-3">
                     {/* Name + Experience */}
@@ -283,7 +296,7 @@ export default function LinkedInBoostModal({ isOpen, onClose, lang = 'EN' }: Pro
                       <input placeholder={t.salaryPh} value={form.salary} onChange={e => set('salary', e.target.value)} className={inputCls} />
                     </div>
 
-                    {/* Preview toggle */}
+                    {/* Preview toggle — clean candidate-only post */}
                     {canSubmit && (
                       <div>
                         <div className="flex items-center justify-between">
@@ -293,8 +306,8 @@ export default function LinkedInBoostModal({ isOpen, onClose, lang = 'EN' }: Pro
                           </button>
                           {showPreview && (
                             <button type="button" onClick={handleCopy}
-                              className="flex items-center gap-1 mono text-[8px] text-text/30 hover:text-accent transition-colors">
-                              {copied ? <><Check size={9} className="text-green-400" />{t.copied}</> : <><Copy size={9} />{t.copy}</>}
+                              className="flex items-center gap-1 mono text-[8px] text-text/50 hover:text-[#0077B5] border border-border hover:border-[#0077B5] px-2 py-1 transition-colors">
+                              {copied ? <><Check size={9} className="text-green-400" />{t.copied}</> : <><Copy size={9} />{t.copyShare}</>}
                             </button>
                           )}
                         </div>
