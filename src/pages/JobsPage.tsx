@@ -312,16 +312,18 @@ const PORTAL_SECTIONS: Record<SectionKey, PortalSection> = {
 const SECTION_ORDER: SectionKey[] = ['launch', 'strike', 'roomread', 'ratecard', 'zerocommute', 'compound', 'aileverage'];
 
 // ── Market Value Teaser (free users) ─────────────────────────────────────────
-function MarketValueTeaser({ lang = 'EN' }: { lang?: string }) {
+function MarketValueTeaser({ lang = 'EN', isLoggedIn = false }: { lang?: string; isLoggedIn?: boolean }) {
   const tt = T[lang as keyof typeof T] || T.EN;
   const [role, setRole] = useState<RoleKey>('backend');
   const [country, setCountry] = useState<CountryCode>('BR');
   const [yearsExp, setYearsExp] = useState(4);
   const [shown, setShown] = useState(false);
-  // Email gate
+  // Email gate — auto-unlock for logged-in users
   const [email, setEmail] = useState('');
-  const [captured, setCaptured] = useState(false);
+  const [captured, setCaptured] = useState(() => isLoggedIn);
   const [capturing, setCapturing] = useState(false);
+  // If user logs in while component is mounted, unlock immediately
+  React.useEffect(() => { if (isLoggedIn) setCaptured(true); }, [isLoggedIn]);
 
   const ROLE_OPTS: Record<string, { value: RoleKey; label: string }[]> = {
     EN: [
@@ -1069,13 +1071,13 @@ function JobPortal({ lang, t, onPostVacancy }: { lang: string; t: typeof T.EN; o
   );
 }
 
-export default function JobsPage({ lang = 'EN' }: { lang?: string }) {
+export default function JobsPage({ lang = 'EN', isLoggedIn = false }: { lang?: string; isLoggedIn?: boolean }) {
   const t = T[lang as keyof typeof T] || T.EN;
   const [showVacancy, setShowVacancy] = useState(false);
   const [showLinkedIn, setShowLinkedIn] = useState(false);
   return (
     <div className="min-h-screen bg-bg">
-      <MarketValueTeaser lang={lang} />
+      <MarketValueTeaser lang={lang} isLoggedIn={isLoggedIn} />
       <CandidateResourcesPanel onLinkedInBoost={() => setShowLinkedIn(true)} />
       <JobPortal lang={lang} t={t} onPostVacancy={() => setShowVacancy(true)} />
       <PostVacancyModal isOpen={showVacancy} onClose={() => setShowVacancy(false)} lang={lang} />

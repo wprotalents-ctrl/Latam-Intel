@@ -1020,7 +1020,7 @@ export default function App() {
               exit={{ opacity: 0 }}
               className="absolute inset-0 overflow-y-auto"
             >
-              <JobsPage lang={lang} />
+              <JobsPage lang={lang} isLoggedIn={!!user} />
             </motion.div>
           ) : (
             <motion.div
