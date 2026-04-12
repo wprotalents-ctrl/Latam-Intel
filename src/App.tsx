@@ -622,7 +622,7 @@ export default function App() {
   const [user, setUser] = useState<User | null>(null);
   const [subscriptionStatus, setSubscriptionStatus] = useState<'free' | 'premium'>('free');
   const [userRole, setUserRole] = useState<'candidate' | 'company' | null>(null);
-  const [userRoleLoading, setUserRoleLoading] = useState(false); // true while Firestore doc is loading
+  const [userRoleLoading, setUserRoleLoading] = useState(true); // true until auth + Firestore resolve
   // Client hiring intelligence
   const [clientHiringPlan, setClientHiringPlan] = useState<HiringPlan | null>(null);
   const [clientNetworkReach, setClientNetworkReach] = useState<NetworkReach | null>(null);
@@ -657,11 +657,11 @@ export default function App() {
       setUser(user);
       if (user) {
         setIsAuthModalOpen(false);
-        setUserRoleLoading(true); // start loading — onSnapshot will clear it
+        // userRoleLoading stays true — onSnapshot will clear it once role is fetched
       } else {
         setSubscriptionStatus('free');
         setUserRole(null);
-        setUserRoleLoading(false);
+        setUserRoleLoading(false); // not logged in → no role to load
         setViewMode('Dashboard');
       }
     });
@@ -671,7 +671,11 @@ export default function App() {
   useEffect(() => {
     if (!user) return;
 
+    // Safety timeout: if Firestore doesn't respond in 4s, clear loading so UI isn't stuck
+    const timeout = setTimeout(() => setUserRoleLoading(false), 4000);
+
     const unsubscribe = onSnapshot(doc(db, 'users', user.uid), (snapshot) => {
+      clearTimeout(timeout);
       setUserRoleLoading(false);
       if (snapshot.exists()) {
         const data = snapshot.data();
@@ -682,10 +686,12 @@ export default function App() {
         else setViewMode('Dashboard'); // company or unknown → always Dashboard, never Jobs
       }
     }, (error) => {
+      clearTimeout(timeout);
+      setUserRoleLoading(false); // always clear loading on error
       handleFirestoreError(error, FirestoreOperation.GET, `users/${user.uid}`);
     });
 
-    return () => unsubscribe();
+    return () => { clearTimeout(timeout); unsubscribe(); };
   }, [user]);
 
   // Unified Theme Effect
