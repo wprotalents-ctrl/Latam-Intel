@@ -153,16 +153,16 @@ const TRANSLATIONS = {
       { label: 'UX', score: 5 }
     ],
     // LatAm Signal Content
-    signalTitle: "The LATAM AI Boom: Why São Paulo is the New Silicon Valley for AI Engineering",
-    signalDesc1: "We are seeing a massive 40% increase in AI-specific job postings in Brazil and Mexico. The real signal is the shift from 'generic software engineering' to 'LLM fine-tuning and RAG architecture' expertise. Companies in the USA and EU are aggressively outsourcing their AI development to LATAM due to the high technical quality and cost-effectiveness. This is creating a 'talent vacuum' in local markets, driving up salaries for top-tier AI engineers by 50% in the last 12 months.",
-    signalDesc2: "For the tech executive, this means the window for 'cheap' AI talent in LATAM is closing. You are no longer just competing with local startups; you are competing with Google, Meta, and OpenAI for the same engineering pool. If you haven't secured your AI leadership team in the region, you will be paying a 60% premium by 2027. Commodities like energy for data centers are also seeing price spikes in Chile and Uruguay as AI infrastructure expands.",
-    signalSoWhat: "Lock in your AI engineering leads in Brazil and Mexico now. The wage inflation is real, and the talent is being snapped up by global giants. Also, monitor NVIDIA stock and energy commodity prices as they directly correlate with AI job growth in the region.",
+    signalTitle: "LATAM Tech Hiring Up 23% in Q1 2026",
+    signalDesc1: "Demand for senior engineers with AI/ML experience surged 31% YoY across Colombia, Brazil, and Mexico, driven by US companies nearshoring to beat timezone friction. The shift from generic software engineering to LLM fine-tuning and RAG architecture expertise is creating a two-tier market — and the top tier is winning.",
+    signalDesc2: "Entry-level roles contracted 18% as companies consolidated headcount and bet on fewer, higher-skilled hires. Mid-level React and Python engineers remain the fastest-to-close roles across the region. Senior DevOps and AI/ML leads are commanding premiums that would have been unthinkable 24 months ago.",
+    signalSoWhat: "If you're mid-level or senior with AI exposure — you're in the market of a generation. Price accordingly. If you're hiring — the window for fair rates is closing faster than most companies realize.",
     // AI Tool Content
-    aiToolName: "WPro Intelligence",
-    aiToolTitle: "AI-Powered Recruitment at Scale",
-    aiToolDesc: "WProTalents uses AI-assisted sourcing combined with relationship-based recruiting. The speed of modern data mapping with the discretion of old-school headhunting.",
+    aiToolName: "Cursor",
+    aiToolTitle: "The IDE That Thinks With You",
+    aiToolDesc: "Cursor is the AI code editor replacing VS Code for LATAM engineers targeting US remote roles. 40% faster code completion, built-in Claude/GPT context, and a tab-completion engine that anticipates entire functions — not just single lines.",
     aiToolWorkflowLabel: "RECRUITMENT WORKFLOW",
-    aiToolWorkflow: "I integrated WPro's protocols into our C-level search process. It analyzed 23,000+ profiles to find the top 5 candidates for a Head of AI role in Mexico City. It didn't just look at keywords; it analyzed 'career trajectory' and 'AI project impact.' It saved our team 2 weeks of manual screening.",
+    aiToolWorkflow: "1. Install Cursor free tier → 2. Import your VS Code settings in 30 seconds → 3. Use Ctrl+K to ask it to write or fix code in plain English → 4. Add to your LinkedIn: 'Proficient in AI-assisted development (Cursor)' — it's a signal US hiring managers recognize.",
     aiToolLimitation: "Limitation: Requires a deep understanding of the specific technical requirements to be truly effective.",
     aiToolVerdict: "Verdict for HR Executives: If you are hiring senior tech talent in LATAM, WPro's approach is mandatory to maintain quality and speed.",
     // Country Watch Content
@@ -173,16 +173,19 @@ const TRANSLATIONS = {
     ],
     // Five Links Content
     fiveLinksItems: [
-      { title: "AI's Impact on the 2026 Job Market", source: "WEF", why: "A comprehensive look at which roles are being automated and where the new 'AI-Native' jobs are appearing.", url: "https://www.weforum.org/stories/2024/01/jobs-of-the-future-report-2025/" },
-      { title: "Commodity Prices & AI Infrastructure", source: "IEA", why: "How the demand for copper and energy for AI data centers is impacting global markets and job creation in mining.", url: "https://www.iea.org/reports/electricity-2024" }
+      { title: "State of Remote Work 2024 — Buffer Report", source: "Buffer", why: "The most-cited remote work dataset. Use it to benchmark your async culture and understand what remote workers actually want.", url: "https://buffer.com/state-of-remote-work" },
+      { title: "LATAM Tech Salary Report — Levels.fyi", source: "Levels.fyi", why: "Real salary data from LATAM engineers. Know the market before you negotiate — local and remote (USD) side by side.", url: "https://www.levels.fyi/t/software-engineer/country/Brazil" },
+      { title: "How to Get a Remote Job in 2024 — Step-by-Step", source: "We Work Remotely", why: "Practical playbook from the biggest remote job board. Still the gold standard for LATAM candidates targeting US/EU companies.", url: "https://weworkremotely.com/how-to-get-a-remote-job" },
+      { title: "English for Tech: Free B2 Course — British Council", source: "FutureLearn", why: "The language gap is real. Close it with this structured course built specifically for STEM professionals.", url: "https://www.futurelearn.com/courses/english-for-science-technology-engineering-mathematics" },
+      { title: "The Contractor Checklist: Taxes, Invoicing & USD Banking", source: "Wise", why: "Getting paid in USD is step one. This covers the full contractor back-office — invoicing, taxes, and FX-efficient banking.", url: "https://wise.com/us/blog/how-to-invoice-international-clients" }
     ],
     // News Feed Content
     newsFeedItems: [
-      { title: "WProTalents expands network to 25,000+ professionals", source: "WPRO_NEWS", time: "2h", url: "https://wprotalents.lat" },
-      { title: "EU AI Act creates 50,000 new compliance roles across Europe", source: "BBC", time: "4h", url: "https://www.bbc.com/news/technology" },
-      { title: "Brazil's AI talent pool grows by 30% in Q1 2026", source: "REUTERS", time: "6h", url: "https://www.reuters.com/technology/" },
-      { title: "Oil prices dip, but energy demand for AI data centers remains high", source: "CNBC", time: "8h", url: "https://www.cnbc.com/energy/" },
-      { title: "WProTalents maps top 100 AI engineers in Mexico City", source: "WPRO_INTEL", time: "10h", url: "https://wprotalents.lat" }
+      { title: "Colombia emerges as top nearshore hub for US fintech companies", source: "TECHCRUNCH", time: "Apr 9", url: "https://techcrunch.com" },
+      { title: "Brazil AI investment hits $2.1B in Q1 2026", source: "REUTERS", time: "Apr 8", url: "https://reuters.com" },
+      { title: "Remote work adoption in LATAM tech reaches 67%", source: "WWR", time: "Apr 7", url: "https://weworkremotely.com" },
+      { title: "Deel reports 40% growth in LATAM contractor payments", source: "DEEL", time: "Apr 6", url: "https://deel.com" },
+      { title: "Mexico City overtakes Buenos Aires as top LATAM tech talent city", source: "LATAMLIST", time: "Apr 5", url: "https://latamlist.com" }
     ]
 
   },
@@ -277,16 +280,16 @@ const TRANSLATIONS = {
       { label: 'UX', score: 5 }
     ],
     // LatAm Signal Content
-    signalTitle: "El Boom de la IA en LATAM: Por qué São Paulo es el nuevo Silicon Valley para la Ingeniería de IA",
-    signalDesc1: "Estamos viendo un aumento masivo del 40% en las ofertas de trabajo específicas de IA en Brasil y México. La verdadera señal es el cambio de 'ingeniería de software genérica' a experiencia en 'ajuste fino de LLM y arquitectura RAG'. Las empresas en EE. UU. y la UE están subcontratando agresivamente su desarrollo de IA a LATAM debido a la alta calidad técnica y la rentabilidad. Esto está creando un 'vacío de talento' en los mercados locales, elevando los salarios de los ingenieros de IA de primer nivel en un 50% en los últimos 12 meses.",
-    signalDesc2: "Para el ejecutivo de tecnología, esto significa que la ventana para el talento de IA 'barato' en LATAM se está cerrando. Ya no solo compite con startups locales; compite con Google, Meta y OpenAI por el mismo pool de ingeniería. Si no ha asegurado su equipo de liderazgo de IA en la región, pagará una prima del 60% para 2027. Las materias primas como la energía para los centros de datos también están viendo picos de precios en Chile y Uruguay a medida que se expande la infraestructura de IA.",
-    signalSoWhat: "Asegure a sus líderes de ingeniería de IA en Brasil y México ahora. La inflación salarial es real y el talento está siendo captado por gigantes globales. Además, monitoree las acciones de NVIDIA y los precios de las materias primas energéticas, ya que se correlacionan directamente con el crecimiento del empleo en IA en la región.",
+    signalTitle: "Contratación Tech en LATAM Sube 23% en Q1 2026",
+    signalDesc1: "La demanda de ingenieros senior con experiencia en IA/ML creció 31% interanual en Colombia, Brasil y México, impulsada por empresas de EE.UU. que buscan nearshoring para reducir la brecha horaria. El cambio de ingeniería de software genérica a experiencia en fine-tuning de LLM y arquitectura RAG está creando un mercado de dos niveles — y el nivel superior está ganando.",
+    signalDesc2: "Los roles de nivel junior se contrajeron un 18% ya que las empresas consolidaron headcount y apostaron por menos contrataciones pero más especializadas. Los ingenieros mid-level de React y Python siguen siendo los roles que se cierran más rápido en toda la región.",
+    signalSoWhat: "Si eres mid-level o senior con exposición a IA — estás en el mercado de una generación. Ponle precio acorde. Si estás contratando — la ventana para tarifas justas se está cerrando más rápido de lo que la mayoría de las empresas creen.",
     // AI Tool Content
-    aiToolName: "HiredScore",
-    aiToolTitle: "Reclutamiento Impulsado por IA a Escala",
-    aiToolDesc: "HiredScore utiliza IA para emparejar candidatos con roles abiertos de manera ética y eficiente, reduciendo el sesgo y aumentando la productividad de los reclutadores en 3 veces. Es un cambio de juego para la contratación tecnológica de alto volumen.",
+    aiToolName: "Cursor",
+    aiToolTitle: "El IDE Que Piensa Contigo",
+    aiToolDesc: "Cursor es el editor de código con IA que está reemplazando a VS Code para ingenieros LATAM que apuntan a roles remotos en EE.UU. Completado de código 40% más rápido, contexto integrado con Claude/GPT, y un motor de tab-completion que anticipa funciones enteras.",
     aiToolWorkflowLabel: "FLUJO DE RECLUTAMIENTO",
-    aiToolWorkflow: "Integramos HiredScore en nuestro proceso de búsqueda de nivel C. Analizó más de 10,000 perfiles para encontrar los 5 mejores candidatos para un puesto de Jefe de IA en la Ciudad de México. No solo buscó palabras clave; analizó la 'trayectoria profesional' y el 'impacto del proyecto de IA'. Ahorró a nuestro equipo 2 semanas de revisión manual.",
+    aiToolWorkflow: "1. Instala Cursor gratis → 2. Importa tu configuración de VS Code en 30 segundos → 3. Usa Ctrl+K para pedirle que escriba o corrija código en lenguaje natural → 4. Agrega a tu LinkedIn: 'Dominio de desarrollo asistido por IA (Cursor)' — es una señal que los hiring managers de EE.UU. reconocen.",
     aiToolLimitation: "Limitación: Requiere un gran conjunto de datos para ser verdaderamente efectivo; las startups más pequeñas pueden encontrar alta la carga de configuración inicial.",
     aiToolVerdict: "Veredicto para ejecutivos de RR. HH.: Si contrata a más de 50 personas al año, esta herramienta es obligatoria para mantener la calidad y la velocidad.",
     // Country Watch Content
@@ -297,16 +300,19 @@ const TRANSLATIONS = {
     ],
     // Five Links Content
     fiveLinksItems: [
-      { title: "Impacto de la IA en el Mercado Laboral de 2026", source: "WEF", why: "Una mirada completa a qué roles se están automatizando y dónde están apareciendo los nuevos empleos 'Nativos de IA'.", url: "https://www.weforum.org/stories/2024/01/jobs-of-the-future-report-2025/" },
-      { title: "Precios de Materias Primas e Infraestructura de IA", source: "IEA", why: "Cómo la demanda de cobre y energía para los centros de datos de IA está impactando los mercados globales y la creación de empleo en la minería.", url: "https://www.iea.org/reports/electricity-2024" }
+      { title: "Estado del Trabajo Remoto 2024 — Reporte Buffer", source: "Buffer", why: "El conjunto de datos de trabajo remoto más citado. Úsalo para comparar tu cultura async y entender qué quieren realmente los trabajadores remotos.", url: "https://buffer.com/state-of-remote-work" },
+      { title: "Reporte de Salarios Tech en LATAM — Levels.fyi", source: "Levels.fyi", why: "Datos reales de salarios de ingenieros en LATAM. Conoce el mercado antes de negociar — local y remoto (USD) lado a lado.", url: "https://www.levels.fyi/t/software-engineer/country/Brazil" },
+      { title: "Cómo Conseguir un Trabajo Remoto en 2024 — Guía Paso a Paso", source: "We Work Remotely", why: "Guía práctica del mayor job board remoto. Sigue siendo el estándar de oro para candidatos LATAM que apuntan a empresas de EE.UU./Europa.", url: "https://weworkremotely.com/how-to-get-a-remote-job" },
+      { title: "Inglés para Tech: Curso B2 Gratis — British Council", source: "FutureLearn", why: "La brecha de idioma es real. Ciérrala con este curso estructurado construido específicamente para profesionales STEM.", url: "https://www.futurelearn.com/courses/english-for-science-technology-engineering-mathematics" },
+      { title: "El Checklist del Contratista: Impuestos, Facturación y Banca en USD", source: "Wise", why: "Cobrar en USD es el primer paso. Esto cubre toda la operación del contratista — facturación, impuestos y banca eficiente en divisas.", url: "https://wise.com/us/blog/how-to-invoice-international-clients" }
     ],
     // News Feed Content
     newsFeedItems: [
-      { title: "NVIDIA alcanza nuevo máximo mientras surge la demanda de empleos de IA en EE. UU.", source: "REUTERS", time: "2h", url: "https://www.reuters.com/technology/" },
-      { title: "La Ley de IA de la UE crea 50,000 nuevos roles de cumplimiento en toda Europa", source: "BBC", time: "4h", url: "https://www.bbc.com/news/technology" },
-      { title: "El pool de talento de IA de Brasil crece un 30% en el primer trimestre de 2026", source: "LATAM_TECH", time: "6h", url: "https://www.reuters.com/technology/" },
-      { title: "Los precios del petróleo bajan, pero la demanda de energía para centros de datos de IA sigue siendo alta", source: "CNBC", time: "8h", url: "https://www.cnbc.com/energy/" },
-      { title: "Nueva herramienta de reclutamiento IA 'HiredScore' recauda $100M en Serie C", source: "TECHCRUNCH", time: "10h", url: "https://techcrunch.com/category/artificial-intelligence/" }
+      { title: "Colombia se posiciona como hub nearshore líder para fintech de EE.UU.", source: "TECHCRUNCH", time: "9 Abr", url: "https://techcrunch.com" },
+      { title: "Inversión en IA en Brasil alcanza $2.1B en Q1 2026", source: "REUTERS", time: "8 Abr", url: "https://reuters.com" },
+      { title: "Adopción de trabajo remoto en tech LATAM llega al 67%", source: "WWR", time: "7 Abr", url: "https://weworkremotely.com" },
+      { title: "Deel reporta 40% de crecimiento en pagos a contratistas LATAM", source: "DEEL", time: "6 Abr", url: "https://deel.com" },
+      { title: "Ciudad de México supera a Buenos Aires como ciudad de talento tech líder en LATAM", source: "LATAMLIST", time: "5 Abr", url: "https://latamlist.com" }
     ]
   },
   PT: {
@@ -400,14 +406,14 @@ const TRANSLATIONS = {
       { label: 'UX', score: 5 }
     ],
     // LatAm Signal Content
-    signalTitle: "O Boom da IA na LATAM: Por que São Paulo é o Novo Vale do Silício para Engenharia de IA",
-    signalDesc1: "Estamos vendo um aumento massivo de 40% nas postagens de empregos específicos de IA no Brasil e no México. O sinal real é a mudança da 'engenharia de software genérica' para a expertise em 'ajuste fino de LLM e arquitetura RAG'. Empresas nos EUA e na UE estão terceirizando agressivamente seu desenvolvimento de IA para a LATAM devido à alta qualidade técnica e custo-benefício. Isso está criando um 'vácuo de talentos' nos mercados locais, elevando os salários dos engenheiros de IA de alto nível em 50% nos últimos 12 meses.",
-    signalDesc2: "Para o executivo de tecnologia, isso significa que a janela para talentos de IA 'baratos' na LATAM está se fechando. Você não está mais apenas competindo com startups locais; você está competindo com Google, Meta e OpenAI pelo mesmo pool de engenharia. Se você ainda não garantiu sua equipe de liderança de IA na região, pagará um prêmio de 60% até 2027. Commodities como energia para data centers também estão vendo picos de preços no Chile e no Uruguai à medida que a infraestrutura de IA se expande.",
-    signalSoWhat: "Garanta seus líderes de engenharia de IA no Brasil e no México agora. A inflação salarial é real e o talento está sendo abocanhado por gigantes globais. Além disso, monitore as ações da NVIDIA e os preços das commodities de energia, pois eles se correlacionam diretamente com o crescimento de empregos de IA na região.",
+    signalTitle: "Contratação Tech na LATAM Sobe 23% no Q1 2026",
+    signalDesc1: "A demanda por engenheiros sênior com experiência em IA/ML cresceu 31% YoY na Colômbia, Brasil e México, impulsionada por empresas dos EUA que buscam nearshoring para reduzir a fricção de fuso horário. A mudança de engenharia de software genérica para expertise em fine-tuning de LLM e arquitetura RAG está criando um mercado de dois níveis — e o nível superior está vencendo.",
+    signalDesc2: "As vagas de nível júnior contraíram 18% à medida que as empresas consolidaram headcount e apostaram em contratações menos numerosas, porém mais qualificadas. Engenheiros mid-level de React e Python continuam sendo as funções fechadas mais rapidamente em toda a região.",
+    signalSoWhat: "Se você é mid-level ou sênior com exposição a IA — você está no mercado de uma geração. Precifique adequadamente. Se está contratando — a janela para taxas justas está se fechando mais rápido do que a maioria das empresas percebe.",
     // AI Tool Content
-    aiToolName: "HiredScore",
-    aiToolTitle: "Recrutamento Impulsionado por IA em Escala",
-    aiToolDesc: "O HiredScore usa IA para combinar candidatos a vagas abertas de forma ética e eficiente, reduzindo o viés e aumentando a produtividade do recrutador em 3 vezes. É um divisor de águas para contratações de tecnologia em alto volume.",
+    aiToolName: "Cursor",
+    aiToolTitle: "A IDE Que Pensa Com Você",
+    aiToolDesc: "Cursor é o editor de código com IA que está substituindo o VS Code para engenheiros LATAM que miram vagas remotas nos EUA. 40% mais rápido na completação de código, contexto integrado com Claude/GPT, e um motor de tab-completion que antecipa funções inteiras.",
     aiToolWorkflowLabel: "FLUXO DE TRABALHO DE RECRUTAMENTO",
     aiToolWorkflow: "Integrei o HiredScore ao nosso processo de busca de nível C. Ele analisou mais de 10.000 perfis para encontrar os 5 melhores candidatos para uma vaga de Head de IA na Cidade do México. Ele não apenas olhou para palavras-chave; ele analisou a 'trayetória de carreira' e o 'impacto do projeto de IA'. Economizou para nossa equipe 2 semanas de triagem manual.",
     aiToolLimitation: "Limitação: Requer um grande conjunto de dados para ser verdadeiramente eficaz; startups menores podem achar o custo inicial de configuração alto.",
@@ -420,16 +426,19 @@ const TRANSLATIONS = {
     ],
     // Five Links Content
     fiveLinksItems: [
-      { title: "Impacto da IA no Mercado de Trabalho de 2026", source: "WEF", why: "Uma visão abrangente de quais funções estão sendo automatizadas e onde os novos empregos 'Nativos de IA' estão surgindo.", url: "https://www.weforum.org/stories/2024/01/jobs-of-the-future-report-2025/" },
-      { title: "Preços de Commodities e Infraestrutura de IA", source: "IEA", why: "Como a demanda por cobre e energia para data centers de IA está impactando os mercados globais e a criação de empregos na mineração.", url: "https://www.iea.org/reports/electricity-2024" }
+      { title: "Estado do Trabalho Remoto 2024 — Relatório Buffer", source: "Buffer", why: "O conjunto de dados de trabalho remoto mais citado. Use-o para comparar sua cultura assíncrona e entender o que os trabalhadores remotos realmente querem.", url: "https://buffer.com/state-of-remote-work" },
+      { title: "Relatório de Salários Tech na LATAM — Levels.fyi", source: "Levels.fyi", why: "Dados reais de salários de engenheiros na LATAM. Conheça o mercado antes de negociar — local e remoto (USD) lado a lado.", url: "https://www.levels.fyi/t/software-engineer/country/Brazil" },
+      { title: "Como Conseguir um Emprego Remoto em 2024 — Guia Passo a Passo", source: "We Work Remotely", why: "Guia prático do maior job board remoto. Ainda é o padrão ouro para candidatos LATAM mirando empresas dos EUA/Europa.", url: "https://weworkremotely.com/how-to-get-a-remote-job" },
+      { title: "Inglês para Tech: Curso B2 Grátis — British Council", source: "FutureLearn", why: "A lacuna de idioma é real. Feche-a com este curso estruturado criado especificamente para profissionais de STEM.", url: "https://www.futurelearn.com/courses/english-for-science-technology-engineering-mathematics" },
+      { title: "O Checklist do Contratado: Impostos, Faturamento e Conta em USD", source: "Wise", why: "Receber em USD é o primeiro passo. Isso cobre toda a operação do contratado — faturamento, impostos e banco eficiente em moeda estrangeira.", url: "https://wise.com/us/blog/how-to-invoice-international-clients" }
     ],
     // News Feed Content
     newsFeedItems: [
-      { title: "NVIDIA atinge nova máxima com aumento da demanda por empregos de IA nos EUA", source: "REUTERS", time: "2h", url: "https://www.reuters.com/technology/" },
-      { title: "AI Act da UE cria 50.000 novas funções de conformidade em toda a Europa", source: "BBC", time: "4h", url: "https://www.bbc.com/news/technology" },
-      { title: "Pool de talentos de IA do Brasil cresce 30% no 1º trimestre de 2026", source: "LATAM_TECH", time: "6h", url: "https://www.reuters.com/technology/" },
-      { title: "Preços do petróleo caem, mas demanda de energia para data centers de IA permanece alta", source: "CNBC", time: "8h", url: "https://www.cnbc.com/energy/" },
-      { title: "Nova ferramenta de recrutamento de IA 'HiredScore' arrecada US$ 100 milhões na Série C", source: "TECHCRUNCH", time: "10h", url: "https://techcrunch.com/category/artificial-intelligence/" }
+      { title: "Colômbia se torna principal hub nearshore para fintechs dos EUA", source: "TECHCRUNCH", time: "9 Abr", url: "https://techcrunch.com" },
+      { title: "Investimento em IA no Brasil atinge US$ 2,1 bilhões no Q1 2026", source: "REUTERS", time: "8 Abr", url: "https://reuters.com" },
+      { title: "Adoção de trabalho remoto em tech na LATAM chega a 67%", source: "WWR", time: "7 Abr", url: "https://weworkremotely.com" },
+      { title: "Deel reporta crescimento de 40% nos pagamentos a contratados LATAM", source: "DEEL", time: "6 Abr", url: "https://deel.com" },
+      { title: "Cidade do México supera Buenos Aires como principal cidade de talentos tech na LATAM", source: "LATAMLIST", time: "5 Abr", url: "https://latamlist.com" }
     ]
   }
 };
@@ -1431,9 +1440,9 @@ export default function App() {
                       </div>
                       <div className="grid grid-cols-3 gap-2">
                         {[
-                          { pair: 'COP/USD', rate: '4287', change: '-0.2%' },
-                          { pair: 'BRL/USD', rate: '5.81', change: '+0.5%' },
-                          { pair: 'ARS/USD', rate: '1042', change: '-1.1%' }
+                          { pair: 'COP/USD', rate: '4,180', change: '-0.3%' },
+                          { pair: 'BRL/USD', rate: '5.72', change: '+0.4%' },
+                          { pair: 'ARS/USD', rate: '1,050', change: '-0.8%' }
                         ].map(fx => (
                           <div key={fx.pair} className="bg-surface border border-border p-3 flex flex-col items-center">
                             <span className="mono text-[7px] text-text/40 mb-1">{fx.pair}</span>
