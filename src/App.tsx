@@ -57,6 +57,7 @@ import { SubscriptionSection } from './components/SubscriptionSection';
 import JobsPage from './pages/JobsPage';
 import ClientJobPostForm, { type ClientJobPostData } from './components/ClientJobPostForm';
 import ClientInsightsCard from './components/ClientInsightsCard';
+import CompanyIntelPanel from './components/CompanyIntelPanel';
 import { generateHiringPlan, type HiringPlan } from './lib/hiringPlan';
 import { estimateNetworkReach, type NetworkReach } from './lib/networkReach';
 
@@ -618,6 +619,7 @@ export default function App() {
   const [clientFormData, setClientFormData] = useState<ClientJobPostData | null>(null);
   const [clientInsightsLoading, setClientInsightsLoading] = useState(false);
   const [jobPostSaved, setJobPostSaved] = useState(false);
+  const [companyTab, setCompanyTab] = useState<'intel' | 'post'>('intel');
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [briefings, setBriefings] = useState<Briefing[]>(MOCK_BRIEFINGS);
   const [intelBriefs, setIntelBriefs] = useState<IntelligenceBrief[]>([]);
@@ -1042,7 +1044,27 @@ export default function App() {
                     </div>
                   </div>
 
-                  {/* Job Post Form */}
+                  {/* Tab toggle: Market Data | Post a Role */}
+                  <div className="flex gap-px mb-6 bg-border">
+                    {(['intel', 'post'] as const).map(tab => (
+                      <button key={tab} onClick={() => setCompanyTab(tab)}
+                        className={`flex-1 py-2.5 mono text-[9px] font-bold uppercase tracking-widest transition-colors ${
+                          companyTab === tab ? 'bg-accent text-black' : 'bg-bg text-text/40 hover:text-text'
+                        }`}>
+                        {tab === 'intel' ? '📊 Market Data' : '📋 Post a Role'}
+                      </button>
+                    ))}
+                  </div>
+
+                  {/* Market Intelligence tab */}
+                  {companyTab === 'intel' && (
+                    <div className="mb-6">
+                      <CompanyIntelPanel lang={lang} />
+                    </div>
+                  )}
+
+                  {/* Post a Role tab */}
+                  {companyTab === 'post' && (
                   <div className="border border-border bg-surface/30 p-6 mb-6">
                     <div className="flex items-center gap-2 mb-5">
                       <span className="mono text-[9px] font-bold text-accent tracking-widest uppercase">Post a Role</span>
@@ -1126,6 +1148,7 @@ export default function App() {
                       </>
                     )}
                   </div>
+                  )}
 
                   {/* Company Resources */}
                   <div className="border border-border bg-surface/30 p-6">

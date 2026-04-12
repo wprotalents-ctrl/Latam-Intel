@@ -411,3 +411,116 @@ export function getRemoteReadiness(input: CandidateInput, lang: Lang = 'EN'): Re
 
   return { score, ready, label, strengths, gaps, topAction };
 }
+
+// ─── Company Intel: Static Market Data ────────────────────────────────────────
+
+export interface SkillDemand {
+  skill: string;
+  country: string;
+  demandScore: number;   // 0–100
+  avgSalaryUSD: number;
+  trend: 'rising' | 'stable' | 'falling';
+}
+
+export const SKILL_DEMAND_DATA: SkillDemand[] = [
+  // Colombia
+  { skill: 'React',      country: 'Colombia',  demandScore: 88, avgSalaryUSD: 52000, trend: 'rising'  },
+  { skill: 'Python',     country: 'Colombia',  demandScore: 82, avgSalaryUSD: 55000, trend: 'rising'  },
+  { skill: 'Node.js',    country: 'Colombia',  demandScore: 76, avgSalaryUSD: 48000, trend: 'stable'  },
+  { skill: 'Java',       country: 'Colombia',  demandScore: 68, avgSalaryUSD: 50000, trend: 'falling' },
+  { skill: 'DevOps/AWS', country: 'Colombia',  demandScore: 79, avgSalaryUSD: 62000, trend: 'rising'  },
+  // Brazil
+  { skill: 'React',      country: 'Brazil',    demandScore: 91, avgSalaryUSD: 48000, trend: 'rising'  },
+  { skill: 'Python',     country: 'Brazil',    demandScore: 85, avgSalaryUSD: 51000, trend: 'rising'  },
+  { skill: 'Java',       country: 'Brazil',    demandScore: 80, avgSalaryUSD: 47000, trend: 'stable'  },
+  { skill: 'Node.js',    country: 'Brazil',    demandScore: 73, avgSalaryUSD: 44000, trend: 'stable'  },
+  { skill: 'DevOps/AWS', country: 'Brazil',    demandScore: 77, avgSalaryUSD: 58000, trend: 'rising'  },
+  // Mexico
+  { skill: 'React',      country: 'Mexico',    demandScore: 86, avgSalaryUSD: 45000, trend: 'rising'  },
+  { skill: 'Python',     country: 'Mexico',    demandScore: 78, avgSalaryUSD: 46000, trend: 'rising'  },
+  { skill: 'Java',       country: 'Mexico',    demandScore: 72, avgSalaryUSD: 43000, trend: 'falling' },
+  { skill: 'Node.js',    country: 'Mexico',    demandScore: 70, avgSalaryUSD: 41000, trend: 'stable'  },
+  { skill: 'DevOps/AWS', country: 'Mexico',    demandScore: 74, avgSalaryUSD: 54000, trend: 'rising'  },
+  // Argentina
+  { skill: 'React',      country: 'Argentina', demandScore: 84, avgSalaryUSD: 42000, trend: 'stable'  },
+  { skill: 'Python',     country: 'Argentina', demandScore: 80, avgSalaryUSD: 44000, trend: 'rising'  },
+  { skill: 'Node.js',    country: 'Argentina', demandScore: 68, avgSalaryUSD: 39000, trend: 'stable'  },
+  { skill: 'Java',       country: 'Argentina', demandScore: 62, avgSalaryUSD: 40000, trend: 'falling' },
+  { skill: 'DevOps/AWS', country: 'Argentina', demandScore: 71, avgSalaryUSD: 51000, trend: 'rising'  },
+  // Chile
+  { skill: 'React',      country: 'Chile',     demandScore: 81, avgSalaryUSD: 49000, trend: 'rising'  },
+  { skill: 'Python',     country: 'Chile',     demandScore: 76, avgSalaryUSD: 50000, trend: 'rising'  },
+  { skill: 'Node.js',    country: 'Chile',     demandScore: 65, avgSalaryUSD: 43000, trend: 'stable'  },
+  { skill: 'Java',       country: 'Chile',     demandScore: 60, avgSalaryUSD: 44000, trend: 'falling' },
+  { skill: 'DevOps/AWS', country: 'Chile',     demandScore: 73, avgSalaryUSD: 56000, trend: 'rising'  },
+];
+
+export interface EnglishLevelData {
+  country: string;
+  b2Plus: number;      // % of tech workforce at B2+
+  c1Plus: number;      // % at C1+ (professional proficiency)
+  techWriting: number; // % comfortable with English technical writing
+}
+
+export const ENGLISH_LEVEL_DATA: EnglishLevelData[] = [
+  { country: 'Argentina', b2Plus: 72, c1Plus: 48, techWriting: 61 },
+  { country: 'Chile',     b2Plus: 65, c1Plus: 40, techWriting: 53 },
+  { country: 'Colombia',  b2Plus: 58, c1Plus: 32, techWriting: 44 },
+  { country: 'Mexico',    b2Plus: 52, c1Plus: 29, techWriting: 40 },
+  { country: 'Brazil',    b2Plus: 45, c1Plus: 24, techWriting: 35 },
+  { country: 'Peru',      b2Plus: 41, c1Plus: 19, techWriting: 29 },
+];
+
+export interface EORTool {
+  name: string;
+  monthlyFeeUSD: number;
+  setupFeeUSD: number;
+  bestFor: string;
+  countries: string[];
+  affiliateUrl: string;
+  pros: string[];
+  cons: string[];
+}
+
+export const EOR_TOOLS: EORTool[] = [
+  {
+    name: 'Deel',
+    monthlyFeeUSD: 599,
+    setupFeeUSD: 0,
+    bestFor: 'Full-time employees + contractors, widest LATAM compliance coverage',
+    countries: ['Brazil', 'Mexico', 'Colombia', 'Argentina', 'Chile', 'Peru'],
+    affiliateUrl: 'https://www.deel.com/?ref=wprotalents',
+    pros: ['All LATAM countries', 'Instant contracts', 'Crypto payments', 'Best UI'],
+    cons: ['Most expensive at $599/mo per employee'],
+  },
+  {
+    name: 'Ontop',
+    monthlyFeeUSD: 299,
+    setupFeeUSD: 0,
+    bestFor: 'LATAM-first, best for US companies hiring in Colombia & Mexico',
+    countries: ['Colombia', 'Mexico', 'Brazil', 'Argentina'],
+    affiliateUrl: 'https://www.ontop.ai/?ref=wprotalents',
+    pros: ['LATAM-focused', 'Lower cost', 'Fast onboarding', 'USD payroll'],
+    cons: ['Fewer countries', 'Less brand recognition'],
+  },
+  {
+    name: 'Remote.com',
+    monthlyFeeUSD: 599,
+    setupFeeUSD: 0,
+    bestFor: 'Global coverage with strong benefits and IP protection',
+    countries: ['Brazil', 'Mexico', 'Colombia', 'Argentina', 'Chile'],
+    affiliateUrl: 'https://remote.com/?ref=wprotalents',
+    pros: ['Strong IP protection', 'Good benefits', 'Reliable compliance'],
+    cons: ['Same price as Deel', 'Slower onboarding'],
+  },
+  {
+    name: 'Rippling',
+    monthlyFeeUSD: 499,
+    setupFeeUSD: 0,
+    bestFor: 'US companies wanting HR + payroll + IT in one platform',
+    countries: ['Brazil', 'Mexico', 'Colombia'],
+    affiliateUrl: 'https://www.rippling.com/?ref=wprotalents',
+    pros: ['HR+payroll+IT unified', 'Strong automation', 'US-first UX'],
+    cons: ['Complex setup', 'Fewer LATAM countries'],
+  },
+];
