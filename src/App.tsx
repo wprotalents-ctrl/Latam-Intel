@@ -622,6 +622,7 @@ export default function App() {
   const [user, setUser] = useState<User | null>(null);
   const [subscriptionStatus, setSubscriptionStatus] = useState<'free' | 'premium'>('free');
   const [userRole, setUserRole] = useState<'candidate' | 'company' | null>(null);
+  const [userRoleLoading, setUserRoleLoading] = useState(false); // true while Firestore doc is loading
   // Client hiring intelligence
   const [clientHiringPlan, setClientHiringPlan] = useState<HiringPlan | null>(null);
   const [clientNetworkReach, setClientNetworkReach] = useState<NetworkReach | null>(null);
@@ -654,9 +655,13 @@ export default function App() {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       setUser(user);
-      if (!user) {
+      if (user) {
+        setIsAuthModalOpen(false);
+        setUserRoleLoading(true); // start loading — onSnapshot will clear it
+      } else {
         setSubscriptionStatus('free');
         setUserRole(null);
+        setUserRoleLoading(false);
         setViewMode('Dashboard');
       }
     });
@@ -667,6 +672,7 @@ export default function App() {
     if (!user) return;
 
     const unsubscribe = onSnapshot(doc(db, 'users', user.uid), (snapshot) => {
+      setUserRoleLoading(false);
       if (snapshot.exists()) {
         const data = snapshot.data();
         setSubscriptionStatus(data.subscriptionStatus || 'free');
@@ -1019,6 +1025,20 @@ export default function App() {
                     </div>
                   ))}
                 </div>
+              </div>
+            </motion.div>
+          ) : userRoleLoading ? (
+            /* Loading state while Firestore role resolves */
+            <motion.div
+              key="role-loading"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="absolute inset-0 flex items-center justify-center bg-bg"
+            >
+              <div className="flex flex-col items-center gap-4">
+                <div className="w-8 h-8 border-2 border-accent border-t-transparent rounded-full animate-spin" />
+                <span className="mono text-[9px] text-text/40 uppercase tracking-widest">Loading your workspace…</span>
               </div>
             </motion.div>
           ) : viewMode === 'Jobs' && userRole === 'candidate' ? (
@@ -1383,6 +1403,8 @@ export default function App() {
                         </form>
                       </div>
                     </div>
+                    {/* Filler: fills remaining height so bg-border gap doesn't show */}
+                    <div className="flex-1 bg-bg" />
                   </div>
 
                   {/* Sidebar */}

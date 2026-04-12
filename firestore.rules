@@ -1,43 +1,6 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    // ===============================================================
-    // Assumed Data Model
-    // ===============================================================
-    //
-    // Collection: users
-    // Document ID: uid
-    // Fields:
-    //   - uid: string (required)
-    //   - email: string (required, email format)
-    //   - displayName: string (optional)
-    //   - subscriptionStatus: string (required, enum: ['free', 'premium'])
-    //   - stripeCustomerId: string (optional)
-    //   - createdAt: string (required, date-time format)
-    //
-    // Collection: briefings
-    // Document ID: id
-    // Fields:
-    //   - id: string (required)
-    //   - date: string (required)
-    //   - region: string (required)
-    //   - category: string (required, enum: ['JOBS', 'AI_IMPACT', 'RECRUITMENT', 'HR', 'TECH'])
-    //   - isPremium: bool (required)
-    //   - content: map (required, multilingual)
-    //   - createdAt: string (required, date-time format)
-    //
-    // Collection: subscriptions
-    // Document ID: id
-    // Fields:
-    //   - uid: string (required)
-    //   - stripeSessionId: string (required)
-    //   - plan: string (required)
-    //   - amount: number (required)
-    //   - currency: string (required)
-    //   - status: string (required)
-    //   - createdAt: string (required, date-time format)
-    //
-    // ===============================================================
 
     // Helper Functions
     function isAuthenticated() {
@@ -68,10 +31,10 @@ service cloud.firestore {
              time < request.time + duration.value(5, 'm');
     }
 
-    // Domain Validators
+    // Full user document validator (create / full update)
     function isValidUser(data) {
       let requiredFields = ['uid', 'email', 'subscriptionStatus', 'createdAt', 'updatedAt'];
-      let allowedFields = ['uid', 'email', 'displayName', 'photoURL', 'subscriptionStatus', 'createdAt', 'updatedAt', 'stripeCustomerId'];
+      let allowedFields = ['uid', 'email', 'displayName', 'photoURL', 'subscriptionStatus', 'createdAt', 'updatedAt', 'stripeCustomerId', 'role'];
       
       return data.keys().hasAll(requiredFields) &&
              data.keys().hasOnly(allowedFields) &&
@@ -79,7 +42,8 @@ service cloud.firestore {
              isValidEmail(data.email) &&
              data.subscriptionStatus in ['free', 'premium', 'admin'] &&
              data.createdAt is timestamp &&
-             data.updatedAt is timestamp;
+             data.updatedAt is timestamp &&
+             (!('role' in data) || data.role in ['candidate', 'company']);
     }
 
     function isValidBriefing(data) {
@@ -111,13 +75,26 @@ service cloud.firestore {
     // Rules
     match /users/{uid} {
       allow read: if isOwner(uid) || isAdmin();
-      allow create: if isAuthenticated() && isValidUser(request.resource.data) && 
+
+      allow create: if isAuthenticated() && 
+                      isValidUser(request.resource.data) && 
                       request.resource.data.subscriptionStatus == 'free' &&
                       isRecent(request.resource.data.createdAt);
-      allow update: if (isOwner(uid) && isValidUser(request.resource.data) && 
+
+      // Full profile update (with timestamp validation)
+      allow update: if isOwner(uid) && 
+                      isValidUser(request.resource.data) && 
                       request.resource.data.subscriptionStatus == resource.data.subscriptionStatus &&
                       request.resource.data.createdAt == resource.data.createdAt &&
-                      isRecent(request.resource.data.updatedAt)) || isAdmin();
+                      isRecent(request.resource.data.updatedAt);
+
+      // Role-only merge update: only the 'role' field changes, nothing else
+      allow update: if isOwner(uid) && 
+                      request.resource.data.diff(resource.data).affectedKeys().hasOnly(['role']) &&
+                      request.resource.data.role in ['candidate', 'company'];
+
+      // Admin can always update
+      allow update: if isAdmin();
     }
 
     match /briefings/{id} {
@@ -149,6 +126,12 @@ service cloud.firestore {
     match /crypto_news/{id} {
       allow read: if isAuthenticated();
       allow write: if isAdmin();
+    }
+
+    match /jobPosts/{id} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated();
+      allow update, delete: if isAdmin();
     }
   }
 }
