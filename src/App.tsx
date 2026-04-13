@@ -51,7 +51,7 @@ import {
 import { MOCK_BRIEFINGS, getRecentBriefings } from './services/intelService';
 import { Language, Briefing, IntelligenceBrief } from './types';
 import { auth, onAuthStateChanged, User, signOut, db, handleFirestoreError, FirestoreOperation } from './firebase';
-import { onSnapshot, doc, collection, query, orderBy, limit } from 'firebase/firestore';
+import { onSnapshot, doc, getDoc, setDoc, collection, query, orderBy, limit, serverTimestamp } from 'firebase/firestore';
 import { AuthModal } from './components/AuthModal';
 import { SubscriptionSection } from './components/SubscriptionSection';
 import JobsPage from './pages/JobsPage';
@@ -623,6 +623,7 @@ export default function App() {
   const [subscriptionStatus, setSubscriptionStatus] = useState<'free' | 'premium'>('free');
   const [userRole, setUserRole] = useState<'candidate' | 'company' | null>(null);
   const [userRoleLoading, setUserRoleLoading] = useState(true); // true until auth + Firestore resolve
+  const [needsRolePicker, setNeedsRolePicker] = useState(false); // true when logged in but no role set
   // Client hiring intelligence
   const [clientHiringPlan, setClientHiringPlan] = useState<HiringPlan | null>(null);
   const [clientNetworkReach, setClientNetworkReach] = useState<NetworkReach | null>(null);
@@ -652,6 +653,28 @@ export default function App() {
 
   const isAdmin = user?.email === 'iafacilparareinventarte@gmail.com' && user?.emailVerified;
 
+  const saveRoleForExistingUser = async (role: 'candidate' | 'company') => {
+    if (!user) return;
+    const ref = doc(db, 'users', user.uid);
+    const snap = await getDoc(ref).catch(() => null);
+    if (!snap?.exists()) {
+      await setDoc(ref, {
+        uid: user.uid,
+        email: user.email,
+        displayName: user.displayName || user.email?.split('@')[0] || 'User',
+        photoURL: user.photoURL || null,
+        subscriptionStatus: 'free',
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp(),
+      }).catch(console.error);
+    }
+    await setDoc(ref, { role, updatedAt: serverTimestamp() }, { merge: true }).catch(console.error);
+    setNeedsRolePicker(false);
+    setUserRole(role);
+    if (role === 'candidate') setViewMode('Jobs');
+    else setViewMode('Dashboard');
+  };
+
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       setUser(user);
@@ -661,7 +684,8 @@ export default function App() {
       } else {
         setSubscriptionStatus('free');
         setUserRole(null);
-        setUserRoleLoading(false); // not logged in → no role to load
+        setUserRoleLoading(false);
+        setNeedsRolePicker(false);
         setViewMode('Dashboard');
       }
     });
@@ -672,9 +696,10 @@ export default function App() {
     if (!user) return;
 
     // Safety timeout: if Firestore doesn't respond in 4s, clear loading so UI isn't stuck
-    const timeout = setTimeout(() => setUserRoleLoading(false), 4000);
+    const timeout = setTimeout(() => { setUserRoleLoading(false); setNeedsRolePicker(true); }, 1500);
 
     const unsubscribe = onSnapshot(doc(db, 'users', user.uid), (snapshot) => {
+      clearTimeout(timeout);
       clearTimeout(timeout);
       setUserRoleLoading(false);
       if (snapshot.exists()) {
@@ -683,7 +708,10 @@ export default function App() {
         const role = data.role as 'candidate' | 'company' | undefined;
         setUserRole(role || null);
         if (role === 'candidate') setViewMode('Jobs');
-        else setViewMode('Dashboard'); // company or unknown → always Dashboard, never Jobs
+        else if (role === 'company') setViewMode('Dashboard');
+        else setNeedsRolePicker(true); // logged in but no role saved yet
+      } else {
+        setNeedsRolePicker(true); // no Firestore doc at all
       }
     }, (error) => {
       clearTimeout(timeout);
@@ -1045,6 +1073,49 @@ export default function App() {
               <div className="flex flex-col items-center gap-4">
                 <div className="w-8 h-8 border-2 border-accent border-t-transparent rounded-full animate-spin" />
                 <span className="mono text-[9px] text-text/40 uppercase tracking-widest">Loading your workspace…</span>
+              </div>
+            </motion.div>
+          ) : needsRolePicker && user ? (
+            /* Role picker for logged-in users who haven't set a role yet */
+            <motion.div
+              key="role-picker"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="absolute inset-0 flex items-center justify-center bg-bg p-6"
+            >
+              <div className="w-full max-w-sm border border-border bg-surface p-8">
+                <div className="flex items-center gap-2 mb-2">
+                  <div className="w-2 h-2 bg-accent rounded-full animate-pulse" />
+                  <span className="mono text-[9px] text-accent font-bold uppercase tracking-widest">Welcome to WProTalents Intel</span>
+                </div>
+                <p className="mono text-[10px] text-text/50 mb-8">How are you joining? This sets your experience.</p>
+                <div className="flex flex-col gap-3">
+                  <button
+                    onClick={() => saveRoleForExistingUser('candidate')}
+                    className="flex items-center gap-4 w-full border border-border hover:border-accent/60 bg-bg hover:bg-text/5 p-4 text-left transition-all group"
+                  >
+                    <div className="w-9 h-9 border border-border group-hover:border-accent/40 flex items-center justify-center flex-shrink-0 transition-colors">
+                      <UserIcon size={16} className="text-text/40 group-hover:text-accent transition-colors" />
+                    </div>
+                    <div>
+                      <div className="mono text-[11px] text-text font-bold mb-0.5">I'm a Candidate</div>
+                      <div className="mono text-[9px] text-text/40">Browse AI & tech roles across LATAM</div>
+                    </div>
+                  </button>
+                  <button
+                    onClick={() => saveRoleForExistingUser('company')}
+                    className="flex items-center gap-4 w-full border border-border hover:border-accent/60 bg-bg hover:bg-text/5 p-4 text-left transition-all group"
+                  >
+                    <div className="w-9 h-9 border border-border group-hover:border-accent/40 flex items-center justify-center flex-shrink-0 transition-colors">
+                      <Briefcase size={16} className="text-text/40 group-hover:text-accent transition-colors" />
+                    </div>
+                    <div>
+                      <div className="mono text-[11px] text-text font-bold mb-0.5">I'm a Company</div>
+                      <div className="mono text-[9px] text-text/40">Access market intel and post roles</div>
+                    </div>
+                  </button>
+                </div>
               </div>
             </motion.div>
           ) : viewMode === 'Jobs' && userRole === 'candidate' ? (
