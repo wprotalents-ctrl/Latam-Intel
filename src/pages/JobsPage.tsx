@@ -698,14 +698,46 @@ function JobPortal({ lang, t, onPostVacancy }: { lang: string; t: typeof T.EN; o
     localStorage.setItem(MATCH_KEY, JSON.stringify(prefs));
   };
 
-  const load = () => {
+  const normalizeRegion = (loc: string) => {
+    const l = loc.toLowerCase();
+    if (['brazil','mexico','colombia','argentina','chile','peru','latam'].some(x => l.includes(x))) return 'LATAM';
+    if (['us','usa','united states','new york','california','texas','miami'].some(x => l.includes(x))) return 'USA';
+    if (['uk','germany','france','spain','netherlands','europe'].some(x => l.includes(x))) return 'Europe';
+    return 'Worldwide';
+  };
+
+  const load = async () => {
     setLoading(true);
     setError(false);
-    fetch(`/api/jobs?lang=${lang}&_=${Date.now()}`, { cache: 'no-store' })
-      .then(r => r.json())
-      .then(d => setJobs(Array.isArray(d) ? d : []))
-      .catch(() => setError(true))
-      .finally(() => setLoading(false));
+    try {
+      const results = await Promise.allSettled([
+        // Remotive
+        fetch('https://remotive.com/api/remote-jobs?limit=50').then(r => r.json()).then(d =>
+          (d.jobs || []).map((j: any) => ({ id: `remotive-${j.id}`, title: j.title, company: j.company_name,
+            location: j.candidate_required_location || 'Remote', url: j.url, salary: j.salary || null,
+            tags: j.category, source: 'Remotive', region: normalizeRegion(j.candidate_required_location || 'Remote'),
+            postedAt: j.publication_date }))),
+        // Arbeitnow
+        fetch('https://www.arbeitnow.com/api/job-board-api').then(r => r.json()).then(d =>
+          (d.data || []).map((j: any) => ({ id: `arbeitnow-${j.slug}`, title: j.title, company: j.company_name,
+            location: j.location || 'Remote', url: j.url, salary: null, tags: (j.tags || []).join(', '),
+            source: 'Arbeitnow', region: normalizeRegion(j.location || 'Remote'), postedAt: j.created_at }))),
+        // Jobicy
+        fetch('https://jobicy.com/api/v2/remote-jobs?count=50').then(r => r.json()).then(d =>
+          (d.jobs || []).map((j: any) => ({ id: `jobicy-${j.id}`, title: j.jobTitle, company: j.companyName,
+            location: 'Remote', url: j.url, salary: j.salary ? `${j.salaryCurrency} ${j.salaryMin}–${j.salaryMax}` : null,
+            tags: (j.tags || []).join(', '), source: 'Jobicy', region: 'Worldwide', postedAt: j.publishedDate }))),
+      ]);
+      const all: any[] = [];
+      results.forEach(r => { if (r.status === 'fulfilled') all.push(...r.value); });
+      const unique = Array.from(new Map(all.map(j => [j.id, j])).values());
+      unique.sort((a, b) => (b.postedAt || '').localeCompare(a.postedAt || ''));
+      setJobs(unique);
+    } catch {
+      setError(true);
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => { load(); }, [lang]);
