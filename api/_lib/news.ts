@@ -2,11 +2,11 @@ import axios from "axios";
 import { db, admin } from "./firebase.js";
 
 const QUERIES = [
-  "LATAM tech jobs remote hiring 2026",
-  "software engineer remote Latin America salary",
-  "Colombia Brazil Mexico developer hiring AI",
-  "remote work technology talent Latin America",
-  "AI artificial intelligence jobs LATAM nearshore",
+  "remote work technology jobs",
+  "AI artificial intelligence hiring",
+  "software engineer salary remote",
+  "tech jobs Latin America",
+  "artificial intelligence workforce",
 ];
 
 export async function fetchFreshNews(forceRefresh = false) {
