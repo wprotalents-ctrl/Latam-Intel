@@ -9,19 +9,23 @@ const QUERIES = [
   "artificial intelligence workforce",
 ];
 
+async function getStaleCache() {
+  const snap = await db.collection("market_news")
+    .orderBy("publishedAt", "desc").limit(15).get();
+  return snap.docs.map((d) => d.data());
+}
+
 export async function fetchFreshNews(forceRefresh = false) {
   const API_KEY = process.env.NEWSDATA_API_KEY;
-  if (!API_KEY) return [];
+  if (!API_KEY) return getStaleCache();
 
-  // 4-hour stale check
+  // 4-hour stale check (skip when forceRefresh)
   if (!forceRefresh) {
     const cacheDoc = await db.collection("_cache").doc("news_last_fetch").get();
     if (cacheDoc.exists) {
       const lastFetch = cacheDoc.data()?.timestamp?.toDate?.() as Date | undefined;
       if (lastFetch && Date.now() - lastFetch.getTime() < 4 * 60 * 60 * 1000) {
-        const snap = await db.collection("market_news")
-          .orderBy("publishedAt", "desc").limit(15).get();
-        return snap.docs.map((d) => d.data());
+        return getStaleCache();
       }
     }
   }
@@ -52,17 +56,16 @@ export async function fetchFreshNews(forceRefresh = false) {
         });
       });
       await batch.commit();
-
       await db.collection("_cache").doc("news_last_fetch").set({
         timestamp: admin.firestore.FieldValue.serverTimestamp(), query,
       });
+      return articles;
     }
 
-    return articles;
+    // API returned 0 results — serve stale cache instead of empty array
+    return getStaleCache();
   } catch (e) {
-    // Fallback: serve stale cache
-    const snap = await db.collection("market_news")
-      .orderBy("publishedAt", "desc").limit(15).get();
-    return snap.docs.map((d) => d.data());
+    // Any error — serve stale cache
+    return getStaleCache();
   }
 }
