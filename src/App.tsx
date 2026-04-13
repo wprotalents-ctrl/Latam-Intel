@@ -58,6 +58,7 @@ import JobsPage from './pages/JobsPage';
 import ClientJobPostForm, { type ClientJobPostData } from './components/ClientJobPostForm';
 import ClientInsightsCard from './components/ClientInsightsCard';
 import CompanyIntelPanel from './components/CompanyIntelPanel';
+import CandidateIntel from './components/CandidateIntel';
 import { generateHiringPlan, type HiringPlan } from './lib/hiringPlan';
 import { estimateNetworkReach, type NetworkReach } from './lib/networkReach';
 
@@ -174,7 +175,7 @@ const TRANSLATIONS = {
     // Five Links Content
     fiveLinksItems: [
       { title: "State of Remote Work 2024 — Buffer Report", source: "Buffer", why: "The most-cited remote work dataset. Use it to benchmark your async culture and understand what remote workers actually want.", url: "https://buffer.com/state-of-remote-work" },
-      { title: "LATAM Tech Salary Report — Levels.fyi", source: "Levels.fyi", why: "Real salary data from LATAM engineers. Know the market before you negotiate — local and remote (USD) side by side.", url: "https://www.levels.fyi/t/software-engineer/country/Brazil" },
+      { title: "LATAM Tech Salary Report — Levels.fyi", source: "Levels.fyi", why: "Real salary data from LATAM engineers. Know the market before you negotiate — local and remote (USD) side by side.", url: "https://www.levels.fyi" },
       { title: "How to Get a Remote Job in 2024 — Step-by-Step", source: "We Work Remotely", why: "Practical playbook from the biggest remote job board. Still the gold standard for LATAM candidates targeting US/EU companies.", url: "https://weworkremotely.com/how-to-get-a-remote-job" },
       { title: "English for Tech: Free B2 Course — British Council", source: "FutureLearn", why: "The language gap is real. Close it with this structured course built specifically for STEM professionals.", url: "https://www.futurelearn.com/courses/english-for-science-technology-engineering-mathematics" },
       { title: "The Contractor Checklist: Taxes, Invoicing & USD Banking", source: "Wise", why: "Getting paid in USD is step one. This covers the full contractor back-office — invoicing, taxes, and FX-efficient banking.", url: "https://wise.com/us/blog/how-to-invoice-international-clients" }
@@ -301,7 +302,7 @@ const TRANSLATIONS = {
     // Five Links Content
     fiveLinksItems: [
       { title: "Estado del Trabajo Remoto 2024 — Reporte Buffer", source: "Buffer", why: "El conjunto de datos de trabajo remoto más citado. Úsalo para comparar tu cultura async y entender qué quieren realmente los trabajadores remotos.", url: "https://buffer.com/state-of-remote-work" },
-      { title: "Reporte de Salarios Tech en LATAM — Levels.fyi", source: "Levels.fyi", why: "Datos reales de salarios de ingenieros en LATAM. Conoce el mercado antes de negociar — local y remoto (USD) lado a lado.", url: "https://www.levels.fyi/t/software-engineer/country/Brazil" },
+      { title: "Reporte de Salarios Tech en LATAM — Levels.fyi", source: "Levels.fyi", why: "Datos reales de salarios de ingenieros en LATAM. Conoce el mercado antes de negociar — local y remoto (USD) lado a lado.", url: "https://www.levels.fyi" },
       { title: "Cómo Conseguir un Trabajo Remoto en 2024 — Guía Paso a Paso", source: "We Work Remotely", why: "Guía práctica del mayor job board remoto. Sigue siendo el estándar de oro para candidatos LATAM que apuntan a empresas de EE.UU./Europa.", url: "https://weworkremotely.com/how-to-get-a-remote-job" },
       { title: "Inglés para Tech: Curso B2 Gratis — British Council", source: "FutureLearn", why: "La brecha de idioma es real. Ciérrala con este curso estructurado construido específicamente para profesionales STEM.", url: "https://www.futurelearn.com/courses/english-for-science-technology-engineering-mathematics" },
       { title: "El Checklist del Contratista: Impuestos, Facturación y Banca en USD", source: "Wise", why: "Cobrar en USD es el primer paso. Esto cubre toda la operación del contratista — facturación, impuestos y banca eficiente en divisas.", url: "https://wise.com/us/blog/how-to-invoice-international-clients" }
@@ -427,7 +428,7 @@ const TRANSLATIONS = {
     // Five Links Content
     fiveLinksItems: [
       { title: "Estado do Trabalho Remoto 2024 — Relatório Buffer", source: "Buffer", why: "O conjunto de dados de trabalho remoto mais citado. Use-o para comparar sua cultura assíncrona e entender o que os trabalhadores remotos realmente querem.", url: "https://buffer.com/state-of-remote-work" },
-      { title: "Relatório de Salários Tech na LATAM — Levels.fyi", source: "Levels.fyi", why: "Dados reais de salários de engenheiros na LATAM. Conheça o mercado antes de negociar — local e remoto (USD) lado a lado.", url: "https://www.levels.fyi/t/software-engineer/country/Brazil" },
+      { title: "Relatório de Salários Tech na LATAM — Levels.fyi", source: "Levels.fyi", why: "Dados reais de salários de engenheiros na LATAM. Conheça o mercado antes de negociar — local e remoto (USD) lado a lado.", url: "https://www.levels.fyi" },
       { title: "Como Conseguir um Emprego Remoto em 2024 — Guia Passo a Passo", source: "We Work Remotely", why: "Guia prático do maior job board remoto. Ainda é o padrão ouro para candidatos LATAM mirando empresas dos EUA/Europa.", url: "https://weworkremotely.com/how-to-get-a-remote-job" },
       { title: "Inglês para Tech: Curso B2 Grátis — British Council", source: "FutureLearn", why: "A lacuna de idioma é real. Feche-a com este curso estruturado criado especificamente para profissionais de STEM.", url: "https://www.futurelearn.com/courses/english-for-science-technology-engineering-mathematics" },
       { title: "O Checklist do Contratado: Impostos, Faturamento e Conta em USD", source: "Wise", why: "Receber em USD é o primeiro passo. Isso cobre toda a operação do contratado — faturamento, impostos e banco eficiente em moeda estrangeira.", url: "https://wise.com/us/blog/how-to-invoice-international-clients" }
@@ -1166,6 +1167,14 @@ export default function App() {
                   {companyTab === 'intel' && (
                     <div className="mb-6">
                       <CompanyIntelPanel lang={lang} />
+                      <div className="mt-8 pt-8 border-t border-border">
+                        <div className="flex items-center gap-2 mb-6">
+                          <span className="mono text-[9px] font-bold text-accent tracking-widest uppercase">💰 Market Value Calculator</span>
+                          <div className="h-px flex-1 bg-border" />
+                          <span className="mono text-[8px] text-text/30">Benchmark salaries for your open roles</span>
+                        </div>
+                        <CandidateIntel lang={lang as any} />
+                      </div>
                     </div>
                   )}
 
@@ -1265,8 +1274,8 @@ export default function App() {
                       {[
                         { tag: 'TALENT STRATEGY', color: 'text-violet-400', title: 'How to Build a High-Performance Distributed Team in LATAM', desc: 'Hiring frameworks, onboarding, and culture for remote-first tech companies.', url: 'https://hbr.org/topic/subject/hiring', source: 'HBR' },
                         { tag: 'AI & HIRING', color: 'text-accent', title: 'How AI Is Transforming Talent Acquisition in 2026', desc: 'From sourcing automation to AI-assisted screening — what actually works.', url: 'https://www.linkedin.com/business/talent/blog', source: 'LinkedIn Talent' },
-                        { tag: 'MARKET DATA', color: 'text-emerald-400', title: 'LATAM Salary Benchmarks for Tech Roles — 2026', desc: 'Up-to-date compensation data across Colombia, Brazil, Argentina, and Mexico.', url: 'https://www.levels.fyi/t/software-engineer/locations/latin-america', source: 'Levels.fyi' },
-                        { tag: 'RETENTION', color: 'text-blue-400', title: 'Why Senior Engineers Leave — And How to Keep Them', desc: 'The real reasons your best people walk, and what actually retains top talent.', url: 'https://hbr.org/2023/06/why-your-best-employees-leave-and-how-to-keep-them', source: 'HBR' },
+                        { tag: 'MARKET DATA', color: 'text-emerald-400', title: 'LATAM Salary Benchmarks for Tech Roles — 2026', desc: 'Up-to-date compensation data across Colombia, Brazil, Argentina, and Mexico.', url: 'https://www.levels.fyi', source: 'Levels.fyi' },
+                        { tag: 'RETENTION', color: 'text-blue-400', title: 'Why Senior Engineers Leave — And How to Keep Them', desc: 'The real reasons your best people walk, and what actually retains top talent.', url: 'https://hbr.org/topic/subject/managing-people', source: 'HBR' },
                       ].map((a, i) => (
                         <a key={i} href={a.url} target="_blank" rel="noopener noreferrer"
                           className="group flex flex-col gap-1.5 p-4 bg-bg border border-border hover:border-accent/30 transition-colors">
@@ -1430,8 +1439,8 @@ export default function App() {
                         {[
                           { tag: 'TALENT STRATEGY', color: 'text-violet-400', title: 'How to Build a High-Performance Distributed Team in LATAM', desc: 'Hiring frameworks, onboarding, and culture for remote-first tech companies.', url: 'https://hbr.org/topic/subject/hiring', source: 'Harvard Business Review' },
                           { tag: 'AI & HIRING', color: 'text-accent', title: 'How AI Is Transforming Talent Acquisition in 2026', desc: 'From sourcing automation to AI-assisted screening — what actually works.', url: 'https://www.linkedin.com/business/talent/blog', source: 'LinkedIn Talent Blog' },
-                          { tag: 'MARKET DATA', color: 'text-emerald-400', title: 'LATAM Salary Benchmarks for Tech Roles — 2026 Report', desc: 'Up-to-date compensation data across Colombia, Brazil, Argentina, and Mexico.', url: 'https://www.levels.fyi/t/software-engineer/locations/latin-america', source: 'Levels.fyi' },
-                          { tag: 'RETENTION', color: 'text-blue-400', title: 'Why Senior Engineers Leave — And How to Keep Them', desc: 'The real reasons your best people walk, and what actually retains top talent.', url: 'https://hbr.org/2023/06/why-your-best-employees-leave-and-how-to-keep-them', source: 'HBR' },
+                          { tag: 'MARKET DATA', color: 'text-emerald-400', title: 'LATAM Salary Benchmarks for Tech Roles — 2026 Report', desc: 'Up-to-date compensation data across Colombia, Brazil, Argentina, and Mexico.', url: 'https://www.levels.fyi', source: 'Levels.fyi' },
+                          { tag: 'RETENTION', color: 'text-blue-400', title: 'Why Senior Engineers Leave — And How to Keep Them', desc: 'The real reasons your best people walk, and what actually retains top talent.', url: 'https://hbr.org/topic/subject/managing-people', source: 'HBR' },
                           { tag: 'JOB DESCRIPTIONS', color: 'text-yellow-400', title: 'How to Write Job Descriptions That Attract Senior Talent', desc: 'Most JDs repel the best candidates. Here\'s what top companies do differently.', url: 'https://www.linkedin.com/business/talent/blog/talent-acquisition/how-to-write-a-job-description', source: 'LinkedIn Talent' },
                           { tag: 'REMOTE TEAMS', color: 'text-violet-400', title: 'Managing Across Time Zones: A Playbook for LATAM Remote Teams', desc: 'Async communication, performance reviews, and trust-building across cultures.', url: 'https://www.mckinsey.com/capabilities/people-and-organizational-performance/our-insights', source: 'McKinsey' },
                         ].map((a, i) => (

@@ -207,11 +207,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   try {
-    // Fetch from all sources concurrently
-    const [remotiveRes, arbeitnowRes, remoteokRes, jobicyRes, themuseRes, adzunaRes, findworkRes] = await Promise.allSettled([
+    // Fetch from all sources concurrently (remoteok excluded — blocks serverless IPs)
+    const [remotiveRes, arbeitnowRes, jobicyRes, themuseRes, adzunaRes, findworkRes] = await Promise.allSettled([
       remotive(),
       arbeitnow(),
-      remoteok(),
       jobicy(),
       themuse(),
       adzuna(),
@@ -222,23 +221,25 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const addJobs = (result: PromiseSettledResult<any[]>, sourceName: string) => {
       if (result.status === 'fulfilled' && Array.isArray(result.value)) {
         allJobs.push(...result.value);
+        console.log(`${sourceName}: ${result.value.length} jobs`);
       } else {
-        console.warn(`${sourceName} failed`);
+        console.warn(`${sourceName} failed:`, result.status === 'rejected' ? result.reason : 'unknown');
       }
     };
 
     addJobs(remotiveRes, 'Remotive');
     addJobs(arbeitnowRes, 'Arbeitnow');
-    addJobs(remoteokRes, 'RemoteOK');
     addJobs(jobicyRes, 'Jobicy');
     addJobs(themuseRes, 'The Muse');
     addJobs(adzunaRes, 'Adzuna');
     addJobs(findworkRes, 'Findwork');
 
-    // Remove duplicates by id (simple)
+    // Remove duplicates by id
     const unique = Array.from(new Map(allJobs.map(job => [job.id, job])).values());
     // Sort by date (newest first)
     unique.sort((a, b) => (b.postedAt || '').localeCompare(a.postedAt || ''));
+
+    console.log(`Total unique jobs: ${unique.length}`);
 
     // Update cache
     cachedJobs = unique;
@@ -247,8 +248,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(200).json(unique);
   } catch (error) {
     console.error('Job aggregation error:', error);
-    // If we have stale cache, serve it
+    // Serve stale cache rather than error
     if (cachedJobs) return res.status(200).json(cachedJobs);
-    return res.status(500).json({ error: 'Failed to fetch jobs' });
+    // Return empty array — never 500 to the client
+    return res.status(200).json([]);
   }
 }

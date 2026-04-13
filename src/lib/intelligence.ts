@@ -74,24 +74,27 @@ export interface RemoteReadinessResult {
 // Mid-level (3–5yr), local pay, USD/year
 
 const BASE_SALARY: Record<RoleKey, Record<CountryCode, number>> = {
-  ai_ml:       { BR: 12000, MX: 10500, CO: 9000,  AR: 8000,  CL: 10500 },
-  llm:         { BR: 16000, MX: 14000, CO: 12500, AR: 11000, CL: 14000 },
-  data:        { BR: 10500, MX: 9500,  CO: 8500,  AR: 7500,  CL: 9500  },
-  backend:     { BR: 9500,  MX: 8500,  CO: 7500,  AR: 6500,  CL: 8500  },
-  frontend:    { BR: 8000,  MX: 7500,  CO: 6500,  AR: 5500,  CL: 7500  },
-  fullstack:   { BR: 9500,  MX: 8500,  CO: 7500,  AR: 7000,  CL: 8500  },
-  devops:      { BR: 11000, MX: 10000, CO: 9000,  AR: 8000,  CL: 10000 },
-  product:     { BR: 9500,  MX: 9000,  CO: 8000,  AR: 7000,  CL: 9000  },
-  data_eng:    { BR: 11000, MX: 10000, CO: 9000,  AR: 8000,  CL: 10000 },
-  eng_manager: { BR: 18000, MX: 16000, CO: 14000, AR: 13000, CL: 16000 },
+  // Local market pay (USD/yr) — mid-level, 3–5yr exp — Q1 2026
+  // Source: WProTalents mandates, Glassdoor LATAM, LinkedIn Salary
+  ai_ml:       { BR: 18000, MX: 16000, CO: 14000, AR: 12000, CL: 16000 },
+  llm:         { BR: 22000, MX: 19000, CO: 17000, AR: 15000, CL: 19000 },
+  data:        { BR: 15000, MX: 13500, CO: 12000, AR: 10500, CL: 13500 },
+  backend:     { BR: 14000, MX: 12500, CO: 11000, AR: 9500,  CL: 12500 },
+  frontend:    { BR: 12000, MX: 11000, CO: 9500,  AR: 8000,  CL: 11000 },
+  fullstack:   { BR: 14000, MX: 12500, CO: 11000, AR: 10000, CL: 12500 },
+  devops:      { BR: 16000, MX: 14500, CO: 13000, AR: 11500, CL: 14500 },
+  product:     { BR: 14000, MX: 13000, CO: 11500, AR: 10000, CL: 13000 },
+  data_eng:    { BR: 16000, MX: 14500, CO: 13000, AR: 11500, CL: 14500 },
+  eng_manager: { BR: 26000, MX: 23000, CO: 20000, AR: 18000, CL: 23000 },
 };
 
 const SENIORITY_MULT: Record<SeniorityKey, number> = {
-  junior: 0.55, mid: 1.00, senior: 1.50, staff: 2.10,
+  junior: 0.55, mid: 1.00, senior: 1.55, staff: 2.20,
 };
 
 const REMOTE_MULT: Record<CountryCode, number> = {
-  BR: 1.65, MX: 1.55, CO: 1.70, AR: 1.80, CL: 1.45,
+  // Uplift when working for US/EU company vs local market — 2026
+  BR: 2.80, MX: 2.60, CO: 3.00, AR: 3.50, CL: 2.40,
 };
 
 const ENGLISH_MULT: Record<EnglishLevel, number> = {
@@ -423,36 +426,42 @@ export interface SkillDemand {
 }
 
 export const SKILL_DEMAND_DATA: SkillDemand[] = [
+  // avgSalaryUSD = remote USD/yr paid by US/EU companies — mid-level, Q1 2026
   // Colombia
-  { skill: 'React',      country: 'Colombia',  demandScore: 88, avgSalaryUSD: 52000, trend: 'rising'  },
-  { skill: 'Python',     country: 'Colombia',  demandScore: 82, avgSalaryUSD: 55000, trend: 'rising'  },
-  { skill: 'Node.js',    country: 'Colombia',  demandScore: 76, avgSalaryUSD: 48000, trend: 'stable'  },
-  { skill: 'Java',       country: 'Colombia',  demandScore: 68, avgSalaryUSD: 50000, trend: 'falling' },
-  { skill: 'DevOps/AWS', country: 'Colombia',  demandScore: 79, avgSalaryUSD: 62000, trend: 'rising'  },
+  { skill: 'React',      country: 'Colombia',  demandScore: 88, avgSalaryUSD: 75000, trend: 'rising'  },
+  { skill: 'Python',     country: 'Colombia',  demandScore: 82, avgSalaryUSD: 82000, trend: 'rising'  },
+  { skill: 'Node.js',    country: 'Colombia',  demandScore: 76, avgSalaryUSD: 70000, trend: 'stable'  },
+  { skill: 'Java',       country: 'Colombia',  demandScore: 68, avgSalaryUSD: 72000, trend: 'falling' },
+  { skill: 'DevOps/AWS', country: 'Colombia',  demandScore: 79, avgSalaryUSD: 90000, trend: 'rising'  },
+  { skill: 'AI / ML',    country: 'Colombia',  demandScore: 85, avgSalaryUSD: 105000, trend: 'rising' },
   // Brazil
-  { skill: 'React',      country: 'Brazil',    demandScore: 91, avgSalaryUSD: 48000, trend: 'rising'  },
-  { skill: 'Python',     country: 'Brazil',    demandScore: 85, avgSalaryUSD: 51000, trend: 'rising'  },
-  { skill: 'Java',       country: 'Brazil',    demandScore: 80, avgSalaryUSD: 47000, trend: 'stable'  },
-  { skill: 'Node.js',    country: 'Brazil',    demandScore: 73, avgSalaryUSD: 44000, trend: 'stable'  },
-  { skill: 'DevOps/AWS', country: 'Brazil',    demandScore: 77, avgSalaryUSD: 58000, trend: 'rising'  },
+  { skill: 'React',      country: 'Brazil',    demandScore: 91, avgSalaryUSD: 72000, trend: 'rising'  },
+  { skill: 'Python',     country: 'Brazil',    demandScore: 85, avgSalaryUSD: 78000, trend: 'rising'  },
+  { skill: 'Java',       country: 'Brazil',    demandScore: 80, avgSalaryUSD: 70000, trend: 'stable'  },
+  { skill: 'Node.js',    country: 'Brazil',    demandScore: 73, avgSalaryUSD: 66000, trend: 'stable'  },
+  { skill: 'DevOps/AWS', country: 'Brazil',    demandScore: 77, avgSalaryUSD: 86000, trend: 'rising'  },
+  { skill: 'AI / ML',    country: 'Brazil',    demandScore: 83, avgSalaryUSD: 100000, trend: 'rising' },
   // Mexico
-  { skill: 'React',      country: 'Mexico',    demandScore: 86, avgSalaryUSD: 45000, trend: 'rising'  },
-  { skill: 'Python',     country: 'Mexico',    demandScore: 78, avgSalaryUSD: 46000, trend: 'rising'  },
-  { skill: 'Java',       country: 'Mexico',    demandScore: 72, avgSalaryUSD: 43000, trend: 'falling' },
-  { skill: 'Node.js',    country: 'Mexico',    demandScore: 70, avgSalaryUSD: 41000, trend: 'stable'  },
-  { skill: 'DevOps/AWS', country: 'Mexico',    demandScore: 74, avgSalaryUSD: 54000, trend: 'rising'  },
+  { skill: 'React',      country: 'Mexico',    demandScore: 86, avgSalaryUSD: 68000, trend: 'rising'  },
+  { skill: 'Python',     country: 'Mexico',    demandScore: 78, avgSalaryUSD: 72000, trend: 'rising'  },
+  { skill: 'Java',       country: 'Mexico',    demandScore: 72, avgSalaryUSD: 65000, trend: 'falling' },
+  { skill: 'Node.js',    country: 'Mexico',    demandScore: 70, avgSalaryUSD: 62000, trend: 'stable'  },
+  { skill: 'DevOps/AWS', country: 'Mexico',    demandScore: 74, avgSalaryUSD: 82000, trend: 'rising'  },
+  { skill: 'AI / ML',    country: 'Mexico',    demandScore: 81, avgSalaryUSD: 96000, trend: 'rising'  },
   // Argentina
-  { skill: 'React',      country: 'Argentina', demandScore: 84, avgSalaryUSD: 42000, trend: 'stable'  },
-  { skill: 'Python',     country: 'Argentina', demandScore: 80, avgSalaryUSD: 44000, trend: 'rising'  },
-  { skill: 'Node.js',    country: 'Argentina', demandScore: 68, avgSalaryUSD: 39000, trend: 'stable'  },
-  { skill: 'Java',       country: 'Argentina', demandScore: 62, avgSalaryUSD: 40000, trend: 'falling' },
-  { skill: 'DevOps/AWS', country: 'Argentina', demandScore: 71, avgSalaryUSD: 51000, trend: 'rising'  },
+  { skill: 'React',      country: 'Argentina', demandScore: 84, avgSalaryUSD: 78000, trend: 'stable'  },
+  { skill: 'Python',     country: 'Argentina', demandScore: 80, avgSalaryUSD: 82000, trend: 'rising'  },
+  { skill: 'Node.js',    country: 'Argentina', demandScore: 68, avgSalaryUSD: 70000, trend: 'stable'  },
+  { skill: 'Java',       country: 'Argentina', demandScore: 62, avgSalaryUSD: 68000, trend: 'falling' },
+  { skill: 'DevOps/AWS', country: 'Argentina', demandScore: 71, avgSalaryUSD: 88000, trend: 'rising'  },
+  { skill: 'AI / ML',    country: 'Argentina', demandScore: 78, avgSalaryUSD: 102000, trend: 'rising' },
   // Chile
-  { skill: 'React',      country: 'Chile',     demandScore: 81, avgSalaryUSD: 49000, trend: 'rising'  },
-  { skill: 'Python',     country: 'Chile',     demandScore: 76, avgSalaryUSD: 50000, trend: 'rising'  },
-  { skill: 'Node.js',    country: 'Chile',     demandScore: 65, avgSalaryUSD: 43000, trend: 'stable'  },
-  { skill: 'Java',       country: 'Chile',     demandScore: 60, avgSalaryUSD: 44000, trend: 'falling' },
-  { skill: 'DevOps/AWS', country: 'Chile',     demandScore: 73, avgSalaryUSD: 56000, trend: 'rising'  },
+  { skill: 'React',      country: 'Chile',     demandScore: 81, avgSalaryUSD: 70000, trend: 'rising'  },
+  { skill: 'Python',     country: 'Chile',     demandScore: 76, avgSalaryUSD: 74000, trend: 'rising'  },
+  { skill: 'Node.js',    country: 'Chile',     demandScore: 65, avgSalaryUSD: 62000, trend: 'stable'  },
+  { skill: 'Java',       country: 'Chile',     demandScore: 60, avgSalaryUSD: 64000, trend: 'falling' },
+  { skill: 'DevOps/AWS', country: 'Chile',     demandScore: 73, avgSalaryUSD: 82000, trend: 'rising'  },
+  { skill: 'AI / ML',    country: 'Chile',     demandScore: 76, avgSalaryUSD: 95000, trend: 'rising'  },
 ];
 
 export interface EnglishLevelData {
