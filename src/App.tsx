@@ -115,6 +115,13 @@ const TRANSLATIONS = {
     marketCalcDesc: "Benchmark salaries for your open roles",
     todayJobNews: "Today's Job & AI News",
     loadingWorkspace: "Loading your workspace…",
+    unlockFull: "Unlock Full Market Intelligence",
+    upgradeFeatures: ["Weekly AI hiring signals", "LATAM salary benchmarks", "Company hiring forecasts", "Talent market alerts"],
+    upgradeCta: "UPGRADE · $29/MO",
+    cancelAny: "Cancel anytime · Instant access",
+    dailyBriefingsStrip: "Daily briefings · AI job impact reports · Salary data",
+    upgradeClose: "CLOSE ✕",
+    upgradeOpen: "UPGRADE $29 →",
     openReport: "OPEN INTEL REPORT",
     generatingSignal: "ANALYZING TALENT MARKET...",
     generateNewBriefing: "GENERATE INTEL BRIEFING",
@@ -246,6 +253,13 @@ const TRANSLATIONS = {
     marketCalcDesc: "Benchmark de salarios para tus roles abiertos",
     todayJobNews: "Noticias de Empleo e IA de Hoy",
     loadingWorkspace: "Cargando tu workspace…",
+    unlockFull: "Accede a Inteligencia de Mercado Completa",
+    upgradeFeatures: ["Señales semanales de contratación IA", "Benchmarks salariales LATAM", "Previsiones de contratación empresarial", "Alertas del mercado de talento"],
+    upgradeCta: "ACTUALIZAR · $29/MES",
+    cancelAny: "Cancela cuando quieras · Acceso inmediato",
+    dailyBriefingsStrip: "Briefings diarios · Informes de impacto IA · Datos salariales",
+    upgradeClose: "CERRAR ✕",
+    upgradeOpen: "ACTUALIZAR $29 →",
     openReport: "ABRIR INFORME LABORAL",
     generatingSignal: "ANALIZANDO MERCADO LABORAL...",
     generateNewBriefing: "GENERAR INFORME LABORAL",
@@ -376,6 +390,13 @@ const TRANSLATIONS = {
     marketCalcDesc: "Benchmark de salários para suas vagas abertas",
     todayJobNews: "Notícias de Emprego e IA de Hoje",
     loadingWorkspace: "Carregando seu workspace…",
+    unlockFull: "Acesse Inteligência de Mercado Completa",
+    upgradeFeatures: ["Sinais semanais de contratação IA", "Benchmarks salariais LATAM", "Previsões de contratação empresarial", "Alertas do mercado de talentos"],
+    upgradeCta: "ATUALIZAR · $29/MÊS",
+    cancelAny: "Cancele quando quiser · Acesso imediato",
+    dailyBriefingsStrip: "Briefings diários · Relatórios de impacto IA · Dados salariais",
+    upgradeClose: "FECHAR ✕",
+    upgradeOpen: "ATUALIZAR $29 →",
     openReport: "ABRIR RELATÓRIO DE EMPREGO",
     generatingSignal: "ANALISANDO MERCADO DE TRABALHO...",
     generateNewBriefing: "GERAR BRIEFING DE EMPREGO",
@@ -1745,15 +1766,10 @@ export default function App() {
                     <section className="p-8 bg-accent text-black flex-1">
                       <div className="mono text-black/60 mb-4 font-bold text-[9px] tracking-widest">WPRO INTEL // EXECUTIVE</div>
                       <h4 className="text-2xl font-black uppercase tracking-tighter leading-tight mb-6">
-                        Unlock Full<br />Market Intelligence
+                        {t.unlockFull}
                       </h4>
                       <div className="space-y-3 mb-6">
-                        {[
-                          'Weekly AI hiring signals',
-                          'LATAM salary benchmarks',
-                          'Company hiring forecasts',
-                          'Talent market alerts',
-                        ].map((item, i) => (
+                        {t.upgradeFeatures.map((item: string, i: number) => (
                           <div key={i} className="flex items-center gap-2 mono text-[9px] text-black/70">
                             <ChevronRight size={10} className="text-black/50 shrink-0" />
                             {item}
@@ -1764,9 +1780,9 @@ export default function App() {
                         onClick={() => setShowUpgrade(v => !v)}
                         className="w-full bg-bg text-accent py-4 mono font-bold text-[10px] hover:opacity-90 transition-opacity flex items-center justify-center gap-2"
                       >
-                        <Zap size={13} /> UPGRADE · $29/MO
+                        <Zap size={13} /> {t.upgradeCta}
                       </button>
-                      <p className="mono text-[8px] text-black/40 mt-3 text-center">Cancel anytime · Instant access</p>
+                      <p className="mono text-[8px] text-black/40 mt-3 text-center">{t.cancelAny}</p>
                     </section>
                   </div>
 
@@ -1775,13 +1791,13 @@ export default function App() {
                     <div className="border-t border-border px-6 py-2 flex items-center justify-between gap-4 bg-surface/30">
                       <span className="mono text-[8px] text-text/25">
                         <span className="text-accent/70 font-bold">EXECUTIVE</span>
-                        {' · '}Daily briefings · AI job impact reports · Salary data
+                        {' · '}{t.dailyBriefingsStrip}
                       </span>
                       <button
                         onClick={() => setShowUpgrade(v => !v)}
                         className="mono text-[8px] border border-accent/30 text-accent/70 px-3 py-1 hover:bg-accent hover:text-black hover:border-accent transition-all whitespace-nowrap shrink-0"
                       >
-                        {showUpgrade ? 'CLOSE ✕' : 'UPGRADE $29 →'}
+                        {showUpgrade ? t.upgradeClose : t.upgradeOpen}
                       </button>
                     </div>
                     {showUpgrade && <SubscriptionSection />}

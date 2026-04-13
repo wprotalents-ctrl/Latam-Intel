@@ -438,10 +438,9 @@ function WProCTA() {
             <Users size={24} className="text-accent" />
           </div>
           <div>
-            <h3 className="font-black text-xl tracking-tighter uppercase mb-1">Hire LATAM Tech Talent — Fast</h3>
+            <h3 className="font-black text-xl tracking-tighter uppercase mb-1">{ms.hireFast}</h3>
             <p className="text-text/60 text-sm">
-              23,000+ vetted AI & tech professionals. Senior roles filled in 21 days or less.
-              US & EU companies only. Founder-led. No junior recruiters.
+              {ms.hireDesc}
             </p>
           </div>
         </div>
@@ -449,10 +448,10 @@ function WProCTA() {
         {/* Stats */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-px bg-border mb-6">
           {[
-            { stat: '21 days', label: 'Avg. time to fill' },
-            { stat: '23K+', label: 'Vetted professionals' },
-            { stat: '94%', label: 'Offer acceptance' },
-            { stat: '40–60%', label: 'Cost vs US hiring' },
+            { stat: '21 days', label: ms.statLabels[0] },
+            { stat: '23K+', label: ms.statLabels[1] },
+            { stat: '94%', label: ms.statLabels[2] },
+            { stat: '40–60%', label: ms.statLabels[3] },
           ].map(({ stat, label }) => (
             <div key={label} className="bg-surface text-center py-5">
               <div className="text-2xl font-black text-accent">{stat}</div>
@@ -667,6 +666,34 @@ export default function MembersPage() {
   };
   const tl = TAB_LABELS[lang];
   const sl = SECTION_LABELS[lang];
+  const MS = {
+    EN: {
+      welcomeBack: 'Welcome back',
+      member: 'Member',
+      hubDesc: 'Your exclusive LATAM AI workforce intelligence hub.',
+      hireFast: 'Hire LATAM Tech Talent — Fast',
+      hireDesc: '23,000+ vetted AI & tech professionals. Senior roles filled in 21 days or less. US & EU companies only. Founder-led. No junior recruiters.',
+      statLabels: ['Avg. time to fill', 'Vetted professionals', 'Offer acceptance', 'Cost vs US hiring'],
+    },
+    ES: {
+      welcomeBack: 'Bienvenido de nuevo',
+      member: 'Miembro',
+      hubDesc: 'Tu hub exclusivo de inteligencia del mercado laboral IA en LATAM.',
+      hireFast: 'Contratar Talento Tech LATAM — Rápido',
+      hireDesc: '23,000+ profesionales IA y tech verificados. Roles senior cubiertos en 21 días o menos. Solo empresas de EE.UU. y UE. Liderado por el fundador.',
+      statLabels: ['Tiempo promedio de contratación', 'Profesionales verificados', 'Aceptación de oferta', 'Costo vs contratación en EE.UU.'],
+    },
+    PT: {
+      welcomeBack: 'Bem-vindo de volta',
+      member: 'Membro',
+      hubDesc: 'Seu hub exclusivo de inteligência do mercado de trabalho IA na LATAM.',
+      hireFast: 'Contratar Talento Tech LATAM — Rápido',
+      hireDesc: '23.000+ profissionais de IA e tech verificados. Vagas sênior preenchidas em 21 dias ou menos. Apenas empresas dos EUA e UE. Liderado pelo fundador.',
+      statLabels: ['Tempo médio de contratação', 'Profissionais verificados', 'Aceitação de oferta', 'Custo vs contratação nos EUA'],
+    },
+  };
+  const ms = MS[lang];
+
 
   const TABS: { id: Tab; label: string; icon: any; badge?: string }[] = [
     { id: 'intel',     label: tl.intel,     icon: TrendingUp, badge: 'NEW' },
@@ -708,10 +735,10 @@ export default function MembersPage() {
         {/* Welcome */}
         <div className="mb-8">
           <h1 className="text-3xl font-black tracking-tighter uppercase mb-1">
-            Welcome back, {user.displayName?.split(' ')[0] || 'Member'}
+            {ms.welcomeBack}, {user.displayName?.split(' ')[0] || ms.member}
           </h1>
           <p className="text-text/50 text-sm">
-            Your exclusive LATAM AI workforce intelligence hub.
+            {ms.hubDesc}
           </p>
         </div>
 
