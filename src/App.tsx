@@ -757,6 +757,9 @@ export default function App() {
   }, []);
 
   const fetchMarketIntel = async () => {
+    const safeJson = async (res: Response, fallback: any) => {
+      try { return res.ok ? await res.json() : fallback; } catch { return fallback; }
+    };
     try {
       const [newsRes, cryptoRes, trendsRes, volumeRes, briefRes] = await Promise.all([
         fetch('/api/market-intel/news'),
@@ -766,23 +769,21 @@ export default function App() {
         fetch('/api/market-intel/brief')
       ]);
 
-      if (newsRes.ok && cryptoRes.ok && trendsRes.ok && volumeRes.ok && briefRes.ok) {
-        const [news, cryptoNews, trends, volume, briefData] = await Promise.all([
-          newsRes.json(),
-          cryptoRes.json(),
-          trendsRes.json(),
-          volumeRes.json(),
-          briefRes.json()
-        ]);
+      const [news, cryptoNews, trends, volume, briefData] = await Promise.all([
+        safeJson(newsRes, []),
+        safeJson(cryptoRes, []),
+        safeJson(trendsRes, { sectors: [], companies: [] }),
+        safeJson(volumeRes, []),
+        safeJson(briefRes, { brief: '' })
+      ]);
 
-        setMarketIntelData({
-          news,
-          cryptoNews,
-          trends,
-          volume: Array.isArray(volume[0]) ? volume[0] : volume,
-          brief: briefData.brief
-        });
-      }
+      setMarketIntelData({
+        news,
+        cryptoNews,
+        trends,
+        volume: Array.isArray(volume[0]) ? volume[0] : volume,
+        brief: briefData.brief || ''
+      });
     } catch (error) {
       console.error("Failed to fetch market intel:", error);
     }
