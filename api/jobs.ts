@@ -11,11 +11,21 @@ function region(location: string): 'LATAM' | 'USA' | 'Europe' | 'Worldwide' {
 }
 
 // ---------- Helper: fetch with timeout ----------
+const BROWSER_HEADERS = {
+  'User-Agent': 'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)',
+  'Accept': 'application/json, text/plain, */*',
+  'Accept-Language': 'en-US,en;q=0.9',
+};
+
 async function timed(url: string, options?: RequestInit): Promise<Response> {
   const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 8000);
+  const timeout = setTimeout(() => controller.abort(), 10000);
   try {
-    const res = await fetch(url, { ...options, signal: controller.signal });
+    const res = await fetch(url, { 
+      ...options, 
+      signal: controller.signal,
+      headers: { ...BROWSER_HEADERS, ...(options?.headers || {}) }
+    });
     clearTimeout(timeout);
     return res;
   } catch (err) {
