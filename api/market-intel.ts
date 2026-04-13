@@ -8,8 +8,9 @@ import { db } from "./_lib/firebase.js";
 export const config = { maxDuration: 30 };
 
 // ── /api/market-intel/news ────────────────────────────────────────────────────
-async function handleNews(res: VercelResponse) {
-  const news = await fetchFreshNews();
+async function handleNews(req: VercelRequest, res: VercelResponse) {
+  const force = req.query?.force === '1';
+  const news = await fetchFreshNews(force);
   res.json(news);
 }
 
