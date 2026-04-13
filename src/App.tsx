@@ -111,6 +111,10 @@ const TRANSLATIONS = {
     fiveLinks: "Five Insights Worth Your Time",
     fxRates: "MARKET RATES // LIVE",
     ago: "AGO",
+    marketCalcTitle: "💰 Market Value Calculator",
+    marketCalcDesc: "Benchmark salaries for your open roles",
+    todayJobNews: "Today's Job & AI News",
+    loadingWorkspace: "Loading your workspace…",
     openReport: "OPEN INTEL REPORT",
     generatingSignal: "ANALYZING TALENT MARKET...",
     generateNewBriefing: "GENERATE INTEL BRIEFING",
@@ -238,6 +242,10 @@ const TRANSLATIONS = {
     fiveLinks: "Cinco Perspectivas Laborales que Valen tu Tiempo",
     fxRates: "TASAS DE MERCADO // EN VIVO",
     ago: "ATRÁS",
+    marketCalcTitle: "💰 Calculadora de Valor de Mercado",
+    marketCalcDesc: "Benchmark de salarios para tus roles abiertos",
+    todayJobNews: "Noticias de Empleo e IA de Hoy",
+    loadingWorkspace: "Cargando tu workspace…",
     openReport: "ABRIR INFORME LABORAL",
     generatingSignal: "ANALIZANDO MERCADO LABORAL...",
     generateNewBriefing: "GENERAR INFORME LABORAL",
@@ -364,6 +372,10 @@ const TRANSLATIONS = {
     fiveLinks: "Cinco Insights de Empregos que Valem seu Tempo",
     fxRates: "TAXAS DE MERCADO // AO VIVO",
     ago: "ATRÁS",
+    marketCalcTitle: "💰 Calculadora de Valor de Mercado",
+    marketCalcDesc: "Benchmark de salários para suas vagas abertas",
+    todayJobNews: "Notícias de Emprego e IA de Hoje",
+    loadingWorkspace: "Carregando seu workspace…",
     openReport: "ABRIR RELATÓRIO DE EMPREGO",
     generatingSignal: "ANALISANDO MERCADO DE TRABALHO...",
     generateNewBriefing: "GERAR BRIEFING DE EMPREGO",
@@ -1074,7 +1086,7 @@ export default function App() {
             >
               <div className="flex flex-col items-center gap-4">
                 <div className="w-8 h-8 border-2 border-accent border-t-transparent rounded-full animate-spin" />
-                <span className="mono text-[9px] text-text/40 uppercase tracking-widest">Loading your workspace…</span>
+                <span className="mono text-[9px] text-text/40 uppercase tracking-widest">{t.loadingWorkspace}</span>
               </div>
             </motion.div>
           ) : needsRolePicker && user ? (
@@ -1170,9 +1182,9 @@ export default function App() {
                       <CompanyIntelPanel lang={lang} />
                       <div className="mt-8 pt-8 border-t border-border">
                         <div className="flex items-center gap-2 mb-6">
-                          <span className="mono text-[9px] font-bold text-accent tracking-widest uppercase">💰 Market Value Calculator</span>
+                          <span className="mono text-[9px] font-bold text-accent tracking-widest uppercase">{t.marketCalcTitle}</span>
                           <div className="h-px flex-1 bg-border" />
-                          <span className="mono text-[8px] text-text/30">Benchmark salaries for your open roles</span>
+                          <span className="mono text-[8px] text-text/30">{t.marketCalcDesc}</span>
                         </div>
                         <CandidateIntel lang={lang as any} />
                       </div>
@@ -1408,7 +1420,7 @@ export default function App() {
                       <div className="bg-bg p-6 border-b border-border">
                         <div className="flex items-center gap-2 mb-6">
                           <Newspaper size={10} className="text-accent" />
-                          <div className="mono text-[9px] text-text/40 font-bold uppercase tracking-widest">Today's Job News</div>
+                          <div className="mono text-[9px] text-text/40 font-bold uppercase tracking-widest">{t.todayJobNews}</div>
                         </div>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                           {marketIntelData.news.slice(0, 4).map((item, i) => (
