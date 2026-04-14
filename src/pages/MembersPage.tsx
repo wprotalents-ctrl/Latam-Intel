@@ -2,21 +2,21 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import {
-  Lock, Crown, CreditCard, Coins, ArrowLeft, Download,
+  Lock, Crown, Coins, ArrowLeft, Download,
   ExternalLink, FileText, BarChart2, Wrench, BookOpen,
   Users, Calendar, ChevronRight, Star, Zap, Globe,
   TrendingUp, BriefcaseBusiness, Mail, Phone, Loader2,
   Check, Shield, Clock, ChevronDown, ChevronUp
 } from 'lucide-react';
-import { auth } from '../firebase';
+import { auth, db } from '../firebase';
 
-import { getUserProfile, getNewsletterIssues, getMemberResources } from '../lib/supabase';
+import { getUserProfile, getMemberResources } from '../lib/supabase';
 import CandidateIntel from '../components/CandidateIntel';
 import ClientJobPostForm, { type ClientJobPostData } from '../components/ClientJobPostForm';
 import ClientInsightsCard from '../components/ClientInsightsCard';
 import { generateHiringPlan, type HiringPlan } from '../lib/hiringPlan';
 import { estimateNetworkReach, type NetworkReach } from '../lib/networkReach';
-import type { SupabaseUser, NewsletterIssue, MemberResource } from '../lib/supabase';
+import type { SupabaseUser, MemberResource } from '../lib/supabase';
 import type { User } from 'firebase/auth';
 
 // @ts-ignore
@@ -40,26 +40,11 @@ const RESOURCE_ICONS: Record<string, any> = {
 
 // ─── Paywall Component ────────────────────────────────────────────────────────
 function PaywallGate({ user }: { user: User | null }) {
-  const [loading, setLoading] = useState<'card' | 'crypto' | null>(null);
-
-  const handleCard = async () => {
-    if (!user) return;
-    setLoading('card');
-    try {
-      const res = await fetch('/api/create-checkout-session', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId: user.uid, customerEmail: user.email }),
-      });
-      const { url } = await res.json();
-      if (url) window.location.href = url;
-    } catch (e) { console.error(e); }
-    finally { setLoading(null); }
-  };
+  const [loading, setLoading] = useState(false);
 
   const handleCrypto = async () => {
     if (!user) return;
-    setLoading('crypto');
+    setLoading(true);
     try {
       const res = await fetch('/api/create-crypto-charge', {
         method: 'POST',
@@ -67,9 +52,9 @@ function PaywallGate({ user }: { user: User | null }) {
         body: JSON.stringify({ userId: user.uid, userEmail: user.email }),
       });
       const { url } = await res.json();
-      window.location.href = url;
+      if (url) window.location.href = url;
     } catch (e) { console.error(e); }
-    finally { setLoading(null); }
+    finally { setLoading(false); }
   };
 
   return (
@@ -96,19 +81,19 @@ function PaywallGate({ user }: { user: User | null }) {
             Members Only
           </h1>
           <p className="text-text/60 leading-relaxed">
-            The full Workforce Daily archive, LATAM salary data, AI recruitment tools,
-            and private WPro resources — all for <span className="text-accent font-bold">$29/month</span>.
+            Full LATAM salary data, AI recruitment tools, market intelligence,
+            and private WPro resources — all for <span className="text-accent font-bold">$29 in crypto</span>. 30 days. No subscription.
           </p>
         </div>
 
         {/* What you get */}
         <div className="bg-surface border border-border p-6 mb-6 space-y-3">
           {[
-            { icon: FileText,    text: 'Full Workforce Daily archive — every issue, fully readable' },
-            { icon: BarChart2,   text: 'LATAM Salary Intelligence — 40+ roles, 5 countries' },
-            { icon: Wrench,      text: 'AI Recruitment Toolkit — prompts, scorecards, workflows' },
-            { icon: BookOpen,    text: 'WPro Playbooks — LATAM hiring strategies that actually work' },
+            { icon: BarChart2,        text: 'LATAM Salary Intelligence — 40+ roles, 5 countries, Q1 2026' },
+            { icon: Wrench,           text: 'AI Recruitment Toolkit — prompts, scorecards, workflows' },
+            { icon: BookOpen,         text: 'WPro Playbooks — LATAM hiring strategies that actually work' },
             { icon: BriefcaseBusiness, text: 'Private WPro job board — roles not posted publicly' },
+            { icon: Globe,            text: 'Full market intelligence dashboard — live data, trends, signals' },
           ].map(({ icon: Icon, text }, i) => (
             <div key={i} className="flex items-start gap-3">
               <div className="shrink-0 w-5 h-5 bg-accent/10 flex items-center justify-center mt-0.5">
@@ -123,23 +108,15 @@ function PaywallGate({ user }: { user: User | null }) {
         {user ? (
           <div className="space-y-3">
             <button
-              onClick={handleCard}
-              disabled={loading !== null}
-              className="w-full py-4 bg-accent text-black font-bold hover:opacity-90 transition flex items-center justify-center gap-2 disabled:opacity-50"
-            >
-              <CreditCard size={18} />
-              {loading === 'card' ? 'Connecting...' : 'Subscribe — $29/mo with Card'}
-            </button>
-            <button
               onClick={handleCrypto}
-              disabled={loading !== null}
-              className="w-full py-4 bg-surface border border-border text-text font-bold hover:border-accent/40 transition flex items-center justify-center gap-2 disabled:opacity-50"
+              disabled={loading}
+              className="w-full py-4 bg-accent text-black font-black hover:opacity-90 transition flex items-center justify-center gap-2 disabled:opacity-50 mono text-[11px] tracking-widest"
             >
               <Coins size={18} />
-              {loading === 'crypto' ? 'Connecting...' : 'Pay with Crypto (USDC / BTC / ETH)'}
+              {loading ? 'Opening payment...' : 'Pay with Crypto — $29 USDC / BTC / ETH'}
             </button>
-            <p className="text-center text-xs text-text/30 flex items-center justify-center gap-1">
-              <Shield size={10} /> Secure · Cancel anytime · Instant access
+            <p className="text-center text-xs text-text/30 flex items-center justify-center gap-1 mono text-[8px]">
+              <Shield size={10} /> No Stripe · No card · 30-day access · Instant activation
             </p>
           </div>
         ) : (
@@ -169,124 +146,154 @@ function PaywallGate({ user }: { user: User | null }) {
 }
 
 // ─── Newsletter Archive ───────────────────────────────────────────────────────
-function NewsletterArchive({ issues }: { issues: NewsletterIssue[] }) {
-  const [expanded, setExpanded] = useState<string | null>(null);
+// ─── Access Tab ──────────────────────────────────────────────────────────────
+interface AccessTabProps {
+  user: User;
+  executiveUntil: Date | null;
+  lang: 'EN' | 'ES' | 'PT';
+}
 
-  if (issues.length === 0) {
-    return (
-      <div className="text-center py-16 border border-dashed border-border">
-        <Clock size={32} className="text-text/20 mx-auto mb-3" />
-        <p className="text-text/40 mono text-sm">First issue drops next Monday at 8am</p>
-      </div>
-    );
-  }
+function AccessTab({ user, executiveUntil, lang }: AccessTabProps) {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+
+  const T = {
+    EN: {
+      active: 'Executive Access — Active',
+      expires: 'Expires',
+      daysLeft: 'days remaining',
+      renew: 'Renew for another 30 days — $29 USDC',
+      noAccess: 'No active subscription',
+      payNow: 'Get Executive Access — $29 USDC',
+      payDesc: 'Pay once in crypto. Get 30 days of full Executive access — salary data, AI tools, and market intelligence.',
+      accepted: 'Accepted: USDC · USDT · ETH · BTC · DAI',
+      connecting: 'Opening payment...',
+      how: 'How it works',
+      step1: 'Click the button — a secure Coinbase Commerce page opens.',
+      step2: 'Pay $29 in any stablecoin or crypto.',
+      step3: 'Access activates automatically within seconds of confirmation.',
+      noStripe: 'No Stripe. No card. No subscription traps.',
+      history: 'Payment History',
+      pending: 'pending',
+      confirmed: 'confirmed',
+    },
+    ES: {
+      active: 'Acceso Ejecutivo — Activo',
+      expires: 'Vence el',
+      daysLeft: 'días restantes',
+      renew: 'Renovar 30 días más — $29 USDC',
+      noAccess: 'Sin suscripción activa',
+      payNow: 'Obtener Acceso Ejecutivo — $29 USDC',
+      payDesc: 'Pago único en cripto. 30 días de acceso completo — datos salariales, herramientas IA e inteligencia de mercado.',
+      accepted: 'Aceptamos: USDC · USDT · ETH · BTC · DAI',
+      connecting: 'Abriendo pago...',
+      how: 'Cómo funciona',
+      step1: 'Haz clic — se abre una página segura de Coinbase Commerce.',
+      step2: 'Paga $29 en cualquier stablecoin o cripto.',
+      step3: 'El acceso se activa automáticamente en segundos.',
+      noStripe: 'Sin Stripe. Sin tarjeta. Sin trampas de suscripción.',
+      history: 'Historial de Pagos',
+      pending: 'pendiente',
+      confirmed: 'confirmado',
+    },
+    PT: {
+      active: 'Acesso Executivo — Ativo',
+      expires: 'Expira em',
+      daysLeft: 'dias restantes',
+      renew: 'Renovar por mais 30 dias — $29 USDC',
+      noAccess: 'Sem assinatura ativa',
+      payNow: 'Obter Acesso Executivo — $29 USDC',
+      payDesc: 'Pagamento único em cripto. 30 dias de acesso completo — dados salariais, ferramentas de IA e inteligência de mercado.',
+      accepted: 'Aceitos: USDC · USDT · ETH · BTC · DAI',
+      connecting: 'Abrindo pagamento...',
+      how: 'Como funciona',
+      step1: 'Clique no botão — abre uma página segura do Coinbase Commerce.',
+      step2: 'Pague $29 em qualquer stablecoin ou cripto.',
+      step3: 'O acesso é ativado automaticamente em segundos após a confirmação.',
+      noStripe: 'Sem Stripe. Sem cartão. Sem armadilhas de assinatura.',
+      history: 'Histórico de Pagamentos',
+      pending: 'pendente',
+      confirmed: 'confirmado',
+    },
+  };
+  const t = T[lang];
+
+  const daysLeft = executiveUntil
+    ? Math.max(0, Math.ceil((executiveUntil.getTime() - Date.now()) / 86400000))
+    : 0;
+
+  const handlePay = async () => {
+    setLoading(true); setError('');
+    try {
+      const res = await fetch('/api/create-crypto-charge', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId: user.uid, userEmail: user.email }),
+      });
+      const data = await res.json();
+      if (data.url) window.location.href = data.url;
+      else setError(data.error || 'Payment creation failed. Try again.');
+    } catch {
+      setError('Network error. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
-    <div className="space-y-4">
-      {issues.map((issue) => {
-        const cat = CATEGORY_CONFIG[issue.category] || CATEGORY_CONFIG['Workforce Daily'];
-        const isOpen = expanded === issue.id;
+    <div className="space-y-8 max-w-2xl">
+      {/* Status card */}
+      <div className={`border p-6 ${executiveUntil ? 'border-accent/40 bg-accent/5' : 'border-border bg-surface/30'}`}>
+        <div className="flex items-center gap-3 mb-4">
+          <div className={`w-2 h-2 rounded-full ${executiveUntil ? 'bg-accent' : 'bg-text/20'}`} />
+          <span className="mono text-[10px] font-bold tracking-widest uppercase">
+            {executiveUntil ? t.active : t.noAccess}
+          </span>
+        </div>
+        {executiveUntil && (
+          <div className="space-y-2">
+            <div className="flex items-baseline gap-2">
+              <span className="text-4xl font-black text-accent">{daysLeft}</span>
+              <span className="text-text/50 mono text-[10px]">{t.daysLeft}</span>
+            </div>
+            <p className="mono text-[9px] text-text/40">
+              {t.expires} {executiveUntil.toLocaleDateString(lang === 'EN' ? 'en-US' : lang === 'ES' ? 'es-CO' : 'pt-BR', { day: 'numeric', month: 'long', year: 'numeric' })}
+            </p>
+            {/* Days bar */}
+            <div className="mt-3 h-1 bg-border">
+              <div className="h-1 bg-accent transition-all" style={{ width: `${Math.min(100, (daysLeft / 30) * 100)}%` }} />
+            </div>
+          </div>
+        )}
+      </div>
 
-        return (
-          <motion.div
-            key={issue.id}
-            layout
-            className="bg-surface border border-border hover:border-accent/30 transition-colors"
-          >
-            <button
-              onClick={() => setExpanded(isOpen ? null : issue.id)}
-              className="w-full text-left p-6 flex items-start gap-4"
-            >
-              <div className={`shrink-0 px-2 py-1 mono text-[9px] font-bold ${cat.bg} ${cat.color}`}>
-                {cat.label}
-              </div>
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2 mb-1">
-                  <span className="mono text-[10px] text-text/30">{issue.week_label}</span>
-                  {issue.is_hiring_signal && (
-                    <span className="px-1.5 py-0.5 bg-green-400/10 text-green-400 mono text-[8px] font-bold">
-                      HIRING SIGNAL
-                    </span>
-                  )}
-                </div>
-                <h3 className="font-bold text-text leading-tight pr-8">{issue.subject_line}</h3>
-                <p className="text-sm text-text/50 mt-1 line-clamp-2">{issue.free_teaser}</p>
-              </div>
-              {isOpen ? <ChevronUp size={16} className="shrink-0 text-text/40 mt-1" /> : <ChevronDown size={16} className="shrink-0 text-text/40 mt-1" />}
-            </button>
+      {/* Pay button */}
+      <div>
+        <button
+          onClick={handlePay}
+          disabled={loading}
+          className="w-full py-4 bg-accent text-black font-black hover:opacity-90 transition flex items-center justify-center gap-3 disabled:opacity-50 mono text-[11px] tracking-widest"
+        >
+          <Coins size={18} />
+          {loading ? t.connecting : (executiveUntil ? t.renew : t.payNow)}
+        </button>
+        <p className="mono text-[8px] text-text/30 text-center mt-2">{t.accepted}</p>
+        {error && <p className="mono text-[9px] text-red-400 text-center mt-2">{error}</p>}
+      </div>
 
-            <AnimatePresence>
-              {isOpen && (
-                <motion.div
-                  initial={{ height: 0, opacity: 0 }}
-                  animate={{ height: 'auto', opacity: 1 }}
-                  exit={{ height: 0, opacity: 0 }}
-                  className="overflow-hidden"
-                >
-                  <div className="px-6 pb-6 border-t border-border pt-6 space-y-6">
-                    {/* Slack hook */}
-                    {issue.slack_hook && (
-                      <div className="bg-bg border border-border p-4">
-                        <p className="mono text-[9px] text-accent mb-2">SLACK HOOK · copy & share</p>
-                        <p className="text-sm text-text/70 italic">"{issue.slack_hook}"</p>
-                      </div>
-                    )}
-
-                    {/* Full paid analysis */}
-                    {issue.paid_analysis ? (
-                      <div className="space-y-4">
-                        {Array.isArray(issue.paid_analysis.sections)
-                          ? issue.paid_analysis.sections.map((section: any, i: number) => (
-                            <div key={i}>
-                              <h4 className="font-bold text-text mb-2">{section.heading}</h4>
-                              {section.paragraphs?.map((p: string, j: number) => (
-                                <p key={j} className="text-text/70 text-sm leading-relaxed mb-2">{p}</p>
-                              ))}
-                              {section.soWhat && (
-                                <div className="mt-2 pl-4 border-l-2 border-accent">
-                                  <p className="mono text-[9px] text-accent mb-1">SO WHAT?</p>
-                                  <p className="text-sm text-text font-medium">{section.soWhat}</p>
-                                </div>
-                              )}
-                            </div>
-                          ))
-                          : <p className="text-text/70 text-sm leading-relaxed">{JSON.stringify(issue.paid_analysis)}</p>
-                        }
-                      </div>
-                    ) : (
-                      <p className="text-text/70 text-sm leading-relaxed">{issue.free_teaser}</p>
-                    )}
-
-                    {/* Country codes */}
-                    {issue.country_codes && issue.country_codes.length > 0 && (
-                      <div className="flex items-center gap-2">
-                        <Globe size={12} className="text-text/30" />
-                        {issue.country_codes.map((c) => (
-                          <span key={c} className="mono text-[9px] px-2 py-0.5 border border-border text-text/40">
-                            {c}
-                          </span>
-                        ))}
-                      </div>
-                    )}
-
-                    {/* Beehiiv link */}
-                    {issue.beehiiv_web_url && (
-                      <a
-                        href={issue.beehiiv_web_url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-2 text-xs text-accent hover:underline"
-                      >
-                        View in browser <ExternalLink size={10} />
-                      </a>
-                    )}
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </motion.div>
-        );
-      })}
+      {/* How it works */}
+      <div className="border border-border p-6">
+        <p className="mono text-[9px] font-bold text-accent tracking-widest mb-4">{t.how.toUpperCase()}</p>
+        <div className="space-y-3">
+          {[t.step1, t.step2, t.step3].map((step, i) => (
+            <div key={i} className="flex items-start gap-3">
+              <span className="mono text-[10px] font-black text-accent shrink-0 mt-0.5">0{i + 1}</span>
+              <span className="text-sm text-text/60">{step}</span>
+            </div>
+          ))}
+        </div>
+        <p className="mono text-[8px] text-text/25 mt-4 pt-4 border-t border-border">{t.noStripe}</p>
+      </div>
     </div>
   );
 }
@@ -575,7 +582,7 @@ function WProCTA() {
 }
 
 // ─── Main MembersPage ─────────────────────────────────────────────────────────
-type Tab = 'intel' | 'archive' | 'salary' | 'resources' | 'wpro';
+type Tab = 'intel' | 'access' | 'salary' | 'resources' | 'wpro';
 
 export default function MembersPage() {
   const lang = (() => {
@@ -586,7 +593,8 @@ export default function MembersPage() {
   const [profile, setProfile] = useState<SupabaseUser | null>(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<Tab>('intel');
-  const [issues, setIssues] = useState<NewsletterIssue[]>([]);
+  const [executiveUntil, setExecutiveUntil] = useState<Date | null>(null);
+  const [paymentLoading, setPaymentLoading] = useState(false);
   const [resources, setResources] = useState<MemberResource[]>([]);
   const [dataLoading, setDataLoading] = useState(false);
   // Client hiring intelligence
@@ -600,25 +608,29 @@ export default function MembersPage() {
     const unsub = auth.onAuthStateChanged(async (u) => {
       setUser(u);
       if (u) {
-        const p = await getUserProfile(u.uid);
+        const [p, snap] = await Promise.all([
+          getUserProfile(u.uid),
+          db.collection('users').doc(u.uid).get(),
+        ]);
         setProfile(p);
+        const data = snap.data();
+        if (data?.executiveUntil) {
+          const until = data.executiveUntil.toDate?.() ?? new Date(data.executiveUntil);
+          if (until > new Date()) setExecutiveUntil(until);
+        }
       }
       setLoading(false);
     });
     return unsub;
   }, []);
 
-  const isPremium = profile?.subscription_status === 'premium';
+  const isPremium = profile?.subscription_status === 'premium' || executiveUntil !== null;
 
   // Load data once confirmed premium
   useEffect(() => {
     if (!isPremium) return;
     setDataLoading(true);
-    Promise.all([
-      getNewsletterIssues(true),
-      getMemberResources(),
-    ]).then(([iss, res]) => {
-      setIssues(iss);
+    getMemberResources().then((res) => {
       setResources(res);
       setDataLoading(false);
     });
@@ -637,28 +649,28 @@ export default function MembersPage() {
   }
 
   const TAB_LABELS: Record<'EN'|'ES'|'PT', Record<Tab, string>> = {
-    EN: { intel: 'My Market Value', archive: 'Newsletter Archive', salary: 'Salary Intel', resources: 'Resources', wpro: 'Hire with WPro' },
-    ES: { intel: 'Mi Valor de Mercado', archive: 'Archivo Newsletter', salary: 'Intel Salarial', resources: 'Recursos', wpro: 'Contratar con WPro' },
-    PT: { intel: 'Meu Valor de Mercado', archive: 'Arquivo Newsletter', salary: 'Intel Salarial', resources: 'Recursos', wpro: 'Contratar com WPro' },
+    EN: { intel: 'My Market Value', access: 'My Access', salary: 'Salary Intel', resources: 'Resources', wpro: 'Hire with WPro' },
+    ES: { intel: 'Mi Valor de Mercado', access: 'Mi Acceso', salary: 'Intel Salarial', resources: 'Recursos', wpro: 'Contratar con WPro' },
+    PT: { intel: 'Meu Valor de Mercado', access: 'Meu Acesso', salary: 'Intel Salarial', resources: 'Recursos', wpro: 'Contratar com WPro' },
   };
   const SECTION_LABELS: Record<'EN'|'ES'|'PT', Record<Tab, { title: string; desc: string }>> = {
     EN: {
       intel:     { title: 'My Market Value',        desc: 'Enter your profile — see your real market salary, best opportunities, and skills to learn for maximum ROI.' },
-      archive:   { title: 'Workforce Daily Archive', desc: '' },
+      access:    { title: 'My Executive Access', desc: 'Your active subscription, expiry, and payment options.' },
       salary:    { title: 'LATAM Salary Intelligence', desc: 'AI & tech roles, 5 countries. Updated Q1 2026.' },
       resources: { title: 'WPro Resources',          desc: 'Playbooks, templates, and tools — built from 20 years of LATAM recruiting.' },
       wpro:      { title: 'Hire with WProTalents',   desc: 'As a member, you get priority access to our founder-led search service.' },
     },
     ES: {
       intel:     { title: 'Mi Valor de Mercado',     desc: 'Ingresa tu perfil — ve tu salario real de mercado, mejores oportunidades y habilidades a aprender para máximo ROI.' },
-      archive:   { title: 'Archivo Workforce Daily', desc: '' },
+      access:    { title: 'Mi Acceso Ejecutivo', desc: 'Tu suscripción activa, vencimiento y opciones de pago.' },
       salary:    { title: 'Inteligencia Salarial LATAM', desc: 'Roles AI y tech, 5 países. Actualizado Q1 2026.' },
       resources: { title: 'Recursos WPro',           desc: 'Playbooks, plantillas y herramientas — construidos desde 20 años de reclutamiento LATAM.' },
       wpro:      { title: 'Contratar con WProTalents', desc: 'Como miembro, tienes acceso prioritario a nuestro servicio de búsqueda liderado por el fundador.' },
     },
     PT: {
       intel:     { title: 'Meu Valor de Mercado',   desc: 'Insira seu perfil — veja seu salário real de mercado, melhores oportunidades e habilidades a aprender para máximo ROI.' },
-      archive:   { title: 'Arquivo Workforce Daily', desc: '' },
+      access:    { title: 'Meu Acesso Executivo', desc: 'Sua assinatura ativa, vencimento e opções de pagamento.' },
       salary:    { title: 'Inteligência Salarial LATAM', desc: 'Funções de AI e tech, 5 países. Atualizado Q1 2026.' },
       resources: { title: 'Recursos WPro',           desc: 'Playbooks, templates e ferramentas — construídos a partir de 20 anos de recrutamento no LATAM.' },
       wpro:      { title: 'Contratar com WProTalents', desc: 'Como membro, você tem acesso prioritário ao nosso serviço de busca liderado pelo fundador.' },
@@ -697,7 +709,7 @@ export default function MembersPage() {
 
   const TABS: { id: Tab; label: string; icon: any; badge?: string }[] = [
     { id: 'intel',     label: tl.intel,     icon: TrendingUp, badge: 'NEW' },
-    { id: 'archive',   label: tl.archive,   icon: FileText },
+    { id: 'access',    label: tl.access,    icon: Crown },
     { id: 'salary',    label: tl.salary,    icon: BarChart2 },
     { id: 'resources', label: tl.resources, icon: BookOpen },
     { id: 'wpro',      label: tl.wpro,      icon: Users },
@@ -789,14 +801,8 @@ export default function MembersPage() {
                     <CandidateIntel lang={lang} />
                   </div>
                 )}
-                {activeTab === 'archive' && (
-                  <div>
-                    <div className="flex items-center justify-between mb-6">
-                      <h2 className="text-xl font-black uppercase tracking-tighter">Workforce Daily Archive</h2>
-                      <span className="mono text-[9px] text-text/30">{issues.length} issues</span>
-                    </div>
-                    <NewsletterArchive issues={issues} />
-                  </div>
+                {activeTab === 'access' && (
+                  <AccessTab user={user} executiveUntil={executiveUntil} lang={lang} />
                 )}
                 {activeTab === 'salary' && (
                   <div>
