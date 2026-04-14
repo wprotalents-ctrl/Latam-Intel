@@ -511,6 +511,110 @@ function MarketValueTeaser({ lang = 'EN', isLoggedIn = false }: { lang?: string;
   );
 }
 
+// ─── Teleport: LATAM City Quality-of-Life Widget ─────────────────────────────
+interface CityScore { name: string; flag: string; slug: string; overall: number; tech: number; cost: number; safety: number; }
+
+const LATAM_CITIES = [
+  { name: 'Medellín',    flag: '🇨🇴', slug: 'medellin'      },
+  { name: 'Bogotá',      flag: '🇨🇴', slug: 'bogota'        },
+  { name: 'São Paulo',   flag: '🇧🇷', slug: 'sao-paulo'     },
+  { name: 'Buenos Aires',flag: '🇦🇷', slug: 'buenos-aires'  },
+  { name: 'Mexico City', flag: '🇲🇽', slug: 'mexico-city'   },
+  { name: 'Lima',        flag: '🇵🇪', slug: 'lima'          },
+  { name: 'Santiago',    flag: '🇨🇱', slug: 'santiago'      },
+  { name: 'Montevideo',  flag: '🇺🇾', slug: 'montevideo'    },
+];
+
+function LatamCitiesWidget({ lang = 'EN' }: { lang?: string }) {
+  const [cities, setCities] = React.useState<CityScore[]>([]);
+  const [loading, setLoading] = React.useState(true);
+  const [error, setError] = React.useState(false);
+
+  const labels: Record<string, { title: string; tech: string; cost: string; safety: string; overall: string }> = {
+    EN: { title: 'LATAM TECH HUBS · QUALITY OF LIFE', tech: 'Tech', cost: 'Affordability', safety: 'Safety', overall: 'Score' },
+    ES: { title: 'HUBS TECH LATAM · CALIDAD DE VIDA',  tech: 'Tech', cost: 'Costo', safety: 'Seguridad', overall: 'Score' },
+    PT: { title: 'HUBS TECH LATAM · QUALIDADE DE VIDA', tech: 'Tech', cost: 'Custo', safety: 'Segurança', overall: 'Score' },
+  };
+  const lb = labels[lang] || labels.EN;
+
+  React.useEffect(() => {
+    let cancelled = false;
+    async function load() {
+      try {
+        const results = await Promise.allSettled(
+          LATAM_CITIES.map(c =>
+            fetch(`https://api.teleport.org/api/urban_areas/slug:${c.slug}/scores/`)
+              .then(r => r.ok ? r.json() : null)
+              .then(d => {
+                if (!d) return null;
+                const cats = d.categories || [];
+                const get = (name: string) => {
+                  const cat = cats.find((x: any) => x.name.toLowerCase().includes(name));
+                  return cat ? Math.round(cat.score_out_of_10 * 10) : 0;
+                };
+                return {
+                  name: c.name, flag: c.flag, slug: c.slug,
+                  overall: Math.round((d.teleport_city_score || 0)),
+                  tech: get('startup'),
+                  cost: get('cost'),
+                  safety: get('safety'),
+                } as CityScore;
+              })
+          )
+        );
+        if (cancelled) return;
+        const built = results
+          .filter(r => r.status === 'fulfilled' && r.value)
+          .map(r => (r as PromiseFulfilledResult<CityScore | null>).value!)
+          .sort((a, b) => b.overall - a.overall);
+        setCities(built);
+      } catch { setError(true); }
+      finally { if (!cancelled) setLoading(false); }
+    }
+    load();
+    return () => { cancelled = true; };
+  }, []);
+
+  if (error || (!loading && cities.length === 0)) return null;
+
+  return (
+    <section className="border-b border-border bg-bg px-6 md:px-10 py-8 max-w-7xl mx-auto w-full">
+      <div className="mono text-[9px] text-text/40 mb-4 flex items-center gap-2">
+        <Globe size={10} className="text-accent" /> {lb.title}
+      </div>
+      {loading ? (
+        <div className="flex gap-2">{[...Array(4)].map((_, i) => <div key={i} className="h-24 flex-1 bg-surface border border-border animate-pulse" />)}</div>
+      ) : (
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+          {cities.slice(0, 8).map(city => (
+            <div key={city.slug} className="bg-surface border border-border p-3">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-[8px] font-bold text-text/80">{city.flag} {city.name}</span>
+                <span className="mono text-[8px] font-black text-accent">{city.overall}<span className="text-text/30">/100</span></span>
+              </div>
+              <div className="space-y-1">
+                {[
+                  { label: lb.tech, val: city.tech },
+                  { label: lb.cost, val: city.cost },
+                  { label: lb.safety, val: city.safety },
+                ].map(row => (
+                  <div key={row.label} className="flex items-center gap-1">
+                    <span className="mono text-[7px] text-text/30 w-16 shrink-0">{row.label}</span>
+                    <div className="flex-1 h-1 bg-border rounded-full overflow-hidden">
+                      <div className="h-full bg-accent/60 rounded-full" style={{ width: `${row.val}%` }} />
+                    </div>
+                    <span className="mono text-[7px] text-text/50 w-5 text-right">{row.val}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </section>
+  );
+}
+
 function CandidateResourcesPanel({ onLinkedInBoost }: { onLinkedInBoost: () => void }) {
   const [activeSection, setActiveSection] = useState<SectionKey>('launch');
   const section = PORTAL_SECTIONS[activeSection];
@@ -727,6 +831,21 @@ function JobPortal({ lang, t, onPostVacancy }: { lang: string; t: typeof T.EN; o
           (d.jobs || []).map((j: any) => ({ id: `jobicy-${j.id}`, title: j.jobTitle, company: j.companyName,
             location: 'Remote', url: j.url, salary: j.salary ? `${j.salaryCurrency} ${j.salaryMin}–${j.salaryMax}` : null,
             tags: (j.tags || []).join(', '), source: 'Jobicy', region: 'Worldwide', postedAt: j.publishedDate }))),
+        // GraphQL Jobs — remote tech roles, free, no auth
+        fetch('https://api.graphql.jobs/', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ query: `{ jobs(input:{types:[FULL_TIME],remotes:[{type:FULLY_REMOTE}]}) { id title applyUrl commitment { title } company { name } cities { name country { name isoCode } } tags { name } createdAt } }` }),
+        }).then(r => r.json()).then(d =>
+          ((d.data?.jobs) || []).map((j: any) => {
+            const country = j.cities?.[0]?.country?.isoCode || 'WW';
+            const loc = j.cities?.[0] ? `${j.cities[0].name}, ${j.cities[0].country?.name || ''}` : 'Remote';
+            const latamCodes = ['BR','MX','CO','AR','CL','PE','VE','EC','UY','PY','BO'];
+            const region = latamCodes.includes(country) ? 'LATAM' : ['US','CA'].includes(country) ? 'USA' : ['GB','DE','FR','ES','NL','PT','IT','SE','PL'].includes(country) ? 'Europe' : 'Worldwide';
+            return { id: `gqljobs-${j.id}`, title: j.title, company: j.company?.name || '', location: loc,
+              url: j.applyUrl || '', salary: null, tags: (j.tags || []).map((t: any) => t.name).join(', '),
+              source: 'GraphQL.jobs', region, postedAt: j.createdAt };
+          })),
       ]);
       const all: any[] = [];
       results.forEach(r => { if (r.status === 'fulfilled') all.push(...r.value); });
@@ -1110,6 +1229,7 @@ export default function JobsPage({ lang = 'EN', isLoggedIn = false }: { lang?: s
   return (
     <div className="min-h-screen bg-bg">
       <MarketValueTeaser lang={lang} isLoggedIn={isLoggedIn} />
+      <LatamCitiesWidget lang={lang} />
       <CandidateResourcesPanel onLinkedInBoost={() => setShowLinkedIn(true)} />
       <JobPortal lang={lang} t={t} onPostVacancy={() => setShowVacancy(true)} />
       <PostVacancyModal isOpen={showVacancy} onClose={() => setShowVacancy(false)} lang={lang} />

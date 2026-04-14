@@ -1,5 +1,5 @@
 /// <reference types="vite/client" />
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import {
   Lock, Crown, Coins, ArrowLeft, Download,
@@ -147,6 +147,80 @@ function PaywallGate({ user }: { user: User | null }) {
 
 // ─── Newsletter Archive ───────────────────────────────────────────────────────
 // ─── Access Tab ──────────────────────────────────────────────────────────────
+// ─── CoinGecko: Crypto price ticker for AccessTab ────────────────────────────
+interface CryptoPrice { id: string; symbol: string; usd: number; usd_24h_change: number; }
+
+function useCryptoPrices() {
+  const [prices, setPrices] = React.useState<CryptoPrice[]>([]);
+  const [loading, setLoading] = React.useState(true);
+
+  React.useEffect(() => {
+    let cancelled = false;
+    async function fetchPrices() {
+      try {
+        const res = await fetch(
+          'https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum,usd-coin,tether&vs_currencies=usd&include_24hr_change=true'
+        );
+        if (!res.ok) throw new Error('coingecko failed');
+        const data = await res.json();
+        if (cancelled) return;
+        const built: CryptoPrice[] = [
+          { id: 'bitcoin',  symbol: 'BTC',  usd: data.bitcoin?.usd  || 0, usd_24h_change: data.bitcoin?.usd_24h_change  || 0 },
+          { id: 'ethereum', symbol: 'ETH',  usd: data.ethereum?.usd || 0, usd_24h_change: data.ethereum?.usd_24h_change || 0 },
+          { id: 'usd-coin', symbol: 'USDC', usd: data['usd-coin']?.usd || 1, usd_24h_change: data['usd-coin']?.usd_24h_change || 0 },
+          { id: 'tether',   symbol: 'USDT', usd: data.tether?.usd   || 1, usd_24h_change: data.tether?.usd_24h_change   || 0 },
+        ].filter(p => p.usd > 0);
+        setPrices(built);
+      } catch { /* silently fail — payment works without prices */ }
+      finally { if (!cancelled) setLoading(false); }
+    }
+    fetchPrices();
+    const id = setInterval(fetchPrices, 5 * 60 * 1000); // refresh every 5 min
+    return () => { cancelled = true; clearInterval(id); };
+  }, []);
+
+  return { prices, loading };
+}
+
+function CryptoTicker({ lang = 'EN' }: { lang?: string }) {
+  const { prices, loading } = useCryptoPrices();
+  const label: Record<string, string> = { EN: 'ACCEPTED CURRENCIES · LIVE RATES', ES: 'CRIPTOS ACEPTADAS · PRECIOS EN VIVO', PT: 'CRIPTOS ACEITAS · PREÇOS AO VIVO' };
+
+  if (loading) return (
+    <div className="border border-border p-4 animate-pulse">
+      <div className="h-3 bg-surface w-40 mb-3" />
+      <div className="grid grid-cols-4 gap-2">{[...Array(4)].map((_, i) => <div key={i} className="h-12 bg-surface" />)}</div>
+    </div>
+  );
+  if (prices.length === 0) return null;
+
+  return (
+    <div className="border border-border p-4">
+      <p className="mono text-[8px] text-text/30 mb-3 tracking-widest">{label[lang] || label.EN}</p>
+      <div className="grid grid-cols-4 gap-2">
+        {prices.map(p => {
+          const up = p.usd_24h_change >= 0;
+          const isStable = p.symbol === 'USDC' || p.symbol === 'USDT';
+          return (
+            <div key={p.id} className="bg-surface border border-border p-2 flex flex-col items-center">
+              <span className="mono text-[8px] font-bold text-accent">{p.symbol}</span>
+              <span className="mono text-[10px] font-black text-text mt-1">
+                {isStable ? '$1.00' : `$${p.usd.toLocaleString('en', { maximumFractionDigits: 0 })}`}
+              </span>
+              {!isStable && (
+                <span className={`mono text-[7px] ${up ? 'text-green-400' : 'text-red-400'}`}>
+                  {up ? '+' : ''}{p.usd_24h_change.toFixed(1)}%
+                </span>
+              )}
+              {isStable && <span className="mono text-[7px] text-text/30">stable</span>}
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
 interface AccessTabProps {
   user: User;
   executiveUntil: Date | null;
@@ -280,6 +354,9 @@ function AccessTab({ user, executiveUntil, lang }: AccessTabProps) {
         <p className="mono text-[8px] text-text/30 text-center mt-2">{t.accepted}</p>
         {error && <p className="mono text-[9px] text-red-400 text-center mt-2">{error}</p>}
       </div>
+
+      {/* Live crypto prices */}
+      <CryptoTicker lang={lang} />
 
       {/* How it works */}
       <div className="border border-border p-6">

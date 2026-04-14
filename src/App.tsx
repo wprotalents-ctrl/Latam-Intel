@@ -1,3 +1,4 @@
+import { useFxRates } from './hooks/useFxRates';
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { 
@@ -863,6 +864,7 @@ export default function App() {
     }
   };
 
+  const { rates: fxRates, loading: fxLoading, lastUpdated: fxDate } = useFxRates();
   const t = TRANSLATIONS[lang];
 
   return (
@@ -1579,17 +1581,22 @@ export default function App() {
                     {widgets.fx !== false && <section className="p-8 bg-bg">
                       <div className="mono text-[9px] text-text/40 mb-4 flex items-center gap-2">
                         <Activity size={10} className="text-accent" /> {t.fxRates}
+                        {fxDate && <span className="text-[7px] text-text/20 ml-auto">{fxDate}</span>}
+                        {fxLoading && <span className="text-[7px] text-accent/50 animate-pulse ml-1">●</span>}
                       </div>
                       <div className="grid grid-cols-3 gap-2">
-                        {[
-                          { pair: 'COP/USD', rate: '4,180', change: '-0.3%' },
-                          { pair: 'BRL/USD', rate: '5.72', change: '+0.4%' },
-                          { pair: 'ARS/USD', rate: '1,050', change: '-0.8%' }
-                        ].map(fx => (
+                        {(fxRates.length > 0 ? fxRates : [
+                          { pair: 'COP/USD', rate: '—', change: '', flag: '🇨🇴' },
+                          { pair: 'BRL/USD', rate: '—', change: '', flag: '🇧🇷' },
+                          { pair: 'ARS/USD', rate: '—', change: '', flag: '🇦🇷' },
+                          { pair: 'MXN/USD', rate: '—', change: '', flag: '🇲🇽' },
+                          { pair: 'CLP/USD', rate: '—', change: '', flag: '🇨🇱' },
+                          { pair: 'PEN/USD', rate: '—', change: '', flag: '🇵🇪' },
+                        ]).map(fx => (
                           <div key={fx.pair} className="bg-surface border border-border p-3 flex flex-col items-center">
-                            <span className="mono text-[7px] text-text/40 mb-1">{fx.pair}</span>
+                            <span className="mono text-[7px] text-text/40 mb-1">{fx.flag} {fx.pair}</span>
                             <span className="text-sm font-black text-text">{fx.rate}</span>
-                            <span className={`text-[7px] font-mono ${fx.change.startsWith('+') ? 'text-green-500' : 'text-red-500'}`}>{fx.change}</span>
+                            {fx.change && <span className={`text-[7px] font-mono ${fx.change.startsWith('+') ? 'text-green-500' : 'text-red-500'}`}>{fx.change}</span>}
                           </div>
                         ))}
                       </div>
