@@ -9,6 +9,8 @@ import {
   Newspaper, Mail, Lock, BarChart2
 } from 'lucide-react';
 import { computeMarketValue } from '../lib/intelligence';
+import { db } from '../firebase';
+import { collection, getDocs, query, orderBy, where } from 'firebase/firestore';
 import type { RoleKey, CountryCode, EnglishLevel } from '../lib/intelligence';
 import LinkedInBoostModal from '../components/LinkedInBoostModal';
 import PostVacancyModal from '../components/PostVacancyModal';
@@ -910,6 +912,31 @@ function JobPortal({ lang, t, onPostVacancy }: { lang: string; t: typeof T.EN; o
     setLoading(true);
     setError(false);
     try {
+      // Fetch WProTalents posted jobs from Firestore
+      let wpJobs: any[] = [];
+      try {
+        const q = query(collection(db, 'jobPosts'), orderBy('createdAt', 'desc'));
+        const snap = await getDocs(q);
+        wpJobs = snap.docs.map(doc => {
+          const d = doc.data();
+          return {
+            id: `wpro-${doc.id}`,
+            title: `${d.seniority ? d.seniority.charAt(0).toUpperCase() + d.seniority.slice(1) + ' ' : ''}${d.role}`,
+            company: 'WProTalents Client',
+            location: d.country || 'LATAM',
+            url: 'https://wa.me/573243132500?text=' + encodeURIComponent(`Hi\! I saw the ${d.role} role on WProTalents Intel and I'd like to apply.`),
+            salary: d.salary ? `USD ${Number(d.salary).toLocaleString()}` : null,
+            tags: d.role,
+            source: 'WProTalents',
+            region: normalizeRegion(d.country || 'LATAM'),
+            postedAt: d.createdAt,
+            description: d.description,
+          };
+        });
+      } catch (e) {
+        console.warn('Could not load WProTalents jobs:', e);
+      }
+
       const results = await Promise.allSettled([
         // Remotive
         fetch('https://remotive.com/api/remote-jobs?limit=50').then(r => r.json()).then(d =>
@@ -947,7 +974,8 @@ function JobPortal({ lang, t, onPostVacancy }: { lang: string; t: typeof T.EN; o
       results.forEach(r => { if (r.status === 'fulfilled') all.push(...r.value); });
       const unique = Array.from(new Map(all.map(j => [j.id, j])).values());
       unique.sort((a, b) => (b.postedAt || '').localeCompare(a.postedAt || ''));
-      setJobs(unique);
+      // Prepend WProTalents jobs at the top (they're curated/direct)
+      setJobs([...wpJobs, ...unique]);
     } catch {
       setError(true);
     } finally {
@@ -1240,7 +1268,11 @@ function JobPortal({ lang, t, onPostVacancy }: { lang: string; t: typeof T.EN; o
                     initial={{ opacity: 0, y: 8 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: Math.min(idx * 0.015, 0.3) }}
-                    className="group border border-border bg-surface hover:border-accent/40 hover:bg-surface/80 transition-colors flex flex-col cursor-pointer relative"
+                    className={`group flex flex-col cursor-pointer relative transition-colors ${
+                      job.source === 'WProTalents'
+                        ? 'border border-accent/40 bg-accent/5 hover:border-accent hover:bg-accent/10'
+                        : 'border border-border bg-surface hover:border-accent/40 hover:bg-surface/80'
+                    }`}
                   >
                     {/* Save button */}
                     <button
@@ -1252,6 +1284,11 @@ function JobPortal({ lang, t, onPostVacancy }: { lang: string; t: typeof T.EN; o
                     </button>
 
                     <div className="p-4 flex flex-col flex-1 gap-2">
+                      {job.source === 'WProTalents' && (
+                        <div className="mono text-[7px] text-accent font-bold tracking-widest flex items-center gap-1 mb-1">
+                          <div className="w-1 h-1 rounded-full bg-accent animate-pulse" /> DIRECT — WPRO CLIENT
+                        </div>
+                      )}
                       <div className="flex items-center justify-between pr-5">
                         <span className={`mono text-[7px] border px-1.5 py-0.5 ${rs}`}>{job.region}</span>
                         {ago && <span className="mono text-[7px] text-text/15 flex items-center gap-0.5"><Clock size={7} />{ago}</span>}
@@ -1266,6 +1303,9 @@ function JobPortal({ lang, t, onPostVacancy }: { lang: string; t: typeof T.EN; o
                         <MapPin size={8} className="shrink-0" />{job.location}
                       </div>
                       {job.salary && <div className="mono text-[8px] text-accent/70 font-bold">{job.salary}</div>}
+                      {job.source === 'WProTalents' && (job as any).description && (
+                        <p className="mono text-[7px] text-text/40 line-clamp-2">{(job as any).description}</p>
+                      )}
                     </div>
                     <div className="flex items-center justify-between px-4 py-2.5 border-t border-text/5">
                       <span className="mono text-[7px] text-text/10">{t.via} {job.source}</span>

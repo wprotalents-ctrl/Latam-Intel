@@ -31,7 +31,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       description: description ?? '',
       planType,
       companyEmail: companyEmail ?? null,
-      status: 'pending',
+      status: 'active',
       createdAt: new Date().toISOString(),
     });
 
