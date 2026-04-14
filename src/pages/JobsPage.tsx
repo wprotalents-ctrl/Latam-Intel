@@ -74,7 +74,7 @@ const T = {
     teaserUplift: 'uplift · /year',
     teaserPerYear: '/year',
     teaserLockedLabel: 'Full dashboard · Executive Members',
-    teaserUnlock: 'Unlock for $29/mo',
+    teaserUnlock: 'Join Beta — Free Access',
     teaserLockedSections: ['Salary by English Level', 'Best Markets for You', 'Skills ROI'],
   },
   ES: {
@@ -113,7 +113,7 @@ const T = {
     teaserUplift: 'uplift · /año',
     teaserPerYear: '/año',
     teaserLockedLabel: 'Dashboard completo · Miembros Ejecutivos',
-    teaserUnlock: 'Desbloquear por $29/mes',
+    teaserUnlock: 'Unirse al Beta — Gratis',
     teaserLockedSections: ['Salario por Nivel de Inglés', 'Mejores Mercados para Ti', 'ROI de Habilidades'],
   },
   PT: {
@@ -152,7 +152,7 @@ const T = {
     teaserUplift: 'uplift · /ano',
     teaserPerYear: '/ano',
     teaserLockedLabel: 'Dashboard completo · Membros Executivos',
-    teaserUnlock: 'Desbloquear por $29/mês',
+    teaserUnlock: 'Entrar no Beta — Grátis',
     teaserLockedSections: ['Salário por Nível de Inglês', 'Melhores Mercados para Você', 'ROI de Habilidades'],
   },
 };

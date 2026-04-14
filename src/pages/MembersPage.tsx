@@ -18,6 +18,7 @@ import { generateHiringPlan, type HiringPlan } from '../lib/hiringPlan';
 import { estimateNetworkReach, type NetworkReach } from '../lib/networkReach';
 import type { SupabaseUser, MemberResource } from '../lib/supabase';
 import type { User } from 'firebase/auth';
+import { AuthModal } from '../components/AuthModal';
 
 // @ts-ignore
 
@@ -38,98 +39,59 @@ const RESOURCE_ICONS: Record<string, any> = {
   'Reports':     TrendingUp,
 };
 
-// ─── Paywall Component ────────────────────────────────────────────────────────
-function PaywallGate({ user }: { user: User | null }) {
-  const [loading, setLoading] = useState(false);
-
-  const handleCrypto = async () => {
-    if (!user) return;
-    setLoading(true);
-    try {
-      const res = await fetch('/api/create-crypto-charge', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId: user.uid, userEmail: user.email }),
-      });
-      const { url } = await res.json();
-      if (url) window.location.href = url;
-    } catch (e) { console.error(e); }
-    finally { setLoading(false); }
-  };
+// ─── Sign-in Gate (non-logged-in users only) ─────────────────────────────────
+function PaywallGate({ user: _user }: { user: User | null }) {
 
   return (
     <div className="min-h-screen bg-bg flex items-center justify-center p-6">
       <motion.div
         initial={{ opacity: 0, y: 24 }}
         animate={{ opacity: 1, y: 0 }}
-        className="max-w-lg w-full"
+        className="max-w-md w-full"
       >
-        {/* Lock icon */}
+        {/* Badge */}
         <div className="flex justify-center mb-8">
-          <div className="relative">
-            <div className="w-20 h-20 bg-accent/10 border border-accent/20 flex items-center justify-center">
-              <Lock className="text-accent" size={36} />
-            </div>
-            <div className="absolute -top-2 -right-2 w-6 h-6 bg-accent flex items-center justify-center">
-              <Crown size={12} className="text-black" />
-            </div>
+          <div className="inline-flex items-center gap-2 px-3 py-1 border border-accent/30 bg-accent/5 mono text-[9px] text-accent">
+            <div className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse" />
+            BETA ACCESS · FREE
           </div>
         </div>
 
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-black tracking-tighter uppercase mb-3">
-            Members Only
-          </h1>
-          <p className="text-text/60 leading-relaxed">
-            Full LATAM salary data, AI recruitment tools, market intelligence,
-            and private WPro resources — all for <span className="text-accent font-bold">$29 in crypto</span>. 30 days. No subscription.
+          <h1 className="text-3xl font-black tracking-tighter uppercase mb-3">Members Area</h1>
+          <p className="text-text/50 text-sm leading-relaxed">
+            Sign in to unlock LATAM salary data, the US hiring signal, remote salary calculator, and AI job market briefings — free during beta.
           </p>
         </div>
 
-        {/* What you get */}
-        <div className="bg-surface border border-border p-6 mb-6 space-y-3">
+        {/* Perks preview */}
+        <div className="bg-surface border border-border p-5 mb-6 space-y-2.5">
           {[
-            { icon: BarChart2,        text: 'LATAM Salary Intelligence — 40+ roles, 5 countries, Q1 2026' },
-            { icon: Wrench,           text: 'AI Recruitment Toolkit — prompts, scorecards, workflows' },
-            { icon: BookOpen,         text: 'WPro Playbooks — LATAM hiring strategies that actually work' },
-            { icon: BriefcaseBusiness, text: 'Private WPro job board — roles not posted publicly' },
-            { icon: Globe,            text: 'Full market intelligence dashboard — live data, trends, signals' },
-          ].map(({ icon: Icon, text }, i) => (
+            'LATAM Salary Benchmarks — 40+ roles · 5 countries',
+            'US Hiring Signal — powered by live BLS data',
+            'Remote Salary Calculator — what US companies pay vs what you charge',
+            'AI Job Market Briefings — weekly signal, no fluff',
+            'WPro Playbooks — 20 years of LATAM recruiting strategy',
+          ].map((text, i) => (
             <div key={i} className="flex items-start gap-3">
-              <div className="shrink-0 w-5 h-5 bg-accent/10 flex items-center justify-center mt-0.5">
-                <Check size={10} className="text-accent" />
+              <div className="shrink-0 w-4 h-4 bg-accent/10 flex items-center justify-center mt-0.5">
+                <Check size={8} className="text-accent" />
               </div>
-              <span className="text-sm text-text/70">{text}</span>
+              <span className="mono text-[9px] text-text/60">{text}</span>
             </div>
           ))}
         </div>
 
-        {/* Payment buttons */}
-        {user ? (
-          <div className="space-y-3">
-            <button
-              onClick={handleCrypto}
-              disabled={loading}
-              className="w-full py-4 bg-accent text-black font-black hover:opacity-90 transition flex items-center justify-center gap-2 disabled:opacity-50 mono text-[11px] tracking-widest"
-            >
-              <Coins size={18} />
-              {loading ? 'Opening payment...' : 'Pay with Crypto — $29 USDC / BTC / ETH'}
-            </button>
-            <p className="text-center text-xs text-text/30 flex items-center justify-center gap-1 mono text-[8px]">
-              <Shield size={10} /> No Stripe · No card · 30-day access · Instant activation
-            </p>
-          </div>
-        ) : (
-          <div className="text-center">
-            <p className="text-text/50 text-sm mb-4">Sign in with Google to subscribe</p>
-            <button
-              onClick={() => window.dispatchEvent(new CustomEvent('open-auth-modal'))}
-              className="px-8 py-3 bg-text text-bg font-bold hover:opacity-90 transition"
-            >
-              Sign In
-            </button>
-          </div>
-        )}
+        {/* Sign-in CTA */}
+        <div className="text-center space-y-3">
+          <button
+            onClick={() => window.dispatchEvent(new CustomEvent('wpro-open-auth'))}
+            className="w-full py-4 bg-accent text-black font-black hover:opacity-90 transition mono text-[11px] tracking-widest"
+          >
+            SIGN IN · GET FREE BETA ACCESS
+          </button>
+          <p className="mono text-[8px] text-text/25">No credit card · No commitment · Founding Member pricing coming soon</p>
+        </div>
 
         {/* Back link */}
         <div className="text-center mt-8">
@@ -669,6 +631,7 @@ export default function MembersPage() {
   const [user, setUser] = useState<User | null>(null);
   const [profile, setProfile] = useState<SupabaseUser | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isAuthOpen, setIsAuthOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<Tab>('intel');
   const [executiveUntil, setExecutiveUntil] = useState<Date | null>(null);
   const [paymentLoading, setPaymentLoading] = useState(false);
@@ -679,6 +642,13 @@ export default function MembersPage() {
   const [networkReach, setNetworkReach] = useState<NetworkReach | null>(null);
   const [lastFormData, setLastFormData] = useState<ClientJobPostData | null>(null);
   const [insightsLoading, setInsightsLoading] = useState(false);
+
+  // Listen for sign-in trigger from PaywallGate
+  useEffect(() => {
+    const handler = () => setIsAuthOpen(true);
+    window.addEventListener('wpro-open-auth', handler);
+    return () => window.removeEventListener('wpro-open-auth', handler);
+  }, []);
 
   // Auth listener
   useEffect(() => {
@@ -691,6 +661,14 @@ export default function MembersPage() {
         ]);
         setProfile(p);
         const data = snap.data();
+        // Mark as beta member in Firestore (idempotent)
+        if (!data?.betaMember) {
+          db.collection('users').doc(u.uid).set({
+            betaMember: true,
+            betaJoinedAt: new Date().toISOString(),
+            email: u.email,
+          }, { merge: true }).catch(() => {});
+        }
         if (data?.executiveUntil) {
           const until = data.executiveUntil.toDate?.() ?? new Date(data.executiveUntil);
           if (until > new Date()) setExecutiveUntil(until);
@@ -705,7 +683,6 @@ export default function MembersPage() {
 
   // Load data once confirmed premium
   useEffect(() => {
-    if (!isPremium) return;
     setDataLoading(true);
     getMemberResources().then((res) => {
       setResources(res);
@@ -721,8 +698,14 @@ export default function MembersPage() {
     );
   }
 
-  if (!user || !isPremium) {
-    return <PaywallGate user={user} />;
+  // BETA: any logged-in user gets full access — isPremium gates only the Access tab payment state
+  if (!user) {
+    return (
+      <>
+        <PaywallGate user={null} />
+        <AuthModal isOpen={isAuthOpen} onClose={() => setIsAuthOpen(false)} />
+      </>
+    );
   }
 
   const TAB_LABELS: Record<'EN'|'ES'|'PT', Record<Tab, string>> = {

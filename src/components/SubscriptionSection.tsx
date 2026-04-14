@@ -1,230 +1,101 @@
 /// <reference types="vite/client" />
-import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
-import { Check, Zap, Globe, Shield, Coins, CreditCard } from 'lucide-react';
-import { auth } from '../firebase';
-import { loadStripe } from '@stripe/stripe-js';
+import React from 'react';
+import { Check, Zap, Globe, Shield, Coins, Users, Lock } from 'lucide-react';
 
-// @ts-ignore
-const STRIPE_KEY = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY;
-const stripePromise = STRIPE_KEY ? loadStripe(STRIPE_KEY) : Promise.resolve(null);
+// ─── Beta Member Section ──────────────────────────────────────────────────────
+// Replaces the old Stripe/payment subscription section during the beta period.
+// Any logged-in user is a founding beta member — no payment required yet.
 
-interface Plan {
-  id: string;
-  name: string;
-  price: string;
-  features: string[];
-  isPopular?: boolean;
-}
-
-const PLANS: Plan[] = [
-  {
-    id: 'free',
-    name: 'Standard',
-    price: '$0',
-    features: [
-      'Weekly general briefings',
-      'Basic market pulse',
-      'Public AI tool reviews',
-      'Community access'
-    ]
-  },
-  {
-    id: 'premium',
-    name: 'Executive',
-    price: '$29',
-    features: [
-      'Daily deep-dive briefings',
-      'AI Job Impact reports',
-      'Salary & Recruitment data',
-      'Exclusive HR strategies',
-      'Crypto payment support'
-    ],
-    isPopular: true
-  }
+const PERKS = [
+  { icon: Globe,  label: 'LATAM Salary Benchmarks',    desc: '40+ roles · 5 countries · live data' },
+  { icon: Zap,    label: 'US Hiring Signal',            desc: 'BLS-powered market heat indicator' },
+  { icon: Coins,  label: 'Remote Salary Calculator',   desc: 'What US companies pay vs what you charge' },
+  { icon: Users,  label: '23,000+ Professional Network', desc: 'Founder-built over 20 years' },
+  { icon: Shield, label: 'AI Job Market Briefings',     desc: 'Weekly signal — no fluff' },
+  { icon: Lock,   label: 'Founding Member Rate',        desc: 'Lock your price before public launch' },
 ];
 
-export const SubscriptionSection: React.FC = () => {
-  const [loading, setLoading] = useState<string | null>(null);
-  const [showPaymentOptions, setShowPaymentOptions] = useState(false);
+const FOUNDING_TERMS = {
+  EN: {
+    badge: 'FOUNDING MEMBER ACCESS',
+    headline: 'You\'re in the Beta.',
+    sub: 'All features are free during the beta period. When we go public, Founding Members lock in the lowest rate — forever.',
+    perks: 'What\'s included:',
+    cta: 'OPEN MEMBERS AREA →',
+    counter: 'Beta spots are limited.',
+    note: 'No credit card. No commitment. When pricing launches, you\'ll be notified first and get priority access at the Founding Member rate.',
+  },
+  ES: {
+    badge: 'ACCESO FOUNDING MEMBER',
+    headline: 'Estás dentro del Beta.',
+    sub: 'Todas las funciones son gratis durante el período beta. Al lanzar públicamente, los Founding Members bloquean la tarifa más baja — para siempre.',
+    perks: 'Qué incluye:',
+    cta: 'ABRIR ÁREA DE MIEMBROS →',
+    counter: 'Plazas beta limitadas.',
+    note: 'Sin tarjeta. Sin compromiso. Cuando lancemos precios, serás el primero en saberlo con tarifa Founding Member.',
+  },
+  PT: {
+    badge: 'ACESSO FOUNDING MEMBER',
+    headline: 'Você está no Beta.',
+    sub: 'Todas as funcionalidades são gratuitas durante o período beta. No lançamento público, os Founding Members travam a menor taxa — para sempre.',
+    perks: 'O que está incluído:',
+    cta: 'ABRIR ÁREA DE MEMBROS →',
+    counter: 'Vagas beta limitadas.',
+    note: 'Sem cartão. Sem compromisso. Quando os preços forem lançados, você será notificado primeiro com a taxa Founding Member.',
+  },
+};
 
-  const handleStripePayment = async () => {
-    if (!auth.currentUser) return;
-    if (!STRIPE_KEY) {
-      alert('Stripe is not configured. Please set VITE_STRIPE_PUBLISHABLE_KEY in your environment.');
-      return;
-    }
-    setLoading('stripe');
-    try {
-      const response = await fetch('/api/create-checkout-session', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          // @ts-ignore
-          priceId: import.meta.env.VITE_STRIPE_PRO_PRICE_ID,
-          userId: auth.currentUser.uid,
-          customerEmail: auth.currentUser.email,
-        }),
-      });
-
-      const session = await response.json();
-      const stripe = await stripePromise;
-      if (stripe) {
-        // @ts-ignore - Stripe type mismatch in some environments
-        const { error } = await stripe.redirectToCheckout({
-          sessionId: session.id,
-        });
-        if (error) console.error(error);
-      }
-    } catch (error) {
-      console.error('Stripe error:', error);
-    } finally {
-      setLoading(null);
-    }
-  };
-
-  const handleCryptoPayment = async () => {
-    if (!auth.currentUser) return;
-    setLoading('crypto');
-    try {
-      const response = await fetch('/api/create-crypto-charge', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          userId: auth.currentUser.uid,
-          userEmail: auth.currentUser.email,
-        }),
-      });
-
-      const { url } = await response.json();
-      window.location.href = url;
-    } catch (error) {
-      console.error('Crypto error:', error);
-    } finally {
-      setLoading(null);
-    }
-  };
-
-  const handleSubscribe = async (planId: string) => {
-    if (!auth.currentUser) {
-      alert('Please sign in to subscribe.');
-      return;
-    }
-
-    if (planId === 'free') return;
-    setShowPaymentOptions(true);
-  };
+export const SubscriptionSection: React.FC<{ lang?: string }> = ({ lang = 'EN' }) => {
+  const t = FOUNDING_TERMS[lang as keyof typeof FOUNDING_TERMS] || FOUNDING_TERMS.EN;
 
   return (
-    <div className="py-24 bg-bg">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-5xl font-bold text-text tracking-tight mb-4">
-            Intelligence for the <span className="text-accent">Next Cycle</span>
+    <div className="py-16 bg-bg border-t border-border">
+      <div className="max-w-4xl mx-auto px-6">
+
+        {/* Badge + headline */}
+        <div className="text-center mb-10">
+          <div className="inline-flex items-center gap-2 px-3 py-1 border border-accent/30 bg-accent/5 mono text-[9px] text-accent mb-5">
+            <div className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse" />
+            {t.badge}
+          </div>
+          <h2 className="text-3xl md:text-4xl font-black uppercase tracking-tighter text-text mb-3">
+            {t.headline}
           </h2>
-          <p className="text-text/40 max-w-2xl mx-auto text-lg">
-            Join 12,000+ executives receiving daily signal on the LatAm tech ecosystem.
+          <p className="text-text/50 max-w-xl mx-auto text-sm leading-relaxed">
+            {t.sub}
           </p>
         </div>
 
-        <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-          {PLANS.map((plan) => (
-            <motion.div
-              key={plan.id}
-              whileHover={{ y: -5 }}
-              className={`relative p-8 rounded-2xl border ${
-                plan.isPopular 
-                  ? 'border-accent bg-accent/5 shadow-2xl shadow-accent/10' 
-                  : 'border-border bg-surface'
-              }`}
-            >
-              {plan.isPopular && (
-                <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-accent text-black text-xs font-bold px-3 py-1 rounded-full uppercase tracking-widest">
-                  Most Popular
+        {/* Perks grid */}
+        <div className="mb-10">
+          <p className="mono text-[9px] text-text/30 uppercase tracking-widest mb-5 text-center">{t.perks}</p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+            {PERKS.map((perk, i) => (
+              <div key={i} className="flex items-start gap-3 p-4 bg-surface border border-border">
+                <div className="w-6 h-6 bg-accent/10 border border-accent/20 flex items-center justify-center shrink-0 mt-0.5">
+                  <Check size={10} className="text-accent" />
                 </div>
-              )}
-
-              <div className="mb-8">
-                <h3 className="text-xl font-bold text-text mb-2">{plan.name}</h3>
-                <div className="flex items-baseline gap-1">
-                  <span className="text-4xl font-bold text-text">{plan.price}</span>
-                  <span className="text-text/40 text-sm">/month</span>
+                <div>
+                  <div className="mono text-[10px] font-bold text-text mb-0.5">{perk.label}</div>
+                  <div className="mono text-[8px] text-text/40">{perk.desc}</div>
                 </div>
               </div>
-
-              <ul className="space-y-4 mb-8">
-                {plan.features.map((feature, idx) => (
-                  <li key={idx} className="flex items-start gap-3 text-text/60 text-sm">
-                    <Check className="text-accent shrink-0" size={18} />
-                    {feature}
-                  </li>
-                ))}
-              </ul>
-
-              {!showPaymentOptions || plan.id === 'free' ? (
-                <button
-                  onClick={() => handleSubscribe(plan.id)}
-                  disabled={loading !== null}
-                  className={`w-full py-4 rounded-xl font-bold transition-all flex items-center justify-center gap-2 ${
-                    plan.isPopular
-                      ? 'bg-accent text-black hover:opacity-90'
-                      : 'bg-text text-bg hover:opacity-90'
-                  } disabled:opacity-50`}
-                >
-                  {plan.id === 'free' ? 'Current Plan' : 'Subscribe Now'}
-                </button>
-              ) : (
-                <div className="space-y-3">
-                  <button
-                    onClick={handleStripePayment}
-                    disabled={loading !== null}
-                    className="w-full py-4 rounded-xl font-bold bg-text text-bg hover:opacity-90 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
-                  >
-                    <CreditCard size={18} />
-                    {loading === 'stripe' ? 'Connecting...' : 'Pay with Card'}
-                  </button>
-                  <button
-                    onClick={handleCryptoPayment}
-                    disabled={loading !== null}
-                    className="w-full py-4 rounded-xl font-bold bg-accent text-black hover:opacity-90 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
-                  >
-                    <Coins size={18} />
-                    {loading === 'crypto' ? 'Connecting...' : 'Pay with Crypto'}
-                  </button>
-                  <button 
-                    onClick={() => setShowPaymentOptions(false)}
-                    className="w-full text-xs text-text/40 hover:text-text transition-colors"
-                  >
-                    Cancel
-                  </button>
-                </div>
-              )}
-
-              {plan.id === 'premium' && (
-                <p className="mt-4 text-center text-[10px] text-text/40 uppercase tracking-widest flex items-center justify-center gap-2">
-                  <Shield size={10} /> Supports USDC & Crypto via Stripe
-                </p>
-              )}
-            </motion.div>
-          ))}
+            ))}
+          </div>
         </div>
 
-        <div className="mt-24 grid grid-cols-2 md:grid-cols-4 gap-8 border-t border-border pt-16">
-          {[
-            { icon: Globe, label: 'Regional Focus', desc: 'BR, MX, CO, AR, CL' },
-            { icon: Zap, label: 'Daily Signal', desc: 'No fluff, just impact' },
-            { icon: Shield, label: 'Verified Data', desc: 'Direct from source' },
-            { icon: Coins, label: 'Crypto Ready', desc: 'Pay with USDC' }
-          ].map((item, idx) => (
-            <div key={idx} className="text-center space-y-2">
-              <div className="w-10 h-10 rounded-lg bg-surface flex items-center justify-center mx-auto mb-4">
-                <item.icon className="text-accent" size={20} />
-              </div>
-              <h4 className="text-text font-semibold text-sm">{item.label}</h4>
-              <p className="text-text/40 text-xs">{item.desc}</p>
-            </div>
-          ))}
+        {/* CTA */}
+        <div className="text-center">
+          <button
+            onClick={() => window.location.href = '/members'}
+            className="inline-flex items-center gap-3 px-10 py-4 bg-accent text-black mono font-bold text-[11px] tracking-widest hover:opacity-90 transition-opacity mb-4"
+          >
+            <Zap size={14} /> {t.cta}
+          </button>
+          <p className="mono text-[8px] text-accent/60 mb-2">{t.counter}</p>
+          <p className="mono text-[8px] text-text/25 max-w-md mx-auto leading-relaxed">{t.note}</p>
         </div>
+
       </div>
     </div>
   );

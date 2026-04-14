@@ -116,13 +116,13 @@ const TRANSLATIONS = {
     marketCalcDesc: "Benchmark salaries for your open roles",
     todayJobNews: "Today's Job & AI News",
     loadingWorkspace: "Loading your workspace…",
-    unlockFull: "Unlock Full Market Intelligence",
-    upgradeFeatures: ["Weekly AI hiring signals", "LATAM salary benchmarks", "Company hiring forecasts", "Talent market alerts"],
-    upgradeCta: "UPGRADE · $29/MO",
-    cancelAny: "Cancel anytime · Instant access",
-    dailyBriefingsStrip: "Daily briefings · AI job impact reports · Salary data",
+    unlockFull: "Join the Beta — Free Access",
+    upgradeFeatures: ["Live LATAM salary benchmarks", "US hiring market signal", "Remote salary calculator", "AI job market briefings"],
+    upgradeCta: "JOIN BETA · FREE",
+    cancelAny: "Free during beta · Founding Member pricing coming soon",
+    dailyBriefingsStrip: "Beta access · All features free · Founding Member spots limited",
     upgradeClose: "CLOSE ✕",
-    upgradeOpen: "UPGRADE $29 →",
+    upgradeOpen: "JOIN BETA →",
     openReport: "OPEN INTEL REPORT",
     generatingSignal: "ANALYZING TALENT MARKET...",
     generateNewBriefing: "GENERATE INTEL BRIEFING",
@@ -254,13 +254,13 @@ const TRANSLATIONS = {
     marketCalcDesc: "Benchmark de salarios para tus roles abiertos",
     todayJobNews: "Noticias de Empleo e IA de Hoy",
     loadingWorkspace: "Cargando tu workspace…",
-    unlockFull: "Accede a Inteligencia de Mercado Completa",
-    upgradeFeatures: ["Señales semanales de contratación IA", "Benchmarks salariales LATAM", "Previsiones de contratación empresarial", "Alertas del mercado de talento"],
-    upgradeCta: "ACTUALIZAR · $29/MES",
-    cancelAny: "Cancela cuando quieras · Acceso inmediato",
-    dailyBriefingsStrip: "Briefings diarios · Informes de impacto IA · Datos salariales",
+    unlockFull: "Únete al Beta — Acceso Gratuito",
+    upgradeFeatures: ["Benchmarks salariales LATAM en vivo", "Señal del mercado laboral EE.UU.", "Calculadora de salario remoto", "Informes del mercado laboral IA"],
+    upgradeCta: "UNIRSE AL BETA · GRATIS",
+    cancelAny: "Gratis durante el beta · Precio Founding Member próximamente",
+    dailyBriefingsStrip: "Acceso beta · Todas las funciones gratis · Founding Member limitado",
     upgradeClose: "CERRAR ✕",
-    upgradeOpen: "ACTUALIZAR $29 →",
+    upgradeOpen: "UNIRSE AL BETA →",
     openReport: "ABRIR INFORME LABORAL",
     generatingSignal: "ANALIZANDO MERCADO LABORAL...",
     generateNewBriefing: "GENERAR INFORME LABORAL",
@@ -391,13 +391,13 @@ const TRANSLATIONS = {
     marketCalcDesc: "Benchmark de salários para suas vagas abertas",
     todayJobNews: "Notícias de Emprego e IA de Hoje",
     loadingWorkspace: "Carregando seu workspace…",
-    unlockFull: "Acesse Inteligência de Mercado Completa",
-    upgradeFeatures: ["Sinais semanais de contratação IA", "Benchmarks salariais LATAM", "Previsões de contratação empresarial", "Alertas do mercado de talentos"],
-    upgradeCta: "ATUALIZAR · $29/MÊS",
-    cancelAny: "Cancele quando quiser · Acesso imediato",
-    dailyBriefingsStrip: "Briefings diários · Relatórios de impacto IA · Dados salariais",
+    unlockFull: "Entre no Beta — Acesso Gratuito",
+    upgradeFeatures: ["Benchmarks salariais LATAM ao vivo", "Sinal do mercado de trabalho EUA", "Calculadora de salário remoto", "Relatórios do mercado de trabalho IA"],
+    upgradeCta: "ENTRAR NO BETA · GRÁTIS",
+    cancelAny: "Grátis durante o beta · Preço de Founding Member em breve",
+    dailyBriefingsStrip: "Acesso beta · Todas as funcionalidades grátis · Founding Member limitado",
     upgradeClose: "FECHAR ✕",
-    upgradeOpen: "ATUALIZAR $29 →",
+    upgradeOpen: "ENTRAR NO BETA →",
     openReport: "ABRIR RELATÓRIO DE EMPREGO",
     generatingSignal: "ANALISANDO MERCADO DE TRABALHO...",
     generateNewBriefing: "GERAR BRIEFING DE EMPREGO",
@@ -877,7 +877,7 @@ export default function App() {
             <div className="w-8 h-8 bg-accent flex items-center justify-center text-black font-black text-xl">W</div>
             <div className="flex flex-col text-left">
               <h1 className="text-sm font-black uppercase tracking-tighter leading-none">WProTalents Intel</h1>
-              <span className="mono text-[8px] text-accent/60">WPRO INTEL BETA</span>
+              <span className="mono text-[8px] text-accent/60">BETA · FREE ACCESS</span>
             </div>
           </a>
 
@@ -1004,12 +1004,15 @@ export default function App() {
                   <p className="text-sm text-text/60 max-w-xl mx-auto leading-relaxed mb-8">
                     {t.heroDesc}
                   </p>
-                  <button
-                    onClick={() => setIsAuthModalOpen(true)}
-                    className="inline-flex items-center gap-3 px-8 py-4 bg-accent text-black mono font-bold text-[11px] hover:opacity-90 transition-opacity"
-                  >
-                    <LogIn size={14} /> ACCESS VIP INTEL
-                  </button>
+                  <div className="flex flex-col items-center gap-3">
+                    <button
+                      onClick={() => setIsAuthModalOpen(true)}
+                      className="inline-flex items-center gap-3 px-8 py-4 bg-accent text-black mono font-bold text-[11px] hover:opacity-90 transition-opacity"
+                    >
+                      <LogIn size={14} /> JOIN BETA — FREE ACCESS
+                    </button>
+                    <p className="mono text-[8px] text-text/30">No credit card · No commitment · Founding Member pricing coming soon</p>
+                  </div>
                 </div>
 
                 {/* Blurred preview cards */}
@@ -1024,7 +1027,7 @@ export default function App() {
                           onClick={() => setIsAuthModalOpen(true)}
                           className="px-5 py-2 bg-accent text-black mono text-[9px] font-bold hover:opacity-90 transition-opacity"
                         >
-                          LOGIN TO BROWSE JOBS
+                          JOIN BETA — FREE
                         </button>
                       </div>
                     </div>
@@ -1053,7 +1056,7 @@ export default function App() {
                           onClick={() => setIsAuthModalOpen(true)}
                           className="px-5 py-2 bg-accent text-black mono text-[9px] font-bold hover:opacity-90 transition-opacity"
                         >
-                          LOGIN TO ACCESS INTEL
+                          JOIN BETA — FREE
                         </button>
                       </div>
                     </div>
@@ -1784,7 +1787,7 @@ export default function App() {
                         ))}
                       </div>
                       <button
-                        onClick={() => setShowUpgrade(v => !v)}
+                        onClick={() => window.location.href = '/members'}
                         className="w-full bg-bg text-accent py-4 mono font-bold text-[10px] hover:opacity-90 transition-opacity flex items-center justify-center gap-2"
                       >
                         <Zap size={13} /> {t.upgradeCta}
@@ -1801,13 +1804,12 @@ export default function App() {
                         {' · '}{t.dailyBriefingsStrip}
                       </span>
                       <button
-                        onClick={() => setShowUpgrade(v => !v)}
+                        onClick={() => window.location.href = '/members'}
                         className="mono text-[8px] border border-accent/30 text-accent/70 px-3 py-1 hover:bg-accent hover:text-black hover:border-accent transition-all whitespace-nowrap shrink-0"
                       >
-                        {showUpgrade ? t.upgradeClose : t.upgradeOpen}
+                        {t.upgradeOpen}
                       </button>
                     </div>
-                    {showUpgrade && <SubscriptionSection />}
                   </div>
                 </div>
               )}
@@ -1828,9 +1830,9 @@ export default function App() {
               </div>
             </div>
             <div className="flex gap-8 mono text-[9px] font-bold text-text/40">
-              <a href="#" className="hover:text-accent transition-colors">{t.terms}</a>
-              <a href="#" className="hover:text-accent transition-colors">{t.privacy}</a>
-              <a href="#" className="hover:text-accent transition-colors">{t.contact}</a>
+              <a href="https://wprotalents.lat" target="_blank" rel="noopener noreferrer" className="hover:text-accent transition-colors">{t.terms}</a>
+              <a href="mailto:info@wprotalents.lat" className="hover:text-accent transition-colors">{t.privacy}</a>
+              <a href="https://wa.me/573243132500" target="_blank" rel="noopener noreferrer" className="hover:text-accent transition-colors">{t.contact}</a>
             </div>
           </div>
         </div>
