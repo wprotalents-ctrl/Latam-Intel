@@ -197,118 +197,199 @@ interface PortalSection {
   articles: PortalArticle[];
 }
 
-const PORTAL_SECTIONS: Record<SectionKey, PortalSection> = {
-  launch: {
-    label: 'Launch Protocol',
-    tag: 'START HERE',
-    Icon: Rocket,
-    color: 'text-accent',
-    accent: 'bg-accent text-black',
-    desc: 'Build your strategy before you send a single application.',
-    articles: [
-      { title: 'Identify Your Job Search North Star', desc: 'Clarify what you\'re actually looking for — role, comp, culture — before spending a single hour applying.', url: 'https://hbr.org/2021/01/figuring-out-your-career-goals', tag: 'STRATEGY' },
-      { title: 'Build Your Job Search Command Center', desc: 'Track every application, follow-up, and contact in one organised system so nothing falls through the cracks.', url: 'https://www.notion.com/templates/job-search-tracker', tag: 'ORGANISATION' },
-      { title: 'LATAM to Global: Your USD Remote Roadmap', desc: 'The exact steps LATAM professionals take to transition from local pay to USD/EUR remote compensation.', url: 'https://remote.com/blog/employer-of-record-latin-america', tag: 'LATAM' },
-      { title: 'Subscribe to Workforce Daily — Free', desc: 'Weekly AI hiring signals, LATAM salary moves, and market intel delivered to your inbox. Curated by WProTalents.', url: 'https://latam-intel.vercel.app', tag: 'WPRO INTEL', wpro: true },
-      { title: 'Brag Doc: Track Your Wins Continuously', desc: 'The single habit that makes every resume update, performance review, and salary negotiation dramatically easier.', url: 'https://hbr.org/2022/01/how-to-build-a-brag-document', tag: 'CAREER INTEL' },
-    ],
-  },
-  strike: {
-    label: 'Strike Package',
-    tag: 'GET HIRED',
-    Icon: FileText,
-    color: 'text-emerald-400',
-    accent: 'bg-emerald-500 text-black',
-    desc: 'Stand out from hundreds of applicants with a sharp, ATS-optimised application.',
-    articles: [
-      { title: 'ATS-Proof Your Resume: The 10-Step Checklist', desc: 'Over 75% of resumes never reach a human. Use these steps to get through the filter first.', url: 'https://www.jobscan.co/blog/beat-applicant-tracking-system/', tag: 'ATS' },
-      { title: 'Resume Keywords That Get You Past the Filter', desc: 'How to identify the right keywords for each role and embed them naturally in your resume.', url: 'https://www.linkedin.com/pulse/how-use-keywords-your-resume-get-noticed-recruiters-linkedin-news/', tag: 'KEYWORDS' },
-      { title: 'The LinkedIn Profile Formula That Attracts Inbound', desc: 'Optimise every section — headline, about, experience — to appear in recruiter searches passively.', url: 'https://www.linkedin.com/business/talent/blog/talent-acquisition/linkedin-profile-tips-for-job-seekers', tag: 'LINKEDIN' },
-      { title: 'How to Write a Cover Letter That Gets Read', desc: 'When to write one, what to include, and the structure that makes hiring managers stop scrolling.', url: 'https://hbr.org/2014/02/how-to-write-a-cover-letter', tag: 'WRITING' },
-      { title: 'Get Your Profile in Front of 23K+ Hiring Managers', desc: 'WProTalents features vetted LATAM candidates to our network of US & EU companies — free, within 48h.', url: '#linkedin-boost', tag: 'WPRO EXCLUSIVE', wpro: true },
-      { title: 'Free Resume Review Tools Ranked by Recruiters', desc: 'The best free tools to check your resume for ATS compliance, grammar, and impact before you apply.', url: 'https://resume.io', tag: 'TOOLS' },
-    ],
-  },
-  roomread: {
-    label: 'Room Read',
-    tag: 'INTERVIEW',
-    Icon: Mic2,
-    color: 'text-blue-400',
-    accent: 'bg-blue-500 text-white',
-    desc: 'Walk into every interview prepared, confident, and strategic.',
-    articles: [
-      { title: 'How to Research Any Company Before an Interview', desc: 'The 30-minute research framework that makes you sound like an insider — and earns the offer.', url: 'https://hbr.org/2019/10/how-to-prepare-for-any-type-of-job-interview', tag: 'RESEARCH' },
-      { title: 'The STAR Method: Master Behavioural Questions', desc: 'Situation, Task, Action, Result — the one framework that works for every behavioural interview question.', url: 'https://www.themuse.com/advice/star-interview-method', tag: 'FRAMEWORK' },
-      { title: 'Remote Interview Mastery: Setup, Presence & Follow-Up', desc: 'Camera angles, lighting, async follow-up templates, and the nuances of remote-first hiring panels.', url: 'https://www.toptal.com/remote/how-to-ace-a-remote-job-interview', tag: 'REMOTE' },
-      { title: 'Tech Interview Handbook (Free, Open Source)', desc: 'The most comprehensive free guide to algorithms, system design, and behavioural prep for tech roles.', url: 'https://www.techinterviewhandbook.org/', tag: 'TECH' },
-      { title: '30 Questions to Ask at the End of Any Interview', desc: 'The questions that signal intellectual curiosity, preparation, and genuine interest — sorted by interview type.', url: 'https://www.glassdoor.com/blog/good-questions-to-ask-in-an-interview/', tag: 'TACTICS' },
-      { title: 'Pramp: Free Mock Interview Practice', desc: 'Practice real technical and behavioural interviews with peers. Free, live, and brutally honest feedback.', url: 'https://www.pramp.com/', tag: 'PRACTICE' },
-    ],
-  },
-  ratecard: {
-    label: 'Rate Card',
-    tag: 'NEGOTIATE',
-    Icon: DollarSign,
-    color: 'text-yellow-400',
-    accent: 'bg-yellow-500 text-black',
-    desc: 'Never leave money on the table. Know your worth, own the conversation.',
-    articles: [
-      { title: '15 Rules for Negotiating a Job Offer (HBR)', desc: 'The definitive Harvard Business Review playbook for salary negotiation — used by professionals worldwide.', url: 'https://hbr.org/2014/06/15-rules-for-negotiating-a-job-offer', tag: 'NEGOTIATION' },
-      { title: 'Real Compensation Data for Tech & AI Roles', desc: 'Verified salary, equity, and total comp data for hundreds of roles across global tech companies.', url: 'https://www.levels.fyi/', tag: 'DATA' },
-      { title: 'LATAM Salary in USD: The Full Picture', desc: 'USD remote pay vs local rates — the real gap, how companies calculate it, and how to close it.', url: 'https://remote.com/blog/employer-of-record-latin-america', tag: 'LATAM' },
-      { title: 'How to Choose Between Multiple Job Offers', desc: 'A structured decision framework for when you\'re lucky enough to have options and need to choose wisely.', url: 'https://www.glassdoor.com/blog/evaluate-job-offer/', tag: 'DECISION' },
-      { title: 'Salary Negotiation Scripts That Actually Work', desc: 'Word-for-word email and call scripts for countering an offer, asking for more, and not blinking first.', url: 'https://www.glassdoor.com/blog/guide/salary-negotiation-scripts/', tag: 'SCRIPTS' },
-    ],
-  },
-  zerocommute: {
-    label: 'Zero-Commute Stack',
-    tag: 'REMOTE',
-    Icon: Globe,
-    color: 'text-violet-400',
-    accent: 'bg-violet-500 text-white',
-    desc: 'Win at remote — from landing your first role to thriving long-term.',
-    articles: [
-      { title: 'GitLab\'s All-Remote Work Guide (Best in Class)', desc: 'The most detailed, battle-tested remote work guide on the internet — built by a 2,000-person remote company.', url: 'https://about.gitlab.com/company/culture/all-remote/guide/', tag: 'GUIDE' },
-      { title: 'Best Job Boards for Remote LATAM Roles in 2026', desc: 'The top platforms where US and EU companies actively search for LATAM remote talent — ranked by quality.', url: 'https://remotive.com', tag: 'JOB BOARDS' },
-      { title: 'How to Cold Message Recruiters on LinkedIn', desc: 'Message frameworks and templates for reaching out to US/EU recruiters and hiring managers without being ignored.', url: 'https://www.linkedin.com/pulse/how-message-recruiter-linkedin-get-response-job-search-guide/', tag: 'NETWORKING' },
-      { title: 'Military Precision: Write Emails That Get Responses', desc: 'The BLUF (Bottom Line Up Front) method for async written communication — used by top remote teams.', url: 'https://hbr.org/2016/11/how-to-write-email-with-military-precision', tag: 'COMMUNICATION' },
-      { title: 'Remote Work Toolkit: Productivity & Wellbeing', desc: 'Structure, tools, and routines for sustainable full-time remote work — without burning out or disappearing.', url: 'https://www.notion.com/templates/remote-work-toolkit', tag: 'WELLBEING' },
-    ],
-  },
-  compound: {
-    label: 'Compound Career',
-    tag: 'LONG GAME',
-    Icon: Compass,
-    color: 'text-pink-400',
-    accent: 'bg-pink-500 text-white',
-    desc: 'Think beyond the next job. Build the career you actually want.',
-    articles: [
-      { title: 'CliftonStrengths: Discover What You\'re Best At', desc: 'One of the most widely-used strengths assessments. Understand your natural talents before your next move.', url: 'https://www.gallup.com/cliftonstrengths/en/strengthsquest.aspx', tag: 'SELF-DISCOVERY' },
-      { title: '16 Personalities — Free Career Planning Assessment', desc: 'One of the most-used free personality assessments. Great for understanding your working style and fit.', url: 'https://www.16personalities.com/', tag: 'ASSESSMENT' },
-      { title: 'How to Pivot Careers Without Starting From Zero', desc: 'The HBR framework for making a career transition that builds on existing experience rather than erasing it.', url: 'https://hbr.org/2021/07/how-to-make-a-career-pivot', tag: 'TRANSITION' },
-      { title: 'Build Credibility Fast in the First 90 Days', desc: 'What to do — and avoid — in your first 3 months to establish trust and set the tone for your tenure.', url: 'https://hbr.org/2018/01/how-to-build-trust-in-the-first-90-days-of-a-new-job', tag: 'CULTURE' },
-      { title: 'AI Upskilling for Long-Term Career Resilience', desc: 'The skills that separate candidates who thrive in the AI era from those who get left behind. Plan accordingly.', url: 'https://www.coursera.org/articles/ai-skills', tag: 'FUTURE-PROOF' },
-      { title: 'WPro Workforce Daily — LATAM Market Intel', desc: 'Subscribe for weekly hiring signals, salary trends, and AI workforce data. Built for LATAM professionals.', url: 'https://latam-intel.vercel.app', tag: 'WPRO INTEL', wpro: true },
-    ],
-  },
-  aileverage: {
-    label: 'AI Leverage',
-    tag: 'FUTURE-PROOF',
-    Icon: Zap,
-    color: 'text-violet-400',
-    accent: 'bg-violet-500 text-white',
-    desc: 'The skills that separate the hired from the overlooked in 2026.',
-    articles: [
-      { title: 'Top AI & ML Skills Every Tech Pro Needs in 2026', desc: 'Prompt engineering, RAG, fine-tuning, and agentic systems — now table stakes for senior roles globally.', url: 'https://www.coursera.org/articles/ai-skills', tag: 'SKILLS' },
-      { title: 'Prompt Engineering for Developers (Free Course)', desc: 'Andrew Ng\'s 1-hour course on writing effective prompts for GPT-4, Claude, and Gemini. Career-changing.', url: 'https://www.deeplearning.ai/short-courses/chatgpt-prompt-engineering-for-developers/', tag: 'FREE COURSE' },
-      { title: 'System Design Primer (Most-Starred GitHub Guide)', desc: 'The go-to open-source system design guide for senior engineering interviews at top companies worldwide.', url: 'https://github.com/donnemartin/system-design-primer', tag: 'INTERVIEWS' },
-      { title: 'WEF Future of Jobs Report 2025', desc: 'Which roles are growing, which are declining, and the exact skills that will define hiring in 2025–2030.', url: 'https://www.weforum.org/publications/the-future-of-jobs-report-2025/', tag: 'MARKET DATA' },
-      { title: 'GitHub Copilot: AI-Assisted Coding Guide', desc: 'How to use AI pair-programming tools effectively, improve your output, and put it convincingly on your CV.', url: 'https://docs.github.com/en/copilot', tag: 'TOOLS' },
-      { title: 'Kaggle: Free Machine Learning Courses', desc: 'Hands-on ML courses from beginner to advanced — with certificates, datasets, and a global community.', url: 'https://www.kaggle.com/learn', tag: 'FREE COURSE' },
-    ],
-  },
-};
-
+function getPortalSections(lang: string): Record<SectionKey, PortalSection> {
+  const isES = lang === 'ES';
+  const isPT = lang === 'PT';
+  return {
+    launch: {
+      label: isPT ? 'Protocolo de Lançamento' : isES ? 'Protocolo de Lanzamiento' : 'Launch Protocol',
+      tag: isPT ? 'COMECE AQUI' : isES ? 'EMPIEZA AQUÍ' : 'START HERE',
+      Icon: Rocket, color: 'text-accent', accent: 'bg-accent text-black',
+      desc: isPT ? 'Construa sua estratégia antes de enviar uma única candidatura.' : isES ? 'Construye tu estrategia antes de enviar una sola solicitud.' : 'Build your strategy before you send a single application.',
+      articles: isPT ? [
+        { title: 'Identifique sua Estrela Guia na Busca de Emprego', desc: 'Clarifique o que você realmente busca — função, remuneração, cultura — antes de gastar uma única hora se candidatando.', url: 'https://hbr.org/2021/01/figuring-out-your-career-goals', tag: 'ESTRATÉGIA' },
+        { title: 'Monte seu Centro de Comando para Busca de Emprego', desc: 'Rastreie cada candidatura, follow-up e contato em um sistema organizado para que nada seja perdido.', url: 'https://www.notion.com/templates/job-search-tracker', tag: 'ORGANIZAÇÃO' },
+        { title: 'LATAM para o Mundo: Seu Roteiro Remoto em USD', desc: 'Os passos exatos que profissionais LATAM usam para passar de salário local para remuneração remota em USD/EUR.', url: 'https://remote.com/blog/employer-of-record-latin-america', tag: 'LATAM' },
+        { title: 'Assine o Workforce Daily — Grátis', desc: 'Sinais semanais de contratação em IA, movimentos salariais na LATAM e inteligência de mercado na sua caixa de entrada.', url: 'https://wprotalents.lat', tag: 'WPRO INTEL', wpro: true },
+        { title: 'Brag Doc: Registre Suas Conquistas Continuamente', desc: 'O único hábito que torna cada atualização de currículo, avaliação de desempenho e negociação salarial dramaticamente mais fácil.', url: 'https://hbr.org/2022/01/how-to-build-a-brag-document', tag: 'INTEL DE CARREIRA' },
+      ] : isES ? [
+        { title: 'Identifica tu Estrella del Norte en la Búsqueda de Empleo', desc: 'Aclara lo que realmente buscas — rol, compensación, cultura — antes de pasar una sola hora aplicando.', url: 'https://hbr.org/2021/01/figuring-out-your-career-goals', tag: 'ESTRATEGIA' },
+        { title: 'Construye tu Centro de Comando de Búsqueda de Empleo', desc: 'Rastrea cada solicitud, seguimiento y contacto en un sistema organizado para que nada se pierda.', url: 'https://www.notion.com/templates/job-search-tracker', tag: 'ORGANIZACIÓN' },
+        { title: 'LATAM al Mundo: Tu Hoja de Ruta Remota en USD', desc: 'Los pasos exactos que siguen los profesionales de LATAM para pasar del salario local a la compensación remota en USD/EUR.', url: 'https://remote.com/blog/employer-of-record-latin-america', tag: 'LATAM' },
+        { title: 'Suscríbete a Workforce Daily — Gratis', desc: 'Señales semanales de contratación en IA, movimientos salariales en LATAM e inteligencia de mercado en tu bandeja.', url: 'https://wprotalents.lat', tag: 'WPRO INTEL', wpro: true },
+        { title: 'Brag Doc: Registra tus Logros Continuamente', desc: 'El único hábito que hace que cada actualización de currículum, revisión de desempeño y negociación salarial sea mucho más fácil.', url: 'https://hbr.org/2022/01/how-to-build-a-brag-document', tag: 'INTEL DE CARRERA' },
+      ] : [
+        { title: 'Identify Your Job Search North Star', desc: "Clarify what you're actually looking for — role, comp, culture — before spending a single hour applying.", url: 'https://hbr.org/2021/01/figuring-out-your-career-goals', tag: 'STRATEGY' },
+        { title: 'Build Your Job Search Command Center', desc: "Track every application, follow-up, and contact in one organised system so nothing falls through the cracks.", url: 'https://www.notion.com/templates/job-search-tracker', tag: 'ORGANISATION' },
+        { title: 'LATAM to Global: Your USD Remote Roadmap', desc: 'The exact steps LATAM professionals take to transition from local pay to USD/EUR remote compensation.', url: 'https://remote.com/blog/employer-of-record-latin-america', tag: 'LATAM' },
+        { title: 'Subscribe to Workforce Daily — Free', desc: 'Weekly AI hiring signals, LATAM salary moves, and market intel delivered to your inbox. Curated by WProTalents.', url: 'https://wprotalents.lat', tag: 'WPRO INTEL', wpro: true },
+        { title: 'Brag Doc: Track Your Wins Continuously', desc: 'The single habit that makes every resume update, performance review, and salary negotiation dramatically easier.', url: 'https://hbr.org/2022/01/how-to-build-a-brag-document', tag: 'CAREER INTEL' },
+      ],
+    },
+    strike: {
+      label: isPT ? 'Pacote de Ataque' : isES ? 'Paquete de Ataque' : 'Strike Package',
+      tag: isPT ? 'SEJA CONTRATADO' : isES ? 'CONSIGUE EL EMPLEO' : 'GET HIRED',
+      Icon: FileText, color: 'text-emerald-400', accent: 'bg-emerald-500 text-black',
+      desc: isPT ? 'Destaque-se de centenas de candidatos com uma candidatura afiada e otimizada para ATS.' : isES ? 'Destácate de cientos de solicitantes con una solicitud clara y optimizada para ATS.' : 'Stand out from hundreds of applicants with a sharp, ATS-optimised application.',
+      articles: isPT ? [
+        { title: 'Blindagem Anti-ATS: O Checklist de 10 Passos', desc: 'Mais de 75% dos currículos nunca chegam a um humano. Use esses passos para passar pelo filtro primeiro.', url: 'https://www.jobscan.co/blog/beat-applicant-tracking-system/', tag: 'ATS' },
+        { title: 'Palavras-Chave que Fazem seu Currículo Passar', desc: 'Como identificar as palavras-chave certas para cada vaga e incorporá-las naturalmente no seu currículo.', url: 'https://www.linkedin.com/pulse/how-use-keywords-your-resume-get-noticed-recruiters-linkedin-news/', tag: 'PALAVRAS-CHAVE' },
+        { title: 'A Fórmula de Perfil LinkedIn que Atrai Recrutadores', desc: 'Otimize cada seção — título, sobre, experiência — para aparecer em buscas de recrutadores passivamente.', url: 'https://www.linkedin.com/business/talent/blog/talent-acquisition/linkedin-profile-tips-for-job-seekers', tag: 'LINKEDIN' },
+        { title: 'Como Escrever uma Carta de Apresentação que Seja Lida', desc: 'Quando escrever, o que incluir e a estrutura que faz os gestores pararem de rolar a tela.', url: 'https://hbr.org/2014/02/how-to-write-a-cover-letter', tag: 'ESCRITA' },
+        { title: 'Coloque seu Perfil na Frente de 23K+ Gestores', desc: 'WProTalents apresenta candidatos LATAM verificados à nossa rede de empresas dos EUA e Europa — grátis, em 48h.', url: '#linkedin-boost', tag: 'WPRO EXCLUSIVO', wpro: true },
+        { title: 'Ferramentas Gratuitas de Revisão de Currículo', desc: 'As melhores ferramentas gratuitas para verificar conformidade com ATS, gramática e impacto antes de se candidatar.', url: 'https://resume.io', tag: 'FERRAMENTAS' },
+      ] : isES ? [
+        { title: 'Blindaje Anti-ATS: El Checklist de 10 Pasos', desc: 'Más del 75% de los currículums nunca llegan a un humano. Usa estos pasos para pasar el filtro primero.', url: 'https://www.jobscan.co/blog/beat-applicant-tracking-system/', tag: 'ATS' },
+        { title: 'Palabras Clave que Hacen Pasar tu Currículum', desc: 'Cómo identificar las palabras clave correctas para cada rol e integrarlas de forma natural en tu currículum.', url: 'https://www.linkedin.com/pulse/how-use-keywords-your-resume-get-noticed-recruiters-linkedin-news/', tag: 'PALABRAS CLAVE' },
+        { title: 'La Fórmula de Perfil LinkedIn que Atrae Inbound', desc: 'Optimiza cada sección — titular, sobre, experiencia — para aparecer en búsquedas de reclutadores pasivamente.', url: 'https://www.linkedin.com/business/talent/blog/talent-acquisition/linkedin-profile-tips-for-job-seekers', tag: 'LINKEDIN' },
+        { title: 'Cómo Escribir una Carta de Presentación que se Lea', desc: 'Cuándo escribirla, qué incluir y la estructura que hace que los responsables paren de hacer scroll.', url: 'https://hbr.org/2014/02/how-to-write-a-cover-letter', tag: 'REDACCIÓN' },
+        { title: 'Pon tu Perfil Frente a 23K+ Gerentes de Contratación', desc: 'WProTalents presenta candidatos LATAM verificados a nuestra red de empresas de EE.UU. y Europa — gratis, en 48h.', url: '#linkedin-boost', tag: 'WPRO EXCLUSIVO', wpro: true },
+        { title: 'Herramientas Gratuitas de Revisión de CV', desc: 'Las mejores herramientas gratuitas para revisar tu CV: ATS, gramática e impacto antes de aplicar.', url: 'https://resume.io', tag: 'HERRAMIENTAS' },
+      ] : [
+        { title: 'ATS-Proof Your Resume: The 10-Step Checklist', desc: "Over 75% of resumes never reach a human. Use these steps to get through the filter first.", url: 'https://www.jobscan.co/blog/beat-applicant-tracking-system/', tag: 'ATS' },
+        { title: 'Resume Keywords That Get You Past the Filter', desc: 'How to identify the right keywords for each role and embed them naturally in your resume.', url: 'https://www.linkedin.com/pulse/how-use-keywords-your-resume-get-noticed-recruiters-linkedin-news/', tag: 'KEYWORDS' },
+        { title: 'The LinkedIn Profile Formula That Attracts Inbound', desc: "Optimise every section — headline, about, experience — to appear in recruiter searches passively.", url: 'https://www.linkedin.com/business/talent/blog/talent-acquisition/linkedin-profile-tips-for-job-seekers', tag: 'LINKEDIN' },
+        { title: 'How to Write a Cover Letter That Gets Read', desc: 'When to write one, what to include, and the structure that makes hiring managers stop scrolling.', url: 'https://hbr.org/2014/02/how-to-write-a-cover-letter', tag: 'WRITING' },
+        { title: 'Get Your Profile in Front of 23K+ Hiring Managers', desc: 'WProTalents features vetted LATAM candidates to our network of US & EU companies — free, within 48h.', url: '#linkedin-boost', tag: 'WPRO EXCLUSIVE', wpro: true },
+        { title: 'Free Resume Review Tools Ranked by Recruiters', desc: 'The best free tools to check your resume for ATS compliance, grammar, and impact before you apply.', url: 'https://resume.io', tag: 'TOOLS' },
+      ],
+    },
+    roomread: {
+      label: isPT ? 'Leitura da Sala' : isES ? 'Lectura de Sala' : 'Room Read',
+      tag: isPT ? 'ENTREVISTA' : isES ? 'ENTREVISTA' : 'INTERVIEW',
+      Icon: Mic2, color: 'text-blue-400', accent: 'bg-blue-500 text-white',
+      desc: isPT ? 'Entre em cada entrevista preparado, confiante e estratégico.' : isES ? 'Entra a cada entrevista preparado, con confianza y estrategia.' : 'Walk into every interview prepared, confident, and strategic.',
+      articles: isPT ? [
+        { title: 'Como Pesquisar Qualquer Empresa Antes de uma Entrevista', desc: 'O framework de pesquisa de 30 minutos que faz você parecer um insider — e conquista a oferta.', url: 'https://hbr.org/2019/10/how-to-prepare-for-any-type-of-job-interview', tag: 'PESQUISA' },
+        { title: 'O Método STAR: Domine Perguntas Comportamentais', desc: 'Situação, Tarefa, Ação, Resultado — o único framework que funciona para toda pergunta comportamental.', url: 'https://www.themuse.com/advice/star-interview-method', tag: 'FRAMEWORK' },
+        { title: 'Maestria em Entrevistas Remotas', desc: 'Ângulos de câmera, iluminação, templates de follow-up async e as nuances de painéis remotos.', url: 'https://www.toptal.com/remote/how-to-ace-a-remote-job-interview', tag: 'REMOTO' },
+        { title: 'Tech Interview Handbook (Grátis, Open Source)', desc: 'O guia mais completo e gratuito para prep de algoritmos, design de sistemas e questões comportamentais.', url: 'https://www.techinterviewhandbook.org/', tag: 'TECH' },
+        { title: '30 Perguntas para Fazer no Final de Qualquer Entrevista', desc: 'As perguntas que sinalizam curiosidade intelectual, preparação e interesse genuíno.', url: 'https://www.glassdoor.com/blog/good-questions-to-ask-in-an-interview/', tag: 'TÁTICAS' },
+        { title: 'Pramp: Prática Gratuita de Entrevistas Simuladas', desc: 'Pratique entrevistas técnicas e comportamentais reais com pares. Grátis, ao vivo e com feedback honesto.', url: 'https://www.pramp.com/', tag: 'PRÁTICA' },
+      ] : isES ? [
+        { title: 'Cómo Investigar Cualquier Empresa Antes de una Entrevista', desc: 'El framework de investigación de 30 minutos que te hace sonar como un insider — y te gana la oferta.', url: 'https://hbr.org/2019/10/how-to-prepare-for-any-type-of-job-interview', tag: 'INVESTIGACIÓN' },
+        { title: 'El Método STAR: Domina las Preguntas de Comportamiento', desc: 'Situación, Tarea, Acción, Resultado — el único framework que funciona para toda pregunta conductual.', url: 'https://www.themuse.com/advice/star-interview-method', tag: 'FRAMEWORK' },
+        { title: 'Maestría en Entrevistas Remotas', desc: 'Ángulos de cámara, iluminación, plantillas de follow-up async y los matices de paneles remotos.', url: 'https://www.toptal.com/remote/how-to-ace-a-remote-job-interview', tag: 'REMOTO' },
+        { title: 'Tech Interview Handbook (Gratis, Open Source)', desc: 'La guía gratuita más completa para algoritmos, diseño de sistemas y prep conductual para roles tech.', url: 'https://www.techinterviewhandbook.org/', tag: 'TECH' },
+        { title: '30 Preguntas para Hacer al Final de Cualquier Entrevista', desc: 'Las preguntas que señalan curiosidad intelectual, preparación e interés genuino.', url: 'https://www.glassdoor.com/blog/good-questions-to-ask-in-an-interview/', tag: 'TÁCTICAS' },
+        { title: 'Pramp: Práctica Gratuita de Entrevistas Simuladas', desc: 'Practica entrevistas técnicas y de comportamiento reales con pares. Gratis, en vivo y feedback brutal.', url: 'https://www.pramp.com/', tag: 'PRÁCTICA' },
+      ] : [
+        { title: 'How to Research Any Company Before an Interview', desc: "The 30-minute research framework that makes you sound like an insider — and earns the offer.", url: 'https://hbr.org/2019/10/how-to-prepare-for-any-type-of-job-interview', tag: 'RESEARCH' },
+        { title: 'The STAR Method: Master Behavioural Questions', desc: 'Situation, Task, Action, Result — the one framework that works for every behavioural interview question.', url: 'https://www.themuse.com/advice/star-interview-method', tag: 'FRAMEWORK' },
+        { title: 'Remote Interview Mastery: Setup, Presence & Follow-Up', desc: 'Camera angles, lighting, async follow-up templates, and the nuances of remote-first hiring panels.', url: 'https://www.toptal.com/remote/how-to-ace-a-remote-job-interview', tag: 'REMOTE' },
+        { title: 'Tech Interview Handbook (Free, Open Source)', desc: 'The most comprehensive free guide to algorithms, system design, and behavioural prep for tech roles.', url: 'https://www.techinterviewhandbook.org/', tag: 'TECH' },
+        { title: '30 Questions to Ask at the End of Any Interview', desc: 'The questions that signal intellectual curiosity, preparation, and genuine interest — sorted by interview type.', url: 'https://www.glassdoor.com/blog/good-questions-to-ask-in-an-interview/', tag: 'TACTICS' },
+        { title: 'Pramp: Free Mock Interview Practice', desc: 'Practice real technical and behavioural interviews with peers. Free, live, and brutally honest feedback.', url: 'https://www.pramp.com/', tag: 'PRACTICE' },
+      ],
+    },
+    ratecard: {
+      label: isPT ? 'Tabela de Preços' : isES ? 'Tarjeta de Tarifas' : 'Rate Card',
+      tag: isPT ? 'NEGOCIE' : isES ? 'NEGOCIA' : 'NEGOTIATE',
+      Icon: DollarSign, color: 'text-yellow-400', accent: 'bg-yellow-500 text-black',
+      desc: isPT ? 'Nunca deixe dinheiro na mesa. Conheça seu valor, domine a conversa.' : isES ? 'Nunca dejes dinero sobre la mesa. Conoce tu valor, controla la conversación.' : 'Never leave money on the table. Know your worth, own the conversation.',
+      articles: isPT ? [
+        { title: '15 Regras para Negociar uma Oferta de Emprego (HBR)', desc: 'O manual definitivo do Harvard Business Review para negociação salarial — usado por profissionais no mundo todo.', url: 'https://hbr.org/2014/06/15-rules-for-negotiating-a-job-offer', tag: 'NEGOCIAÇÃO' },
+        { title: 'Dados Reais de Remuneração para Cargos Tech & IA', desc: 'Dados verificados de salário, equity e comp total para centenas de cargos em empresas tech globais.', url: 'https://www.levels.fyi/', tag: 'DADOS' },
+        { title: 'Salário LATAM em USD: O Quadro Completo', desc: 'Remuneração remota em USD vs. salários locais — a lacuna real, como empresas a calculam e como fechá-la.', url: 'https://remote.com/blog/employer-of-record-latin-america', tag: 'LATAM' },
+        { title: 'Como Escolher Entre Múltiplas Ofertas de Emprego', desc: 'Um framework de decisão estruturado para quando você tem opções e precisa escolher sabiamente.', url: 'https://www.glassdoor.com/blog/evaluate-job-offer/', tag: 'DECISÃO' },
+        { title: 'Scripts de Negociação Salarial que Funcionam', desc: 'Scripts de email e ligação para contra-oferecer, pedir mais e não piscar primeiro.', url: 'https://www.glassdoor.com/blog/guide/salary-negotiation-scripts/', tag: 'SCRIPTS' },
+      ] : isES ? [
+        { title: '15 Reglas para Negociar una Oferta de Empleo (HBR)', desc: 'El manual definitivo de Harvard Business Review para negociación salarial — usado por profesionales en todo el mundo.', url: 'https://hbr.org/2014/06/15-rules-for-negotiating-a-job-offer', tag: 'NEGOCIACIÓN' },
+        { title: 'Datos Reales de Compensación para Roles Tech & IA', desc: 'Datos verificados de salario, equity y comp total para cientos de roles en empresas tech globales.', url: 'https://www.levels.fyi/', tag: 'DATOS' },
+        { title: 'Salario LATAM en USD: El Cuadro Completo', desc: 'Pago remoto en USD vs. salarios locales — la brecha real, cómo la calculan las empresas y cómo cerrarla.', url: 'https://remote.com/blog/employer-of-record-latin-america', tag: 'LATAM' },
+        { title: 'Cómo Elegir Entre Múltiples Ofertas de Empleo', desc: 'Un framework de decisión estructurado para cuando tienes opciones y necesitas elegir sabiamente.', url: 'https://www.glassdoor.com/blog/evaluate-job-offer/', tag: 'DECISIÓN' },
+        { title: 'Scripts de Negociación Salarial que Funcionan', desc: 'Scripts de email y llamada para contraoferta, pedir más y no parpadear primero.', url: 'https://www.glassdoor.com/blog/guide/salary-negotiation-scripts/', tag: 'SCRIPTS' },
+      ] : [
+        { title: '15 Rules for Negotiating a Job Offer (HBR)', desc: 'The definitive Harvard Business Review playbook for salary negotiation — used by professionals worldwide.', url: 'https://hbr.org/2014/06/15-rules-for-negotiating-a-job-offer', tag: 'NEGOTIATION' },
+        { title: 'Real Compensation Data for Tech & AI Roles', desc: 'Verified salary, equity, and total comp data for hundreds of roles across global tech companies.', url: 'https://www.levels.fyi/', tag: 'DATA' },
+        { title: 'LATAM Salary in USD: The Full Picture', desc: 'USD remote pay vs local rates — the real gap, how companies calculate it, and how to close it.', url: 'https://remote.com/blog/employer-of-record-latin-america', tag: 'LATAM' },
+        { title: 'How to Choose Between Multiple Job Offers', desc: "A structured decision framework for when you're lucky enough to have options and need to choose wisely.", url: 'https://www.glassdoor.com/blog/evaluate-job-offer/', tag: 'DECISION' },
+        { title: 'Salary Negotiation Scripts That Actually Work', desc: "Word-for-word email and call scripts for countering an offer, asking for more, and not blinking first.", url: 'https://www.glassdoor.com/blog/guide/salary-negotiation-scripts/', tag: 'SCRIPTS' },
+      ],
+    },
+    zerocommute: {
+      label: isPT ? 'Stack Zero-Commute' : isES ? 'Stack Cero-Viaje' : 'Zero-Commute Stack',
+      tag: isPT ? 'REMOTO' : isES ? 'REMOTO' : 'REMOTE',
+      Icon: Globe, color: 'text-violet-400', accent: 'bg-violet-500 text-white',
+      desc: isPT ? 'Vença no trabalho remoto — de conquistar seu primeiro cargo a prosperar a longo prazo.' : isES ? 'Gana en el trabajo remoto — desde conseguir tu primer rol hasta prosperar a largo plazo.' : 'Win at remote — from landing your first role to thriving long-term.',
+      articles: isPT ? [
+        { title: 'Guia All-Remote do GitLab (O Melhor da Categoria)', desc: 'O guia de trabalho remoto mais detalhado e testado da internet — criado por uma empresa remota de 2.000 pessoas.', url: 'https://about.gitlab.com/company/culture/all-remote/guide/', tag: 'GUIA' },
+        { title: 'Melhores Job Boards para Vagas Remotas na LATAM 2026', desc: 'As principais plataformas onde empresas dos EUA e Europa buscam ativamente talentos remotos da LATAM.', url: 'https://remotive.com', tag: 'JOB BOARDS' },
+        { title: 'Como Abordar Recrutadores no LinkedIn via Cold Message', desc: 'Frameworks e templates de mensagem para contatar recrutadores dos EUA/Europa sem ser ignorado.', url: 'https://www.linkedin.com/pulse/how-message-recruiter-linkedin-get-response-job-search-guide/', tag: 'NETWORKING' },
+        { title: 'Precisão Militar: Escreva Emails que Geram Respostas', desc: 'O método BLUF para comunicação escrita async — usado pelas melhores equipes remotas.', url: 'https://hbr.org/2016/11/how-to-write-email-with-military-precision', tag: 'COMUNICAÇÃO' },
+        { title: 'Kit de Ferramentas para Trabalho Remoto: Produtividade & Bem-Estar', desc: 'Estrutura, ferramentas e rotinas para trabalho remoto integral sustentável — sem esgotamento.', url: 'https://www.notion.com/templates/remote-work-toolkit', tag: 'BEM-ESTAR' },
+      ] : isES ? [
+        { title: 'Guía All-Remote de GitLab (La Mejor de su Clase)', desc: 'La guía de trabajo remoto más detallada y probada de internet — construida por una empresa remota de 2.000 personas.', url: 'https://about.gitlab.com/company/culture/all-remote/guide/', tag: 'GUÍA' },
+        { title: 'Mejores Job Boards para Roles Remotos en LATAM 2026', desc: 'Las principales plataformas donde empresas de EE.UU. y Europa buscan activamente talento remoto LATAM.', url: 'https://remotive.com', tag: 'JOB BOARDS' },
+        { title: 'Cómo Contactar Reclutadores en LinkedIn en Frío', desc: 'Frameworks y plantillas de mensajes para contactar reclutadores de EE.UU./Europa sin ser ignorado.', url: 'https://www.linkedin.com/pulse/how-message-recruiter-linkedin-get-response-job-search-guide/', tag: 'NETWORKING' },
+        { title: 'Precisión Militar: Escribe Emails que Obtienen Respuestas', desc: 'El método BLUF para comunicación escrita async — usado por los mejores equipos remotos.', url: 'https://hbr.org/2016/11/how-to-write-email-with-military-precision', tag: 'COMUNICACIÓN' },
+        { title: 'Kit de Herramientas para Trabajo Remoto: Productividad & Bienestar', desc: 'Estructura, herramientas y rutinas para trabajo remoto sostenible a tiempo completo.', url: 'https://www.notion.com/templates/remote-work-toolkit', tag: 'BIENESTAR' },
+      ] : [
+        { title: "GitLab's All-Remote Work Guide (Best in Class)", desc: "The most detailed, battle-tested remote work guide on the internet — built by a 2,000-person remote company.", url: 'https://about.gitlab.com/company/culture/all-remote/guide/', tag: 'GUIDE' },
+        { title: 'Best Job Boards for Remote LATAM Roles in 2026', desc: 'The top platforms where US and EU companies actively search for LATAM remote talent — ranked by quality.', url: 'https://remotive.com', tag: 'JOB BOARDS' },
+        { title: 'How to Cold Message Recruiters on LinkedIn', desc: 'Message frameworks and templates for reaching out to US/EU recruiters and hiring managers without being ignored.', url: 'https://www.linkedin.com/pulse/how-message-recruiter-linkedin-get-response-job-search-guide/', tag: 'NETWORKING' },
+        { title: 'Military Precision: Write Emails That Get Responses', desc: 'The BLUF (Bottom Line Up Front) method for async written communication — used by top remote teams.', url: 'https://hbr.org/2016/11/how-to-write-email-with-military-precision', tag: 'COMMUNICATION' },
+        { title: 'Remote Work Toolkit: Productivity & Wellbeing', desc: 'Structure, tools, and routines for sustainable full-time remote work — without burning out or disappearing.', url: 'https://www.notion.com/templates/remote-work-toolkit', tag: 'WELLBEING' },
+      ],
+    },
+    compound: {
+      label: isPT ? 'Carreira Composta' : isES ? 'Carrera Compuesta' : 'Compound Career',
+      tag: isPT ? 'LONGO PRAZO' : isES ? 'JUEGO LARGO' : 'LONG GAME',
+      Icon: Compass, color: 'text-pink-400', accent: 'bg-pink-500 text-white',
+      desc: isPT ? 'Pense além do próximo emprego. Construa a carreira que você realmente deseja.' : isES ? 'Piensa más allá del próximo trabajo. Construye la carrera que realmente quieres.' : 'Think beyond the next job. Build the career you actually want.',
+      articles: isPT ? [
+        { title: 'CliftonStrengths: Descubra no que Você é Melhor', desc: 'Uma das avaliações de fortalezas mais usadas. Entenda seus talentos naturais antes do seu próximo movimento.', url: 'https://www.gallup.com/cliftonstrengths/en/strengthsquest.aspx', tag: 'AUTODESCOBERTA' },
+        { title: '16 Personalidades — Avaliação de Carreira Grátis', desc: 'Uma das avaliações de personalidade gratuitas mais usadas. Ótima para entender seu estilo de trabalho e fit.', url: 'https://www.16personalities.com/', tag: 'AVALIAÇÃO' },
+        { title: 'Como Fazer uma Transição de Carreira sem Começar do Zero', desc: 'O framework da HBR para fazer uma transição que aproveita a experiência existente.', url: 'https://hbr.org/2021/07/how-to-make-a-career-pivot', tag: 'TRANSIÇÃO' },
+        { title: 'Construa Credibilidade Rápido nos Primeiros 90 Dias', desc: 'O que fazer — e evitar — nos seus primeiros 3 meses para estabelecer confiança e definir o tom.', url: 'https://hbr.org/2018/01/how-to-build-trust-in-the-first-90-days-of-a-new-job', tag: 'CULTURA' },
+        { title: 'Upskilling em IA para Resiliência de Longo Prazo', desc: 'As habilidades que separam candidatos que prosperam na era da IA dos que ficam para trás.', url: 'https://www.coursera.org/articles/ai-skills', tag: 'FUTURO' },
+        { title: 'WPro Workforce Daily — Intel de Mercado LATAM', desc: 'Sinais semanais de contratação, tendências salariais e dados de força de trabalho com IA.', url: 'https://wprotalents.lat', tag: 'WPRO INTEL', wpro: true },
+      ] : isES ? [
+        { title: 'CliftonStrengths: Descubre en qué Eres Mejor', desc: 'Una de las evaluaciones de fortalezas más usadas. Comprende tus talentos naturales antes de tu próximo movimiento.', url: 'https://www.gallup.com/cliftonstrengths/en/strengthsquest.aspx', tag: 'AUTODESCUBRIMIENTO' },
+        { title: '16 Personalidades — Evaluación de Carrera Gratis', desc: 'Una de las evaluaciones de personalidad gratuitas más usadas. Ideal para entender tu estilo de trabajo y fit.', url: 'https://www.16personalities.com/', tag: 'EVALUACIÓN' },
+        { title: 'Cómo Hacer una Transición de Carrera sin Empezar desde Cero', desc: 'El framework de HBR para hacer una transición que aprovecha la experiencia existente.', url: 'https://hbr.org/2021/07/how-to-make-a-career-pivot', tag: 'TRANSICIÓN' },
+        { title: 'Construye Credibilidad Rápido en los Primeros 90 Días', desc: 'Qué hacer — y evitar — en tus primeros 3 meses para establecer confianza y marcar el tono.', url: 'https://hbr.org/2018/01/how-to-build-trust-in-the-first-90-days-of-a-new-job', tag: 'CULTURA' },
+        { title: 'Upskilling en IA para Resiliencia a Largo Plazo', desc: 'Las habilidades que separan a los candidatos que prosperan en la era de la IA de los que se quedan atrás.', url: 'https://www.coursera.org/articles/ai-skills', tag: 'FUTURO' },
+        { title: 'WPro Workforce Daily — Intel de Mercado LATAM', desc: 'Señales semanales de contratación, tendencias salariales y datos de fuerza laboral con IA.', url: 'https://wprotalents.lat', tag: 'WPRO INTEL', wpro: true },
+      ] : [
+        { title: "CliftonStrengths: Discover What You're Best At", desc: "One of the most widely-used strengths assessments. Understand your natural talents before your next move.", url: 'https://www.gallup.com/cliftonstrengths/en/strengthsquest.aspx', tag: 'SELF-DISCOVERY' },
+        { title: '16 Personalities — Free Career Planning Assessment', desc: 'One of the most-used free personality assessments. Great for understanding your working style and fit.', url: 'https://www.16personalities.com/', tag: 'ASSESSMENT' },
+        { title: 'How to Pivot Careers Without Starting From Zero', desc: 'The HBR framework for making a career transition that builds on existing experience rather than erasing it.', url: 'https://hbr.org/2021/07/how-to-make-a-career-pivot', tag: 'TRANSITION' },
+        { title: 'Build Credibility Fast in the First 90 Days', desc: "What to do — and avoid — in your first 3 months to establish trust and set the tone for your tenure.", url: 'https://hbr.org/2018/01/how-to-build-trust-in-the-first-90-days-of-a-new-job', tag: 'CULTURE' },
+        { title: 'AI Upskilling for Long-Term Career Resilience', desc: 'The skills that separate candidates who thrive in the AI era from those who get left behind. Plan accordingly.', url: 'https://www.coursera.org/articles/ai-skills', tag: 'FUTURE-PROOF' },
+        { title: 'WPro Workforce Daily — LATAM Market Intel', desc: 'Subscribe for weekly hiring signals, salary trends, and AI workforce data. Built for LATAM professionals.', url: 'https://wprotalents.lat', tag: 'WPRO INTEL', wpro: true },
+      ],
+    },
+    aileverage: {
+      label: isPT ? 'Alavancagem de IA' : isES ? 'Palanca de IA' : 'AI Leverage',
+      tag: isPT ? 'À PROVA DO FUTURO' : isES ? 'A PRUEBA DEL FUTURO' : 'FUTURE-PROOF',
+      Icon: Zap, color: 'text-violet-400', accent: 'bg-violet-500 text-white',
+      desc: isPT ? 'As habilidades que separam os contratados dos ignorados em 2026.' : isES ? 'Las habilidades que separan a los contratados de los ignorados en 2026.' : 'The skills that separate the hired from the overlooked in 2026.',
+      articles: isPT ? [
+        { title: 'Top Habilidades em IA & ML para Profissionais Tech em 2026', desc: 'Prompt engineering, RAG, fine-tuning e sistemas agênticos — agora obrigatórios para cargos sênior globalmente.', url: 'https://www.coursera.org/articles/ai-skills', tag: 'HABILIDADES' },
+        { title: 'Prompt Engineering para Devs (Curso Grátis)', desc: "O curso de 1 hora de Andrew Ng sobre prompts eficazes para GPT-4, Claude e Gemini. Muda carreiras.", url: 'https://www.deeplearning.ai/short-courses/chatgpt-prompt-engineering-for-developers/', tag: 'CURSO GRÁTIS' },
+        { title: 'System Design Primer (Guia GitHub Mais Estrelado)', desc: 'O guia open-source de design de sistemas para entrevistas sênior nas maiores empresas do mundo.', url: 'https://github.com/donnemartin/system-design-primer', tag: 'ENTREVISTAS' },
+        { title: 'Relatório WEF sobre o Futuro dos Empregos 2025', desc: 'Quais cargos estão crescendo, quais estão declinando e as habilidades que definirão contratações em 2025–2030.', url: 'https://www.weforum.org/publications/the-future-of-jobs-report-2025/', tag: 'DADOS DE MERCADO' },
+        { title: 'GitHub Copilot: Guia de Codificação com IA', desc: 'Como usar pair-programming com IA de forma eficaz, melhorar seu output e colocar no CV com convicção.', url: 'https://docs.github.com/en/copilot', tag: 'FERRAMENTAS' },
+        { title: 'Kaggle: Cursos Gratuitos de Machine Learning', desc: 'Cursos práticos de ML do iniciante ao avançado — com certificados, datasets e comunidade global.', url: 'https://www.kaggle.com/learn', tag: 'CURSO GRÁTIS' },
+      ] : isES ? [
+        { title: 'Top Habilidades en IA & ML para Profesionales Tech en 2026', desc: 'Prompt engineering, RAG, fine-tuning y sistemas agénticos — ahora requisitos básicos para roles sénior globalmente.', url: 'https://www.coursera.org/articles/ai-skills', tag: 'HABILIDADES' },
+        { title: 'Prompt Engineering para Devs (Curso Gratis)', desc: "El curso de 1 hora de Andrew Ng sobre prompts efectivos para GPT-4, Claude y Gemini. Cambia carreras.", url: 'https://www.deeplearning.ai/short-courses/chatgpt-prompt-engineering-for-developers/', tag: 'CURSO GRATIS' },
+        { title: 'System Design Primer (Guía GitHub Más Estrellada)', desc: 'La guía open-source de diseño de sistemas para entrevistas sénior en las mayores empresas del mundo.', url: 'https://github.com/donnemartin/system-design-primer', tag: 'ENTREVISTAS' },
+        { title: 'Informe WEF sobre el Futuro del Trabajo 2025', desc: 'Qué roles crecen, cuáles declinan y las habilidades que definirán la contratación en 2025–2030.', url: 'https://www.weforum.org/publications/the-future-of-jobs-report-2025/', tag: 'DATOS DE MERCADO' },
+        { title: 'GitHub Copilot: Guía de Codificación con IA', desc: 'Cómo usar pair-programming con IA de forma efectiva, mejorar tu output y ponerlo en el CV con convicción.', url: 'https://docs.github.com/en/copilot', tag: 'HERRAMIENTAS' },
+        { title: 'Kaggle: Cursos Gratuitos de Machine Learning', desc: 'Cursos prácticos de ML desde principiante hasta avanzado — con certificados, datasets y comunidad global.', url: 'https://www.kaggle.com/learn', tag: 'CURSO GRATIS' },
+      ] : [
+        { title: 'Top AI & ML Skills Every Tech Pro Needs in 2026', desc: 'Prompt engineering, RAG, fine-tuning, and agentic systems — now table stakes for senior roles globally.', url: 'https://www.coursera.org/articles/ai-skills', tag: 'SKILLS' },
+        { title: 'Prompt Engineering for Developers (Free Course)', desc: "Andrew Ng's 1-hour course on writing effective prompts for GPT-4, Claude, and Gemini. Career-changing.", url: 'https://www.deeplearning.ai/short-courses/chatgpt-prompt-engineering-for-developers/', tag: 'FREE COURSE' },
+        { title: 'System Design Primer (Most-Starred GitHub Guide)', desc: 'The go-to open-source system design guide for senior engineering interviews at top companies worldwide.', url: 'https://github.com/donnemartin/system-design-primer', tag: 'INTERVIEWS' },
+        { title: 'WEF Future of Jobs Report 2025', desc: 'Which roles are growing, which are declining, and the exact skills that will define hiring in 2025–2030.', url: 'https://www.weforum.org/publications/the-future-of-jobs-report-2025/', tag: 'MARKET DATA' },
+        { title: 'GitHub Copilot: AI-Assisted Coding Guide', desc: 'How to use AI pair-programming tools effectively, improve your output, and put it convincingly on your CV.', url: 'https://docs.github.com/en/copilot', tag: 'TOOLS' },
+        { title: 'Kaggle: Free Machine Learning Courses', desc: 'Hands-on ML courses from beginner to advanced — with certificates, datasets, and a global community.', url: 'https://www.kaggle.com/learn', tag: 'FREE COURSE' },
+      ],
+    },
+  };
+}
 const SECTION_ORDER: SectionKey[] = ['launch', 'strike', 'roomread', 'ratecard', 'zerocommute', 'compound', 'aileverage'];
 
 // ── Market Value Teaser (free users) ─────────────────────────────────────────
@@ -615,9 +696,12 @@ function LatamCitiesWidget({ lang = 'EN' }: { lang?: string }) {
   );
 }
 
-function CandidateResourcesPanel({ onLinkedInBoost }: { onLinkedInBoost: () => void }) {
+function CandidateResourcesPanel({ onLinkedInBoost, lang = 'EN' }: { onLinkedInBoost: () => void; lang?: string }) {
   const [activeSection, setActiveSection] = useState<SectionKey>('launch');
-  const section = PORTAL_SECTIONS[activeSection];
+  const portalSections = getPortalSections(lang);
+  const section = portalSections[activeSection];
+  const isES = lang === 'ES';
+  const isPT = lang === 'PT';
 
   return (
     <section className="border-b border-border bg-surface/20">
@@ -626,7 +710,9 @@ function CandidateResourcesPanel({ onLinkedInBoost }: { onLinkedInBoost: () => v
         {/* Header */}
         <div className="flex items-center gap-3 mb-5">
           <Radio size={10} className="text-accent animate-pulse" />
-          <span className="mono text-[9px] text-accent tracking-widest font-bold">CANDIDATE INTELLIGENCE // WPRO CAREER PORTAL</span>
+          <span className="mono text-[9px] text-accent tracking-widest font-bold">
+            {isPT ? 'INTELIGÊNCIA PARA CANDIDATOS // PORTAL WPRO' : isES ? 'INTELIGENCIA PARA CANDIDATOS // PORTAL WPRO' : 'CANDIDATE INTELLIGENCE // WPRO CAREER PORTAL'}
+          </span>
           <div className="h-px flex-1 bg-border" />
           <a
             href="https://wprotalents.lat"
@@ -641,10 +727,10 @@ function CandidateResourcesPanel({ onLinkedInBoost }: { onLinkedInBoost: () => v
         {/* Stats + Join CTA strip */}
         <div className="grid grid-cols-2 sm:grid-cols-5 gap-px bg-border mb-6">
           {[
-            { icon: <Users size={10} />, value: '23K+', label: 'Network' },
-            { icon: <Award size={10} />, value: '500+', label: 'Placed' },
-            { icon: <Globe size={10} />, value: '12', label: 'Countries' },
-            { icon: <Star size={10} />, value: '20yr', label: 'Experience' },
+            { icon: <Users size={10} />, value: '23K+', label: isPT ? 'Rede' : isES ? 'Red' : 'Network' },
+            { icon: <Award size={10} />, value: '500+', label: isPT ? 'Colocados' : isES ? 'Colocados' : 'Placed' },
+            { icon: <Globe size={10} />, value: '12', label: isPT ? 'Países' : isES ? 'Países' : 'Countries' },
+            { icon: <Star size={10} />, value: '20yr', label: isPT ? 'Experiência' : isES ? 'Experiencia' : 'Experience' },
           ].map((s, i) => (
             <div key={i} className="bg-bg px-4 py-3 flex items-center gap-3">
               <span className="text-accent">{s.icon}</span>
@@ -659,8 +745,8 @@ function CandidateResourcesPanel({ onLinkedInBoost }: { onLinkedInBoost: () => v
           >
             <Linkedin size={12} className="text-[#0077B5] shrink-0" />
             <div className="text-left">
-              <div className="mono text-[8px] font-bold text-accent group-hover:text-accent">GET FEATURED</div>
-              <div className="mono text-[7px] text-text/30">Free · 48h</div>
+              <div className="mono text-[8px] font-bold text-accent group-hover:text-accent">{isPT ? 'SER DESTAQUE' : isES ? 'DESTACARSE' : 'GET FEATURED'}</div>
+              <div className="mono text-[7px] text-text/30">{isPT ? 'Grátis · 48h' : isES ? 'Gratis · 48h' : 'Free · 48h'}</div>
             </div>
             <ArrowUpRight size={9} className="text-accent ml-auto" />
           </button>
@@ -669,7 +755,7 @@ function CandidateResourcesPanel({ onLinkedInBoost }: { onLinkedInBoost: () => v
         {/* Tab navigation */}
         <div className="flex gap-1 overflow-x-auto no-scrollbar mb-6 pb-1">
           {SECTION_ORDER.map(key => {
-            const s = PORTAL_SECTIONS[key];
+            const s = portalSections[key];
             const isActive = activeSection === key;
             return (
               <button
@@ -743,15 +829,25 @@ function CandidateResourcesPanel({ onLinkedInBoost }: { onLinkedInBoost: () => v
         {/* Career signal strip */}
         <div className="mt-6 border border-border bg-bg p-4">
           <div className="mono text-[8px] text-accent font-bold mb-3 flex items-center gap-2">
-            <Lightbulb size={9} /> CAREER SIGNAL // WPRO WEEKLY INTEL
+            <Lightbulb size={9} /> {isPT ? 'SINAL DE CARREIRA // INTEL SEMANAL WPRO' : isES ? 'SEÑAL DE CARRERA // INTEL SEMANAL WPRO' : 'CAREER SIGNAL // WPRO WEEKLY INTEL'}
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-            {[
+            {(isPT ? [
+              { icon: <TrendingUp size={11} className="text-accent shrink-0 mt-0.5" />, tip: 'Adicione IA / ML ao seu LinkedIn — buscas por "prompt engineering" cresceram 400% YoY entre recrutadores dos EUA e Europa.' },
+              { icon: <Globe size={11} className="text-emerald-400 shrink-0 mt-0.5" />, tip: 'Vagas remotas em USD/EUR pagam 3–5× os salários locais para engenheiros sênior da LATAM. Priorize empresas globais.' },
+              { icon: <Target size={11} className="text-blue-400 shrink-0 mt-0.5" />, tip: 'Recrutadores gastam ~7 segundos em um currículo. Comece com impacto mensurável, não funções. Números > tudo.' },
+              { icon: <TrendingDown size={11} className="text-red-400 shrink-0 mt-0.5" />, tip: 'Cargos mais em risco com IA: QA manual, entrada de dados, redação básica e frontend júnior (WEF 2026).' },
+            ] : isES ? [
+              { icon: <TrendingUp size={11} className="text-accent shrink-0 mt-0.5" />, tip: 'Agrega IA / ML a tu LinkedIn — las búsquedas de "prompt engineering" subieron 400% YoY entre reclutadores de EE.UU. y Europa.' },
+              { icon: <Globe size={11} className="text-emerald-400 shrink-0 mt-0.5" />, tip: 'Los roles remotos en USD/EUR pagan 3–5× los salarios locales para ingenieros sénior de LATAM. Prioriza empresas globales.' },
+              { icon: <Target size={11} className="text-blue-400 shrink-0 mt-0.5" />, tip: 'Los reclutadores dedican ~7 segundos a un currículum. Empieza con impacto medible, no funciones. Números > todo.' },
+              { icon: <TrendingDown size={11} className="text-red-400 shrink-0 mt-0.5" />, tip: 'Roles más en riesgo por IA: QA manual, entrada de datos, redacción básica y frontend junior (WEF 2026).' },
+            ] : [
               { icon: <TrendingUp size={11} className="text-accent shrink-0 mt-0.5" />, tip: 'Add AI / ML to your LinkedIn — searches for "prompt engineering" are up 400% YoY among US & EU recruiters.' },
               { icon: <Globe size={11} className="text-emerald-400 shrink-0 mt-0.5" />, tip: 'USD/EUR remote roles pay 3–5× local rates for senior LATAM engineers. Prioritise global-first companies.' },
               { icon: <Target size={11} className="text-blue-400 shrink-0 mt-0.5" />, tip: 'Recruiters spend ~7 seconds on a resume. Lead with measurable impact, not duties. Numbers > everything.' },
               { icon: <TrendingDown size={11} className="text-red-400 shrink-0 mt-0.5" />, tip: 'Roles most at risk from AI: manual QA, data entry, basic content writing, and junior frontend (2026 WEF).' },
-            ].map((tip, i) => (
+            ]).map((tip, i) => (
               <div key={i} className="flex items-start gap-2">
                 {tip.icon}
                 <p className="mono text-[9px] text-text/50 leading-relaxed">{tip.tip}</p>
@@ -764,14 +860,14 @@ function CandidateResourcesPanel({ onLinkedInBoost }: { onLinkedInBoost: () => v
             <div className="flex items-center gap-2">
               <Newspaper size={11} className="text-accent" />
               <p className="mono text-[9px] text-text/50">
-                Get this intel weekly — <span className="text-accent font-bold">Workforce Daily</span> by WProTalents. Free.
+                {isPT ? <><span>Receba essa intel semanalmente — </span><span className="text-accent font-bold">Workforce Daily</span><span> by WProTalents. Grátis.</span></> : isES ? <><span>Recibe esta intel semanalmente — </span><span className="text-accent font-bold">Workforce Daily</span><span> by WProTalents. Gratis.</span></> : <>Get this intel weekly — <span className="text-accent font-bold">Workforce Daily</span> by WProTalents. Free.</>}
               </p>
             </div>
             <a
-              href="https://latam-intel.vercel.app"
+              href="https://wprotalents.lat"
               className="mono text-[8px] font-bold border border-accent text-accent px-4 py-1.5 hover:bg-accent hover:text-black transition-colors whitespace-nowrap flex items-center gap-1.5"
             >
-              <Mail size={9} /> SUBSCRIBE FREE →
+              <Mail size={9} /> {isPT ? 'ASSINAR GRÁTIS →' : isES ? 'SUSCRIBIRSE GRATIS →' : 'SUBSCRIBE FREE →'}
             </a>
           </div>
         </div>
@@ -1230,7 +1326,7 @@ export default function JobsPage({ lang = 'EN', isLoggedIn = false }: { lang?: s
     <div className="min-h-screen bg-bg">
       <MarketValueTeaser lang={lang} isLoggedIn={isLoggedIn} />
       <LatamCitiesWidget lang={lang} />
-      <CandidateResourcesPanel onLinkedInBoost={() => setShowLinkedIn(true)} />
+      <CandidateResourcesPanel onLinkedInBoost={() => setShowLinkedIn(true)} lang={lang} />
       <JobPortal lang={lang} t={t} onPostVacancy={() => setShowVacancy(true)} />
       <PostVacancyModal isOpen={showVacancy} onClose={() => setShowVacancy(false)} lang={lang} />
       <LinkedInBoostModal isOpen={showLinkedIn} onClose={() => setShowLinkedIn(false)} lang={lang} />

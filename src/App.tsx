@@ -57,11 +57,10 @@ import { AuthModal } from './components/AuthModal';
 import { SubscriptionSection } from './components/SubscriptionSection';
 import JobsPage from './pages/JobsPage';
 import ClientJobPostForm, { type ClientJobPostData } from './components/ClientJobPostForm';
-import ClientInsightsCard from './components/ClientInsightsCard';
 import CompanyIntelPanel from './components/CompanyIntelPanel';
 import CandidateIntel from './components/CandidateIntel';
-import { generateHiringPlan, type HiringPlan } from './lib/hiringPlan';
-import { estimateNetworkReach, type NetworkReach } from './lib/networkReach';
+import { type HiringPlan } from './lib/hiringPlan';
+import { type NetworkReach } from './lib/networkReach';
 
 const TRANSLATIONS = {
   EN: {
@@ -113,7 +112,14 @@ const TRANSLATIONS = {
     fxRates: "MARKET RATES // LIVE",
     ago: "AGO",
     marketCalcTitle: "💰 Market Value Calculator",
-    marketCalcDesc: "Benchmark salaries for your open roles",
+    marketCalcDesc: "Know what talent costs before you make an offer",
+    clientPortalSubtitle: "Source top LATAM talent · Benchmark salaries · Get AI hiring intelligence",
+    clientTabIntel: "Market Intelligence",
+    clientTabPost: "Post a Role",
+    clientPostTitle: "Post a Role",
+    clientPostSubtitle: "Distributed to 23K+ matched candidates",
+    clientResourcesTitle: "Hiring Intelligence Hub",
+    clientResourcesSubtitle: "Frameworks, data & tools for hiring managers",
     todayJobNews: "Today's Job & AI News",
     loadingWorkspace: "Loading your workspace…",
     unlockFull: "Join the Beta — Free Access",
@@ -251,7 +257,14 @@ const TRANSLATIONS = {
     fxRates: "TASAS DE MERCADO // EN VIVO",
     ago: "ATRÁS",
     marketCalcTitle: "💰 Calculadora de Valor de Mercado",
-    marketCalcDesc: "Benchmark de salarios para tus roles abiertos",
+    marketCalcDesc: "Conoce el costo del talento antes de hacer una oferta",
+    clientPortalSubtitle: "Contrata talento LATAM · Benchmarks de salario · Inteligencia de contratación IA",
+    clientTabIntel: "Inteligencia de Mercado",
+    clientTabPost: "Publicar un Rol",
+    clientPostTitle: "Publicar un Rol",
+    clientPostSubtitle: "Distribuido a 23K+ candidatos compatibles",
+    clientResourcesTitle: "Hub de Inteligencia de Contratación",
+    clientResourcesSubtitle: "Frameworks, datos y herramientas para líderes de contratación",
     todayJobNews: "Noticias de Empleo e IA de Hoy",
     loadingWorkspace: "Cargando tu workspace…",
     unlockFull: "Únete al Beta — Acceso Gratuito",
@@ -388,7 +401,14 @@ const TRANSLATIONS = {
     fxRates: "TAXAS DE MERCADO // AO VIVO",
     ago: "ATRÁS",
     marketCalcTitle: "💰 Calculadora de Valor de Mercado",
-    marketCalcDesc: "Benchmark de salários para suas vagas abertas",
+    marketCalcDesc: "Saiba o custo do talento antes de fazer uma oferta",
+    clientPortalSubtitle: "Contrate talentos LATAM · Benchmarks de salário · Inteligência de contratação IA",
+    clientTabIntel: "Inteligência de Mercado",
+    clientTabPost: "Publicar uma Vaga",
+    clientPostTitle: "Publicar uma Vaga",
+    clientPostSubtitle: "Distribuída para 23K+ candidatos compatíveis",
+    clientResourcesTitle: "Hub de Inteligência de Contratação",
+    clientResourcesSubtitle: "Frameworks, dados e ferramentas para gestores de contratação",
     todayJobNews: "Notícias de Emprego e IA de Hoje",
     loadingWorkspace: "Carregando seu workspace…",
     unlockFull: "Entre no Beta — Acesso Gratuito",
@@ -1186,7 +1206,7 @@ export default function App() {
                     </div>
                     <div>
                       <h2 className="font-black text-lg uppercase tracking-tighter">Client Portal</h2>
-                      <p className="mono text-[8px] text-text/40">Post roles · Get instant hiring intelligence · Featured on wprotalents.lat</p>
+                      <p className="mono text-[8px] text-text/40">{t.clientPortalSubtitle}</p>
                     </div>
                   </div>
 
@@ -1197,7 +1217,7 @@ export default function App() {
                         className={`flex-1 py-2.5 mono text-[9px] font-bold uppercase tracking-widest transition-colors ${
                           companyTab === tab ? 'bg-accent text-black' : 'bg-bg text-text/40 hover:text-text'
                         }`}>
-                        {tab === 'intel' ? '📊 Market Data' : '📋 Post a Role'}
+                        {tab === 'intel' ? `📊 ${t.clientTabIntel}` : `📋 ${t.clientTabPost}`}
                       </button>
                     ))}
                   </div>
@@ -1221,9 +1241,9 @@ export default function App() {
                   {companyTab === 'post' && (
                   <div className="border border-border bg-surface/30 p-6 mb-6">
                     <div className="flex items-center gap-2 mb-5">
-                      <span className="mono text-[9px] font-bold text-accent tracking-widest uppercase">Post a Role</span>
+                      <span className="mono text-[9px] font-bold text-accent tracking-widest uppercase">{t.clientPostTitle}</span>
                       <div className="h-px flex-1 bg-border" />
-                      <span className="mono text-[8px] text-text/30">Featured on wprotalents.lat</span>
+                      <span className="mono text-[8px] text-text/30">{t.clientPostSubtitle}</span>
                     </div>
                     {jobPostSaved && clientFormData ? (
                       /* ── Confirmation panel ── */
@@ -1304,29 +1324,111 @@ export default function App() {
                   </div>
                   )}
 
-                  {/* Company Resources */}
+                  {/* Company Resources — Hiring Intelligence Hub */}
                   <div className="border border-border bg-surface/30 p-6">
-                    <div className="flex items-center gap-2 mb-5">
-                      <span className="mono text-[9px] font-bold text-accent tracking-widest uppercase">Resources for Hiring Managers</span>
+                    <div className="flex items-center gap-2 mb-2">
+                      <span className="mono text-[9px] font-bold text-accent tracking-widest uppercase">{t.clientResourcesTitle}</span>
+                      <div className="h-px flex-1 bg-border" />
+                      <span className="mono text-[8px] text-text/30">{t.clientResourcesSubtitle}</span>
                     </div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                      {[
-                        { tag: 'TALENT STRATEGY', color: 'text-violet-400', title: 'How to Build a High-Performance Distributed Team in LATAM', desc: 'Hiring frameworks, onboarding, and culture for remote-first tech companies.', url: 'https://hbr.org/topic/subject/hiring', source: 'HBR' },
-                        { tag: 'AI & HIRING', color: 'text-accent', title: 'How AI Is Transforming Talent Acquisition in 2026', desc: 'From sourcing automation to AI-assisted screening — what actually works.', url: 'https://www.linkedin.com/business/talent/blog', source: 'LinkedIn Talent' },
-                        { tag: 'MARKET DATA', color: 'text-emerald-400', title: 'LATAM Salary Benchmarks for Tech Roles — 2026', desc: 'Up-to-date compensation data across Colombia, Brazil, Argentina, and Mexico.', url: 'https://www.levels.fyi', source: 'Levels.fyi' },
-                        { tag: 'RETENTION', color: 'text-blue-400', title: 'Why Senior Engineers Leave — And How to Keep Them', desc: 'The real reasons your best people walk, and what actually retains top talent.', url: 'https://hbr.org/topic/subject/managing-people', source: 'HBR' },
-                      ].map((a, i) => (
-                        <a key={i} href={a.url} target="_blank" rel="noopener noreferrer"
-                          className="group flex flex-col gap-1.5 p-4 bg-bg border border-border hover:border-accent/30 transition-colors">
-                          <div className="flex items-center justify-between">
-                            <span className={`mono text-[7px] font-bold ${a.color}`}>{a.tag}</span>
-                            <span className="mono text-[7px] text-text/20">{a.source}</span>
-                          </div>
-                          <h5 className="text-xs font-bold leading-snug group-hover:text-accent transition-colors">{a.title}</h5>
-                          <p className="mono text-[9px] text-text/40 leading-snug line-clamp-2">{a.desc}</p>
-                          <span className="mono text-[7px] text-accent/40 group-hover:text-accent transition-colors flex items-center gap-1 mt-auto">READ <ArrowUpRight size={8} /></span>
+
+                    {/* Intelligence Contact CTA */}
+                    <div className="my-5 p-4 bg-accent/5 border border-accent/20 flex flex-col sm:flex-row items-start sm:items-center gap-4">
+                      <div className="flex-1">
+                        <p className="mono text-[9px] font-bold text-accent mb-0.5">WPro Intelligence Contact</p>
+                        <p className="mono text-[8px] text-text/50">Speak directly with Juan — Founder & Senior Talent Advisor. Free market assessment for your open roles.</p>
+                      </div>
+                      <div className="flex gap-2 shrink-0">
+                        <a href="https://wa.me/573243132500?text=Hi%20Juan\!%20I%27d%20like%20a%20market%20assessment%20for%20my%20hiring%20needs." target="_blank" rel="noopener noreferrer"
+                          className="flex items-center gap-2 px-3 py-2 bg-[#25D366]/10 border border-[#25D366]/30 hover:border-[#25D366] hover:bg-[#25D366]/20 transition-colors">
+                          <svg width="11" height="11" viewBox="0 0 24 24" fill="#25D366"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.136.564 4.14 1.534 5.874L0 24l6.294-1.508A11.955 11.955 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.818 9.818 0 01-5.015-1.378l-.36-.213-3.733.895.944-3.617-.234-.373A9.786 9.786 0 012.182 12C2.182 6.578 6.578 2.182 12 2.182S21.818 6.578 21.818 12 17.422 21.818 12 21.818z"/></svg>
+                          <span className="mono text-[8px] font-bold text-[#25D366]">WhatsApp</span>
                         </a>
-                      ))}
+                        <a href="https://www.linkedin.com/company/world-pro-talents/" target="_blank" rel="noopener noreferrer"
+                          className="flex items-center gap-2 px-3 py-2 bg-[#0077B5]/10 border border-[#0077B5]/30 hover:border-[#0077B5] hover:bg-[#0077B5]/20 transition-colors">
+                          <Linkedin size={11} className="text-[#0077B5]" />
+                          <span className="mono text-[8px] font-bold text-[#0077B5]">LinkedIn</span>
+                        </a>
+                      </div>
+                    </div>
+
+                    {/* Talent Strategy */}
+                    <div className="mb-5">
+                      <div className="flex items-center gap-2 mb-3"><span className="mono text-[7px] font-bold text-violet-400 tracking-widest">TALENT STRATEGY</span><div className="h-px flex-1 bg-border" /></div>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                        {[
+                          { title: 'How to Build a High-Performance Distributed Team in LATAM', desc: 'Hiring frameworks, onboarding rituals, and culture design for remote-first tech companies expanding into LATAM.', url: 'https://hbr.org/topic/subject/hiring', source: 'HBR' },
+                          { title: 'The Definitive Guide to Nearshoring Engineering to LATAM', desc: 'Time zones, legal structures, contractor vs. employee — everything you need to make the right structural decision.', url: 'https://remote.com/blog/employer-of-record-latin-america', source: 'Remote.com' },
+                          { title: 'Why Senior Engineers Leave — And How to Keep Them', desc: 'The real reasons your best people walk, and the retention levers that actually move the needle long-term.', url: 'https://hbr.org/topic/subject/managing-people', source: 'HBR' },
+                          { title: 'The First 90 Days: Onboarding Remote Tech Hires That Stick', desc: "Structured onboarding reduces early attrition by 50%. Here's the framework used by top distributed teams.", url: 'https://hbr.org/2018/01/how-to-build-trust-in-the-first-90-days-of-a-new-job', source: 'HBR' },
+                        ].map((a, i) => (
+                          <a key={i} href={a.url} target="_blank" rel="noopener noreferrer" className="group flex flex-col gap-1.5 p-4 bg-bg border border-border hover:border-violet-400/30 transition-colors">
+                            <div className="flex items-center justify-between"><span className="mono text-[7px] font-bold text-violet-400">STRATEGY</span><span className="mono text-[7px] text-text/20">{a.source}</span></div>
+                            <h5 className="text-xs font-bold leading-snug group-hover:text-accent transition-colors">{a.title}</h5>
+                            <p className="mono text-[9px] text-text/40 leading-snug line-clamp-2">{a.desc}</p>
+                            <span className="mono text-[7px] text-accent/40 group-hover:text-accent transition-colors flex items-center gap-1 mt-auto">READ <ArrowUpRight size={8} /></span>
+                          </a>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Market Data */}
+                    <div className="mb-5">
+                      <div className="flex items-center gap-2 mb-3"><span className="mono text-[7px] font-bold text-emerald-400 tracking-widest">MARKET DATA & SALARY BENCHMARKS</span><div className="h-px flex-1 bg-border" /></div>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                        {[
+                          { title: 'LATAM Tech Salary Benchmarks 2026 — Levels.fyi', desc: 'Real compensation data for software engineers, data scientists, and AI/ML roles across Colombia, Brazil, Mexico & Argentina.', url: 'https://www.levels.fyi', source: 'Levels.fyi' },
+                          { title: 'State of Remote Work 2024 — Buffer Report', desc: 'The most-cited remote work dataset. Benchmark async culture, compensation philosophy, and distributed team structure.', url: 'https://buffer.com/state-of-remote-work', source: 'Buffer' },
+                          { title: 'WEF Future of Jobs 2025 — Which Roles Are Growing', desc: 'Authoritative data on which tech roles are expanding, which are contracting, and the skills gap widening globally.', url: 'https://www.weforum.org/publications/the-future-of-jobs-report-2025/', source: 'WEF' },
+                          { title: 'Deel Global Hiring Report — LATAM Contractor Trends', desc: 'Contractor payment growth, most-hired roles, and emerging LATAM talent hubs for US & EU companies.', url: 'https://www.deel.com/resources', source: 'Deel' },
+                        ].map((a, i) => (
+                          <a key={i} href={a.url} target="_blank" rel="noopener noreferrer" className="group flex flex-col gap-1.5 p-4 bg-bg border border-border hover:border-emerald-400/30 transition-colors">
+                            <div className="flex items-center justify-between"><span className="mono text-[7px] font-bold text-emerald-400">MARKET DATA</span><span className="mono text-[7px] text-text/20">{a.source}</span></div>
+                            <h5 className="text-xs font-bold leading-snug group-hover:text-accent transition-colors">{a.title}</h5>
+                            <p className="mono text-[9px] text-text/40 leading-snug line-clamp-2">{a.desc}</p>
+                            <span className="mono text-[7px] text-accent/40 group-hover:text-accent transition-colors flex items-center gap-1 mt-auto">READ <ArrowUpRight size={8} /></span>
+                          </a>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* AI & Hiring */}
+                    <div className="mb-5">
+                      <div className="flex items-center gap-2 mb-3"><span className="mono text-[7px] font-bold text-accent tracking-widest">AI & HIRING TECH</span><div className="h-px flex-1 bg-border" /></div>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                        {[
+                          { title: 'How AI Is Transforming Talent Acquisition in 2026', desc: "From sourcing automation to AI-assisted screening — what actually works, what doesn't, and what to adopt first.", url: 'https://www.linkedin.com/business/talent/blog', source: 'LinkedIn Talent' },
+                          { title: 'Writing Job Descriptions That Attract Top LATAM Engineers', desc: 'The structural and language choices that make your JD stand out to senior candidates in a crowded market.', url: 'https://hbr.org/2022/03/writing-job-posts-that-attract-the-right-candidates', source: 'HBR' },
+                          { title: 'Structured Interviews: The Fairest, Most Predictive Method', desc: "Meta-analysis shows structured interviews predict performance 2× better than unstructured ones. Here's the framework.", url: 'https://hbr.org/2016/04/how-to-take-the-bias-out-of-interviews', source: 'HBR' },
+                          { title: 'AI Skills in Hiring: What Senior Engineers Are Actually Learning', desc: 'Which AI skills are employers paying premiums for right now — and how to assess them in interviews.', url: 'https://www.coursera.org/articles/ai-skills', source: 'Coursera' },
+                        ].map((a, i) => (
+                          <a key={i} href={a.url} target="_blank" rel="noopener noreferrer" className="group flex flex-col gap-1.5 p-4 bg-bg border border-border hover:border-accent/30 transition-colors">
+                            <div className="flex items-center justify-between"><span className="mono text-[7px] font-bold text-accent">AI & HIRING</span><span className="mono text-[7px] text-text/20">{a.source}</span></div>
+                            <h5 className="text-xs font-bold leading-snug group-hover:text-accent transition-colors">{a.title}</h5>
+                            <p className="mono text-[9px] text-text/40 leading-snug line-clamp-2">{a.desc}</p>
+                            <span className="mono text-[7px] text-accent/40 group-hover:text-accent transition-colors flex items-center gap-1 mt-auto">READ <ArrowUpRight size={8} /></span>
+                          </a>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Templates */}
+                    <div>
+                      <div className="flex items-center gap-2 mb-3"><span className="mono text-[7px] font-bold text-blue-400 tracking-widest">TEMPLATES & TOOLS</span><div className="h-px flex-1 bg-border" /></div>
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
+                        {[
+                          { title: 'Interview Scorecard Template (Notion)', desc: 'Standardise candidate evaluation across your hiring panel with a single shared scorecard.', url: 'https://www.notion.com/templates/job-interview-rating-system', source: 'Notion' },
+                          { title: 'Job Requisition & Approval Template', desc: 'The doc your recruiting team needs before opening any role — scope, comp range, timeline, stakeholders.', url: 'https://www.notion.com/templates/job-offer-letter', source: 'Notion' },
+                          { title: 'Hiring Tracker: Roles, Pipelines & Offers', desc: 'Track every open role, candidate status, and offer in one place. Reduce chaos, accelerate decisions.', url: 'https://www.notion.com/templates/job-offers-tracker', source: 'Notion' },
+                        ].map((a, i) => (
+                          <a key={i} href={a.url} target="_blank" rel="noopener noreferrer" className="group flex flex-col gap-1.5 p-4 bg-bg border border-blue-400/10 hover:border-blue-400/30 transition-colors">
+                            <div className="flex items-center justify-between"><span className="mono text-[7px] font-bold text-blue-400">TEMPLATE</span><span className="mono text-[7px] text-text/20">{a.source}</span></div>
+                            <h5 className="text-xs font-bold leading-snug group-hover:text-accent transition-colors">{a.title}</h5>
+                            <p className="mono text-[9px] text-text/40 leading-snug line-clamp-2">{a.desc}</p>
+                            <span className="mono text-[7px] text-blue-400/40 group-hover:text-blue-400 transition-colors flex items-center gap-1 mt-auto">USE FREE <ArrowUpRight size={8} /></span>
+                          </a>
+                        ))}
+                      </div>
                     </div>
                   </div>
                 </div>
