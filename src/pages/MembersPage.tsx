@@ -107,7 +107,6 @@ function PaywallGate({ user: _user }: { user: User | null }) {
   );
 }
 
-// ─── Newsletter Archive ───────────────────────────────────────────────────────
 // ─── Access Tab ──────────────────────────────────────────────────────────────
 // ─── CoinGecko: Crypto price ticker for AccessTab ────────────────────────────
 interface CryptoPrice { id: string; symbol: string; usd: number; usd_24h_change: number; }

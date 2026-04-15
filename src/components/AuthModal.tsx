@@ -173,18 +173,6 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
       await saveUserRole(user.uid, selectedRole).catch(err =>
         console.error('[finalizeAuth] role save failed:', err)
       );
-      // Track signup to Google Sheets — fire and forget, never block auth
-      fetch('/api/subscribe-newsletter?action=track', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          uid: user.uid,
-          email: user.email || '',
-          displayName: user.displayName || '',
-          role: selectedRole,
-          timestamp: new Date().toISOString(),
-        }),
-      }).catch(() => {});
     }
     handleClose();
   };

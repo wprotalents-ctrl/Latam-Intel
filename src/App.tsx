@@ -83,11 +83,8 @@ const TRANSLATIONS = {
     briefings: "Talent Briefings",
     intelReports: "Strategic Intelligence",
     joinNetwork: "Initiate Search",
-    getSignal: "Get the AI talent signal every Thursday.",
-    subscribe: "Subscribe to Market Alerts",
     marketPulse: "Talent Pulse",
     archive: "Intel Archive",
-    subscribeBtn: "Subscribe",
     rights: "WProTalents © 2026 ALL RIGHTS RESERVED",
     terms: "Terms",
     privacy: "Privacy",
@@ -228,11 +225,8 @@ const TRANSLATIONS = {
     briefings: "Informes Laborales",
     intelReports: "Inteligencia de Fuerza Laboral",
     joinNetwork: "Únete a la Red de Talento",
-    getSignal: "Recibe la señal de empleos IA todos los jueves.",
-    subscribe: "Suscríbete a Alertas de Empleo",
     marketPulse: "Pulso del Empleo",
     archive: "Archivo de Empleos",
-    subscribeBtn: "Suscribirse",
     rights: "TODOS LOS DERECHOS RESERVADOS",
     terms: "Términos",
     privacy: "Privacidad",
@@ -372,11 +366,8 @@ const TRANSLATIONS = {
     briefings: "Briefings de Empregos",
     intelReports: "Inteligência da Força de Trabalho",
     joinNetwork: "Junte-se à Rede de Talentos",
-    getSignal: "Receba o sinal de empregos de IA toda quinta-feira.",
-    subscribe: "Inscreva-se em Alertas de Emprego",
     marketPulse: "Pulso do Emprego",
     archive: "Arquivo de Empregos",
-    subscribeBtn: "Inscrever-se",
     rights: "TODOS OS DIREITOS RESERVADOS",
     terms: "Termos",
     privacy: "Privacidade",
@@ -690,9 +681,6 @@ export default function App() {
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [briefings, setBriefings] = useState<Briefing[]>(MOCK_BRIEFINGS);
   const [intelBriefs, setIntelBriefs] = useState<IntelligenceBrief[]>([]);
-  const [newsletterEmail, setNewsletterEmail] = useState('');
-  const [newsletterConsent, setNewsletterConsent] = useState(false);
-  const [newsletterStatus, setNewsletterStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   // Initialize theme from localStorage or default to 'dark'
   const [theme, setTheme] = useState<'dark' | 'light'>(() => {
     if (typeof window !== 'undefined') {
@@ -862,27 +850,6 @@ export default function App() {
       console.error("Sync error:", error);
     } finally {
       setIsSyncing(false);
-    }
-  };
-
-  const handleNewsletterSubscribe = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!newsletterEmail) return;
-    setNewsletterStatus('loading');
-    try {
-      const response = await fetch('/api/subscribe-newsletter', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: newsletterEmail }),
-      });
-      if (response.ok) {
-        setNewsletterStatus('success');
-        setNewsletterEmail('');
-      } else {
-        setNewsletterStatus('error');
-      }
-    } catch (error) {
-      setNewsletterStatus('error');
     }
   };
 
@@ -1593,49 +1560,6 @@ export default function App() {
                             </span>
                           </a>
                         ))}
-                      </div>
-                    </div>
-
-                    {/* Subscribe Strip */}
-                    <div className="bg-bg p-6 border-b border-border">
-                      <div className="flex flex-col md:flex-row md:items-center gap-6">
-                        <div className="flex-1">
-                          <div className="mono text-[9px] text-accent font-bold mb-1 flex items-center gap-2">
-                            <Radio size={10} className="animate-pulse" /> WPRO SIGNAL · EVERY THURSDAY
-                          </div>
-                          <p className="text-sm text-text/60">{t.getSignal}</p>
-                        </div>
-                        <form onSubmit={handleNewsletterSubscribe} className="flex gap-2 shrink-0">
-                          <input
-                            type="email"
-                            required
-                            value={newsletterEmail}
-                            onChange={e => setNewsletterEmail(e.target.value)}
-                            placeholder="your@email.com"
-                            disabled={newsletterStatus === 'success'}
-                            className="bg-surface border border-border px-3 py-2 mono text-[10px] focus:outline-none focus:border-accent/50 w-48 placeholder:text-text/20 disabled:opacity-50"
-                          />
-                          <button
-                            type="submit"
-                            disabled={newsletterStatus === 'loading' || newsletterStatus === 'success'}
-                            className="px-4 py-2 bg-accent text-black mono text-[9px] font-bold hover:opacity-90 transition-opacity disabled:opacity-50 whitespace-nowrap"
-                          >
-                            {newsletterStatus === 'success' ? '✓ SUBSCRIBED' : newsletterStatus === 'loading' ? '...' : t.subscribeBtn.toUpperCase()}
-                          </button>
-                        </form>
-                        <label className="flex items-start gap-2 mt-2 cursor-pointer">
-                          <input
-                            type="checkbox"
-                            checked={newsletterConsent}
-                            onChange={e => setNewsletterConsent(e.target.checked)}
-                            className="mt-0.5 accent-[var(--color-accent)] shrink-0"
-                          />
-                          <span className="mono text-[8px] text-text/30 leading-relaxed">
-                            I agree to the{' '}
-                            <button onClick={() => setViewMode('Privacy')} className="text-accent hover:underline">Privacy Policy</button>
-                            {' '}and consent to receive communications from World Pro Talents LLC.
-                          </span>
-                        </label>
                       </div>
                     </div>
                     {/* Filler: fills remaining height so bg-border gap doesn't show */}
