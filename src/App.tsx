@@ -56,6 +56,7 @@ import { onSnapshot, doc, getDoc, setDoc, collection, query, orderBy, limit, ser
 import { AuthModal } from './components/AuthModal';
 import { SubscriptionSection } from './components/SubscriptionSection';
 import JobsPage from './pages/JobsPage';
+import PrivacyPage from './pages/PrivacyPage';
 import ClientJobPostForm, { type ClientJobPostData } from './components/ClientJobPostForm';
 import CompanyIntelPanel from './components/CompanyIntelPanel';
 import CandidateIntel from './components/CandidateIntel';
@@ -656,7 +657,7 @@ export default function App() {
     const saved = localStorage.getItem('wpro_lang');
     return (saved === 'EN' || saved === 'ES' || saved === 'PT') ? saved as Language : 'EN';
   });
-  const [viewMode, setViewMode] = useState<'Dashboard' | 'Jobs'>('Dashboard');
+  const [viewMode, setViewMode] = useState<'Dashboard' | 'Jobs' | 'Privacy'>('Dashboard');
   const [currentTime, setCurrentTime] = useState(new Date());
   const [isSyncing, setIsSyncing] = useState(false);
   const [isCustomizeOpen, setIsCustomizeOpen] = useState(false);
@@ -690,6 +691,7 @@ export default function App() {
   const [briefings, setBriefings] = useState<Briefing[]>(MOCK_BRIEFINGS);
   const [intelBriefs, setIntelBriefs] = useState<IntelligenceBrief[]>([]);
   const [newsletterEmail, setNewsletterEmail] = useState('');
+  const [newsletterConsent, setNewsletterConsent] = useState(false);
   const [newsletterStatus, setNewsletterStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   // Initialize theme from localStorage or default to 'dark'
   const [theme, setTheme] = useState<'dark' | 'light'>(() => {
@@ -1188,6 +1190,16 @@ export default function App() {
             >
               <JobsPage lang={lang} isLoggedIn={!!user} />
             </motion.div>
+          ) : viewMode === 'Privacy' ? (
+            <motion.div
+              key="privacy"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="absolute inset-0 overflow-y-auto"
+            >
+              <PrivacyPage onBack={() => setViewMode('Dashboard')} />
+            </motion.div>
           ) : (
             <motion.div
               key={userRole === 'company' ? 'client-portal' : 'dashboard'}
@@ -1628,6 +1640,19 @@ export default function App() {
                             {newsletterStatus === 'success' ? '✓ SUBSCRIBED' : newsletterStatus === 'loading' ? '...' : t.subscribeBtn.toUpperCase()}
                           </button>
                         </form>
+                        <label className="flex items-start gap-2 mt-2 cursor-pointer">
+                          <input
+                            type="checkbox"
+                            checked={newsletterConsent}
+                            onChange={e => setNewsletterConsent(e.target.checked)}
+                            className="mt-0.5 accent-[var(--color-accent)] shrink-0"
+                          />
+                          <span className="mono text-[8px] text-text/30 leading-relaxed">
+                            I agree to the{' '}
+                            <button onClick={() => setViewMode('Privacy')} className="text-accent hover:underline">Privacy Policy</button>
+                            {' '}and consent to receive communications from World Pro Talents LLC.
+                          </span>
+                        </label>
                       </div>
                     </div>
                     {/* Filler: fills remaining height so bg-border gap doesn't show */}
@@ -1932,9 +1957,9 @@ export default function App() {
               </div>
             </div>
             <div className="flex gap-8 mono text-[9px] font-bold text-text/40">
-              <a href="https://wprotalents.lat" target="_blank" rel="noopener noreferrer" className="hover:text-accent transition-colors">{t.terms}</a>
-              <a href="mailto:info@wprotalents.lat" className="hover:text-accent transition-colors">{t.privacy}</a>
-              <a href="https://wa.me/573243132500" target="_blank" rel="noopener noreferrer" className="hover:text-accent transition-colors">{t.contact}</a>
+              <button onClick={() => setViewMode('Privacy')} className="hover:text-accent transition-colors">{t.privacy}</button>
+              <a href="mailto:info@wprotalents.lat" className="hover:text-accent transition-colors">{t.contact}</a>
+              <a href="https://wa.me/573243132500" target="_blank" rel="noopener noreferrer" className="hover:text-accent transition-colors">WhatsApp</a>
             </div>
           </div>
         </div>

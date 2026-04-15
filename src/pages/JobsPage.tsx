@@ -553,11 +553,22 @@ function MarketValueTeaser({ lang = 'EN', isLoggedIn = false }: { lang?: string;
                           />
                           <button
                             type="submit"
-                            disabled={capturing}
+                            disabled={capturing || !emailConsent}
                             className="w-full py-1 bg-accent text-black mono text-[8px] font-bold hover:opacity-90 transition-opacity flex items-center justify-center gap-1 disabled:opacity-50"
                           >
                             {capturing ? <Loader2 size={9} className="animate-spin" /> : <><ChevronRight size={9} /> {lang === 'PT' ? 'VER SALÁRIO' : lang === 'ES' ? 'VER SALARIO' : 'SEE REMOTE'}</>}
                           </button>
+                          <label className="flex items-start gap-1 cursor-pointer">
+                            <input
+                              type="checkbox"
+                              checked={emailConsent}
+                              onChange={e => setEmailConsent(e.target.checked)}
+                              className="mt-0.5 shrink-0"
+                            />
+                            <span className="mono text-[7px] text-text/30 leading-tight">
+                              I agree to the <a href="#privacy" onClick={e => { e.preventDefault(); e.stopPropagation(); }} className="text-accent">Privacy Policy</a> & communications consent.
+                            </span>
+                          </label>
                         </form>
                       </div>
                     )}
