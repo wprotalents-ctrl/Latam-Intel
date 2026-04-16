@@ -212,13 +212,11 @@ function getPortalSections(lang: string): Record<SectionKey, PortalSection> {
         { title: 'Identifique sua Estrela Guia na Busca de Emprego', desc: 'Clarifique o que você realmente busca — função, remuneração, cultura — antes de gastar uma única hora se candidatando.', url: 'https://hbr.org/2021/01/figuring-out-your-career-goals', tag: 'ESTRATÉGIA' },
         { title: 'Monte seu Centro de Comando para Busca de Emprego', desc: 'Rastreie cada candidatura, follow-up e contato em um sistema organizado para que nada seja perdido.', url: 'https://www.notion.com/templates/job-search-tracker', tag: 'ORGANIZAÇÃO' },
         { title: 'LATAM para o Mundo: Seu Roteiro Remoto em USD', desc: 'Os passos exatos que profissionais LATAM usam para passar de salário local para remuneração remota em USD/EUR.', url: 'https://remote.com/blog/employer-of-record-latin-america', tag: 'LATAM' },
-        { title: 'Assine o Workforce Daily — Grátis', desc: 'Sinais semanais de contratação em IA, movimentos salariais na LATAM e inteligência de mercado na sua caixa de entrada.', url: 'https://wprotalents.lat', tag: 'WPRO INTEL', wpro: true },
         { title: 'Brag Doc: Registre Suas Conquistas Continuamente', desc: 'O único hábito que torna cada atualização de currículo, avaliação de desempenho e negociação salarial dramaticamente mais fácil.', url: 'https://hbr.org/2022/01/how-to-build-a-brag-document', tag: 'INTEL DE CARREIRA' },
       ] : isES ? [
         { title: 'Identifica tu Estrella del Norte en la Búsqueda de Empleo', desc: 'Aclara lo que realmente buscas — rol, compensación, cultura — antes de pasar una sola hora aplicando.', url: 'https://hbr.org/2021/01/figuring-out-your-career-goals', tag: 'ESTRATEGIA' },
         { title: 'Construye tu Centro de Comando de Búsqueda de Empleo', desc: 'Rastrea cada solicitud, seguimiento y contacto en un sistema organizado para que nada se pierda.', url: 'https://www.notion.com/templates/job-search-tracker', tag: 'ORGANIZACIÓN' },
         { title: 'LATAM al Mundo: Tu Hoja de Ruta Remota en USD', desc: 'Los pasos exactos que siguen los profesionales de LATAM para pasar del salario local a la compensación remota en USD/EUR.', url: 'https://remote.com/blog/employer-of-record-latin-america', tag: 'LATAM' },
-        { title: 'Suscríbete a Workforce Daily — Gratis', desc: 'Señales semanales de contratación en IA, movimientos salariales en LATAM e inteligencia de mercado en tu bandeja.', url: 'https://wprotalents.lat', tag: 'WPRO INTEL', wpro: true },
         { title: 'Brag Doc: Registra tus Logros Continuamente', desc: 'El único hábito que hace que cada actualización de currículum, revisión de desempeño y negociación salarial sea mucho más fácil.', url: 'https://hbr.org/2022/01/how-to-build-a-brag-document', tag: 'INTEL DE CARRERA' },
       ] : [
         { title: 'Identify Your Job Search North Star', desc: "Clarify what you're actually looking for — role, comp, culture — before spending a single hour applying.", url: 'https://hbr.org/2021/01/figuring-out-your-career-goals', tag: 'STRATEGY' },
@@ -396,7 +394,7 @@ function MarketValueTeaser({ lang = 'EN', isLoggedIn = false }: { lang?: string;
   const [role, setRole] = useState<RoleKey>('backend');
   const [country, setCountry] = useState<CountryCode>('BR');
   const [yearsExp, setYearsExp] = useState(4);
-  const [salaryShown, setSalaryShown] = useState(false);
+  const [shown, setShown] = useState(false);
   // Email gate — auto-unlock for logged-in users
   const [email, setEmail] = useState('');
   const [captured, setCaptured] = useState(() => isLoggedIn);
@@ -455,14 +453,430 @@ function MarketValueTeaser({ lang = 'EN', isLoggedIn = false }: { lang?: string;
           body: JSON.stringify({ email, role, country, yearsExp, source: 'market-value-teaser' }),
         }),
       ]);
-      setCaptured(true);
-    } catch (err) {
-      console.error('captureEmail error', err);
     } finally {
+      setCaptured(true);
       setCapturing(false);
     }
-  };
+  }
 
+  return (
+    <div className="border-b border-border bg-surface/30">
+      <div className="px-6 md:px-10 py-6 max-w-7xl mx-auto">
+        <div className="border border-accent/20 bg-accent/5">
+          {/* Header */}
+          <div className="flex items-center gap-3 px-5 py-3 border-b border-accent/10">
+            <BarChart2 size={12} className="text-accent" />
+            <span className="mono text-[9px] font-bold text-accent tracking-widest">{tt.teaserBadge}</span>
+            <div className="h-px flex-1 bg-accent/10" />
+            <span className="mono text-[7px] text-text/30">{tt.teaserFullDash}</span>
+          </div>
+
+          <div className="p-5">
+            {/* Quick inputs */}
+            <div className="grid grid-cols-3 gap-2 mb-4">
+              <div>
+                <label className="mono text-[7px] text-text/30 block mb-1">{tt.teaserRole}</label>
+                <select value={role} onChange={e => { setRole(e.target.value as RoleKey); setShown(false); }}
+                  className="w-full bg-bg border border-border px-2 py-2 mono text-[10px] focus:outline-none focus:border-accent/50 transition-colors">
+                  {roleOpts.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
+                </select>
+              </div>
+              <div>
+                <label className="mono text-[7px] text-text/30 block mb-1">{tt.teaserCountry}</label>
+                <select value={country} onChange={e => { setCountry(e.target.value as CountryCode); setShown(false); }}
+                  className="w-full bg-bg border border-border px-2 py-2 mono text-[10px] focus:outline-none focus:border-accent/50 transition-colors">
+                  {COUNTRY_OPTS.map(o => <option key={o.value} value={o.value}>{o.flag} {o.label}</option>)}
+                </select>
+              </div>
+              <div>
+                <label className="mono text-[7px] text-text/30 block mb-1">{tt.teaserYearsExp}</label>
+                <input type="number" min={0} max={30} value={yearsExp}
+                  onChange={e => { setYearsExp(Number(e.target.value)); setShown(false); }}
+                  className="w-full bg-bg border border-border px-2 py-2 mono text-[10px] focus:outline-none focus:border-accent/50 transition-colors" />
+              </div>
+            </div>
+
+            <button
+              onClick={() => setShown(true)}
+              className="w-full py-2.5 bg-accent text-black mono text-[9px] font-bold hover:opacity-90 transition-opacity flex items-center justify-center gap-2 mb-4"
+            >
+              <BarChart2 size={11} /> {tt.teaserCalculate}
+            </button>
+
+            <AnimatePresence>
+              {shown && (
+                <motion.div
+                  initial={{ opacity: 0, y: 4 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0 }}
+                  className="space-y-3"
+                >
+                  {/* Market mid — local free, remote gated */}
+                  <div className="grid grid-cols-2 gap-px bg-border">
+                    <div className="bg-bg p-4 text-center">
+                      <p className="mono text-[7px] text-text/30 mb-1">{tt.teaserLocalMid}</p>
+                      <p className="text-xl font-black text-text">{fmt(preview.marketMid)}</p>
+                      <p className="mono text-[7px] text-text/20 mt-0.5">{preview.seniorityLabel} · {tt.teaserPerYear}</p>
+                    </div>
+                    {captured ? (
+                      <div className="bg-accent/5 p-4 text-center">
+                        <p className="mono text-[7px] text-accent mb-1">{tt.teaserRemote}</p>
+                        <p className="text-xl font-black text-accent">{fmt(preview.remoteMid)}</p>
+                        <p className="mono text-[7px] text-text/20 mt-0.5">+{preview.remoteUplift}% {tt.teaserUplift}</p>
+                      </div>
+                    ) : (
+                      <div className="bg-accent/5 p-4 flex flex-col items-center justify-center gap-2 relative">
+                        {/* Blurred remote value behind the gate */}
+                        <p className="mono text-[7px] text-accent mb-0.5">{tt.teaserRemote}</p>
+                        <p className="text-xl font-black text-accent opacity-20 blur-[5px] select-none">{fmt(preview.remoteMid)}</p>
+                        <form onSubmit={captureEmail} className="absolute inset-0 flex flex-col items-center justify-center gap-1.5 px-3">
+                          <Mail size={11} className="text-accent" />
+                          <p className="mono text-[7px] text-text/50 text-center leading-tight">Enter email to unlock</p>
+                          <input
+                            type="email"
+                            required
+                            value={email}
+                            onChange={e => setEmail(e.target.value)}
+                            placeholder="you@example.com"
+                            className="w-full bg-bg border border-accent/40 px-2 py-1 mono text-[9px] focus:outline-none focus:border-accent text-center placeholder:text-text/20"
+                          />
+                          <button
+                            type="submit"
+                            disabled={capturing || !emailConsent}
+                            className="w-full py-1 bg-accent text-black mono text-[8px] font-bold hover:opacity-90 transition-opacity flex items-center justify-center gap-1 disabled:opacity-50"
+                          >
+                            {capturing ? <Loader2 size={9} className="animate-spin" /> : <><ChevronRight size={9} /> {lang === 'PT' ? 'VER SALÁRIO' : lang === 'ES' ? 'VER SALARIO' : 'SEE REMOTE'}</>}
+                          </button>
+                          <label className="flex items-start gap-1 cursor-pointer">
+                            <input
+                              type="checkbox"
+                              checked={emailConsent}
+                              onChange={e => setEmailConsent(e.target.checked)}
+                              className="mt-0.5 shrink-0"
+                            />
+                            <span className="mono text-[7px] text-text/30 leading-tight">
+                              I agree to the <a href="#privacy" onClick={e => { e.preventDefault(); e.stopPropagation(); }} className="text-accent">Privacy Policy</a> & communications consent.
+                            </span>
+                          </label>
+                        </form>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Locked sections */}
+                  <div className="relative">
+                    <div className="grid grid-cols-3 gap-px bg-border opacity-30 blur-[2px] pointer-events-none select-none">
+                      {tt.teaserLockedSections.map((label: string) => (
+                        <div key={label} className="bg-surface p-4 text-center">
+                          <p className="mono text-[7px] text-text/30 mb-1">{label.toUpperCase()}</p>
+                          <p className="text-lg font-black text-text">$••,•••</p>
+                        </div>
+                      ))}
+                    </div>
+                    <div className="absolute inset-0 flex flex-col items-center justify-center gap-2">
+                      <Lock size={16} className="text-accent" />
+                      <p className="mono text-[8px] font-bold text-text">{tt.teaserLockedLabel}</p>
+                      <a
+                        href="/members"
+                        className="mono text-[8px] bg-accent text-black px-4 py-1.5 font-bold hover:opacity-90 transition-opacity flex items-center gap-1"
+                      >
+                        {tt.teaserUnlock} <ChevronRight size={9} />
+                      </a>
+                    </div>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─── Teleport: LATAM City Quality-of-Life Widget ─────────────────────────────
+interface CityScore { name: string; flag: string; slug: string; overall: number; tech: number; cost: number; safety: number; }
+
+const LATAM_CITIES = [
+  { name: 'Medellín',    flag: '🇨🇴', slug: 'medellin'      },
+  { name: 'Bogotá',      flag: '🇨🇴', slug: 'bogota'        },
+  { name: 'São Paulo',   flag: '🇧🇷', slug: 'sao-paulo'     },
+  { name: 'Buenos Aires',flag: '🇦🇷', slug: 'buenos-aires'  },
+  { name: 'Mexico City', flag: '🇲🇽', slug: 'mexico-city'   },
+  { name: 'Lima',        flag: '🇵🇪', slug: 'lima'          },
+  { name: 'Santiago',    flag: '🇨🇱', slug: 'santiago'      },
+  { name: 'Montevideo',  flag: '🇺🇾', slug: 'montevideo'    },
+];
+
+function LatamCitiesWidget({ lang = 'EN' }: { lang?: string }) {
+  const [cities, setCities] = React.useState<CityScore[]>([]);
+  const [loading, setLoading] = React.useState(true);
+  const [error, setError] = React.useState(false);
+
+  const labels: Record<string, { title: string; tech: string; cost: string; safety: string; overall: string }> = {
+    EN: { title: 'LATAM TECH HUBS · QUALITY OF LIFE', tech: 'Tech', cost: 'Affordability', safety: 'Safety', overall: 'Score' },
+    ES: { title: 'HUBS TECH LATAM · CALIDAD DE VIDA',  tech: 'Tech', cost: 'Costo', safety: 'Seguridad', overall: 'Score' },
+    PT: { title: 'HUBS TECH LATAM · QUALIDADE DE VIDA', tech: 'Tech', cost: 'Custo', safety: 'Segurança', overall: 'Score' },
+  };
+  const lb = labels[lang] || labels.EN;
+
+  React.useEffect(() => {
+    let cancelled = false;
+    async function load() {
+      try {
+        const results = await Promise.allSettled(
+          LATAM_CITIES.map(c =>
+            fetch(`https://api.teleport.org/api/urban_areas/slug:${c.slug}/scores/`)
+              .then(r => r.ok ? r.json() : null)
+              .then(d => {
+                if (!d) return null;
+                const cats = d.categories || [];
+                const get = (name: string) => {
+                  const cat = cats.find((x: any) => x.name.toLowerCase().includes(name));
+                  return cat ? Math.round(cat.score_out_of_10 * 10) : 0;
+                };
+                return {
+                  name: c.name, flag: c.flag, slug: c.slug,
+                  overall: Math.round((d.teleport_city_score || 0)),
+                  tech: get('startup'),
+                  cost: get('cost'),
+                  safety: get('safety'),
+                } as CityScore;
+              })
+          )
+        );
+        if (cancelled) return;
+        const built = results
+          .filter(r => r.status === 'fulfilled' && r.value)
+          .map(r => (r as PromiseFulfilledResult<CityScore | null>).value!)
+          .sort((a, b) => b.overall - a.overall);
+        setCities(built);
+      } catch { setError(true); }
+      finally { if (!cancelled) setLoading(false); }
+    }
+    load();
+    return () => { cancelled = true; };
+  }, []);
+
+  if (error || (!loading && cities.length === 0)) return null;
+
+  return (
+    <section className="border-b border-border bg-bg px-6 md:px-10 py-8 max-w-7xl mx-auto w-full">
+      <div className="mono text-[9px] text-text/40 mb-4 flex items-center gap-2">
+        <Globe size={10} className="text-accent" /> {lb.title}
+      </div>
+      {loading ? (
+        <div className="flex gap-2">{[...Array(4)].map((_, i) => <div key={i} className="h-24 flex-1 bg-surface border border-border animate-pulse" />)}</div>
+      ) : (
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+          {cities.slice(0, 8).map(city => (
+            <div key={city.slug} className="bg-surface border border-border p-3">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-[8px] font-bold text-text/80">{city.flag} {city.name}</span>
+                <span className="mono text-[8px] font-black text-accent">{city.overall}<span className="text-text/30">/100</span></span>
+              </div>
+              <div className="space-y-1">
+                {[
+                  { label: lb.tech, val: city.tech },
+                  { label: lb.cost, val: city.cost },
+                  { label: lb.safety, val: city.safety },
+                ].map(row => (
+                  <div key={row.label} className="flex items-center gap-1">
+                    <span className="mono text-[7px] text-text/30 w-16 shrink-0">{row.label}</span>
+                    <div className="flex-1 h-1 bg-border rounded-full overflow-hidden">
+                      <div className="h-full bg-accent/60 rounded-full" style={{ width: `${row.val}%` }} />
+                    </div>
+                    <span className="mono text-[7px] text-text/50 w-5 text-right">{row.val}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </section>
+  );
+}
+
+function CandidateResourcesPanel({ onLinkedInBoost, lang = 'EN' }: { onLinkedInBoost: () => void; lang?: string }) {
+  const [activeSection, setActiveSection] = useState<SectionKey>('launch');
+  const portalSections = getPortalSections(lang);
+  const section = portalSections[activeSection];
+  const isES = lang === 'ES';
+  const isPT = lang === 'PT';
+
+  return (
+    <section className="border-b border-border bg-surface/20">
+      <div className="px-6 md:px-10 pt-8 pb-6 max-w-7xl mx-auto">
+
+        {/* Header */}
+        <div className="flex items-center gap-3 mb-5">
+          <Radio size={10} className="text-accent animate-pulse" />
+          <span className="mono text-[9px] text-accent tracking-widest font-bold">
+            {isPT ? 'INTELIGÊNCIA PARA CANDIDATOS // PORTAL WPRO' : isES ? 'INTELIGENCIA PARA CANDIDATOS // PORTAL WPRO' : 'CANDIDATE INTELLIGENCE // WPRO CAREER PORTAL'}
+          </span>
+          <div className="h-px flex-1 bg-border" />
+          <a
+            href="https://wprotalents.lat"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mono text-[8px] text-text/30 hover:text-accent transition-colors flex items-center gap-1"
+          >
+            wprotalents.lat <ArrowUpRight size={8} />
+          </a>
+        </div>
+
+        {/* Stats + Join CTA strip */}
+        <div className="grid grid-cols-2 sm:grid-cols-5 gap-px bg-border mb-6">
+          {[
+            { icon: <Users size={10} />, value: '23K+', label: isPT ? 'Rede' : isES ? 'Red' : 'Network' },
+            { icon: <Award size={10} />, value: '500+', label: isPT ? 'Colocados' : isES ? 'Colocados' : 'Placed' },
+            { icon: <Globe size={10} />, value: '12', label: isPT ? 'Países' : isES ? 'Países' : 'Countries' },
+            { icon: <Star size={10} />, value: '20yr', label: isPT ? 'Experiência' : isES ? 'Experiencia' : 'Experience' },
+          ].map((s, i) => (
+            <div key={i} className="bg-bg px-4 py-3 flex items-center gap-3">
+              <span className="text-accent">{s.icon}</span>
+              <span className="text-lg font-black text-accent">{s.value}</span>
+              <span className="mono text-[8px] text-text/30 uppercase tracking-widest">{s.label}</span>
+            </div>
+          ))}
+          {/* Get featured CTA as 5th stat */}
+          <button
+            onClick={onLinkedInBoost}
+            className="bg-accent/10 border-l border-accent/20 px-4 py-3 flex items-center gap-2 hover:bg-accent/20 transition-colors group col-span-2 sm:col-span-1"
+          >
+            <Linkedin size={12} className="text-[#0077B5] shrink-0" />
+            <div className="text-left">
+              <div className="mono text-[8px] font-bold text-accent group-hover:text-accent">{isPT ? 'SER DESTAQUE' : isES ? 'DESTACARSE' : 'GET FEATURED'}</div>
+              <div className="mono text-[7px] text-text/30">{isPT ? 'Grátis · 48h' : isES ? 'Gratis · 48h' : 'Free · 48h'}</div>
+            </div>
+            <ArrowUpRight size={9} className="text-accent ml-auto" />
+          </button>
+        </div>
+
+        {/* Tab navigation */}
+        <div className="flex gap-1 overflow-x-auto no-scrollbar mb-6 pb-1">
+          {SECTION_ORDER.map(key => {
+            const s = portalSections[key];
+            const isActive = activeSection === key;
+            return (
+              <button
+                key={key}
+                onClick={() => setActiveSection(key)}
+                className={`flex items-center gap-2 px-3 py-2 mono text-[8px] font-bold border whitespace-nowrap transition-all shrink-0 ${
+                  isActive
+                    ? `${s.accent} border-transparent`
+                    : 'bg-bg border-border text-text/30 hover:text-text/60 hover:border-text/20'
+                }`}
+              >
+                <s.Icon size={10} />
+                {s.label}
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Section content */}
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={activeSection}
+            initial={{ opacity: 0, y: 6 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.15 }}
+          >
+            {/* Section header */}
+            <div className="flex items-center gap-3 mb-4">
+              <span className={`mono text-[8px] font-bold ${section.color}`}>{section.tag}</span>
+              <span className="mono text-[9px] text-text/30">{section.desc}</span>
+            </div>
+
+            {/* Articles grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+              {section.articles.map((a, i) => (
+                <motion.a
+                  key={i}
+                  href={a.url === '#linkedin-boost' ? undefined : a.url}
+                  onClick={a.url === '#linkedin-boost' ? (e) => { e.preventDefault(); onLinkedInBoost(); } : undefined}
+                  target={a.url === '#linkedin-boost' ? undefined : '_blank'}
+                  rel={a.url === '#linkedin-boost' ? undefined : 'noopener noreferrer'}
+                  initial={{ opacity: 0, y: 4 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: i * 0.05 }}
+                  className={`group border bg-bg hover:border-accent/30 p-4 flex flex-col gap-2 transition-colors cursor-pointer ${
+                    a.wpro ? 'border-accent/20 bg-accent/5' : 'border-border'
+                  }`}
+                >
+                  <div className="flex items-center justify-between">
+                    <span className={`mono text-[7px] font-bold ${a.wpro ? 'text-accent' : section.color}`}>{a.tag}</span>
+                    {a.wpro && (
+                      <span className="mono text-[6px] bg-accent text-black px-1.5 py-0.5 font-black">WPRO</span>
+                    )}
+                  </div>
+                  <p className="text-xs font-bold leading-snug group-hover:text-accent transition-colors flex-1">
+                    {a.title}
+                  </p>
+                  <p className="mono text-[9px] text-text/40 leading-snug line-clamp-2">
+                    {a.desc}
+                  </p>
+                  <span className="mono text-[7px] text-text/20 group-hover:text-accent transition-colors flex items-center gap-1 mt-1">
+                    {a.url === '#linkedin-boost' ? 'SUBMIT' : 'READ'} <ArrowUpRight size={8} />
+                  </span>
+                </motion.a>
+              ))}
+            </div>
+          </motion.div>
+        </AnimatePresence>
+
+        {/* Career signal strip */}
+        <div className="mt-6 border border-border bg-bg p-4">
+          <div className="mono text-[8px] text-accent font-bold mb-3 flex items-center gap-2">
+            <Lightbulb size={9} /> {isPT ? 'SINAL DE CARREIRA // INTEL SEMANAL WPRO' : isES ? 'SEÑAL DE CARRERA // INTEL SEMANAL WPRO' : 'CAREER SIGNAL // WPRO WEEKLY INTEL'}
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+            {(isPT ? [
+              { icon: <TrendingUp size={11} className="text-accent shrink-0 mt-0.5" />, tip: 'Adicione IA / ML ao seu LinkedIn — buscas por "prompt engineering" cresceram 400% YoY entre recrutadores dos EUA e Europa.' },
+              { icon: <Globe size={11} className="text-emerald-400 shrink-0 mt-0.5" />, tip: 'Vagas remotas em USD/EUR pagam 3–5× os salários locais para engenheiros sênior da LATAM. Priorize empresas globais.' },
+              { icon: <Target size={11} className="text-blue-400 shrink-0 mt-0.5" />, tip: 'Recrutadores gastam ~7 segundos em um currículo. Comece com impacto mensurável, não funções. Números > tudo.' },
+              { icon: <TrendingDown size={11} className="text-red-400 shrink-0 mt-0.5" />, tip: 'Cargos mais em risco com IA: QA manual, entrada de dados, redação básica e frontend júnior (WEF 2026).' },
+            ] : isES ? [
+              { icon: <TrendingUp size={11} className="text-accent shrink-0 mt-0.5" />, tip: 'Agrega IA / ML a tu LinkedIn — las búsquedas de "prompt engineering" subieron 400% YoY entre reclutadores de EE.UU. y Europa.' },
+              { icon: <Globe size={11} className="text-emerald-400 shrink-0 mt-0.5" />, tip: 'Los roles remotos en USD/EUR pagan 3–5× los salarios locales para ingenieros sénior de LATAM. Prioriza empresas globales.' },
+              { icon: <Target size={11} className="text-blue-400 shrink-0 mt-0.5" />, tip: 'Los reclutadores dedican ~7 segundos a un currículum. Empieza con impacto medible, no funciones. Números > todo.' },
+              { icon: <TrendingDown size={11} className="text-red-400 shrink-0 mt-0.5" />, tip: 'Roles más en riesgo por IA: QA manual, entrada de datos, redacción básica y frontend junior (WEF 2026).' },
+            ] : [
+              { icon: <TrendingUp size={11} className="text-accent shrink-0 mt-0.5" />, tip: 'Add AI / ML to your LinkedIn — searches for "prompt engineering" are up 400% YoY among US & EU recruiters.' },
+              { icon: <Globe size={11} className="text-emerald-400 shrink-0 mt-0.5" />, tip: 'USD/EUR remote roles pay 3–5× local rates for senior LATAM engineers. Prioritise global-first companies.' },
+              { icon: <Target size={11} className="text-blue-400 shrink-0 mt-0.5" />, tip: 'Recruiters spend ~7 seconds on a resume. Lead with measurable impact, not duties. Numbers > everything.' },
+              { icon: <TrendingDown size={11} className="text-red-400 shrink-0 mt-0.5" />, tip: 'Roles most at risk from AI: manual QA, data entry, basic content writing, and junior frontend (2026 WEF).' },
+            ]).map((tip, i) => (
+              <div key={i} className="flex items-start gap-2">
+                {tip.icon}
+                <p className="mono text-[9px] text-text/50 leading-relaxed">{tip.tip}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+
+      </div>
+    </section>
+  );
+}
+
+// ── Job portal ────────────────────────────────────────────────────────────────
+function JobPortal({ lang, t, onPostVacancy }: { lang: string; t: typeof T.EN; onPostVacancy: () => void }) {
+  const [jobs, setJobs] = useState<Job[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
+  const [search, setSearch] = useState('');
+  const [region, setRegion] = useState('All');
+  const [page, setPage] = useState(1);
+  const PAGE = 30;
+  const [showLinkedIn, setShowLinkedIn] = useState(false);
+  const [saved, setSaved] = useState<Set<string>>(new Set());
+  const [matchPrefs, setMatchPrefs] = useState<MatchPrefs>(() => {
+    try { return JSON.parse(localStorage.getItem(MATCH_KEY) || '{}'); } catch { return {}; }
+  });
   const [matchOpen, setMatchOpen] = useState(true);
 
   const saveMatchPrefs = (prefs: MatchPrefs) => {
