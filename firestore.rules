@@ -134,5 +134,38 @@ service cloud.firestore {
       allow create: if isAuthenticated();
       allow update, delete: if isAdmin();
     }
+
+    // ═══════════════════════════════════════════════════════════════
+    // CV RADAR FEATURE - Client talent search profiles
+    // ═══════════════════════════════════════════════════════════════
+
+    match /clients/{clientId} {
+      // Clients can only access their own data
+      allow read, write: if isOwner(clientId);
+
+      // CV Radars - talent search profiles
+      match /cvRadars/{radarId} {
+        // Clients can read and write their own radars
+        allow read, write: if isOwner(clientId);
+
+        // Matches subcollection - audit trail (append-only)
+        // Cloud Function creates matches via service account
+        // Clients can view their matches and update status (viewed, contacted, etc.)
+        match /matches/{matchId} {
+          // Clients can only READ their own matches
+          allow read: if isOwner(clientId);
+          
+          // Clients can UPDATE status and notes (but cannot delete - audit trail)
+          allow update: if isOwner(clientId) &&
+                          request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'clientNotes', 'clientActionAt']);
+          
+          // Cloud Function and admin can create
+          allow create: if isAdmin() || request.auth.token.firebase.sign_in_provider == 'custom';
+          
+          // Never allow deletion (audit trail protection)
+          allow delete: if false;
+        }
+      }
+    }
   }
 }
