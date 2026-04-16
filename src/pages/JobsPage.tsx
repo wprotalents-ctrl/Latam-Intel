@@ -9,8 +9,8 @@ import {
   Newspaper, Mail, Lock, BarChart2
 } from 'lucide-react';
 import { computeMarketValue } from '../lib/intelligence';
-import { db } from '../firebase';
-import { collection, getDocs, query, orderBy, where } from 'firebase/firestore';
+// import { db } from '../firebase'; // No longer needed - using API-based loading
+// Firebase imports removed - using API-based job loading instead
 import type { RoleKey, CountryCode, EnglishLevel } from '../lib/intelligence';
 import LinkedInBoostModal from '../components/LinkedInBoostModal';
 import PostVacancyModal from '../components/PostVacancyModal';
@@ -899,38 +899,11 @@ function JobPortal({ lang, t, onPostVacancy }: { lang: string; t: typeof T.EN; o
     setLoading(true);
     setError(false);
     try {
-      // Fetch WProTalents curated jobs from Firestore
-      let wpJobs: any[] = [];
-      try {
-        const q = query(collection(db, 'jobPosts'), orderBy('createdAt', 'desc'));
-        const snap = await getDocs(q);
-        wpJobs = snap.docs.map(doc => {
-          const d = doc.data();
-          return {
-            id: `wpro-${doc.id}`,
-            title: `${d.seniority ? d.seniority.charAt(0).toUpperCase() + d.seniority.slice(1) + ' ' : ''}${d.role}`,
-            company: 'WProTalents Client',
-            location: d.country || 'LATAM',
-            url: `mailto:juan@wprotalents.lat?subject=${encodeURIComponent(`Apply: ${d.role} via WProTalents Intel`)}`,
-            salary: d.salary ? `USD ${Number(d.salary).toLocaleString()}` : null,
-            tags: d.role,
-            source: 'WProTalents',
-            region: normalizeRegion(d.country || 'LATAM'),
-            postedAt: d.createdAt,
-            description: d.description,
-          };
-        });
-      } catch (e) {
-        console.warn('Could not load WProTalents jobs:', e);
-      }
-
       // Fetch aggregated jobs from server-side API — bypasses CORS, 30-min cache
       const res = await fetch('/api/jobs');
       if (!res.ok) throw new Error('jobs API error');
       const apiJobs: any[] = await res.json();
-
-      // Prepend WProTalents curated jobs at the top
-      setJobs([...wpJobs, ...apiJobs]);
+      setJobs(apiJobs);
     } catch {
       setError(true);
     } finally {
@@ -1022,9 +995,6 @@ function JobPortal({ lang, t, onPostVacancy }: { lang: string; t: typeof T.EN; o
             {jobs.length > 0 && <span className="text-text/10 ml-1">of {jobs.length} total</span>}
           </span>
         )}
-        <button onClick={load} className="text-text/20 hover:text-accent transition-colors ml-1" title="Refresh">
-          <RefreshCw size={11} />
-        </button>
       </div>
 
       <p className="mono text-[9px] text-text/25 mb-4">{t.candidateDesc}</p>
