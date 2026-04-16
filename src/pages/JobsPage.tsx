@@ -911,7 +911,7 @@ function JobPortal({ lang, t, onPostVacancy }: { lang: string; t: typeof T.EN; o
             title: `${d.seniority ? d.seniority.charAt(0).toUpperCase() + d.seniority.slice(1) + ' ' : ''}${d.role}`,
             company: 'WProTalents Client',
             location: d.country || 'LATAM',
-            url: `mailto:juancarlosmolinadussan@gmail.com?subject=${encodeURIComponent(`Apply: ${d.role} via WProTalents Intel`)}`,
+            url: `mailto:juan@wprotalents.lat?subject=${encodeURIComponent(`Apply: ${d.role} via WProTalents Intel`)}`,
             salary: d.salary ? `USD ${Number(d.salary).toLocaleString()}` : null,
             tags: d.role,
             source: 'WProTalents',

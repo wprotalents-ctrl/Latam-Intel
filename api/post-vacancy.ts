@@ -26,17 +26,41 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   try {
     await db.collection("vacancies").add(submission);
 
-    const emailEndpoint = process.env.NOTIFICATION_EMAIL_ENDPOINT;
-    if (emailEndpoint) {
-      await fetch(emailEndpoint, {
+    // Email notification via Resend (set RESEND_API_KEY in Vercel env vars)
+    const resendKey = process.env.RESEND_API_KEY;
+    if (resendKey) {
+      await fetch("https://api.resend.com/emails", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Authorization": `Bearer ${resendKey}`,
+          "Content-Type": "application/json",
+        },
         body: JSON.stringify({
-          to: "juancarlosmolinadussan@gmail.com",
+          from: "WProTalents Intel <onboarding@resend.dev>",
+          to: ["juan@wprotalents.lat", "wprotalents@gmail.com"],
           subject: `🏢 New Vacancy: ${role} @ ${company}`,
-          text: `New client vacancy submission:\n\nCompany: ${company}\nWebsite: ${website || "N/A"}\nContact: ${contact}\nRole: ${role}\nSeniority: ${experience}\nSkills: ${skills}\nBudget: ${budget || "Not specified"}\nJob URL: ${jobUrl || "N/A"}\n\nDescription:\n${description || "N/A"}`,
+          html: `
+            <h2 style="font-family:monospace">New Client Vacancy</h2>
+            <table style="font-family:monospace;font-size:13px;border-collapse:collapse">
+              <tr><td style="padding:4px 12px 4px 0;color:#666">Company</td><td><strong>${company}</strong></td></tr>
+              <tr><td style="padding:4px 12px 4px 0;color:#666">Website</td><td>${website || "N/A"}</td></tr>
+              <tr><td style="padding:4px 12px 4px 0;color:#666">Contact</td><td>${contact}</td></tr>
+              <tr><td style="padding:4px 12px 4px 0;color:#666">Role</td><td>${role}</td></tr>
+              <tr><td style="padding:4px 12px 4px 0;color:#666">Seniority</td><td>${experience}</td></tr>
+              <tr><td style="padding:4px 12px 4px 0;color:#666">Skills</td><td>${skills}</td></tr>
+              <tr><td style="padding:4px 12px 4px 0;color:#666">Budget</td><td>${budget || "Not specified"}</td></tr>
+              <tr><td style="padding:4px 12px 4px 0;color:#666">Job URL</td><td>${jobUrl || "N/A"}</td></tr>
+            </table>
+            ${description ? `<hr style="margin:16px 0"/><h3 style="font-family:monospace">Description</h3><p style="font-family:monospace;font-size:12px">${description}</p>` : ""}
+            <hr style="margin:16px 0"/>
+            <p style="font-family:monospace;font-size:12px">
+              <a href="https://console.firebase.google.com/project/ai-studio-applet-webapp-b5093/firestore/databases/ai-studio-98e74f83-a378-445d-baa9-3c954d2762c7/data/~2Fvacancies">
+                View all vacancies in Firebase →
+              </a>
+            </p>
+          `,
         }),
-      }).catch(() => {});
+      }).catch((e: any) => console.warn("Resend email failed:", e.message));
     }
 
     return res.json({ success: true });

@@ -35,7 +35,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         },
         body: JSON.stringify({
           from: "WProTalents Intel <onboarding@resend.dev>",
-          to: ["juancarlosmolinadussan@gmail.com"],
+          to: ["juan@wprotalents.lat", "wprotalents@gmail.com"],
           subject: `🔥 New Talent Pool: ${name} — ${role}`,
           html: `
             <h2 style="font-family:monospace">New Talent Pool Submission</h2>
