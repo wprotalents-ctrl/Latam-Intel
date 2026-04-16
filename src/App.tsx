@@ -60,6 +60,8 @@ import PrivacyPage from './pages/PrivacyPage';
 import ClientJobPostForm, { type ClientJobPostData } from './components/ClientJobPostForm';
 import CompanyIntelPanel from './components/CompanyIntelPanel';
 import CandidateIntel from './components/CandidateIntel';
+import CVRadarDashboard from './components/CVRadarDashboard';
+import RadarDetailsPage from './components/RadarDetailsPage';
 import { type HiringPlan } from './lib/hiringPlan';
 import { type NetworkReach } from './lib/networkReach';
 
@@ -677,7 +679,8 @@ export default function App() {
   const [clientFormData, setClientFormData] = useState<ClientJobPostData | null>(null);
   const [clientInsightsLoading, setClientInsightsLoading] = useState(false);
   const [jobPostSaved, setJobPostSaved] = useState(false);
-  const [companyTab, setCompanyTab] = useState<'intel' | 'post'>('intel');
+  const [companyTab, setCompanyTab] = useState<'intel' | 'post' | 'radar'>('intel');
+  const [selectedRadarId, setSelectedRadarId] = useState<string | null>(null);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [briefings, setBriefings] = useState<Briefing[]>(MOCK_BRIEFINGS);
   const [intelBriefs, setIntelBriefs] = useState<IntelligenceBrief[]>([]);
@@ -1191,12 +1194,12 @@ export default function App() {
 
                   {/* Tab toggle: Market Data | Post a Role */}
                   <div className="flex gap-px mb-6 bg-border">
-                    {(['intel', 'post'] as const).map(tab => (
+                    {(['intel', 'post', 'radar'] as const).map(tab => (
                       <button key={tab} onClick={() => setCompanyTab(tab)}
                         className={`flex-1 py-2.5 mono text-[9px] font-bold uppercase tracking-widest transition-colors ${
                           companyTab === tab ? 'bg-accent text-black' : 'bg-bg text-text/40 hover:text-text'
                         }`}>
-                        {tab === 'intel' ? `📊 ${t.clientTabIntel}` : `📋 ${t.clientTabPost}`}
+                        {tab === 'intel' ? `📊 ${t.clientTabIntel}` : tab === 'post' ? `📋 ${t.clientTabPost}` : `🎯 CV Radar`}
                       </button>
                     ))}
                   </div>
@@ -1289,6 +1292,26 @@ export default function App() {
                       </>
                     )}
                   </div>
+                  )}
+
+
+                  {/* CV Radar tab */}
+                  {companyTab === 'radar' && (
+                    <>
+                      {!selectedRadarId ? (
+                        <CVRadarDashboard
+                          clientId={user?.uid || ''}
+                          onSelectRadar={(radarId) => setSelectedRadarId(radarId)}
+                        />
+                      ) : (
+                        <RadarDetailsPage
+                          clientId={user?.uid || ''}
+                          radarId={selectedRadarId}
+                          radarName=""
+                          onBack={() => setSelectedRadarId(null)}
+                        />
+                      )}
+                    </>
                   )}
 
                   {/* Company Resources — Hiring Intelligence Hub */}
