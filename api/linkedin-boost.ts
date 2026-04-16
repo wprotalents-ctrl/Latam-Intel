@@ -24,19 +24,42 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     // Save to Firestore so Juan can see all pending submissions in one place
     await db.collection("linkedin_boosts").add(submission);
 
-    // Email Juan via simple fetch to a mailto-style service or just log
-    // Using a simple fetch to an email API if configured, otherwise just save
-    const emailEndpoint = process.env.NOTIFICATION_EMAIL_ENDPOINT;
-    if (emailEndpoint) {
-      await fetch(emailEndpoint, {
+    // Email notification via Resend (set RESEND_API_KEY in Vercel env vars)
+    const resendKey = process.env.RESEND_API_KEY;
+    if (resendKey) {
+      await fetch("https://api.resend.com/emails", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Authorization": `Bearer ${resendKey}`,
+          "Content-Type": "application/json",
+        },
         body: JSON.stringify({
-          to: "juancarlosmolinadussan@gmail.com",
-          subject: `🔥 New LinkedIn Boost: ${name} — ${role}`,
-          text: `New candidate boost request:\n\nName: ${name}\nRole: ${role}\nSkills: ${skills}\nExperience: ${experience} years\nAvailability: ${availability}\nSalary: ${salary || "Not specified"}\nContact: ${contact}\n\n---\nGENERATED POST:\n\n${generatedPost}`,
+          from: "WProTalents Intel <onboarding@resend.dev>",
+          to: ["juancarlosmolinadussan@gmail.com"],
+          subject: `🔥 New Talent Pool: ${name} — ${role}`,
+          html: `
+            <h2 style="font-family:monospace">New Talent Pool Submission</h2>
+            <table style="font-family:monospace;font-size:13px;border-collapse:collapse">
+              <tr><td style="padding:4px 12px 4px 0;color:#666">Name</td><td><strong>${name}</strong></td></tr>
+              <tr><td style="padding:4px 12px 4px 0;color:#666">Role</td><td>${role}</td></tr>
+              <tr><td style="padding:4px 12px 4px 0;color:#666">Skills</td><td>${skills}</td></tr>
+              <tr><td style="padding:4px 12px 4px 0;color:#666">Experience</td><td>${experience} years</td></tr>
+              <tr><td style="padding:4px 12px 4px 0;color:#666">Availability</td><td>${availability}</td></tr>
+              <tr><td style="padding:4px 12px 4px 0;color:#666">Salary</td><td>${salary || "Not specified"}</td></tr>
+              <tr><td style="padding:4px 12px 4px 0;color:#666">Contact</td><td>${contact}</td></tr>
+            </table>
+            <hr style="margin:16px 0"/>
+            <h3 style="font-family:monospace">Generated LinkedIn Post</h3>
+            <pre style="background:#f5f5f5;padding:12px;font-size:12px;white-space:pre-wrap">${generatedPost}</pre>
+            <hr style="margin:16px 0"/>
+            <p style="font-family:monospace;font-size:12px">
+              <a href="https://console.firebase.google.com/project/ai-studio-applet-webapp-b5093/firestore/databases/ai-studio-98e74f83-a378-445d-baa9-3c954d2762c7/data/~2Flinkedin_boosts">
+                View all submissions in Firebase →
+              </a>
+            </p>
+          `,
         }),
-      }).catch(() => {});
+      }).catch((e: any) => console.warn("Resend email failed:", e.message));
     }
 
     return res.json({ success: true });

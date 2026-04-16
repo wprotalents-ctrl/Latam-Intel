@@ -52,7 +52,8 @@ const T = {
     loading: 'Aggregating jobs from multiple sources...',
     error: 'Could not load jobs',
     retry: 'RETRY',
-    noJobs: 'No jobs match your search.',
+    noJobs: 'No jobs match your filters.',
+    noJobsEmpty: 'No jobs loaded — tap ↻ to retry.',
     roles: 'roles',
     loadMore: 'LOAD MORE',
     matchTitle: 'Quick Match',
@@ -91,7 +92,8 @@ const T = {
     loading: 'Agregando empleos de múltiples fuentes...',
     error: 'No se pudieron cargar los empleos',
     retry: 'REINTENTAR',
-    noJobs: 'Sin resultados.',
+    noJobs: 'Sin resultados para tu búsqueda.',
+    noJobsEmpty: 'No se cargaron empleos — presiona ↻ para reintentar.',
     roles: 'roles',
     loadMore: 'CARGAR MÁS',
     matchTitle: 'Búsqueda Rápida',
@@ -130,7 +132,8 @@ const T = {
     loading: 'Agregando vagas de múltiplas fontes...',
     error: 'Não foi possível carregar as vagas',
     retry: 'TENTAR NOVAMENTE',
-    noJobs: 'Nenhuma vaga encontrada.',
+    noJobs: 'Nenhuma vaga para sua busca.',
+    noJobsEmpty: 'Nenhuma vaga carregada — toque ↻ para tentar novamente.',
     roles: 'vagas',
     loadMore: 'CARREGAR MAIS',
     matchTitle: 'Busca Rápida',
@@ -896,7 +899,7 @@ function JobPortal({ lang, t, onPostVacancy }: { lang: string; t: typeof T.EN; o
     setLoading(true);
     setError(false);
     try {
-      // Fetch WProTalents posted jobs from Firestore
+      // Fetch WProTalents curated jobs from Firestore
       let wpJobs: any[] = [];
       try {
         const q = query(collection(db, 'jobPosts'), orderBy('createdAt', 'desc'));
@@ -908,7 +911,7 @@ function JobPortal({ lang, t, onPostVacancy }: { lang: string; t: typeof T.EN; o
             title: `${d.seniority ? d.seniority.charAt(0).toUpperCase() + d.seniority.slice(1) + ' ' : ''}${d.role}`,
             company: 'WProTalents Client',
             location: d.country || 'LATAM',
-            url: 'https://wa.me/573243132500?text=' + encodeURIComponent(`Hi\! I saw the ${d.role} role on WProTalents Intel and I'd like to apply.`),
+            url: `mailto:juancarlosmolinadussan@gmail.com?subject=${encodeURIComponent(`Apply: ${d.role} via WProTalents Intel`)}`,
             salary: d.salary ? `USD ${Number(d.salary).toLocaleString()}` : null,
             tags: d.role,
             source: 'WProTalents',
@@ -921,45 +924,13 @@ function JobPortal({ lang, t, onPostVacancy }: { lang: string; t: typeof T.EN; o
         console.warn('Could not load WProTalents jobs:', e);
       }
 
-      const results = await Promise.allSettled([
-        // Remotive
-        fetch('https://remotive.com/api/remote-jobs?limit=50').then(r => r.json()).then(d =>
-          (d.jobs || []).map((j: any) => ({ id: `remotive-${j.id}`, title: j.title, company: j.company_name,
-            location: j.candidate_required_location || 'Remote', url: j.url, salary: j.salary || null,
-            tags: j.category, source: 'Remotive', region: normalizeRegion(j.candidate_required_location || 'Remote'),
-            postedAt: j.publication_date }))),
-        // Arbeitnow
-        fetch('https://www.arbeitnow.com/api/job-board-api').then(r => r.json()).then(d =>
-          (d.data || []).map((j: any) => ({ id: `arbeitnow-${j.slug}`, title: j.title, company: j.company_name,
-            location: j.location || 'Remote', url: j.url, salary: null, tags: (j.tags || []).join(', '),
-            source: 'Arbeitnow', region: normalizeRegion(j.location || 'Remote'), postedAt: j.created_at }))),
-        // Jobicy
-        fetch('https://jobicy.com/api/v2/remote-jobs?count=50').then(r => r.json()).then(d =>
-          (d.jobs || []).map((j: any) => ({ id: `jobicy-${j.id}`, title: j.jobTitle, company: j.companyName,
-            location: 'Remote', url: j.url, salary: j.salary ? `${j.salaryCurrency} ${j.salaryMin}–${j.salaryMax}` : null,
-            tags: (j.tags || []).join(', '), source: 'Jobicy', region: 'Worldwide', postedAt: j.publishedDate }))),
-        // GraphQL Jobs — remote tech roles, free, no auth
-        fetch('https://api.graphql.jobs/', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ query: `{ jobs(input:{types:[FULL_TIME],remotes:[{type:FULLY_REMOTE}]}) { id title applyUrl commitment { title } company { name } cities { name country { name isoCode } } tags { name } createdAt } }` }),
-        }).then(r => r.json()).then(d =>
-          ((d.data?.jobs) || []).map((j: any) => {
-            const country = j.cities?.[0]?.country?.isoCode || 'WW';
-            const loc = j.cities?.[0] ? `${j.cities[0].name}, ${j.cities[0].country?.name || ''}` : 'Remote';
-            const latamCodes = ['BR','MX','CO','AR','CL','PE','VE','EC','UY','PY','BO'];
-            const region = latamCodes.includes(country) ? 'LATAM' : ['US','CA'].includes(country) ? 'USA' : ['GB','DE','FR','ES','NL','PT','IT','SE','PL'].includes(country) ? 'Europe' : 'Worldwide';
-            return { id: `gqljobs-${j.id}`, title: j.title, company: j.company?.name || '', location: loc,
-              url: j.applyUrl || '', salary: null, tags: (j.tags || []).map((t: any) => t.name).join(', '),
-              source: 'GraphQL.jobs', region, postedAt: j.createdAt };
-          })),
-      ]);
-      const all: any[] = [];
-      results.forEach(r => { if (r.status === 'fulfilled') all.push(...r.value); });
-      const unique = Array.from(new Map(all.map(j => [j.id, j])).values());
-      unique.sort((a, b) => (b.postedAt || '').localeCompare(a.postedAt || ''));
-      // Prepend WProTalents jobs at the top (they're curated/direct)
-      setJobs([...wpJobs, ...unique]);
+      // Fetch aggregated jobs from server-side API — bypasses CORS, 30-min cache
+      const res = await fetch('/api/jobs');
+      if (!res.ok) throw new Error('jobs API error');
+      const apiJobs: any[] = await res.json();
+
+      // Prepend WProTalents curated jobs at the top
+      setJobs([...wpJobs, ...apiJobs]);
     } catch {
       setError(true);
     } finally {
@@ -1305,7 +1276,14 @@ function JobPortal({ lang, t, onPostVacancy }: { lang: string; t: typeof T.EN; o
 
           {filtered.length === 0 && !loading && (
             <div className="text-center py-16 border border-dashed border-border">
-              <p className="mono text-[10px] text-text/20">{t.noJobs}</p>
+              <p className="mono text-[10px] text-text/20">
+                {jobs.length === 0 ? ((t as any).noJobsEmpty || 'No jobs loaded — tap ↻ to retry.') : t.noJobs}
+              </p>
+              {jobs.length === 0 && (
+                <button onClick={load} className="mt-3 mono text-[9px] text-accent/50 hover:text-accent transition-colors flex items-center gap-1.5 mx-auto">
+                  <RefreshCw size={10} /> Retry
+                </button>
+              )}
             </div>
           )}
 
