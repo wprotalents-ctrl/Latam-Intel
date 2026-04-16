@@ -1301,7 +1301,9 @@ export default function App() {
                       {!selectedRadarId ? (
                         <CVRadarDashboard
                           clientId={user?.uid || ''}
-                          onSelectRadar={(radarId) => setSelectedRadarId(radarId)}
+                          lang={lang as any}
+                          onCreateRadar={() => {}}
+                          onViewRadar={(radarId) => setSelectedRadarId(radarId)}
                         />
                       ) : (
                         <RadarDetailsPage

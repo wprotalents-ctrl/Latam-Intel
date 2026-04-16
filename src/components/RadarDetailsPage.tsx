@@ -56,6 +56,8 @@ export default function RadarDetailsPage({
     loadMatches();
   }, [clientId, radarId]);
 
+  const [actualRadarName, setActualRadarName] = useState(radarName);
+
   const loadMatches = async () => {
     setLoading(true);
     setError(false);
@@ -65,6 +67,9 @@ export default function RadarDetailsPage({
       const data = await res.json();
       setMatches(data.matches || []);
       setStats(data.stats);
+      if (data.radar?.radarName) {
+        setActualRadarName(data.radar.radarName);
+      }
     } catch {
       setError(true);
     } finally {
@@ -141,7 +146,7 @@ export default function RadarDetailsPage({
             <ArrowLeft size={16} />
           </button>
           <div>
-            <h1 className="font-black text-xl uppercase tracking-tighter">{radarName}</h1>
+            <h1 className="font-black text-xl uppercase tracking-tighter">{actualRadarName}</h1>
             <p className="mono text-[8px] text-text/40">Showing all matches</p>
           </div>
         </div>

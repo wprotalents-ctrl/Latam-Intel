@@ -34,9 +34,18 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           matchId: doc.id,
           candidateId: data.candidateId,
           candidateName: data.candidateName,
+          candidateEmail: data.candidateEmail || '',
           matchScore: data.matchScore,
+          matchBreakdown: data.matchBreakdown || {
+            skillsScore: 0,
+            experienceScore: 0,
+            locationScore: 0,
+            salaryScore: 0,
+          },
+          reasoning: data.reasoning || [],
           status: data.status,
           createdAt: data.createdAt,
+          candidateProfile: data.candidateProfile || {},
         };
       });
 
