@@ -1177,7 +1177,7 @@ export default function App() {
             >
               {userRole === 'company' ? (
                 /* ── Company Client Portal ───────────────────────────────── */
-                <div className="max-w-3xl mx-auto px-6 py-10">
+                <div className="max-w-7xl mx-auto px-6 md:px-10 py-10">
                   {/* Header */}
                   <div className="flex items-center gap-3 mb-8 pb-6 border-b border-border">
                     <div className="w-10 h-10 bg-accent/10 border border-accent/20 flex items-center justify-center">
