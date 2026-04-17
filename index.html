@@ -1,24 +1,512 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&family=Inter:wght@100..900&display=swap" rel="stylesheet">
-    <title>WProTalents Intel | Strategic Talent Intelligence</title>
-    
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LATAM Tech Intel - Hiring Intelligence Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: #e2e8f0;
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        nav {
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(10px);
+            padding: 1.5rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        nav .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #60a5fa, #3b82f6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        nav .user-menu {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .hero {
+            text-align: center;
+            padding: 4rem 2rem;
+            margin: 3rem 0;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            font-weight: 800;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, #60a5fa, #a78bfa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1.1;
+        }
+
+        .hero p {
+            font-size: 1.25rem;
+            color: #cbd5e1;
+            margin-bottom: 2rem;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .value-props {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            margin: 3rem 0;
+            padding: 2rem 0;
+        }
+
+        .value-prop {
+            background: rgba(30, 41, 59, 0.5);
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            border-radius: 12px;
+            padding: 2rem;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+
+        .value-prop:hover {
+            border-color: rgba(96, 165, 250, 0.5);
+            background: rgba(30, 41, 59, 0.8);
+            transform: translateY(-4px);
+        }
+
+        .value-prop h3 {
+            color: #60a5fa;
+            margin-bottom: 1rem;
+            font-size: 1.3rem;
+        }
+
+        .value-prop p {
+            color: #cbd5e1;
+            font-size: 0.95rem;
+        }
+
+        .auth-section {
+            background: rgba(30, 41, 59, 0.6);
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            border-radius: 12px;
+            padding: 3rem;
+            max-width: 500px;
+            margin: 3rem auto;
+            backdrop-filter: blur(10px);
+        }
+
+        .auth-section h2 {
+            margin-bottom: 2rem;
+            color: #f1f5f9;
+            font-size: 1.5rem;
+        }
+
+        .auth-form {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .form-group label {
+            font-size: 0.9rem;
+            color: #cbd5e1;
+            font-weight: 500;
+        }
+
+        .form-group input {
+            padding: 0.75rem 1rem;
+            border: 1px solid rgba(148, 163, 184, 0.3);
+            border-radius: 8px;
+            background: rgba(15, 23, 42, 0.6);
+            color: #f1f5f9;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #60a5fa;
+            background: rgba(15, 23, 42, 0.9);
+            box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.1);
+        }
+
+        .btn {
+            padding: 0.85rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #60a5fa, #3b82f6);
+            color: white;
+            width: 100%;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(96, 165, 250, 0.3);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-google {
+            background: rgba(148, 163, 184, 0.1);
+            color: #e2e8f0;
+            border: 1px solid rgba(148, 163, 184, 0.3);
+            width: 100%;
+        }
+
+        .btn-google:hover {
+            background: rgba(148, 163, 184, 0.2);
+            border-color: rgba(148, 163, 184, 0.5);
+        }
+
+        .divider {
+            text-align: center;
+            margin: 1.5rem 0;
+            color: #64748b;
+        }
+
+        .divider::before,
+        .divider::after {
+            content: '';
+            display: inline-block;
+            width: 40%;
+            height: 1px;
+            background: rgba(148, 163, 184, 0.2);
+            vertical-align: middle;
+        }
+
+        .divider::before {
+            margin-right: 1rem;
+        }
+
+        .divider::after {
+            margin-left: 1rem;
+        }
+
+        .message {
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            display: none;
+        }
+
+        .message.success {
+            background: rgba(34, 197, 94, 0.1);
+            border: 1px solid rgba(34, 197, 94, 0.3);
+            color: #86efac;
+            display: block;
+        }
+
+        .message.error {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: #fca5a5;
+            display: block;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .auth-links {
+            text-align: center;
+            margin-top: 2rem;
+            font-size: 0.9rem;
+        }
+
+        .auth-links a {
+            color: #60a5fa;
+            text-decoration: none;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .auth-links a:hover {
+            color: #93c5fd;
+            text-decoration: underline;
+        }
+
+        .dashboard-link {
+            text-align: center;
+            margin-top: 2rem;
+        }
+
+        .dashboard-link a {
+            display: inline-block;
+            padding: 0.75rem 1.5rem;
+            background: linear-gradient(135deg, #a78bfa, #8b5cf6);
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .dashboard-link a:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(167, 139, 250, 0.3);
+        }
+
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+
+            .hero p {
+                font-size: 1rem;
+            }
+
+            .auth-section {
+                padding: 2rem;
+            }
+
+            .value-props {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+
     <!-- Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-0JPFP65WXE"></script>
     <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', 'G-0JPFP65WXE');
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-0JPFP65WXE');
     </script>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
-  </body>
+</head>
+<body>
+    <nav>
+        <div class="logo">LATAM Tech Intel</div>
+        <div class="user-menu" id="userMenu">
+            <button class="btn btn-google" onclick="loginWithGoogle()">Sign in with Google</button>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="hero">
+            <h1>Understand the LATAM Tech Talent Market</h1>
+            <p>Real salary benchmarks, talent availability, and hiring trends. Build your tech team smarter with market intelligence.</p>
+        </div>
+
+        <div class="value-props">
+            <div class="value-prop">
+                <h3>💰 Salary Benchmarks</h3>
+                <p>See what the market is actually paying for every role and skill level in LATAM. Stay competitive without overpaying.</p>
+            </div>
+            <div class="value-prop">
+                <h3>👥 Talent Supply & Demand</h3>
+                <p>Who's available right now? Which roles have the most candidates? Data-driven talent sourcing across LATAM.</p>
+            </div>
+            <div class="value-prop">
+                <h3>📈 Market Trends</h3>
+                <p>Track hiring volume, skill trends, and where competitors are recruiting. Stay ahead of the talent wars.</p>
+            </div>
+        </div>
+
+        <div class="auth-section">
+            <h2>Access the Dashboard</h2>
+            <div id="authMessage" class="message"></div>
+
+            <!-- Email/Magic Link Form -->
+            <div id="emailAuthForm">
+                <div class="auth-form">
+                    <div class="form-group">
+                        <label for="email">Email Address</label>
+                        <input type="email" id="email" placeholder="you@company.com" required>
+                    </div>
+                    <button class="btn btn-primary" id="sendMagicLink" onclick="sendMagicLink()">
+                        Send Magic Link
+                    </button>
+                </div>
+            </div>
+
+            <!-- Success message after email sent -->
+            <div id="emailSentMessage" style="display: none; text-align: center; padding: 2rem 0;">
+                <p style="color: #86efac; margin-bottom: 1rem; font-size: 1.1rem;">✓ Check your email for the login link</p>
+                <p style="color: #cbd5e1; font-size: 0.9rem;">We've sent a magic link to your email. Click it to access the dashboard.</p>
+                <button class="btn btn-google" onclick="resetEmailForm()" style="margin-top: 1rem;">Try another email</button>
+            </div>
+
+            <div class="divider">or</div>
+
+            <button class="btn btn-google" onclick="loginWithGoogle()">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"></circle>
+                </svg>
+                Sign in with Google
+            </button>
+
+            <div class="auth-links">
+                <p id="loginPrompt">Don't have an account? <a onclick="toggleAuthMode()">Create one with email</a></p>
+                <p id="signupPrompt" style="display: none;">Already have an account? <a onclick="toggleAuthMode()">Sign in</a></p>
+            </div>
+        </div>
+
+        <div class="dashboard-link">
+            <p style="color: #cbd5e1; margin-bottom: 1rem;">Already signed in? <a href="/dashboard.html">Go to Dashboard →</a></p>
+        </div>
+    </div>
+
+    <script>
+        const SUPABASE_URL = 'https://qxvppedapgfchnnixyhj.supabase.co';
+        const SUPABASE_ANON_KEY = 'sb_publishable_mHTGchSQ7INFETDz0zshVQ_ebwwR2sw';
+        const GOOGLE_CLIENT_ID = 'YOUR_GOOGLE_CLIENT_ID_HERE';
+
+        function showMessage(message, type = 'error') {
+            const authMessage = document.getElementById('authMessage');
+            authMessage.textContent = message;
+            authMessage.className = `message ${type}`;
+        }
+
+        function hideMessage() {
+            const authMessage = document.getElementById('authMessage');
+            authMessage.className = 'message';
+        }
+
+        async function sendMagicLink() {
+            const email = document.getElementById('email').value.trim();
+            if (!email) {
+                showMessage('Please enter your email address', 'error');
+                return;
+            }
+            if (!email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
+                showMessage('Please enter a valid email address', 'error');
+                return;
+            }
+            const sendButton = document.getElementById('sendMagicLink');
+            sendButton.disabled = true;
+            sendButton.innerHTML = '<span class="loading"></span> Sending...';
+            try {
+                const response = await fetch(`${SUPABASE_URL}/auth/v1/magiclink`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'apikey': SUPABASE_ANON_KEY
+                    },
+                    body: JSON.stringify({
+                        email: email,
+                        gotrue_meta_security: {}
+                    })
+                });
+                if (response.ok) {
+                    document.getElementById('emailAuthForm').style.display = 'none';
+                    document.getElementById('emailSentMessage').style.display = 'block';
+                    hideMessage();
+                    gtag('event', 'email_magic_link_sent', {email_domain: email.split('@')[1]});
+                } else {
+                    const error = await response.json();
+                    showMessage(error.message || 'Failed to send magic link. Please try again.', 'error');
+                }
+            } catch (error) {
+                showMessage('Connection error. Please check your internet and try again.', 'error');
+            } finally {
+                sendButton.disabled = false;
+                sendButton.textContent = 'Send Magic Link';
+            }
+        }
+
+        function resetEmailForm() {
+            document.getElementById('emailAuthForm').style.display = 'block';
+            document.getElementById('emailSentMessage').style.display = 'none';
+            document.getElementById('email').value = '';
+            hideMessage();
+        }
+
+        function toggleAuthMode() {
+            const loginPrompt = document.getElementById('loginPrompt');
+            const signupPrompt = document.getElementById('signupPrompt');
+            loginPrompt.style.display = loginPrompt.style.display === 'none' ? 'block' : 'none';
+            signupPrompt.style.display = signupPrompt.style.display === 'none' ? 'block' : 'none';
+        }
+
+        function loginWithGoogle() {
+            showMessage('Google Sign-In coming soon', 'error');
+            gtag('event', 'google_signin_clicked', {});
+        }
+
+        function checkAuthStatus() {
+            const authToken = localStorage.getItem('sb_auth_token');
+            if (authToken) {
+                window.location.href = '/dashboard.html';
+            }
+        }
+
+        window.addEventListener('load', () => {
+            checkAuthStatus();
+            gtag('event', 'landing_page_view', {page_path: '/index.html'});
+        });
+
+        if (window.location.hash.includes('#access_token=')) {
+            const hash = window.location.hash.substring(1);
+            const params = new URLSearchParams(hash);
+            const accessToken = params.get('access_token');
+            if (accessToken) {
+                localStorage.setItem('sb_auth_token', accessToken);
+                gtag('event', 'login_success', {method: 'magic_link'});
+                setTimeout(() => {
+                    window.location.href = '/dashboard.html';
+                }, 1000);
+            }
+        }
+    </script>
+</body>
 </html>
