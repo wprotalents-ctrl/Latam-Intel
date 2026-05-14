@@ -27,10 +27,7 @@ import {
   Settings,
   LayoutDashboard,
   Cpu,
-  LogIn,
   User as UserIcon,
-  LogOut,
-  Lock,
   Briefcase,
   Brain,
   RefreshCw,
@@ -51,9 +48,8 @@ import {
 } from 'recharts';
 import { MOCK_BRIEFINGS, getRecentBriefings } from './services/intelService';
 import { Language, Briefing, IntelligenceBrief } from './types';
-import { auth, onAuthStateChanged, User, signOut, db, handleFirestoreError, FirestoreOperation } from './firebase';
+import { db, handleFirestoreError, FirestoreOperation } from './firebase';
 import { onSnapshot, doc, getDoc, setDoc, collection, query, orderBy, limit, serverTimestamp } from 'firebase/firestore';
-import { AuthModal } from './components/AuthModal';
 import { SubscriptionSection } from './components/SubscriptionSection';
 import JobsPage from './pages/JobsPage';
 import PrivacyPage from './pages/PrivacyPage';
@@ -668,11 +664,6 @@ export default function App() {
       return next;
     });
   };
-  const [user, setUser] = useState<User | null>(null);
-  const [subscriptionStatus, setSubscriptionStatus] = useState<'free' | 'premium'>('free');
-  const [userRole, setUserRole] = useState<'candidate' | 'company' | null>(null);
-  const [userRoleLoading, setUserRoleLoading] = useState(true); // true until auth + Firestore resolve
-  const [needsRolePicker, setNeedsRolePicker] = useState(false); // true when logged in but no role set
   // Client hiring intelligence
   const [clientHiringPlan, setClientHiringPlan] = useState<HiringPlan | null>(null);
   const [clientNetworkReach, setClientNetworkReach] = useState<NetworkReach | null>(null);
@@ -681,7 +672,6 @@ export default function App() {
   const [jobPostSaved, setJobPostSaved] = useState(false);
   const [companyTab, setCompanyTab] = useState<'intel' | 'post' | 'radar'>('intel');
   const [selectedRadarId, setSelectedRadarId] = useState<string | null>(null);
-  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [briefings, setBriefings] = useState<Briefing[]>(MOCK_BRIEFINGS);
   const [intelBriefs, setIntelBriefs] = useState<IntelligenceBrief[]>([]);
   // Initialize theme from localStorage or default to 'dark'
@@ -699,77 +689,6 @@ export default function App() {
     brief: ''
   });
 
-  const isAdmin = user?.email === 'iafacilparareinventarte@gmail.com' && user?.emailVerified;
-
-  const saveRoleForExistingUser = async (role: 'candidate' | 'company') => {
-    if (!user) return;
-    const ref = doc(db, 'users', user.uid);
-    const snap = await getDoc(ref).catch(() => null);
-    if (!snap?.exists()) {
-      await setDoc(ref, {
-        uid: user.uid,
-        email: user.email,
-        displayName: user.displayName || user.email?.split('@')[0] || 'User',
-        photoURL: user.photoURL || null,
-        subscriptionStatus: 'free',
-        createdAt: serverTimestamp(),
-        updatedAt: serverTimestamp(),
-      }).catch(console.error);
-    }
-    await setDoc(ref, { role, updatedAt: serverTimestamp() }, { merge: true }).catch(console.error);
-    setNeedsRolePicker(false);
-    setUserRole(role);
-    if (role === 'candidate') setViewMode('Jobs');
-    else setViewMode('Dashboard');
-  };
-
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      setUser(user);
-      if (user) {
-        setIsAuthModalOpen(false);
-        // userRoleLoading stays true — onSnapshot will clear it once role is fetched
-      } else {
-        setSubscriptionStatus('free');
-        setUserRole(null);
-        setUserRoleLoading(false);
-        setNeedsRolePicker(false);
-        setViewMode('Dashboard');
-      }
-    });
-    return () => unsubscribe();
-  }, []);
-
-  useEffect(() => {
-    if (!user) return;
-
-    // Safety timeout: if Firestore doesn't respond in 4s, clear loading so UI isn't stuck
-    const timeout = setTimeout(() => { setUserRoleLoading(false); setNeedsRolePicker(true); }, 1500);
-
-    const unsubscribe = onSnapshot(doc(db, 'users', user.uid), (snapshot) => {
-      clearTimeout(timeout);
-      clearTimeout(timeout);
-      setUserRoleLoading(false);
-      if (snapshot.exists()) {
-        const data = snapshot.data();
-        setSubscriptionStatus(data.subscriptionStatus || 'free');
-        const role = data.role as 'candidate' | 'company' | undefined;
-        setUserRole(role || null);
-        if (role === 'candidate') setViewMode('Jobs');
-        else if (role === 'company') setViewMode('Dashboard');
-        else setNeedsRolePicker(true); // logged in but no role saved yet
-      } else {
-        setNeedsRolePicker(true); // no Firestore doc at all
-      }
-    }, (error) => {
-      clearTimeout(timeout);
-      setUserRoleLoading(false); // always clear loading on error
-      handleFirestoreError(error, FirestoreOperation.GET, `users/${user.uid}`);
-    });
-
-    return () => { clearTimeout(timeout); unsubscribe(); };
-  }, [user]);
-
   // Unified Theme Effect
   useEffect(() => {
     const root = document.documentElement;
@@ -786,18 +705,14 @@ export default function App() {
   }, [theme]);
 
   useEffect(() => {
-    if (!user) return;
-
     const fetchBriefings = async () => {
-      const recent = await getRecentBriefings(20, subscriptionStatus === 'premium' || isAdmin);
+      const recent = await getRecentBriefings(20, true);
       if (recent.length > 0) {
         setBriefings(recent);
       }
     };
     fetchBriefings();
-
-    return () => {};
-  }, [user, subscriptionStatus, isAdmin]);
+  }, []);
 
   useEffect(() => {
     fetchMarketIntel();
@@ -936,7 +851,7 @@ export default function App() {
                 {isSyncing ? 'Syncing...' : 'Daily Sync'}
               </button>
             )}
-            {user ? (
+            {false ? (
               <div className="flex items-center gap-3">
                 <div className="flex flex-col items-end">
                   <span className="mono text-[9px] text-text font-bold">{user.displayName || 'User'}</span>
@@ -973,7 +888,7 @@ export default function App() {
 
       <main className="flex-1 relative overflow-hidden grid-bg">
         <AnimatePresence mode="wait">
-          {!user ? (
+          {false ? (
             /* ── PUBLIC TEASER ── */
             <motion.div
               key="teaser"
@@ -2051,8 +1966,6 @@ export default function App() {
           </motion.div>
         )}
       </AnimatePresence>
-
-      <AuthModal isOpen={isAuthModalOpen} onClose={() => setIsAuthModalOpen(false)} />
     </div>
   );
 }
