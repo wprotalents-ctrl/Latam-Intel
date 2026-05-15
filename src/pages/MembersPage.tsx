@@ -766,12 +766,124 @@ export default function MembersPage() {
   const ms = MS[lang];
 
 
+export default function MembersPage() {
+  const [lang, setLang] = React.useState<'EN' | 'ES' | 'PT'>(() => {
+    const saved = localStorage.getItem('wpro_lang');
+    return (saved === 'EN' || saved === 'ES' || saved === 'PT') ? saved as any : 'EN';
+  });
+  
+  // Create fake user object so component thinks you're logged in
+  const user: any = {
+    uid: 'public-user',
+    email: 'public@latam-intel.app',
+    displayName: 'Member',
+    photoURL: null,
+  };
+
+  const [activeTab, setActiveTab] = React.useState<Tab>('intel');
+  const [dataLoading, setDataLoading] = React.useState(false);
+  const [resources, setResources] = React.useState<MemberResource[]>([]);
+  const [hiringPlan, setHiringPlan] = React.useState<HiringPlan | null>(null);
+  const [networkReach, setNetworkReach] = React.useState<NetworkReach | null>(null);
+  const [lastFormData, setLastFormData] = React.useState<ClientJobPostData | null>(null);
+  const [insightsLoading, setInsightsLoading] = React.useState(false);
+  const [executiveUntil] = React.useState(new Date('2099-12-31'));
+
+  // Load resources
+  React.useEffect(() => {
+    const mockResources: MemberResource[] = [
+      { id: '1', title: 'LATAM Salary Benchmarks', category: 'Salary Data', url: '/', description: 'Complete salary data for 40+ roles across 5 countries' },
+      { id: '2', title: 'Remote Salary Calculator', category: 'Salary Data', url: '/', description: 'Compare USD vs local currency compensation' },
+      { id: '3', title: 'AI Skills Roadmap 2026', category: 'Playbooks', url: '/', description: 'What to learn to 10x your market value in AI/ML' },
+      { id: '4', title: 'LATAM Recruitment Playbook', category: 'Playbooks', url: '/', description: '20 years of WProTalents founder recruiting strategy' },
+      { id: '5', title: 'Job Description Template', category: 'Templates', url: '/', description: 'Write JDs that attract top tier talent' },
+      { id: '6', title: 'Offer Letter Template', category: 'Templates', url: '/', description: 'Market-rate offer templates (USD + local)' },
+    ];
+    setResources(mockResources);
+  }, []);
+
+  const tl: Record<string, any> = {
+    EN: {
+      intel: 'My Market Value',
+      access: 'Access & Payment',
+      salary: 'Salary Intel',
+      resources: 'Resources',
+      wpro: 'Hire Talent',
+      welcomeBack: 'Welcome',
+      member: 'Member',
+      hubDesc: 'Browse LATAM salary data, AI market signals, and hiring tools. Everything is free during beta.',
+    },
+    ES: {
+      intel: 'Mi Valor de Mercado',
+      access: 'Acceso y Pago',
+      salary: 'Inteligencia Salarial',
+      resources: 'Recursos',
+      wpro: 'Contratar Talento',
+      welcomeBack: 'Bienvenido',
+      member: 'Miembro',
+      hubDesc: 'Explora datos salariales LATAM, señales de mercado de IA y herramientas de contratación. Todo es gratis durante beta.',
+    },
+    PT: {
+      intel: 'Meu Valor de Mercado',
+      access: 'Acesso e Pagamento',
+      salary: 'Inteligência Salarial',
+      resources: 'Recursos',
+      wpro: 'Contratar Talentos',
+      welcomeBack: 'Bem-vindo',
+      member: 'Membro',
+      hubDesc: 'Explore dados salariais LATAM, sinais de mercado de IA e ferramentas de contratação. Tudo é gratuito durante beta.',
+    },
+  };
+  
+  const MS = {
+    EN: {
+      welcomeBack: 'Welcome back',
+      member: 'Member',
+      hubDesc: 'Your LATAM salary intelligence, market data, and hiring tools hub.',
+      intel: 'Market Intelligence',
+      access: 'Access & Payment',
+      salary: 'Salary Data',
+      resources: 'Playbooks',
+      wpro: 'Hire Talent',
+      hireFast: 'Hire LATAM Tech Talent — Fast',
+      hireDesc: '23,000+ verified AI & tech professionals. Senior roles filled in 21 days or less. US & EU companies only. Founder-led.',
+      statLabels: ['Time to hire', 'Verified talent', 'Offer acceptance', 'Cost vs US hiring'],
+    },
+    ES: {
+      welcomeBack: 'Bienvenido de vuelta',
+      member: 'Miembro',
+      hubDesc: 'Tu hub de inteligencia salarial LATAM, datos de mercado y herramientas de contratación.',
+      intel: 'Inteligencia de Mercado',
+      access: 'Acceso y Pago',
+      salary: 'Datos Salariales',
+      resources: 'Playbooks',
+      wpro: 'Contratar Talento',
+      hireFast: 'Contratar Talento Tech LATAM — Rápido',
+      hireDesc: '23.000+ professionles de IA y tech verificados. Vacantes senior cubiertas en 21 días o menos. Solo empresas USA y UE. Liderado por fundador.',
+      statLabels: ['Tiempo para contratar', 'Profesionales verificados', 'Aceptación de oferta', 'Costo vs contratación USA'],
+    },
+    PT: {
+      welcomeBack: 'Bem-vindo de volta',
+      member: 'Membro',
+      hubDesc: 'Seu hub de inteligência salarial LATAM, dados de mercado e ferramentas de contratação.',
+      intel: 'Inteligência de Mercado',
+      access: 'Acesso e Pagamento',
+      salary: 'Dados Salariais',
+      resources: 'Playbooks',
+      wpro: 'Contratar Talentos',
+      hireFast: 'Contratar Talento Tech LATAM — Rápido',
+      hireDesc: '23.000+ profissionais de IA e tech verificados. Vagas sênior preenchidas em 21 dias ou menos. Apenas empresas dos EUA e UE. Liderado pelo fundador.',
+      statLabels: ['Tempo para contratar', 'Profissionais verificados', 'Aceitação de oferta', 'Custo vs contratação nos EUA'],
+    },
+  };
+  const ms = MS[lang];
+
   const TABS: { id: Tab; label: string; icon: any; badge?: string }[] = [
-    { id: 'intel',     label: tl.intel,     icon: TrendingUp, badge: 'NEW' },
-    { id: 'access',    label: tl.access,    icon: Crown },
-    { id: 'salary',    label: tl.salary,    icon: BarChart2 },
-    { id: 'resources', label: tl.resources, icon: BookOpen },
-    { id: 'wpro',      label: tl.wpro,      icon: Users },
+    { id: 'intel',     label: tl[lang].intel,     icon: TrendingUp, badge: 'NEW' },
+    { id: 'access',    label: tl[lang].access,    icon: Crown },
+    { id: 'salary',    label: tl[lang].salary,    icon: BarChart2 },
+    { id: 'resources', label: tl[lang].resources, icon: BookOpen },
+    { id: 'wpro',      label: tl[lang].wpro,      icon: Users },
   ];
 
   return (
@@ -793,11 +905,8 @@ export default function MembersPage() {
           </div>
           <div className="flex items-center gap-3">
             <div className="px-2 py-1 bg-accent/10 border border-accent/20 mono text-[9px] text-accent font-bold">
-              EXECUTIVE
+              PUBLIC ACCESS
             </div>
-            {user.photoURL && (
-              <img src={user.photoURL} alt={user.displayName || ''} className="w-8 h-8 rounded-full" />
-            )}
           </div>
         </div>
       </header>
@@ -806,7 +915,7 @@ export default function MembersPage() {
         {/* Welcome */}
         <div className="mb-8">
           <h1 className="text-3xl font-black tracking-tighter uppercase mb-1">
-            {ms.welcomeBack}, {user.displayName?.split(' ')[0] || ms.member}
+            {ms.welcomeBack}, {user.displayName}
           </h1>
           <p className="text-text/50 text-sm">
             {ms.hubDesc}
@@ -857,11 +966,22 @@ export default function MembersPage() {
                       <h2 className="text-xl font-black uppercase tracking-tighter mb-1">My Market Value</h2>
                       <p className="text-sm text-text/50">Enter your profile — see your real market salary, best opportunities, and exact skills to learn for maximum ROI.</p>
                     </div>
-                    <CandidateIntel lang={lang} />
+                    <CandidateIntel lang={lang as any} />
                   </div>
                 )}
                 {activeTab === 'access' && (
-                  <AccessTab user={user} executiveUntil={executiveUntil} lang={lang} />
+                  <div className="p-6 bg-surface border border-border">
+                    <h3 className="text-lg font-bold mb-4">Free Beta Access</h3>
+                    <p className="text-text/60 mb-4">You have full access to all features during the beta period at no cost.</p>
+                    <div className="bg-accent/10 border border-accent/20 p-4 mb-4">
+                      <p className="mono text-[10px] text-accent">
+                        Access type: <span className="font-bold">FOUNDING MEMBER (FREE)</span>
+                      </p>
+                      <p className="mono text-[10px] text-text/40 mt-2">
+                        Special pricing when beta ends will be reserved for founding members.
+                      </p>
+                    </div>
+                  </div>
                 )}
                 {activeTab === 'salary' && (
                   <div>
@@ -885,10 +1005,9 @@ export default function MembersPage() {
                   <div>
                     <div className="mb-6">
                       <h2 className="text-xl font-black uppercase tracking-tighter mb-1">Hire with WProTalents</h2>
-                      <p className="text-sm text-text/50">As a member, you get priority access to our founder-led search service.</p>
+                      <p className="text-sm text-text/50">Post a role and get instant hiring intelligence powered by AI.</p>
                     </div>
 
-                    {/* Job post form + instant insights */}
                     <div className="border border-border bg-surface/30 p-6 mb-6">
                       <div className="flex items-center gap-2 mb-5">
                         <span className="mono text-[9px] font-bold text-accent tracking-widest uppercase">Post a Role — Get Instant Hiring Intelligence</span>
