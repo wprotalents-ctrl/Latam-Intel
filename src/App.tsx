@@ -647,6 +647,7 @@ export default function App() {
     return (saved === 'EN' || saved === 'ES' || saved === 'PT') ? saved as Language : 'EN';
   });
   const [viewMode, setViewMode] = useState<'Dashboard' | 'Jobs' | 'Privacy'>('Dashboard');
+  const [selectedRole, setSelectedRole] = useState<'candidate' | 'company' | null>(null);
   const [currentTime, setCurrentTime] = useState(new Date());
   const [isSyncing, setIsSyncing] = useState(false);
   const [isCustomizeOpen, setIsCustomizeOpen] = useState(false);
@@ -795,7 +796,7 @@ export default function App() {
             >
               <LayoutDashboard size={14} /> {t.dashboard}
             </button>
-            {userRole === 'candidate' && (
+            {selectedRole === 'candidate' && (
               <button
                 onClick={() => setViewMode('Jobs')}
                 className={`px-4 py-2 mono text-[10px] transition-all flex items-center gap-2 ${viewMode === 'Jobs' ? 'text-accent bg-text/5' : 'text-text/40 hover:text-text'}`}
@@ -851,40 +852,51 @@ export default function App() {
                 {isSyncing ? 'Syncing...' : 'Daily Sync'}
               </button>
             )}
-            {false ? (
-              <div className="flex items-center gap-3">
-                <div className="flex flex-col items-end">
-                  <span className="mono text-[9px] text-text font-bold">{user.displayName || 'User'}</span>
-                  <button 
-                    onClick={() => signOut(auth)}
-                    className="mono text-[8px] text-text/40 hover:text-accent transition-colors flex items-center gap-1"
-                  >
-                    <LogOut size={10} /> Logout
-                  </button>
-                </div>
-                <div className="w-8 h-8 rounded-full bg-accent/20 border border-accent/40 flex items-center justify-center overflow-hidden">
-                  {user.photoURL ? (
-                    <img src={user.photoURL} alt="Profile" className="w-full h-full object-cover" />
-                  ) : (
-                    <UserIcon size={16} className="text-accent" />
-                  )}
-                </div>
-              </div>
-            ) : (
-              <button 
-                onClick={() => setIsAuthModalOpen(true)}
-                className="px-4 py-2 bg-accent text-black mono text-[10px] font-bold flex items-center gap-2 hover:opacity-90 transition-opacity"
+            <div className="hidden sm:flex items-center gap-2 rounded-sm border border-border bg-surface px-3 py-1.5 mono text-[9px] text-text/70">
+              <span className="font-bold uppercase tracking-[0.2em]">
+                {selectedRole ? (selectedRole === 'candidate' ? 'Candidate' : 'Company') : 'Choose your path'}
+              </span>
+            </div>
+            {selectedRole && (
+              <button
+                onClick={() => setSelectedRole(null)}
+                className="hidden sm:inline-flex px-3 py-1.5 border border-border text-[9px] rounded-sm hover:bg-text/5 transition"
               >
-                <LogIn size={14} /> Login
+                Clear
               </button>
             )}
-            
             <button className="p-2 border border-border hover:bg-text/5 rounded-sm">
               <Menu size={18} />
             </button>
           </div>
         </div>
       </header>
+
+      <section className="border-b border-border bg-surface/70">
+        <div className="max-w-6xl mx-auto px-6 py-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+          <div className="max-w-3xl">
+            <p className="mono text-[9px] uppercase tracking-[0.24em] text-accent mb-2">Choose your path</p>
+            <h2 className="text-2xl font-black tracking-tighter">Candidate or Company? No login required.</h2>
+            <p className="text-sm text-text/60 mt-2">
+              Select the experience that matches you and explore LATAM market intelligence without signing in.
+            </p>
+          </div>
+          <div className="flex flex-wrap gap-3">
+            <button
+              onClick={() => setSelectedRole('candidate')}
+              className={`px-4 py-3 rounded-sm text-[10px] uppercase tracking-[0.22em] font-bold transition ${selectedRole === 'candidate' ? 'bg-accent text-black' : 'bg-bg border border-border text-text hover:border-accent/40 hover:text-accent'}`}
+            >
+              Candidate
+            </button>
+            <button
+              onClick={() => setSelectedRole('company')}
+              className={`px-4 py-3 rounded-sm text-[10px] uppercase tracking-[0.22em] font-bold transition ${selectedRole === 'company' ? 'bg-accent text-black' : 'bg-bg border border-border text-text hover:border-accent/40 hover:text-accent'}`}
+            >
+              Company
+            </button>
+          </div>
+        </div>
+      </section>
 
       <main className="flex-1 relative overflow-hidden grid-bg">
         <AnimatePresence mode="wait">
