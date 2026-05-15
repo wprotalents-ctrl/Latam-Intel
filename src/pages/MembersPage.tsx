@@ -8,17 +8,13 @@ import {
   TrendingUp, BriefcaseBusiness, Mail, Phone, Loader2,
   Check, Shield, Clock, ChevronDown, ChevronUp
 } from 'lucide-react';
-import { auth, db } from '../firebase';
-
-import { getUserProfile, getMemberResources } from '../lib/supabase';
 import CandidateIntel from '../components/CandidateIntel';
 import ClientJobPostForm, { type ClientJobPostData } from '../components/ClientJobPostForm';
 import ClientInsightsCard from '../components/ClientInsightsCard';
 import { generateHiringPlan, type HiringPlan } from '../lib/hiringPlan';
 import { estimateNetworkReach, type NetworkReach } from '../lib/networkReach';
-import type { SupabaseUser, MemberResource } from '../lib/supabase';
+import type { MemberResource } from '../lib/supabase';
 import type { User } from 'firebase/auth';
-import { AuthModal } from '../components/AuthModal';
 
 // @ts-ignore
 
@@ -39,83 +35,15 @@ const RESOURCE_ICONS: Record<string, any> = {
   'Reports':     TrendingUp,
 };
 
-// ─── Sign-in Gate (non-logged-in users only) ─────────────────────────────────
-function PaywallGate({ user: _user }: { user: User | null }) {
-
-  return (
-    <div className="min-h-screen bg-bg flex items-center justify-center p-6">
-      <motion.div
-        initial={{ opacity: 0, y: 24 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="max-w-md w-full"
-      >
-        {/* Badge */}
-        <div className="flex justify-center mb-8">
-          <div className="inline-flex items-center gap-2 px-3 py-1 border border-accent/30 bg-accent/5 mono text-[9px] text-accent">
-            <div className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse" />
-            BETA ACCESS · FREE
-          </div>
-        </div>
-
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-black tracking-tighter uppercase mb-3">Members Area</h1>
-          <p className="text-text/50 text-sm leading-relaxed">
-            Sign in to unlock LATAM salary data, the US hiring signal, remote salary calculator, and AI job market briefings — free during beta.
-          </p>
-        </div>
-
-        {/* Perks preview */}
-        <div className="bg-surface border border-border p-5 mb-6 space-y-2.5">
-          {[
-            'LATAM Salary Benchmarks — 40+ roles · 5 countries',
-            'US Hiring Signal — powered by live BLS data',
-            'Remote Salary Calculator — what US companies pay vs what you charge',
-            'AI Job Market Briefings — weekly signal, no fluff',
-            'WPro Playbooks — 20 years of LATAM recruiting strategy',
-          ].map((text, i) => (
-            <div key={i} className="flex items-start gap-3">
-              <div className="shrink-0 w-4 h-4 bg-accent/10 flex items-center justify-center mt-0.5">
-                <Check size={8} className="text-accent" />
-              </div>
-              <span className="mono text-[9px] text-text/60">{text}</span>
-            </div>
-          ))}
-        </div>
-
-        {/* Sign-in CTA */}
-        <div className="text-center space-y-3">
-          <button
-            onClick={() => window.dispatchEvent(new CustomEvent('wpro-open-auth'))}
-            className="w-full py-4 bg-accent text-black font-black hover:opacity-90 transition mono text-[11px] tracking-widest"
-          >
-            SIGN IN · GET FREE BETA ACCESS
-          </button>
-          <p className="mono text-[8px] text-text/25">No credit card · No commitment · Founding Member pricing coming soon</p>
-        </div>
-
-        {/* Back link */}
-        <div className="text-center mt-8">
-          <button
-            onClick={() => window.location.href = '/'}
-            className="text-sm text-text/40 hover:text-accent transition flex items-center gap-1 mx-auto"
-          >
-            <ArrowLeft size={14} /> Back to Dashboard
-          </button>
-        </div>
-      </motion.div>
-    </div>
-  );
-}
-
 // ─── Access Tab ──────────────────────────────────────────────────────────────
 // ─── CoinGecko: Crypto price ticker for AccessTab ────────────────────────────
 interface CryptoPrice { id: string; symbol: string; usd: number; usd_24h_change: number; }
 
 function useCryptoPrices() {
-  const [prices, setPrices] = React.useState<CryptoPrice[]>([]);
-  const [loading, setLoading] = React.useState(true);
+  const [prices, setPrices] = useState<CryptoPrice[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  React.useEffect(() => {
+  useEffect(() => {
     let cancelled = false;
     async function fetchPrices() {
       try {
@@ -623,7 +551,7 @@ function WProCTA() {
 type Tab = 'intel' | 'access' | 'salary' | 'resources' | 'wpro';
 
 export default function MembersPage() {
-  const [lang, setLang] = React.useState<'EN' | 'ES' | 'PT'>(() => {
+  const [lang, setLang] = useState<'EN' | 'ES' | 'PT'>(() => {
     const saved = localStorage.getItem('wpro_lang');
     return (saved === 'EN' || saved === 'ES' || saved === 'PT') ? saved as any : 'EN';
   });
@@ -636,17 +564,17 @@ export default function MembersPage() {
     photoURL: null,
   };
 
-  const [activeTab, setActiveTab] = React.useState<Tab>('intel');
-  const [dataLoading, setDataLoading] = React.useState(false);
-  const [resources, setResources] = React.useState<MemberResource[]>([]);
-  const [hiringPlan, setHiringPlan] = React.useState<HiringPlan | null>(null);
-  const [networkReach, setNetworkReach] = React.useState<NetworkReach | null>(null);
-  const [lastFormData, setLastFormData] = React.useState<ClientJobPostData | null>(null);
-  const [insightsLoading, setInsightsLoading] = React.useState(false);
-  const [executiveUntil] = React.useState(new Date('2099-12-31'));
+  const [activeTab, setActiveTab] = useState<Tab>('intel');
+  const [dataLoading, setDataLoading] = useState(false);
+  const [resources, setResources] = useState<MemberResource[]>([]);
+  const [hiringPlan, setHiringPlan] = useState<HiringPlan | null>(null);
+  const [networkReach, setNetworkReach] = useState<NetworkReach | null>(null);
+  const [lastFormData, setLastFormData] = useState<ClientJobPostData | null>(null);
+  const [insightsLoading, setInsightsLoading] = useState(false);
+  const [executiveUntil] = useState(new Date('2099-12-31'));
 
   // Load resources
-  React.useEffect(() => {
+  useEffect(() => {
     const mockResources: MemberResource[] = [
       { id: '1', title: 'LATAM Salary Benchmarks', category: 'Salary Data', url: '/', description: 'Complete salary data for 40+ roles across 5 countries' },
       { id: '2', title: 'Remote Salary Calculator', category: 'Salary Data', url: '/', description: 'Compare USD vs local currency compensation' },
