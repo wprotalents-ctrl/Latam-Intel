@@ -158,7 +158,7 @@ const T = {
     teaserPerYear: '/ano',
     teaserLockedLabel: 'Dashboard completo · Membros Executivos',
     teaserUnlock: 'Entrar no Beta — Grátis',
-    teaserLockedSections: ['Salário por Nível de Inglês', 'Melhores Mercados para Você', 'ROI de Habilidades'],
+    teaserLockedSections: ['Salário por Nível de Inglés', 'Melhores Mercados para Você', 'ROI de Habilidades'],
   },
 };
 
@@ -273,7 +273,7 @@ function getPortalSections(lang: string): Record<SectionKey, PortalSection> {
         { title: 'El Método STAR: Domina las Preguntas de Comportamiento', desc: 'Situación, Tarea, Acción, Resultado — el único framework que funciona para toda pregunta conductual.', url: 'https://www.themuse.com/advice/star-interview-method', tag: 'FRAMEWORK' },
         { title: 'Maestría en Entrevistas Remotas', desc: 'Ángulos de cámara, iluminación, plantillas de follow-up async y los matices de paneles remotos.', url: 'https://www.toptal.com/remote/how-to-ace-a-remote-job-interview', tag: 'REMOTO' },
         { title: 'Tech Interview Handbook (Gratis, Open Source)', desc: 'La guía gratuita más completa para algoritmos, diseño de sistemas y prep conductual para roles tech.', url: 'https://www.techinterviewhandbook.org/', tag: 'TECH' },
-        { title: '30 Preguntas para Hacer al Final de Cualquier Entrevista', desc: 'Las preguntas que señalan curiosidad intelectual, preparación e interés genuino.', url: 'https://www.glassdoor.com/blog/good-questions-to-ask-in-an-interview/', tag: 'TÁCTICAS' },
+        { title: '30 Preguntas para Hacer al Final de Cualquier Entrevista', desc: 'Las perguntas que señalan curiosidad intelectual, preparación e interés genuino.', url: 'https://www.glassdoor.com/blog/good-questions-to-ask-in-an-interview/', tag: 'TÁCTICAS' },
         { title: 'Pramp: Práctica Gratuita de Entrevistas Simuladas', desc: 'Practica entrevistas técnicas y de comportamiento reales con pares. Gratis, en vivo y feedback brutal.', url: 'https://www.pramp.com/', tag: 'PRÁCTICA' },
       ] : [
         { title: 'How to Research Any Company Before an Interview', desc: "The 30-minute research framework that makes you sound like an insider — and earns the offer.", url: 'https://hbr.org/2019/10/how-to-prepare-for-any-type-of-job-interview', tag: 'RESEARCH' },
@@ -297,8 +297,8 @@ function getPortalSections(lang: string): Record<SectionKey, PortalSection> {
         { title: 'Scripts de Negociação Salarial que Funcionam', desc: 'Scripts de email e ligação para contra-oferecer, pedir mais e não piscar primeiro.', url: 'https://www.glassdoor.com/blog/guide/salary-negotiation-scripts/', tag: 'SCRIPTS' },
       ] : isES ? [
         { title: '15 Reglas para Negociar una Oferta de Empleo (HBR)', desc: 'El manual definitivo de Harvard Business Review para negociación salarial — usado por profesionales en todo el mundo.', url: 'https://hbr.org/2014/06/15-rules-for-negotiating-a-job-offer', tag: 'NEGOCIACIÓN' },
-        { title: 'Datos Reales de Compensación para Roles Tech & IA', desc: 'Datos verificados de salario, equity y comp total para cientos de roles en empresas tech globales.', url: 'https://www.levels.fyi/', tag: 'DATOS' },
-        { title: 'Salario LATAM en USD: El Cuadro Completo', desc: 'Pago remoto en USD vs. salarios locales — la brecha real, cómo la calculan las empresas y cómo cerrarla.', url: 'https://remote.com/blog/employer-of-record-latin-america', tag: 'LATAM' },
+        { title: 'Datos Reales de Compensación para Roles Tech & IA', desc: 'Dados verificados de salario, equity y comp total para cientos de roles en empresas tech globales.', url: 'https://www.levels.fyi/', tag: 'DATOS' },
+        { title: 'Salario LATAM em USD: El Cuadro Completo', desc: 'Pago remoto em USD vs. salários locais — a brecha real, como empresas a calculam e como fechá-la.', url: 'https://remote.com/blog/employer-of-record-latin-america', tag: 'LATAM' },
         { title: 'Cómo Elegir Entre Múltiples Ofertas de Empleo', desc: 'Un framework de decisión estructurado para cuando tienes opciones y necesitas elegir sabiamente.', url: 'https://www.glassdoor.com/blog/evaluate-job-offer/', tag: 'DECISIÓN' },
         { title: 'Scripts de Negociación Salarial que Funcionan', desc: 'Scripts de email y llamada para contraoferta, pedir más y no parpadear primero.', url: 'https://www.glassdoor.com/blog/guide/salary-negotiation-scripts/', tag: 'SCRIPTS' },
       ] : [
@@ -449,13 +449,13 @@ function MarketValueTeaser({ lang = 'EN', isLoggedIn = false }: { lang?: string;
     if (!email || capturing) return;
     setCapturing(true);
     try {
-      await Promise.allSettled([
-        fetch('https://leads.wprotalents.lat/', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email, role, country, yearsExp, source: 'market-value-teaser' }),
-        }),
-      ]);
+      // await Promise.allSettled([
+      //   fetch('https://leads.wprotalents.lat/', {
+      //     method: 'POST',
+      //     headers: { 'Content-Type': 'application/json' },
+      //     body: JSON.stringify({ email, role, country, yearsExp, source: 'market-value-teaser' }),
+      //   }),
+      // ]);
     } finally {
       setCaptured(true);
       setCapturing(false);

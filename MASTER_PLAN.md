@@ -3,7 +3,7 @@
 **GitHub:** https://github.com/wprotalents-ctrl/Latam-Intel  
 **Owner:** Juan · WProTalents · wprotalents@gmail.com  
 **WhatsApp:** +573243132500  
-**Lead capture:** https://leads.wprotalents.lat/ (POST JSON)  
+**Lead capture:** {/* https://leads.wprotalents.lat/ (POST JSON) */}
 **Stack:** React 19 + Vite + TypeScript · Tailwind CSS · Firebase Auth/Firestore · Supabase · Vercel serverless · Framer Motion · Lucide icons  
 **Deploy:** Vercel — auto-deploys on push to `main`
 
@@ -13,7 +13,9 @@
 Convert 23,000 LinkedIn connections → 1,000–2,000 paying subscribers at $29/mo.
 
 **Funnel:**
-LinkedIn post → latam-intel.vercel.app → free salary teaser → **email gate** (leads.wprotalents.lat + Beehiiv) → nurture → upgrade $29/mo Executive Membership
+LinkedIn post → latam-intel.vercel.app → free salary teaser → {/* email gate */} (leads.wprotalents.lat + Beehiiv) → nurture → upgrade $29/mo Executive Membership
+
+**Email gate on MarketValueTeaser:** local salary shows free, remote (USD) blurred until email captured → {/* POST to `leads.wprotalents.lat` */} + `/api/subscribe-newsletter` (Beehiiv) in parallel
 
 **Two user types:**
 - `candidate` — LATAM tech professional seeking remote USD roles
@@ -44,7 +46,7 @@ LinkedIn post → latam-intel.vercel.app → free salary teaser → **email gate
 
 ### Candidate Portal (`/` → Jobs tab)
 - Live job feed with region + quick filters
-- **Email gate on MarketValueTeaser:** local salary shows free, remote (USD) blurred until email captured → POST to `leads.wprotalents.lat` + `/api/subscribe-newsletter` (Beehiiv) in parallel
+- **Email gate on MarketValueTeaser:** local salary shows free, remote (USD) blurred until email captured → {/* POST to `leads.wprotalents.lat` */} + `/api/subscribe-newsletter` (Beehiiv) in parallel
 - **CandidateResourcesPanel:** 7 sections with creative names and curated real articles:
   - `launch` — "Launch Protocol" (START HERE)
   - `strike` — "Strike Package" (GET HIRED)
@@ -214,8 +216,7 @@ All env vars already set in Vercel.
 Email gate on MarketValueTeaser in JobsPage.tsx:
 - Local salary shows free
 - Remote (USD) blurred until email captured
-- On submit: POST to https://leads.wprotalents.lat/ + POST /api/subscribe-newsletter in parallel
-- State: email, captured, capturing
+- On submit: {/* POST to https://leads.wprotalents.lat/ */} + POST /api/subscribe-newsletter in parallel
 
 ## WhatsApp CTA
 In ClientInsightsCard.tsx — shows for promoted plan only
