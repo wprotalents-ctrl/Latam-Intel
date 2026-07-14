@@ -26,6 +26,7 @@
     "node_modules",
     "dist",
     "src",
+    "functions",
     "api/_lib/supabase.ts",
     "api/webhooks",
     "backend"

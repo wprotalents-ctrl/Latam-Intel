@@ -777,112 +777,131 @@ export default function App() {
   return (
     <div className={`h-screen flex flex-col bg-bg text-text selection:bg-accent selection:text-black font-sans relative transition-colors duration-300 ${theme === 'light' ? 'light' : ''}`}>
       <div className="scanline pointer-events-none fixed inset-0 z-[200]" />
-      {/* Top Bar / OSINT Header */}
-      <header className="border-b border-border bg-surface flex items-center justify-between px-6 py-2">
-        <div className="flex items-center gap-8">
-          <a href="https://wprotalents.lat/" target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 group">
-            <div className="w-8 h-8 bg-accent flex items-center justify-center text-black font-black text-xl">W</div>
+      {/* Top Bar / WPro Intel Header */}
+      <header className="border-b border-border/50 bg-surface/90 backdrop-blur-xl flex items-center justify-between px-5 py-2.5 relative z-50">
+        {/* Left: Logo + Nav */}
+        <div className="flex items-center gap-6">
+          <a href="https://wprotalents.lat/" target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 group flex-shrink-0">
+            <div className="w-9 h-9 bg-accent rounded-lg flex items-center justify-center text-white font-black text-lg shadow-lg" style={{ boxShadow: '0 0 20px rgba(255,107,0,0.3)' }}>W</div>
             <div className="flex flex-col text-left">
-              <h1 className="text-sm font-black uppercase tracking-tighter leading-none">WProTalents Intel</h1>
-              <span className="mono text-[8px] text-accent/60">BETA · FREE ACCESS</span>
+              <div className="flex items-center gap-2">
+                <h1 className="text-sm font-black tracking-tight leading-none text-text group-hover:text-accent transition-colors">Latam Intel</h1>
+                <span className="hidden sm:inline-block px-1.5 py-0.5 bg-accent/10 border border-accent/20 rounded text-[8px] font-mono text-accent">BETA</span>
+              </div>
+              <span className="mono text-[7px] text-text-dim tracking-widest">BY WPROTALENTS · FREE ACCESS</span>
             </div>
           </a>
 
-          <nav className="hidden md:flex items-center gap-1">
-            <button 
+          {/* Nav Tabs */}
+          <nav className="hidden md:flex items-center gap-0.5">
+            <button
               onClick={() => setViewMode('Dashboard')}
-              className={`px-4 py-2 mono text-[10px] transition-all flex items-center gap-2 ${viewMode === 'Dashboard' ? 'text-accent bg-text/5' : 'text-text/40 hover:text-text'}`}
+              className={`px-4 py-1.5 mono text-[10px] transition-all duration-200 flex items-center gap-2 rounded-md ${viewMode === 'Dashboard' ? 'text-accent bg-accent/10 border border-accent/20' : 'text-text-muted hover:text-text hover:bg-surface-2 border border-transparent'}`}
             >
-              <LayoutDashboard size={14} /> {t.dashboard}
+              <LayoutDashboard size={13} />
+              {t.dashboard}
             </button>
             {userRole === 'candidate' && (
               <button
                 onClick={() => setViewMode('Jobs')}
-                className={`px-4 py-2 mono text-[10px] transition-all flex items-center gap-2 ${viewMode === 'Jobs' ? 'text-accent bg-text/5' : 'text-text/40 hover:text-text'}`}
+                className={`px-4 py-1.5 mono text-[10px] transition-all duration-200 flex items-center gap-2 rounded-md ${viewMode === 'Jobs' ? 'text-accent bg-accent/10 border border-accent/20' : 'text-text-muted hover:text-text hover:bg-surface-2 border border-transparent'}`}
               >
-                <Briefcase size={14} /> {t.jobs}
+                <Briefcase size={13} />
+                {t.jobs}
               </button>
             )}
+            {/* External link to main WProTalents */}
+            <a
+              href="https://wprotalents.lat"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="px-4 py-1.5 mono text-[10px] text-text-muted hover:text-accent transition-all duration-200 flex items-center gap-2 rounded-md border border-transparent hover:border-border"
+            >
+              WProTalents
+              <ArrowUpRight size={10} />
+            </a>
           </nav>
         </div>
 
-        <div className="flex items-center gap-6">
-          <div className="hidden lg:flex items-center gap-4 mono text-[10px]">
-            <div className="flex items-center gap-2 text-text/40">
-              <Clock size={12} />
-              <span className="text-accent font-bold">{currentTime.toLocaleTimeString([], { hour12: false })}</span>
-              <span className="opacity-50">{t.edt}</span>
-            </div>
-            <div className="w-px h-4 bg-border" />
-            <div className="flex items-center gap-2 text-text/40">
-              <Activity size={12} />
-              <span className="text-green-500 font-bold">WPRO</span>
+        {/* Right: Controls */}
+        <div className="flex items-center gap-3">
+          {/* Live clock */}
+          <div className="hidden xl:flex items-center gap-2 mono text-[10px] text-text-muted">
+            <div className="flex items-center gap-1.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse" />
+              <span className="font-bold text-accent">{currentTime.toLocaleTimeString([], { hour12: false })}</span>
+              <span className="opacity-40">{t.edt}</span>
             </div>
           </div>
-          
-          <div className="flex border border-border overflow-hidden rounded-sm">
+
+          {/* Language Switcher */}
+          <div className="flex border border-border rounded-lg overflow-hidden">
             {(['EN', 'ES', 'PT'] as Language[]).map((l) => (
               <button
                 key={l}
                 onClick={() => { setLang(l); localStorage.setItem('wpro_lang', l); }}
-                className={`px-2 py-1 text-[9px] font-mono font-bold transition-colors ${lang === l ? 'bg-accent text-black' : 'bg-surface text-text/40 hover:bg-text/5'}`}
+                className={`px-2.5 py-1.5 text-[9px] font-mono font-bold transition-all duration-150 ${lang === l ? 'bg-accent text-black' : 'bg-surface text-text-muted hover:bg-surface-2 hover:text-text'}`}
               >
                 {l}
               </button>
             ))}
           </div>
-          
+
+          {/* Theme Toggle */}
           <button
             onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-            className="p-2 border border-border hover:bg-text/5 rounded-sm text-text/40 hover:text-accent transition-colors"
+            className="p-2 border border-border rounded-lg text-text-muted hover:text-accent hover:border-accent/30 transition-all duration-150"
             title={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
           >
-            {theme === 'dark' ? <Sun size={16} /> : <Moon size={16} />}
+            {theme === 'dark' ? <Sun size={15} /> : <Moon size={15} />}
           </button>
-          
-          <div className="flex items-center gap-4">
-            {isAdmin && (
-              <button 
-                onClick={handleSyncIntelligence}
-                disabled={isSyncing}
-                className="hidden lg:flex items-center gap-2 px-3 py-1.5 bg-accent/10 border border-accent/30 text-accent mono text-[9px] font-bold hover:bg-accent/20 transition-all disabled:opacity-50"
-              >
-                <RefreshCw size={12} className={isSyncing ? 'animate-spin' : ''} />
-                {isSyncing ? 'Syncing...' : 'Daily Sync'}
-              </button>
-            )}
-            {false ? (
-              <div className="flex items-center gap-3">
-                <div className="flex flex-col items-end">
-                  <span className="mono text-[9px] text-text font-bold">{user.displayName || 'User'}</span>
-                  <button 
-                    onClick={() => signOut(auth)}
-                    className="mono text-[8px] text-text/40 hover:text-accent transition-colors flex items-center gap-1"
-                  >
-                    <LogOut size={10} /> Logout
-                  </button>
-                </div>
-                <div className="w-8 h-8 rounded-full bg-accent/20 border border-accent/40 flex items-center justify-center overflow-hidden">
-                  {user.photoURL ? (
-                    <img src={user.photoURL} alt="Profile" className="w-full h-full object-cover" />
-                  ) : (
-                    <UserIcon size={16} className="text-accent" />
-                  )}
-                </div>
-              </div>
-            ) : (
-              <button 
-                onClick={() => setIsAuthModalOpen(true)}
-                className="px-4 py-2 bg-accent text-black mono text-[10px] font-bold flex items-center gap-2 hover:opacity-90 transition-opacity"
-              >
-                <LogIn size={14} /> Login
-              </button>
-            )}
-            
-            <button className="p-2 border border-border hover:bg-text/5 rounded-sm">
-              <Menu size={18} />
+
+          {/* Admin Sync */}
+          {isAdmin && (
+            <button
+              onClick={handleSyncIntelligence}
+              disabled={isSyncing}
+              className="hidden lg:flex items-center gap-2 px-3 py-1.5 bg-accent/10 border border-accent/30 text-accent mono text-[9px] font-bold rounded-lg hover:bg-accent/20 transition-all disabled:opacity-50"
+            >
+              <RefreshCw size={11} className={isSyncing ? 'animate-spin' : ''} />
+              {isSyncing ? 'Syncing...' : 'Sync'}
             </button>
-          </div>
+          )}
+
+          {/* User Menu */}
+          {false ? (
+            <div className="flex items-center gap-3">
+              <div className="hidden sm:flex flex-col items-end">
+                <span className="mono text-[9px] text-text font-bold">{user.displayName || 'User'}</span>
+                <button
+                  onClick={() => signOut(auth)}
+                  className="mono text-[8px] text-text-muted hover:text-accent transition-colors flex items-center gap-1"
+                >
+                  <LogOut size={10} /> Sign Out
+                </button>
+              </div>
+              <div className="w-8 h-8 rounded-full bg-accent/20 border border-accent/40 flex items-center justify-center overflow-hidden">
+                {user.photoURL ? (
+                  <img src={user.photoURL} alt="Profile" className="w-full h-full object-cover" />
+                ) : (
+                  <UserIcon size={15} className="text-accent" />
+                )}
+              </div>
+            </div>
+          ) : (
+            <button
+              onClick={() => setIsAuthModalOpen(true)}
+              className="px-4 py-2 bg-accent text-white font-semibold text-xs rounded-lg flex items-center gap-2 hover:bg-accent-bright transition-all duration-150 shadow-md"
+              style={{ boxShadow: '0 2px 12px rgba(255,107,0,0.25)' }}
+            >
+              <LogIn size={14} /> Login
+            </button>
+          )}
+
+          {/* Mobile menu */}
+          <button className="md:hidden p-2 border border-border rounded-lg text-text-muted hover:text-text">
+            <Menu size={18} />
+          </button>
         </div>
       </header>
 
