@@ -123,7 +123,7 @@ export default function CVRadarForm({ clientId, onSuccess, onCancel }: CVRadarFo
         {} as Record<string, any>
       );
 
-      const res = await fetch('/api/cvradar/create', {
+      const res = await fetch('/api/cvradar', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
