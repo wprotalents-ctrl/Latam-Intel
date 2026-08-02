@@ -35,7 +35,8 @@ import {
   Newspaper,
   Sun,
   Copy,
-  CheckCircle2
+  CheckCircle2,
+  Lock
 } from 'lucide-react';
 import { 
   BarChart, 
@@ -48,8 +49,6 @@ import {
 } from 'recharts';
 import { MOCK_BRIEFINGS, getRecentBriefings } from './services/intelService';
 import { Language, Briefing, IntelligenceBrief } from './types';
-import { db, handleFirestoreError, FirestoreOperation } from './firebase';
-import { onSnapshot, doc, getDoc, setDoc, collection, query, orderBy, limit, serverTimestamp } from 'firebase/firestore';
 import { SubscriptionSection } from './components/SubscriptionSection';
 import JobsPage from './pages/JobsPage';
 import PrivacyPage from './pages/PrivacyPage';
@@ -65,6 +64,8 @@ const TRANSLATIONS = {
   EN: {
     dashboard: "Dashboard",
     jobs: "Jobs",
+    forCandidates: "For Candidates",
+    forCompanies: "For Companies",
     marketIntel: "Market Intel",
     tagline: "WProTalents: Strategic Talent Acquisition & AI Market Intelligence",
     signal: "WPro Signal",
@@ -207,6 +208,8 @@ const TRANSLATIONS = {
   ES: {
     dashboard: "Panel",
     jobs: "Empleos",
+    forCandidates: "Para Candidatos",
+    forCompanies: "Para Empresas",
     marketIntel: "Inteligencia de Mercado",
     tagline: "Inteligencia del Mercado Laboral de IA y Tendencias Globales",
     signal: "Señal de Empleos IA",
@@ -348,6 +351,8 @@ const TRANSLATIONS = {
   PT: {
     dashboard: "Painel",
     jobs: "Empregos",
+    forCandidates: "Para Candidatos",
+    forCompanies: "Para Empresas",
     marketIntel: "Inteligência de Mercado",
     tagline: "Inteligência do Mercado de Trabalho de IA e Tendências Globais",
     signal: "Sinal de Empregos de IA",
@@ -646,6 +651,14 @@ export default function App() {
     const saved = localStorage.getItem('wpro_lang');
     return (saved === 'EN' || saved === 'ES' || saved === 'PT') ? saved as Language : 'EN';
   });
+  const [portalType, setPortalType] = useState<'candidate' | 'company'>(() => {
+    const saved = localStorage.getItem('wpro_portal');
+    return (saved === 'candidate' || saved === 'company') ? saved : 'candidate';
+  });
+  const togglePortal = (type: 'candidate' | 'company') => {
+    setPortalType(type);
+    localStorage.setItem('wpro_portal', type);
+  };
   const [viewMode, setViewMode] = useState<'Dashboard' | 'Jobs' | 'Privacy'>('Dashboard');
   const [currentTime, setCurrentTime] = useState(new Date());
   const [isSyncing, setIsSyncing] = useState(false);
@@ -759,7 +772,7 @@ export default function App() {
         const data = await response.json();
         alert(`Sync successful! New briefing ID: ${data.briefingId}`);
         // Re-fetch briefings
-        const recent = await getRecentBriefings(20, subscriptionStatus === 'premium' || isAdmin);
+        const recent = await getRecentBriefings(20, false);
         setBriefings(recent);
       } else {
         alert('Sync failed. Check server logs.');
@@ -801,7 +814,7 @@ export default function App() {
               <LayoutDashboard size={13} />
               {t.dashboard}
             </button>
-            {userRole === 'candidate' && (
+            {portalType === 'candidate' && (
               <button
                 onClick={() => setViewMode('Jobs')}
                 className={`px-4 py-1.5 mono text-[10px] transition-all duration-200 flex items-center gap-2 rounded-md ${viewMode === 'Jobs' ? 'text-accent bg-accent/10 border border-accent/20' : 'text-text-muted hover:text-text hover:bg-surface-2 border border-transparent'}`}
@@ -856,47 +869,21 @@ export default function App() {
             {theme === 'dark' ? <Sun size={15} /> : <Moon size={15} />}
           </button>
 
-          {/* Admin Sync */}
-          {isAdmin && (
+          {/* Portal Toggle: For Candidates / For Companies */}
+          <div className="hidden md:flex border border-border rounded-lg overflow-hidden">
             <button
-              onClick={handleSyncIntelligence}
-              disabled={isSyncing}
-              className="hidden lg:flex items-center gap-2 px-3 py-1.5 bg-accent/10 border border-accent/30 text-accent mono text-[9px] font-bold rounded-lg hover:bg-accent/20 transition-all disabled:opacity-50"
+              onClick={() => togglePortal('candidate')}
+              className={`px-3 py-1.5 text-[9px] font-mono font-bold transition-all duration-150 flex items-center gap-1.5 ${portalType === 'candidate' ? 'bg-accent text-black' : 'bg-surface text-text-muted hover:bg-surface-2 hover:text-text'}`}
             >
-              <RefreshCw size={11} className={isSyncing ? 'animate-spin' : ''} />
-              {isSyncing ? 'Syncing...' : 'Sync'}
+              <UserIcon size={11} /> {t.forCandidates}
             </button>
-          )}
-
-          {/* User Menu */}
-          {false ? (
-            <div className="flex items-center gap-3">
-              <div className="hidden sm:flex flex-col items-end">
-                <span className="mono text-[9px] text-text font-bold">{user.displayName || 'User'}</span>
-                <button
-                  onClick={() => signOut(auth)}
-                  className="mono text-[8px] text-text-muted hover:text-accent transition-colors flex items-center gap-1"
-                >
-                  <LogOut size={10} /> Sign Out
-                </button>
-              </div>
-              <div className="w-8 h-8 rounded-full bg-accent/20 border border-accent/40 flex items-center justify-center overflow-hidden">
-                {user.photoURL ? (
-                  <img src={user.photoURL} alt="Profile" className="w-full h-full object-cover" />
-                ) : (
-                  <UserIcon size={15} className="text-accent" />
-                )}
-              </div>
-            </div>
-          ) : (
             <button
-              onClick={() => setIsAuthModalOpen(true)}
-              className="px-4 py-2 bg-accent text-white font-semibold text-xs rounded-lg flex items-center gap-2 hover:bg-accent-bright transition-all duration-150 shadow-md"
-              style={{ boxShadow: '0 2px 12px rgba(255,107,0,0.25)' }}
+              onClick={() => togglePortal('company')}
+              className={`px-3 py-1.5 text-[9px] font-mono font-bold transition-all duration-150 flex items-center gap-1.5 ${portalType === 'company' ? 'bg-accent text-black' : 'bg-surface text-text-muted hover:bg-surface-2 hover:text-text'}`}
             >
-              <LogIn size={14} /> Login
+              <Briefcase size={11} /> {t.forCompanies}
             </button>
-          )}
+          </div>
 
           {/* Mobile menu */}
           <button className="md:hidden p-2 border border-border rounded-lg text-text-muted hover:text-text">
@@ -1498,7 +1485,7 @@ export default function App() {
 
                 <div className="space-y-8">
                   <h4 className="mono text-[10px] text-text/40 uppercase tracking-widest">The Deep Dive</h4>
-                  {subscriptionStatus === 'premium' || isAdmin ? (
+                  {false ? (
                     <div className="text-text/80 leading-relaxed whitespace-pre-wrap text-lg">
                       {selectedIntelBrief.paid_analysis}
                     </div>

@@ -1,0 +1,1342 @@
+   209→    dashboard: "Panel",
+   210→    jobs: "Empleos",
+   211→    marketIntel: "Inteligencia de Mercado",
+   212→    tagline: "Inteligencia del Mercado Laboral de IA y Tendencias Globales",
+   213→    signal: "Señal de Empleos IA",
+   214→    heroDesc: "Directo. Nivel ejecutivo. 20 años reclutando talento C-level con enfoque en transformación de IA en EE. UU., UE y LATAM.",
+   215→    viewIntel: "Ver Inteligencia Laboral",
+   216→    backToFeed: "Volver al Feed de Inteligencia Laboral",
+   217→    actionable: "¿Impacto en Empleos?",
+   218→    editorialVoice: "Voz de Reclutamiento",
+   219→    authorDesc: "Veterano de 20 años en Reclutamiento Tech. Red de Talento IA.",
+   220→    theVeteran: "El Reclutador",
+   221→    authorBio: "20 años reclutando talento C-level globalmente. Red profunda en EE. UU., UE y LATAM. Experto en el impacto de la IA en la fuerza laboral y creación de nuevos empleos.",
+   222→    network: "Red de Talento",
+   223→    directConn: "Conexiones Directas de CTO/VP y Líderes de IA",
+   224→    briefings: "Informes Laborales",
+   225→    intelReports: "Inteligencia de Fuerza Laboral",
+   226→    joinNetwork: "Únete a la Red de Talento",
+   227→    marketPulse: "Pulso del Empleo",
+   228→    archive: "Archivo de Empleos",
+   229→    rights: "TODOS LOS DERECHOS RESERVADOS",
+   230→    terms: "Términos",
+   231→    privacy: "Privacidad",
+   232→    contact: "Contacto",
+   233→    briefingNum: "Informe Laboral",
+   234→    systemLog: "Log de Talento",
+   235→    worldMap: "Mapa Global de Empleos",
+   236→    radar: "Radar de Talento IA",
+   237→    conflictMonitor: "Volatilidad del Mercado",
+   238→    newsFeed: "Noticias del Mercado Laboral",
+   239→    dailyBriefing: "Diario de Fuerza Laboral",
+   240→    analyst: "Reclutador",
+   241→    alerts: "Alertas de Empleo",
+   242→    reports: "Informes de Mercado",
+   243→    decks: "Decks de Talento",
+   244→    monitoredSituations: "Tendencias de Empleo",
+   245→    localTriangulation: "Datos Laborales Regionales",
+   246→    visualTelemetry: "Telemetría de Talento",
+   247→    latAmSignal: "Empleos IA LATAM",
+   248→    aiToolOfWeek: "Herramienta de Reclutamiento IA",
+   249→    countryWatch: "Vigilancia Global de Empleos",
+   250→    fiveLinks: "Cinco Perspectivas Laborales que Valen tu Tiempo",
+   251→    fxRates: "TASAS DE MERCADO // EN VIVO",
+   252→    ago: "ATRÁS",
+   253→    marketCalcTitle: "💰 Calculadora de Valor de Mercado",
+   254→    marketCalcDesc: "Conoce el costo del talento antes de hacer una oferta",
+   255→    clientPortalSubtitle: "Contrata talento LATAM · Benchmarks de salario · Inteligencia de contratación IA",
+   256→    clientTabIntel: "Inteligencia de Mercado",
+   257→    clientTabPost: "Publicar un Rol",
+   258→    clientPostTitle: "Publicar un Rol",
+   259→    clientPostSubtitle: "Distribuido a 23K+ candidatos compatibles",
+   260→    clientResourcesTitle: "Hub de Inteligencia de Contratación",
+   261→    clientResourcesSubtitle: "Frameworks, datos y herramientas para líderes de contratación",
+   262→    todayJobNews: "Noticias de Empleo e IA de Hoy",
+   263→    loadingWorkspace: "Cargando tu workspace…",
+   264→    unlockFull: "Únete al Beta — Acceso Gratuito",
+   265→    upgradeFeatures: ["Benchmarks salariales LATAM en vivo", "Señal del mercado laboral EE.UU.", "Calculadora de salario remoto", "Informes del mercado laboral IA"],
+   266→    upgradeCta: "UNIRSE AL BETA · GRATIS",
+   267→    cancelAny: "Gratis durante el beta · Precio Founding Member próximamente",
+   268→    dailyBriefingsStrip: "Acceso beta · Todas las funciones gratis · Founding Member limitado",
+   269→    upgradeClose: "CERRAR ✕",
+   270→    upgradeOpen: "UNIRSE AL BETA →",
+   271→    openReport: "ABRIR INFORME LABORAL",
+   272→    generatingSignal: "ANALIZANDO MERCADO LABORAL...",
+   273→    generateNewBriefing: "GENERAR INFORME LABORAL",
+   274→    systemsNominal: "RECLUTAMIENTO NOMINAL",
+   275→    total: "CONTRATACIONES",
+   276→    queue: "VACANTES",
+   277→    feeds: "FUENTES DE TALENTO",
+   278→    night: "Noche",
+   279→    customize: "Personalizar",
+   280→    rotation: "Rotación",
+   281→    resume: "Reanudar",
+   282→    pause: "Pausa",
+   283→    muted: "Silenciado",
+   284→    unmuted: "Sonido",
+   285→    sourceLink: "Fuente de Empleo ↗",
+   286→    edt: "EDT",
+   287→    data: "TALENTO",
+   288→    beta: "JOBDECK BETA",
+   289→    scanning: "ESCANEANDO TALENTO...",
+   290→    aircraft: "TALENTO",
+   291→    systemLogTitle: "LOG DE TALENTO",
+   292→    logMsgs: [
+   293→      "Hub de Talento IA Establecido: SECTOR_7",
+   294→      "Nuevo Empleo IA Detectado: 35.41217, -50.55469",
+   295→      "Feed de Reclutamiento Decodificado: CH_04",
+   296→      "Alerta de Volatilidad de Mercado: Sector Tech",
+   297→      "Ingestión de Datos de Talento Completa: GLOBAL_AI",
+   298→      "Sistema Nominal: Todos los Nodos de Talento Activos",
+   299→      "Nueva Herramienta de Reclutamiento IA Integrada: IP_88.1.2.3"
+   300→    ],
+   301→    sent: "CONTRATADO",
+   302→    marketPulseItems: [
+   303→      { label: 'Empleos IA USA', value: 'Alto', trend: '+15.2%', sentiment: '+2.5' },
+   304→      { label: 'Empleos Tech UE', value: 'Estable', trend: '+2.1%', sentiment: '+0.5' },
+   305→      { label: 'Talento IA LATAM', value: 'Creciente', trend: '+18.4%', sentiment: '+2.8' }
+   306→    ],
+   307→    aiToolScores: [
+   308→      { label: 'EFICIENCIA', score: 5 },
+   309→      { label: 'PRECISIÓN', score: 4 },
+   310→      { label: 'COSTO', score: 5 },
+   311→      { label: 'UX', score: 5 }
+   312→    ],
+   313→    // LatAm Signal Content
+   314→    signalTitle: "Contratación Tech en LATAM Sube 23% en Q1 2026",
+   315→    signalDesc1: "La demanda de ingenieros senior con experiencia en IA/ML creció 31% interanual en Colombia, Brasil y México, impulsada por empresas de EE.UU. que buscan nearshoring para reducir la brecha horaria. El cambio de ingeniería de software genérica a experiencia en fine-tuning de LLM y arquitectura RAG está creando un mercado de dos niveles — y el nivel superior está ganando.",
+   316→    signalDesc2: "Los roles de nivel junior se contrajeron un 18% ya que las empresas consolidaron headcount y apostaron por menos contrataciones pero más especializadas. Los ingenieros mid-level de React y Python siguen siendo los roles que se cierran más rápido en toda la región.",
+   317→    signalSoWhat: "Si eres mid-level o senior con exposición a IA — estás en el mercado de una generación. Ponle precio acorde. Si estás contratando — la ventana para tarifas justas se está cerrando más rápido de lo que la mayoría de las empresas creen.",
+   318→    // AI Tool Content
+   319→    aiToolName: "Cursor",
+   320→    aiToolTitle: "El IDE Que Piensa Contigo",
+   321→    aiToolDesc: "Cursor es el editor de código con IA que está reemplazando a VS Code para ingenieros LATAM que apuntan a roles remotos en EE.UU. Completado de código 40% más rápido, contexto integrado con Claude/GPT, y un motor de tab-completion que anticipa funciones enteras.",
+   322→    aiToolWorkflowLabel: "FLUJO DE RECLUTAMIENTO",
+   323→    aiToolWorkflow: "1. Instala Cursor gratis → 2. Importa tu configuración de VS Code en 30 segundos → 3. Usa Ctrl+K para pedirle que escriba o corrija código en lenguaje natural → 4. Agrega a tu LinkedIn: 'Dominio de desarrollo asistido por IA (Cursor)' — es una señal que los hiring managers de EE.UU. reconocen.",
+   324→    aiToolLimitation: "Limitación: Requiere un gran conjunto de datos para ser verdaderamente efectivo; las startups más pequeñas pueden encontrar alta la carga de configuración inicial.",
+   325→    aiToolVerdict: "Veredicto para ejecutivos de RR. HH.: Si contrata a más de 50 personas al año, esta herramienta es obligatoria para mantener la calidad y la velocidad.",
+   326→    // Country Watch Content
+   327→    countryWatchItems: [
+   328→      { country: "USA", flag: "🇺🇸", text: "El mercado laboral de IA se está enfriando ligeramente en SF pero explotando en Austin y Miami. Enfoque en roles de 'IA Aplicada' en lugar de solo investigación. Las acciones principales como NVDA y MSFT son los principales impulsores del sentimiento laboral." },
+   329→      { country: "UE", flag: "🇪🇺", text: "La implementación de la Ley de IA está creando un aumento en los roles de 'Cumplimiento de IA' y 'Ética'. Alemania y Francia lideran en empleos de IA industrial. Observe los precios de la energía, ya que impactan la expansión de los centros de datos." },
+   330→      { country: "LATAM", flag: "🌎", text: "Brasil y México se están convirtiendo en la oficina administrativa global para el desarrollo de IA. Los salarios están subiendo rápido. Enfoque en construir 'Centros de Excelencia de IA' para retener el mejor talento." }
+   331→    ],
+   332→    // Five Links Content
+   333→    fiveLinksItems: [
+   334→      { title: "Estado del Trabajo Remoto 2024 — Reporte Buffer", source: "Buffer", why: "El conjunto de datos de trabajo remoto más citado. Úsalo para comparar tu cultura async y entender qué quieren realmente los trabajadores remotos.", url: "https://buffer.com/state-of-remote-work" },
+   335→      { title: "Reporte de Salarios Tech en LATAM — Levels.fyi", source: "Levels.fyi", why: "Datos reales de salarios de ingenieros en LATAM. Conoce el mercado antes de negociar — local y remoto (USD) lado a lado.", url: "https://www.levels.fyi" },
+   336→      { title: "Cómo Conseguir un Trabajo Remoto en 2024 — Guía Paso a Paso", source: "We Work Remotely", why: "Guía práctica del mayor job board remoto. Sigue siendo el estándar de oro para candidatos LATAM que apuntan a empresas de EE.UU./Europa.", url: "https://weworkremotely.com/how-to-get-a-remote-job" },
+   337→      { title: "Inglés para Tech: Curso B2 Gratis — British Council", source: "FutureLearn", why: "La brecha de idioma es real. Ciérrala con este curso estructurado construido específicamente para profesionales STEM.", url: "https://www.futurelearn.com/courses/english-for-science-technology-engineering-mathematics" },
+   338→      { title: "El Checklist del Contratista: Impuestos, Facturación y Banca en USD", source: "Wise", why: "Cobrar en USD es el primer paso. Esto cubre toda la operación del contratista — facturación, impuestos y banca eficiente en divisas.", url: "https://wise.com/us/blog/how-to-invoice-international-clients" }
+   339→    ],
+   340→    // News Feed Content
+   341→    newsFeedItems: [
+   342→      { title: "Colombia se posiciona como hub nearshore líder para fintech de EE.UU.", source: "TECHCRUNCH", time: "9 Abr", url: "https://techcrunch.com" },
+   343→      { title: "Inversión en IA en Brasil alcanza $2.1B en Q1 2026", source: "REUTERS", time: "8 Abr", url: "https://reuters.com" },
+   344→      { title: "Adopción de trabajo remoto en tech LATAM llega al 67%", source: "WWR", time: "7 Abr", url: "https://weworkremotely.com" },
+   345→      { title: "Deel reporta 40% de crecimiento en pagos a contratistas LATAM", source: "DEEL", time: "6 Abr", url: "https://deel.com" },
+   346→      { title: "Ciudad de México supera a Buenos Aires como ciudad de talento tech líder en LATAM", source: "LATAMLIST", time: "5 Abr", url: "https://latamlist.com" }
+   347→    ]
+   348→  },
+   349→  PT: {
+   350→    dashboard: "Painel",
+   351→    jobs: "Empregos",
+   352→    marketIntel: "Inteligência de Mercado",
+   353→    tagline: "Inteligência do Mercado de Trabalho de IA e Tendências Globais",
+   354→    signal: "Sinal de Empregos de IA",
+   355→    heroDesc: "Direto. Nível executivo. 20 anos recrutando talentos C-level com foco em transformação de IA nos EUA, UE e LATAM.",
+   356→    viewIntel: "Ver Inteligência de Empregos",
+   357→    backToFeed: "Voltar ao Feed de Inteligência de Empregos",
+   358→    actionable: "Impacto nos Empregos?",
+   359→    editorialVoice: "Voz do Recrutamento",
+   360→    authorDesc: "Veterano de 20 anos em Recrutamento Tech. Rede de Talentos de IA.",
+   361→    theVeteran: "O Recrutador",
+   362→    authorBio: "20 anos recrutando talentos C-level globalmente. Rede profunda nos EUA, UE e LATAM. Especialista no impacto da IA na força de trabalho e na criação de novos empregos.",
+   363→    network: "Rede de Talentos",
+   364→    directConn: "Conexões Diretas com CTO/VP e Líderes de IA",
+   365→    briefings: "Briefings de Empregos",
+   366→    intelReports: "Inteligência da Força de Trabalho",
+   367→    joinNetwork: "Junte-se à Rede de Talentos",
+   368→    marketPulse: "Pulso do Emprego",
+   369→    archive: "Arquivo de Empregos",
+   370→    rights: "TODOS OS DIREITOS RESERVADOS",
+   371→    terms: "Termos",
+   372→    privacy: "Privacidade",
+   373→    contact: "Contato",
+   374→    briefingNum: "Briefing de Emprego",
+   375→    systemLog: "Log de Talentos",
+   376→    worldMap: "Mapa Global de Empregos",
+   377→    radar: "Radar de Talentos de IA",
+   378→    conflictMonitor: "Volatilidade do Mercado",
+   379→    newsFeed: "Notícias do Mercado de Trabalho",
+   380→    dailyBriefing: "Diário da Força de Trabalho",
+   381→    analyst: "Recrutador",
+   382→    alerts: "Alertas de Emprego",
+   383→    reports: "Relatórios de Mercado",
+   384→    decks: "Decks de Talentos",
+   385→    monitoredSituations: "Tendências de Emprego",
+   386→    localTriangulation: "Dados Regionais de Emprego",
+   387→    visualTelemetry: "Telemetria de Talentos",
+   388→    latAmSignal: "Empregos de IA na LATAM",
+   389→    aiToolOfWeek: "Ferramenta de Recrutamento de IA",
+   390→    countryWatch: "Vigilância Global de Empregos",
+   391→    fiveLinks: "Cinco Insights de Empregos que Valem seu Tempo",
+   392→    fxRates: "TAXAS DE MERCADO // AO VIVO",
+   393→    ago: "ATRÁS",
+   394→    marketCalcTitle: "💰 Calculadora de Valor de Mercado",
+   395→    marketCalcDesc: "Saiba o custo do talento antes de fazer uma oferta",
+   396→    clientPortalSubtitle: "Contrate talentos LATAM · Benchmarks de salário · Inteligência de contratação IA",
+   397→    clientTabIntel: "Inteligência de Mercado",
+   398→    clientTabPost: "Publicar uma Vaga",
+   399→    clientPostTitle: "Publicar uma Vaga",
+   400→    clientPostSubtitle: "Distribuída para 23K+ candidatos compatíveis",
+   401→    clientResourcesTitle: "Hub de Inteligência de Contratação",
+   402→    clientResourcesSubtitle: "Frameworks, dados e ferramentas para gestores de contratação",
+   403→    todayJobNews: "Notícias de Emprego e IA de Hoje",
+   404→    loadingWorkspace: "Carregando seu workspace…",
+   405→    unlockFull: "Entre no Beta — Acesso Gratuito",
+   406→    upgradeFeatures: ["Benchmarks salariais LATAM ao vivo", "Sinal do mercado de trabalho EUA", "Calculadora de salário remoto", "Relatórios do mercado de trabalho IA"],
+   407→    upgradeCta: "ENTRAR NO BETA · GRÁTIS",
+   408→    cancelAny: "Grátis durante o beta · Preço de Founding Member em breve",
+   409→    dailyBriefingsStrip: "Acesso beta · Todas as funcionalidades grátis · Founding Member limitado",
+   410→    upgradeClose: "FECHAR ✕",
+   411→    upgradeOpen: "ENTRAR NO BETA →",
+   412→    openReport: "ABRIR RELATÓRIO DE EMPREGO",
+   413→    generatingSignal: "ANALISANDO MERCADO DE TRABALHO...",
+   414→    generateNewBriefing: "GERAR BRIEFING DE EMPREGO",
+   415→    systemsNominal: "RECRUTAMENTO NOMINAL",
+   416→    total: "CONTRATAÇÕES",
+   417→    queue: "VAGAS",
+   418→    feeds: "FEEDS DE TALENTOS",
+   419→    night: "Noite",
+   420→    customize: "Personalizar",
+   421→    rotation: "Rotação",
+   422→    resume: "Retomar",
+   423→    pause: "Pausa",
+   424→    muted: "Mudo",
+   425→    unmuted: "Som",
+   426→    sourceLink: "Fonte do Emprego ↗",
+   427→    edt: "EDT",
+   428→    data: "TALENTOS",
+   429→    beta: "JOBDECK BETA",
+   430→    scanning: "ESCANEANDO TALENTOS...",
+   431→    aircraft: "TALENTOS",
+   432→    systemLogTitle: "LOG DE TALENTOS",
+   433→    logMsgs: [
+   434→      "Hub de Talentos de IA Estabelecido: SECTOR_7",
+   435→      "Novo Emprego de IA Detectado: 35.41217, -50.55469",
+   436→      "Feed de Recrutamento Decifrado: CH_04",
+   437→      "Alerta de Volatilidade do Mercado: Setor Tech",
+   438→      "Ingestão de Dados de Talentos Concluída: GLOBAL_AI",
+   439→      "Sistema Nominal: Todos os Nós de Talentos Ativos",
+   440→      "Nova Ferramenta de Recrutamento de IA Integrada: IP_88.1.2.3"
+   441→    ],
+   442→    sent: "CONTRATADO",
+   443→    marketPulseItems: [
+   444→      { label: 'Empregos IA EUA', value: 'Alto', trend: '+15.2%', sentiment: '+2.5' },
+   445→      { label: 'Empregos Tech UE', value: 'Estável', trend: '+2.1%', sentiment: '+0.5' },
+   446→      { label: 'Talento IA LATAM', value: 'Crescente', trend: '+18.4%', sentiment: '+2.8' }
+   447→    ],
+   448→    aiToolScores: [
+   449→      { label: 'EFICIÊNCIA', score: 5 },
+   450→      { label: 'PRECISÃO', score: 4 },
+   451→      { label: 'CUSTO', score: 5 },
+   452→      { label: 'UX', score: 5 }
+   453→    ],
+   454→    // LatAm Signal Content
+   455→    signalTitle: "Contratação Tech na LATAM Sobe 23% no Q1 2026",
+   456→    signalDesc1: "A demanda por engenheiros sênior com experiência em IA/ML cresceu 31% YoY na Colômbia, Brasil e México, impulsionada por empresas dos EUA que buscam nearshoring para reduzir a fricção de fuso horário. A mudança de engenharia de software genérica para expertise em fine-tuning de LLM e arquitetura RAG está criando um mercado de dois níveis — e o nível superior está vencendo.",
+   457→    signalDesc2: "As vagas de nível júnior contraíram 18% à medida que as empresas consolidaram headcount e apostaram em contratações menos numerosas, porém mais qualificadas. Engenheiros mid-level de React e Python continuam sendo as funções fechadas mais rapidamente em toda a região.",
+   458→    signalSoWhat: "Se você é mid-level ou sênior com exposição a IA — você está no mercado de uma geração. Precifique adequadamente. Se está contratando — a janela para taxas justas está se fechando mais rápido do que a maioria das empresas percebe.",
+   459→    // AI Tool Content
+   460→    aiToolName: "Cursor",
+   461→    aiToolTitle: "A IDE Que Pensa Com Você",
+   462→    aiToolDesc: "Cursor é o editor de código com IA que está substituindo o VS Code para engenheiros LATAM que miram vagas remotas nos EUA. 40% mais rápido na completação de código, contexto integrado com Claude/GPT, e um motor de tab-completion que antecipa funções inteiras.",
+   463→    aiToolWorkflowLabel: "FLUXO DE TRABALHO DE RECRUTAMENTO",
+   464→    aiToolWorkflow: "Integrei o HiredScore ao nosso processo de busca de nível C. Ele analisou mais de 10.000 perfis para encontrar os 5 melhores candidatos para uma vaga de Head de IA na Cidade do México. Ele não apenas olhou para palavras-chave; ele analisou a 'trayetória de carreira' e o 'impacto do projeto de IA'. Economizou para nossa equipe 2 semanas de triagem manual.",
+   465→    aiToolLimitation: "Limitação: Requer um grande conjunto de dados para ser verdadeiramente eficaz; startups menores podem achar o custo inicial de configuração alto.",
+   466→    aiToolVerdict: "Veredito para Executivos de RH: Se você contrata mais de 50 pessoas por ano, esta ferramenta é obrigatória para manter a qualidade e a velocidade.",
+   467→    // Country Watch Content
+   468→    countryWatchItems: [
+   469→      { country: "EUA", flag: "🇺🇸", text: "O mercado de trabalho de IA está esfriando ligeiramente em SF, mas explodindo em Austin e Miami. Foco em funções de 'IA Aplicada' em vez de apenas pesquisa. Ações principais como NVDA e MSFT são os principais impulsionadores do sentimento de emprego." },
+   470→      { country: "UE", flag: "🇪🇺", text: "A implementação do AI Act está criando um aumento nas funções de 'Conformidade de IA' e 'Ética'. Alemanha e França lideram em empregos de IA industrial. Observe os preços da energia, pois eles impactam a expansão dos data centers." },
+   471→      { country: "LATAM", flag: "🌎", text: "Brasil e México estão se tornando o back-office global para o desenvolvimento de IA. Os salários estão subindo rápido. Foco na construção de 'Centros de Excelência de IA' para reter os melhores talentos." }
+   472→    ],
+   473→    // Five Links Content
+   474→    fiveLinksItems: [
+   475→      { title: "Estado do Trabalho Remoto 2024 — Relatório Buffer", source: "Buffer", why: "O conjunto de dados de trabalho remoto mais citado. Use-o para comparar sua cultura assíncrona e entender o que os trabalhadores remotos realmente querem.", url: "https://buffer.com/state-of-remote-work" },
+   476→      { title: "Relatório de Salários Tech na LATAM — Levels.fyi", source: "Levels.fyi", why: "Dados reais de salários de engenheiros na LATAM. Conheça o mercado antes de negociar — local e remoto (USD) lado a lado.", url: "https://www.levels.fyi" },
+   477→      { title: "Como Conseguir um Emprego Remoto em 2024 — Guia Passo a Passo", source: "We Work Remotely", why: "Guia prático do maior job board remoto. Ainda é o padrão ouro para candidatos LATAM mirando empresas dos EUA/Europa.", url: "https://weworkremotely.com/how-to-get-a-remote-job" },
+   478→      { title: "Inglês para Tech: Curso B2 Grátis — British Council", source: "FutureLearn", why: "A lacuna de idioma é real. Feche-a com este curso estruturado criado especificamente para profissionais de STEM.", url: "https://www.futurelearn.com/courses/english-for-science-technology-engineering-mathematics" },
+   479→      { title: "O Checklist do Contratado: Impostos, Faturamento e Conta em USD", source: "Wise", why: "Receber em USD é o primeiro passo. Isso cobre toda a operação do contratado — faturamento, impostos e banco eficiente em moeda estrangeira.", url: "https://wise.com/us/blog/how-to-invoice-international-clients" }
+   480→    ],
+   481→    // News Feed Content
+   482→    newsFeedItems: [
+   483→      { title: "Colômbia se torna principal hub nearshore para fintechs dos EUA", source: "TECHCRUNCH", time: "9 Abr", url: "https://techcrunch.com" },
+   484→      { title: "Investimento em IA no Brasil atinge US$ 2,1 bilhões no Q1 2026", source: "REUTERS", time: "8 Abr", url: "https://reuters.com" },
+   485→      { title: "Adoção de trabalho remoto em tech na LATAM chega a 67%", source: "WWR", time: "7 Abr", url: "https://weworkremotely.com" },
+   486→      { title: "Deel reporta crescimento de 40% nos pagamentos a contratados LATAM", source: "DEEL", time: "6 Abr", url: "https://deel.com" },
+   487→      { title: "Cidade do México supera Buenos Aires como principal cidade de talentos tech na LATAM", source: "LATAMLIST", time: "5 Abr", url: "https://latamlist.com" }
+   488→    ]
+   489→  }
+   490→};
+   491→
+   492→const WorldMap = () => (
+   493→  <div className="relative w-full h-full bg-bg overflow-hidden group">
+   494→    <div className="scanline" />
+   495→    <div className="absolute inset-0 grid-bg opacity-10" />
+   496→    <svg viewBox="0 0 1000 500" className="w-full h-full opacity-40">
+   497→      {/* Latitude/Longitude lines */}
+   498→      {[...Array(10)].map((_, i) => (
+   499→        <line key={`lat-${i}`} x1="0" y1={i * 50} x2="1000" y2={i * 50} stroke="currentColor" strokeWidth="0.2" className="text-text opacity-10" />
+   500→      ))}
+   501→      {[...Array(20)].map((_, i) => (
+   502→        <line key={`lon-${i}`} x1={i * 50} y1="0" x2={i * 50} y2="500" stroke="currentColor" strokeWidth="0.2" className="text-text opacity-10" />
+   503→      ))}
+   504→      
+   505→      <path 
+   506→        d="M150,150 L200,150 L250,200 L300,200 L350,250 L400,250 L450,300 L500,300 L550,250 L600,250 L650,200 L700,200 L750,150 L800,150 L850,200 L900,200" 
+   507→        fill="none" 
+   508→        stroke="var(--accent)" 
+   509→        strokeWidth="0.5" 
+   510→        className="opacity-40"
+   511→      />
+   512→      
+   513→      {/* Abstract landmasses */}
+   514→      <path d="M100,100 Q150,80 200,120 T300,100 T400,150 T350,250 T200,300 T100,200 Z" fill="currentColor" className="text-text opacity-5" />
+   515→      <path d="M500,200 Q550,180 600,220 T700,200 T800,250 T750,350 T600,400 T500,300 Z" fill="currentColor" className="text-text opacity-5" />
+   516→      
+   517→      {[...Array(60)].map((_, i) => (
+   518→        <circle 
+   519→          key={i}
+   520→          cx={Math.random() * 1000}
+   521→          cy={Math.random() * 500}
+   522→          r={Math.random() * 2 + 0.5}
+   523→          fill={Math.random() > 0.8 ? "var(--accent)" : "currentColor"}
+   524→          className="animate-pulse text-text"
+   525→          style={{ animationDelay: `${Math.random() * 5}s` }}
+   526→        />
+   527→      ))}
+   528→    </svg>
+   529→    <div className="absolute bottom-4 left-4 mono text-[7px] text-text/40 bg-surface/80 px-2 py-1 border border-text/10 backdrop-blur-sm">
+   530→      LAT: 35.41217 | LON: -50.55469 | ALT: 12,400M
+   531→    </div>
+   532→    <div className="absolute top-4 right-4 mono text-[7px] text-accent bg-surface/80 px-2 py-1 border border-accent/20 backdrop-blur-sm animate-pulse">
+   533→      LIVE FEED // SAT_04
+   534→    </div>
+   535→  </div>
+   536→);
+   537→
+   538→const RadarWidget = ({ lang, count }: { lang: Language; count: number }) => {
+   539→  const t = TRANSLATIONS[lang];
+   540→  const [blips, setBlips] = useState<{ id: number; x: number; y: number; opacity: number }[]>([]);
+   541→
+   542→  useEffect(() => {
+   543→    const interval = setInterval(() => {
+   544→      setBlips(prev => {
+   545→        const newBlips = prev.map(b => ({ ...b, opacity: b.opacity - 0.1 })).filter(b => b.opacity > 0);
+   546→        if (Math.random() > 0.7) {
+   547→          newBlips.push({
+   548→            id: Date.now(),
+   549→            x: Math.random() * 100,
+   550→            y: Math.random() * 100,
+   551→            opacity: 1
+   552→          });
+   553→        }
+   554→        return newBlips;
+   555→      });
+   556→    }, 500);
+   557→    return () => clearInterval(interval);
+   558→  }, []);
+   559→
+   560→  return (
+   561→    <div className="relative w-full aspect-square bg-surface/30 flex items-center justify-center border border-border overflow-hidden">
+   562→      <div className="absolute inset-0 flex items-center justify-center">
+   563→        {[1, 2, 3, 4].map(i => (
+   564→          <div 
+   565→            key={i} 
+   566→            className="absolute border border-text/10 rounded-full" 
+   567→            style={{ width: `${i * 25}%`, height: `${i * 25}%` }} 
+   568→          />
+   569→        ))}
+   570→        <div className="absolute w-full h-px bg-text/10" />
+   571→        <div className="absolute h-full w-px bg-text/10" />
+   572→        <div className="absolute w-full h-full radar-sweep" />
+   573→        
+   574→        {blips.map(blip => (
+   575→          <motion.div
+   576→            key={blip.id}
+   577→            initial={{ scale: 0 }}
+   578→            animate={{ scale: 1, opacity: blip.opacity }}
+   579→            className="absolute w-1.5 h-1.5 bg-accent rounded-full shadow-[0_0_5px_var(--accent)]"
+   580→            style={{ left: `${blip.x}%`, top: `${blip.y}%` }}
+   581→          />
+   582→        ))}
+   583→      </div>
+   584→      <div className="z-10 flex flex-col items-center bg-surface/40 p-2 backdrop-blur-sm border border-text/5">
+   585→        <div className="mono text-[8px] text-accent font-bold mb-1">{t.scanning}</div>
+   586→        <div className="mono text-[12px] font-black text-text">{count > 0 ? count : '—'} {t.aircraft}</div>
+   587→      </div>
+   588→    </div>
+   589→  );
+   590→};
+   591→
+   592→const SystemLog = ({ lang }: { lang: Language }) => {
+   593→  const t = TRANSLATIONS[lang];
+   594→  const [logs, setLogs] = useState<{ id: number; time: string; msg: string; type: 'INFO' | 'WARN' | 'CRIT' }[]>([]);
+   595→
+   596→  useEffect(() => {
+   597→    const messages = t.logMsgs;
+   598→
+   599→    const interval = setInterval(() => {
+   600→      setLogs(prev => [
+   601→        { 
+   602→          id: Date.now(), 
+   603→          time: new Date().toLocaleTimeString([], { hour12: false }), 
+   604→          msg: messages[Math.floor(Math.random() * messages.length)],
+   605→          type: Math.random() > 0.8 ? 'WARN' : 'INFO'
+   606→        },
+   607→        ...prev.slice(0, 5)
+   608→      ]);
+   609→    }, 3000);
+   610→    return () => clearInterval(interval);
+   611→  }, [t.logMsgs]);
+   612→
+   613→  return (
+   614→    <div className="bg-surface border border-border p-4 h-48 overflow-hidden flex flex-col">
+   615→      <div className="flex items-center justify-between mb-2">
+   616→        <div className="mono text-[9px] text-text/40 flex items-center gap-2">
+   617→          <Activity size={10} className="text-accent" /> {t.systemLogTitle}
+   618→        </div>
+   619→        <div className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse" />
+   620→      </div>
+   621→      <div className="flex-1 space-y-1 overflow-y-auto no-scrollbar font-mono text-[8px]">
+   622→        {logs.map(log => (
+   623→          <div key={log.id} className="flex gap-2">
+   624→            <span className="text-text/20">[{log.time}]</span>
+   625→            <span className={log.type === 'WARN' ? 'text-yellow-500' : 'text-accent'}>{log.type}</span>
+   626→            <span className="text-text/60">{log.msg}</span>
+   627→          </div>
+   628→        ))}
+   629→      </div>
+   630→    </div>
+   631→  );
+   632→};
+   633→
+   634→
+   635→interface MarketIntelData {
+   636→  news: any[];
+   637→  cryptoNews: any[];
+   638→  trends: { sectors: any[]; companies: any[] };
+   639→  volume: any[];
+   640→  brief: string;
+   641→}
+   642→
+   643→export default function App() {
+   644→  const [selectedBriefing, setSelectedBriefing] = useState<Briefing | null>(null);
+   645→  const [selectedIntelBrief, setSelectedIntelBrief] = useState<IntelligenceBrief | null>(null);
+   646→  const [lang, setLang] = useState<Language>(() => {
+   647→    const saved = localStorage.getItem('wpro_lang');
+   648→    return (saved === 'EN' || saved === 'ES' || saved === 'PT') ? saved as Language : 'EN';
+   649→  });
+   650→  const [viewMode, setViewMode] = useState<'Dashboard' | 'Jobs' | 'Privacy'>('Dashboard');
+   651→  const [currentTime, setCurrentTime] = useState(new Date());
+   652→  const [isSyncing, setIsSyncing] = useState(false);
+   653→  const [isCustomizeOpen, setIsCustomizeOpen] = useState(false);
+   654→  const [showUpgrade, setShowUpgrade] = useState(false);
+   655→  const [widgets, setWidgets] = useState<Record<string, boolean>>(() => {
+   656→    try {
+   657→      const saved = localStorage.getItem('wpro-widgets');
+   658→      return saved ? JSON.parse(saved) : { map: true, radar: true, pulse: true, log: true, fx: true };
+   659→    } catch { return { map: true, radar: true, pulse: true, log: true, fx: true }; }
+   660→  });
+   661→  const toggleWidget = (key: string) => {
+   662→    setWidgets(prev => {
+   663→      const next = { ...prev, [key]: !prev[key] };
+   664→      localStorage.setItem('wpro-widgets', JSON.stringify(next));
+   665→      return next;
+   666→    });
+   667→  };
+   668→  // Client hiring intelligence
+   669→  const [clientHiringPlan, setClientHiringPlan] = useState<HiringPlan | null>(null);
+   670→  const [clientNetworkReach, setClientNetworkReach] = useState<NetworkReach | null>(null);
+   671→  const [clientFormData, setClientFormData] = useState<ClientJobPostData | null>(null);
+   672→  const [clientInsightsLoading, setClientInsightsLoading] = useState(false);
+   673→  const [jobPostSaved, setJobPostSaved] = useState(false);
+   674→  const [companyTab, setCompanyTab] = useState<'intel' | 'post' | 'radar'>('intel');
+   675→  const [selectedRadarId, setSelectedRadarId] = useState<string | null>(null);
+   676→  const [briefings, setBriefings] = useState<Briefing[]>(MOCK_BRIEFINGS);
+   677→  const [intelBriefs, setIntelBriefs] = useState<IntelligenceBrief[]>([]);
+   678→  // Initialize theme from localStorage or default to 'dark'
+   679→  const [theme, setTheme] = useState<'dark' | 'light'>(() => {
+   680→    if (typeof window !== 'undefined') {
+   681→      return (localStorage.getItem('wpro-theme') as 'dark' | 'light') || 'dark';
+   682→    }
+   683→    return 'dark';
+   684→  });
+   685→  const [marketIntelData, setMarketIntelData] = useState<MarketIntelData>({
+   686→    news: [],
+   687→    cryptoNews: [],
+   688→    trends: { sectors: [], companies: [] },
+   689→    volume: [],
+   690→    brief: ''
+   691→  });
+   692→
+   693→  // Unified Theme Effect
+   694→  useEffect(() => {
+   695→    const root = document.documentElement;
+   696→    if (theme === 'light') {
+   697→      root.classList.add('light');
+   698→      document.body.classList.add('light');
+   699→      root.style.colorScheme = 'light';
+   700→    } else {
+   701→      root.classList.remove('light');
+   702→      document.body.classList.remove('light');
+   703→      root.style.colorScheme = 'dark';
+   704→    }
+   705→    localStorage.setItem('wpro-theme', theme);
+   706→  }, [theme]);
+   707→
+   708→  useEffect(() => {
+   709→    const fetchBriefings = async () => {
+   710→      const recent = await getRecentBriefings(20, true);
+   711→      if (recent.length > 0) {
+   712→        setBriefings(recent);
+   713→      }
+   714→    };
+   715→    fetchBriefings();
+   716→  }, []);
+   717→
+   718→  useEffect(() => {
+   719→    fetchMarketIntel();
+   720→  }, []);
+   721→
+   722→  const fetchMarketIntel = async () => {
+   723→    const safeJson = async (res: Response, fallback: any) => {
+   724→      try { return res.ok ? await res.json() : fallback; } catch { return fallback; }
+   725→    };
+   726→    try {
+   727→      const [newsRes, cryptoRes, trendsRes, volumeRes, briefRes] = await Promise.all([
+   728→        fetch('/api/market-intel/news'),
+   729→        fetch('/api/market-intel/crypto-news'),
+   730→        fetch('/api/market-intel/trends'),
+   731→        fetch('/api/market-intel/volume'),
+   732→        fetch('/api/market-intel/brief')
+   733→      ]);
+   734→
+   735→      const [news, cryptoNews, trends, volume, briefData] = await Promise.all([
+   736→        safeJson(newsRes, []),
+   737→        safeJson(cryptoRes, []),
+   738→        safeJson(trendsRes, { sectors: [], companies: [] }),
+   739→        safeJson(volumeRes, []),
+   740→        safeJson(briefRes, { brief: '' })
+   741→      ]);
+   742→
+   743→      setMarketIntelData({
+   744→        news,
+   745→        cryptoNews,
+   746→        trends,
+   747→        volume: Array.isArray(volume[0]) ? volume[0] : volume,
+   748→        brief: briefData.brief || ''
+   749→      });
+   750→    } catch (error) {
+   751→      console.error("Failed to fetch market intel:", error);
+   752→    }
+   753→  };
+   754→
+   755→  const handleSyncIntelligence = async () => {
+   756→    setIsSyncing(true);
+   757→    try {
+   758→      const response = await fetch('/api/sync-intelligence', { method: 'POST' });
+   759→      if (response.ok) {
+   760→        const data = await response.json();
+   761→        alert(`Sync successful! New briefing ID: ${data.briefingId}`);
+   762→        // Re-fetch briefings
+   763→        const recent = await getRecentBriefings(20, subscriptionStatus === 'premium' || isAdmin);
+   764→        setBriefings(recent);
+   765→      } else {
+   766→        alert('Sync failed. Check server logs.');
+   767→      }
+   768→    } catch (error) {
+   769→      console.error("Sync error:", error);
+   770→    } finally {
+   771→      setIsSyncing(false);
+   772→    }
+   773→  };
+   774→
+   775→  const { rates: fxRates, loading: fxLoading, lastUpdated: fxDate } = useFxRates();
+   776→  const t = TRANSLATIONS[lang];
+   777→
+   778→  return (
+   779→    <div className={`h-screen flex flex-col bg-bg text-text selection:bg-accent selection:text-black font-sans relative transition-colors duration-300 ${theme === 'light' ? 'light' : ''}`}>
+   780→      <div className="scanline pointer-events-none fixed inset-0 z-[200]" />
+   781→      {/* Top Bar / WPro Intel Header */}
+   782→      <header className="border-b border-border/50 bg-surface/90 backdrop-blur-xl flex items-center justify-between px-5 py-2.5 relative z-50">
+   783→        {/* Left: Logo + Nav */}
+   784→        <div className="flex items-center gap-6">
+   785→          <a href="https://wprotalents.lat/" target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 group flex-shrink-0">
+   786→            <div className="w-9 h-9 bg-accent rounded-lg flex items-center justify-center text-white font-black text-lg shadow-lg" style={{ boxShadow: '0 0 20px rgba(255,107,0,0.3)' }}>W</div>
+   787→            <div className="flex flex-col text-left">
+   788→              <div className="flex items-center gap-2">
+   789→                <h1 className="text-sm font-black tracking-tight leading-none text-text group-hover:text-accent transition-colors">Latam Intel</h1>
+   790→                <span className="hidden sm:inline-block px-1.5 py-0.5 bg-accent/10 border border-accent/20 rounded text-[8px] font-mono text-accent">BETA</span>
+   791→              </div>
+   792→              <span className="mono text-[7px] text-text-dim tracking-widest">BY WPROTALENTS · FREE ACCESS</span>
+   793→            </div>
+   794→          </a>
+   795→
+   796→          {/* Nav Tabs */}
+   797→          <nav className="hidden md:flex items-center gap-0.5">
+   798→            <button
+   799→              onClick={() => setViewMode('Dashboard')}
+   800→              className={`px-4 py-1.5 mono text-[10px] transition-all duration-200 flex items-center gap-2 rounded-md ${viewMode === 'Dashboard' ? 'text-accent bg-accent/10 border border-accent/20' : 'text-text-muted hover:text-text hover:bg-surface-2 border border-transparent'}`}
+   801→            >
+   802→              <LayoutDashboard size={13} />
+   803→              {t.dashboard}
+   804→            </button>
+   805→            {userRole === 'candidate' && (
+   806→              <button
+   807→                onClick={() => setViewMode('Jobs')}
+   808→                className={`px-4 py-1.5 mono text-[10px] transition-all duration-200 flex items-center gap-2 rounded-md ${viewMode === 'Jobs' ? 'text-accent bg-accent/10 border border-accent/20' : 'text-text-muted hover:text-text hover:bg-surface-2 border border-transparent'}`}
+   809→              >
+   810→                <Briefcase size={13} />
+   811→                {t.jobs}
+   812→              </button>
+   813→            )}
+   814→            {/* External link to main WProTalents */}
+   815→            <a
+   816→              href="https://wprotalents.lat"
+   817→              target="_blank"
+   818→              rel="noopener noreferrer"
+   819→              className="px-4 py-1.5 mono text-[10px] text-text-muted hover:text-accent transition-all duration-200 flex items-center gap-2 rounded-md border border-transparent hover:border-border"
+   820→            >
+   821→              WProTalents
+   822→              <ArrowUpRight size={10} />
+   823→            </a>
+   824→          </nav>
+   825→        </div>
+   826→
+   827→        {/* Right: Controls */}
+   828→        <div className="flex items-center gap-3">
+   829→          {/* Live clock */}
+   830→          <div className="hidden xl:flex items-center gap-2 mono text-[10px] text-text-muted">
+   831→            <div className="flex items-center gap-1.5">
+   832→              <span className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse" />
+   833→              <span className="font-bold text-accent">{currentTime.toLocaleTimeString([], { hour12: false })}</span>
+   834→              <span className="opacity-40">{t.edt}</span>
+   835→            </div>
+   836→          </div>
+   837→
+   838→          {/* Language Switcher */}
+   839→          <div className="flex border border-border rounded-lg overflow-hidden">
+   840→            {(['EN', 'ES', 'PT'] as Language[]).map((l) => (
+   841→              <button
+   842→                key={l}
+   843→                onClick={() => { setLang(l); localStorage.setItem('wpro_lang', l); }}
+   844→                className={`px-2.5 py-1.5 text-[9px] font-mono font-bold transition-all duration-150 ${lang === l ? 'bg-accent text-black' : 'bg-surface text-text-muted hover:bg-surface-2 hover:text-text'}`}
+   845→              >
+   846→                {l}
+   847→              </button>
+   848→            ))}
+   849→          </div>
+   850→
+   851→          {/* Theme Toggle */}
+   852→          <button
+   853→            onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+   854→            className="p-2 border border-border rounded-lg text-text-muted hover:text-accent hover:border-accent/30 transition-all duration-150"
+   855→            title={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+   856→          >
+   857→            {theme === 'dark' ? <Sun size={15} /> : <Moon size={15} />}
+   858→          </button>
+   859→
+   860→          {/* Admin Sync */}
+   861→          {isAdmin && (
+   862→            <button
+   863→              onClick={handleSyncIntelligence}
+   864→              disabled={isSyncing}
+   865→              className="hidden lg:flex items-center gap-2 px-3 py-1.5 bg-accent/10 border border-accent/30 text-accent mono text-[9px] font-bold rounded-lg hover:bg-accent/20 transition-all disabled:opacity-50"
+   866→            >
+   867→              <RefreshCw size={11} className={isSyncing ? 'animate-spin' : ''} />
+   868→              {isSyncing ? 'Syncing...' : 'Sync'}
+   869→            </button>
+   870→          )}
+   871→
+   872→          {/* User Menu */}
+   873→          {false ? (
+   874→            <div className="flex items-center gap-3">
+   875→              <div className="hidden sm:flex flex-col items-end">
+   876→                <span className="mono text-[9px] text-text font-bold">{user.displayName || 'User'}</span>
+   877→                <button
+   878→                  onClick={() => signOut(auth)}
+   879→                  className="mono text-[8px] text-text-muted hover:text-accent transition-colors flex items-center gap-1"
+   880→                >
+   881→                  <LogOut size={10} /> Sign Out
+   882→                </button>
+   883→              </div>
+   884→              <div className="w-8 h-8 rounded-full bg-accent/20 border border-accent/40 flex items-center justify-center overflow-hidden">
+   885→                {user.photoURL ? (
+   886→                  <img src={user.photoURL} alt="Profile" className="w-full h-full object-cover" />
+   887→                ) : (
+   888→                  <UserIcon size={15} className="text-accent" />
+   889→                )}
+   890→              </div>
+   891→            </div>
+   892→          ) : (
+   893→            <button
+   894→              onClick={() => setIsAuthModalOpen(true)}
+   895→              className="px-4 py-2 bg-accent text-white font-semibold text-xs rounded-lg flex items-center gap-2 hover:bg-accent-bright transition-all duration-150 shadow-md"
+   896→              style={{ boxShadow: '0 2px 12px rgba(255,107,0,0.25)' }}
+   897→            >
+   898→              <LogIn size={14} /> Login
+   899→            </button>
+   900→          )}
+   901→
+   902→          {/* Mobile menu */}
+   903→          <button className="md:hidden p-2 border border-border rounded-lg text-text-muted hover:text-text">
+   904→            <Menu size={18} />
+   905→          </button>
+   906→        </div>
+   907→      </header>
+   908→
+   909→      <main className="flex-1 relative overflow-hidden grid-bg">
+   910→        <AnimatePresence mode="wait">
+   911→          <motion.div
+   912→            key="dashboard"
+   913→            initial={{ opacity: 0 }}
+   914→            animate={{ opacity: 1 }}
+   915→            exit={{ opacity: 0 }}
+   916→            className="absolute inset-0 overflow-y-auto"
+   917→          >
+   918→            {/* Dashboard */}
+   919→            <div className="grid grid-cols-12 gap-px bg-border min-h-full">
+   920→              {/* Main content */}
+   921→              <div className="col-span-12 lg:col-span-8 flex flex-col gap-px bg-border">
+   922→                {/* Top Row: Map and Radar */}
+   923→                    <div className="grid grid-cols-1 md:grid-cols-3 gap-px bg-border">
+   924→                      {widgets.map !== false && (
+   925→                        <div className="md:col-span-2 bg-bg relative min-h-[400px]">
+   926→                          <div className="absolute top-4 left-4 z-20 flex items-center gap-2 mono text-[9px] bg-surface/80 p-2 border border-border">
+   927→                            <Globe size={10} className="text-accent" /> {t.worldMap}
+   928→                          </div>
+   929→                          <WorldMap />
+   930→                        </div>
+   931→                      )}
+   932→                      {widgets.radar !== false && (
+   933→                        <div className={`bg-bg relative p-4 flex flex-col ${widgets.map === false ? 'md:col-span-3' : ''}`}>
+   934→                          <div className="flex items-center justify-between mb-4">
+   935→                            <div className="mono text-[9px] text-text/40 flex items-center gap-2">
+   936→                              <Activity size={10} className="text-accent" /> {t.radar}
+   937→                            </div>
+   938→                          </div>
+   939→                          <RadarWidget lang={lang} count={briefings.length} />
+   940→                          <div className="mt-4 space-y-2">
+   941→                            {[
+   942→                              { label: 'Executive / C-Level', color: 'bg-yellow-500', pct: 12 },
+   943→                              { label: 'Senior Individual Contributor', color: 'bg-green-500', pct: 38 },
+   944→                              { label: 'Mid-Level', color: 'bg-blue-400', pct: 35 },
+   945→                              { label: 'Emerging / Rising Talent', color: 'bg-accent', pct: 15 }
+   946→                            ].map(item => (
+   947→                              <div key={item.label} className="flex items-center justify-between mono text-[8px]">
+   948→                                <div className="flex items-center gap-2">
+   949→                                  <div className={`w-1.5 h-1.5 rounded-full ${item.color}`} />
+   950→                                  {item.label}
+   951→                                </div>
+   952→                                <span className="text-text/40">{item.pct}%</span>
+   953→                              </div>
+   954→                            ))}
+   955→                          </div>
+   956→                        </div>
+   957→                      )}
+   958→                    </div>
+   959→
+   960→                    {/* Middle Row: Conflict Monitor and News */}
+   961→                    <div className="grid grid-cols-1 md:grid-cols-2 gap-px bg-border">
+   962→                      <div className="bg-bg p-6 flex flex-col">
+   963→                        <div className="flex items-center justify-between mb-6">
+   964→                          <div className="mono text-[9px] text-accent flex items-center gap-2">
+   965→                            <Zap size={10} /> {t.latAmSignal} // FEATURED
+   966→                          </div>
+   967→                          <div className="mono text-[8px] text-text/20">WEEK 13 // 2026</div>
+   968→                        </div>
+   969→                        <div className="flex-1">
+   970→                          <h4 className="text-xl font-black uppercase tracking-tight mb-4 text-text">
+   971→                            {t.signalTitle}
+   972→                          </h4>
+   973→                          <p className="text-xs leading-relaxed text-text/70 mb-4">
+   974→                            {t.signalDesc1}
+   975→                          </p>
+   976→                          <p className="text-xs leading-relaxed text-text/70 mb-6">
+   977→                            {t.signalDesc2}
+   978→                          </p>
+   979→                          <div className="so-what !my-0 !py-3">
+   980→                            <span className="mono font-bold text-accent block mb-1 tracking-widest">{t.actionable.toUpperCase()}</span>
+   981→                            <p className="text-xs italic">
+   982→                              {t.signalSoWhat}
+   983→                            </p>
+   984→                          </div>
+   985→                        </div>
+   986→                      </div>
+   987→
+   988→                      <div className="bg-bg p-6">
+   989→                        <div className="flex items-center justify-between mb-6">
+   990→                          <div className="mono text-[9px] text-text/40 flex items-center gap-2">
+   991→                            <Radio size={10} className="text-accent" /> {t.newsFeed}
+   992→                          </div>
+   993→                        </div>
+   994→                        <div className="space-y-6">
+   995→                          {t.newsFeedItems.map((news, i) => (
+   996→                            <a key={i} href={news.url} target="_blank" rel="noopener noreferrer" className="group block">
+   997→                              <h5 className="text-sm font-bold group-hover:text-accent transition-colors mb-1 flex items-start gap-1">
+   998→                                {news.title}
+   999→                                <ArrowUpRight size={11} className="shrink-0 mt-0.5 text-text/20 group-hover:text-accent transition-colors" />
+  1000→                              </h5>
+  1001→                              <div className="flex gap-3 mono text-[8px] text-text/40">
+  1002→                                <span className="text-accent">{news.source}</span>
+  1003→                                <span>{news.time} {t.ago}</span>
+  1004→                              </div>
+  1005→                            </a>
+  1006→                          ))}
+  1007→                        </div>
+  1008→                      </div>
+  1009→                    </div>
+  1010→
+  1011→                    {/* Market Intel Integration: Brief and Job News */}
+  1012→                    {marketIntelData.brief && (
+  1013→                      <div className="bg-bg p-6 border-b border-border">
+  1014→                        <div className="flex items-center gap-2 mb-6">
+  1015→                          <Zap size={10} className="text-accent" />
+  1016→                          <div className="mono text-[9px] text-accent font-bold uppercase tracking-widest">AI Impact Brief</div>
+  1017→                        </div>
+  1018→                        <div className="bg-surface border border-accent/20 p-6 relative overflow-hidden">
+  1019→                          <div className="absolute top-0 right-0 p-4 opacity-5">
+  1020→                            <Zap size={48} className="text-accent" />
+  1021→                          </div>
+  1022→                          <p className="text-lg font-medium leading-relaxed text-text/90 italic">
+  1023→                            "{marketIntelData.brief}"
+  1024→                          </p>
+  1025→                        </div>
+  1026→                      </div>
+  1027→                    )}
+  1028→
+  1029→                    {marketIntelData.news.length > 0 && (
+  1030→                      <div className="bg-bg p-6 border-b border-border">
+  1031→                        <div className="flex items-center gap-2 mb-6">
+  1032→                          <Newspaper size={10} className="text-accent" />
+  1033→                          <div className="mono text-[9px] text-text/40 font-bold uppercase tracking-widest">{t.todayJobNews}</div>
+  1034→                        </div>
+  1035→                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+  1036→                          {marketIntelData.news.slice(0, 4).map((item, i) => (
+  1037→                            <a 
+  1038→                              key={i} 
+  1039→                              href={item.url} 
+  1040→                              target="_blank" 
+  1041→                              rel="noopener noreferrer"
+  1042→                              className="p-4 bg-surface border border-border hover:border-accent/40 transition-all group"
+  1043→                            >
+  1044→                              <div className="flex justify-between items-start gap-2 mb-2">
+  1045→                                <span className="mono text-[8px] text-accent uppercase">{item.source}</span>
+  1046→                                <span className="mono text-[8px] text-text/20">{new Date(item.publishedAt).toLocaleDateString()}</span>
+  1047→                              </div>
+  1048→                              <h5 className="text-sm font-bold group-hover:text-accent transition-colors line-clamp-2">{item.title}</h5>
+  1049→                            </a>
+  1050→                          ))}
+  1051→                        </div>
+  1052→                      </div>
+  1053→                    )}
+  1054→
+  1055→                    {/* Company Resources // Curated Articles */}
+  1056→                    <div className="bg-bg p-6 border-b border-border">
+  1057→                      <div className="flex items-center gap-2 mb-5">
+  1058→                        <Briefcase size={10} className="text-accent" />
+  1059→                        <div className="mono text-[9px] text-accent font-bold uppercase tracking-widest">Company Resources // Curated for You</div>
+  1060→                      </div>
+  1061→                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+  1062→                        {[
+  1063→                          { tag: 'TALENT STRATEGY', color: 'text-violet-400', title: 'How to Build a High-Performance Distributed Team in LATAM', desc: 'Hiring frameworks, onboarding, and culture for remote-first tech companies.', url: 'https://hbr.org/topic/subject/hiring', source: 'Harvard Business Review' },
+  1064→                          { tag: 'AI & HIRING', color: 'text-accent', title: 'How AI Is Transforming Talent Acquisition in 2026', desc: 'From sourcing automation to AI-assisted screening — what actually works.', url: 'https://www.linkedin.com/business/talent/blog', source: 'LinkedIn Talent Blog' },
+  1065→                          { tag: 'MARKET DATA', color: 'text-emerald-400', title: 'LATAM Salary Benchmarks for Tech Roles — 2026 Report', desc: 'Up-to-date compensation data across Colombia, Brazil, Argentina, and Mexico.', url: 'https://www.levels.fyi', source: 'Levels.fyi' },
+  1066→                          { tag: 'RETENTION', color: 'text-blue-400', title: 'Why Senior Engineers Leave — And How to Keep Them', desc: 'The real reasons your best people walk, and what actually retains top talent.', url: 'https://hbr.org/topic/subject/managing-people', source: 'HBR' },
+  1067→                          { tag: 'JOB DESCRIPTIONS', color: 'text-yellow-400', title: 'How to Write Job Descriptions That Attract Senior Talent', desc: 'Most JDs repel the best candidates. Here\'s what top companies do differently.', url: 'https://www.linkedin.com/business/talent/blog/talent-acquisition/how-to-write-a-job-description', source: 'LinkedIn Talent' },
+  1068→                          { tag: 'REMOTE TEAMS', color: 'text-violet-400', title: 'Managing Across Time Zones: A Playbook for LATAM Remote Teams', desc: 'Async communication, performance reviews, and trust-building across cultures.', url: 'https://www.mckinsey.com/capabilities/people-and-organizational-performance/our-insights', source: 'McKinsey' },
+  1069→                        ].map((a, i) => (
+  1070→                          <a key={i} href={a.url} target="_blank" rel="noopener noreferrer"
+  1071→                            className="group flex flex-col gap-1.5 p-4 bg-surface border border-border hover:border-accent/30 transition-colors">
+  1072→                            <div className="flex items-center justify-between">
+  1073→                              <span className={`mono text-[7px] font-bold ${a.color}`}>{a.tag}</span>
+  1074→                              <span className="mono text-[7px] text-text/20">{a.source}</span>
+  1075→                            </div>
+  1076→                            <h5 className="text-xs font-bold leading-snug group-hover:text-accent transition-colors">{a.title}</h5>
+  1077→                            <p className="mono text-[9px] text-text/40 leading-snug line-clamp-2">{a.desc}</p>
+  1078→                            <span className="mono text-[7px] text-accent/40 group-hover:text-accent transition-colors flex items-center gap-1 mt-auto">
+  1079→                              READ <ArrowUpRight size={8} />
+  1080→                            </span>
+  1081→                          </a>
+  1082→                        ))}
+  1083→                      </div>
+  1084→                    </div>
+  1085→                    {/* Filler: fills remaining height so bg-border gap doesn't show */}
+  1086→                    <div className="flex-1 bg-bg" />
+  1087→                  </div>
+  1088→
+  1089→                  {/* Sidebar */}
+  1090→                  <div className="col-span-12 lg:col-span-4 flex flex-col gap-px bg-border">
+  1091→                    {widgets.pulse !== false && <section className="p-8 bg-bg">
+  1092→                      <div className="flex items-center justify-between mb-8">
+  1093→                        <div className="mono text-[9px] text-text/40 flex items-center gap-2">
+  1094→                          <TrendingUp size={10} className="text-accent" /> {t.marketPulse}
+  1095→                        </div>
+  1096→                        <span className={`mono text-[7px] px-1.5 py-0.5 border ${marketIntelData.news.length > 0 ? 'border-green-500/30 text-green-500' : 'border-text/10 text-text/20'}`}>
+  1097→                          {marketIntelData.news.length > 0 ? '● LIVE' : '○ CACHED'}
+  1098→                        </span>
+  1099→                      </div>
+  1100→                      <div className="space-y-6">
+  1101→                        {marketIntelData.cryptoNews.length > 0 && (
+  1102→                          <div className="p-4 bg-surface border border-border">
+  1103→                            <div className="flex items-center gap-2 mb-4">
+  1104→                              <Bitcoin size={12} className="text-accent" />
+  1105→                              <span className="mono font-bold text-[10px] uppercase tracking-widest">Crypto & Web3 Pulse</span>
+  1106→                            </div>
+  1107→                            <div className="space-y-3">
+  1108→                              {marketIntelData.cryptoNews.slice(0, 3).map((item, i) => (
+  1109→                                <a key={i} href={item.url} target="_blank" rel="noopener noreferrer" className="block group">
+  1110→                                  <h6 className="text-[10px] font-bold group-hover:text-accent transition-colors line-clamp-1">{item.title}</h6>
+  1111→                                  <span className="mono text-[7px] text-text/40 uppercase">{item.source}</span>
+  1112→                                </a>
+  1113→                              ))}
+  1114→                            </div>
+  1115→                          </div>
+  1116→                        )}
+  1117→
+  1118→                        {t.marketPulseItems.map((item, i) => (
+  1119→                          <div key={item.label} className="flex justify-between items-center p-4 bg-surface border border-border">
+  1120→                            <div className="flex items-center gap-3">
+  1121→                              <div className="p-2 bg-surface text-accent">
+  1122→                                {i === 0 ? <TrendingUp size={12} /> : i === 1 ? <Users size={12} /> : <Globe size={12} />}
+  1123→                              </div>
+  1124→                              <div className="flex flex-col">
+  1125→                                <span className="mono font-bold text-[10px]">{item.label}</span>
+  1126→                                <div className="flex items-center gap-2">
+  1127→                                  <span className="text-[8px] text-green-500 font-mono">{item.trend}</span>
+  1128→                                  <span className="text-[8px] text-text/40 font-mono">Sent: {item.sentiment}</span>
+  1129→                                </div>
+  1130→                              </div>
+  1131→                            </div>
+  1132→                            <span className="px-2 py-0.5 bg-surface text-accent text-[8px] font-mono border border-accent/20">{item.value}</span>
+  1133→                          </div>
+  1134→                        ))}
+  1135→                      </div>
+  1136→                    </section>}
+  1137→
+  1138→                    {widgets.fx !== false && <section className="p-8 bg-bg">
+  1139→                      <div className="mono text-[9px] text-text/40 mb-4 flex items-center gap-2">
+  1140→                        <Activity size={10} className="text-accent" /> {t.fxRates}
+  1141→                        {fxDate && <span className="text-[7px] text-text/20 ml-auto">{fxDate}</span>}
+  1142→                        {fxLoading && <span className="text-[7px] text-accent/50 animate-pulse ml-1">●</span>}
+  1143→                      </div>
+  1144→                      <div className="grid grid-cols-3 gap-2">
+  1145→                        {(fxRates.length > 0 ? fxRates : [
+  1146→                          { pair: 'COP/USD', rate: '—', change: '', flag: '🇨🇴' },
+  1147→                          { pair: 'BRL/USD', rate: '—', change: '', flag: '🇧🇷' },
+  1148→                          { pair: 'ARS/USD', rate: '—', change: '', flag: '🇦🇷' },
+  1149→                          { pair: 'MXN/USD', rate: '—', change: '', flag: '🇲🇽' },
+  1150→                          { pair: 'CLP/USD', rate: '—', change: '', flag: '🇨🇱' },
+  1151→                          { pair: 'PEN/USD', rate: '—', change: '', flag: '🇵🇪' },
+  1152→                        ]).map(fx => (
+  1153→                          <div key={fx.pair} className="bg-surface border border-border p-3 flex flex-col items-center">
+  1154→                            <span className="mono text-[7px] text-text/40 mb-1">{fx.flag} {fx.pair}</span>
+  1155→                            <span className="text-sm font-black text-text">{fx.rate}</span>
+  1156→                            {fx.change && <span className={`text-[7px] font-mono ${fx.change.startsWith('+') ? 'text-green-500' : 'text-red-500'}`}>{fx.change}</span>}
+  1157→                          </div>
+  1158→                        ))}
+  1159→                      </div>
+  1160→                    </section>}
+  1161→
+  1162→                    {/* Market Intel Charts */}
+  1163→                    {marketIntelData.trends.sectors.length > 0 && (
+  1164→                      <section className="p-8 bg-bg border-t border-border">
+  1165→                        <div className="mono text-[9px] text-text/40 mb-6 flex items-center gap-2">
+  1166→                          <TrendingUp size={10} className="text-accent" /> TOP HIRING SECTORS
+  1167→                        </div>
+  1168→                        <div className="h-[200px] w-full">
+  1169→                          <ResponsiveContainer width="100%" height="100%">
+  1170→                            <BarChart data={marketIntelData.trends.sectors} layout="vertical">
+  1171→                              <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" horizontal={false} />
+  1172→                              <XAxis type="number" hide />
+  1173→                              <YAxis 
+  1174→                                dataKey="name" 
+  1175→                                type="category" 
+  1176→                                width={80} 
+  1177→                                stroke="var(--text)" 
+  1178→                                fontSize={8}
+  1179→                                tick={{ fill: 'var(--text)', opacity: 0.4 }}
+  1180→                              />
+  1181→                              <Tooltip 
+  1182→                                contentStyle={{ backgroundColor: 'var(--surface)', border: '1px solid var(--border)', fontSize: '10px' }}
+  1183→                                itemStyle={{ color: 'var(--accent)' }}
+  1184→                              />
+  1185→                              <Bar dataKey="count" fill="var(--accent)" radius={[0, 2, 2, 0]} />
+  1186→                            </BarChart>
+  1187→                          </ResponsiveContainer>
+  1188→                        </div>
+  1189→                      </section>
+  1190→                    )}
+  1191→
+  1192→                    {marketIntelData.volume.length > 0 && (
+  1193→                      <section className="p-8 bg-bg border-t border-border">
+  1194→                        <div className="mono text-[9px] text-text/40 mb-6 flex items-center gap-2">
+  1195→                          <Globe size={10} className="text-accent" /> LATAM JOB VOLUME
+  1196→                        </div>
+  1197→                        <div className="h-[200px] w-full">
+  1198→                          <ResponsiveContainer width="100%" height="100%">
+  1199→                            <BarChart data={marketIntelData.volume}>
+  1200→                              <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" vertical={false} />
+  1201→                              <XAxis 
+  1202→                                dataKey="country" 
+  1203→                                stroke="var(--text)" 
+  1204→                                fontSize={8}
+  1205→                                tick={{ fill: 'var(--text)', opacity: 0.4 }}
+  1206→                              />
+  1207→                              <YAxis 
+  1208→                                stroke="var(--text)" 
+  1209→                                fontSize={8}
+  1210→                                tick={{ fill: 'var(--text)', opacity: 0.4 }}
+  1211→                              />
+  1212→                              <Tooltip 
+  1213→                                contentStyle={{ backgroundColor: 'var(--surface)', border: '1px solid var(--border)', fontSize: '10px' }}
+  1214→                                itemStyle={{ color: 'var(--accent)' }}
+  1215→                              />
+  1216→                              <Bar dataKey="count" fill="var(--accent)" radius={[2, 2, 0, 0]} />
+  1217→                            </BarChart>
+  1218→                          </ResponsiveContainer>
+  1219→                        </div>
+  1220→                      </section>
+  1221→                    )}
+  1222→
+  1223→                    {marketIntelData.trends.companies.length > 0 && (
+  1224→                      <section className="p-8 bg-bg border-t border-border">
+  1225→                        <div className="mono text-[9px] text-text/40 mb-6 flex items-center gap-2">
+  1226→                          <Users size={10} className="text-accent" /> MOST ACTIVE COMPANIES
+  1227→                        </div>
+  1228→                        <div className="space-y-2">
+  1229→                          {marketIntelData.trends.companies.slice(0, 5).map((company, idx) => (
+  1230→                            <div key={idx} className="flex items-center justify-between p-2 bg-surface border border-border">
+  1231→                              <span className="font-bold text-[10px]">{company.name}</span>
+  1232→                              <span className="mono text-[8px] text-accent">{company.count} roles</span>
+  1233→                            </div>
+  1234→                          ))}
+  1235→                        </div>
+  1236→                      </section>
+  1237→                    )}
+  1238→
+  1239→                    <section className="p-8 bg-bg grid grid-cols-1 md:grid-cols-2 gap-4">
+  1240→                      <div className="bg-surface border border-border p-6 flex flex-col justify-between">
+  1241→                        <div>
+  1242→                          <div className="flex items-center justify-between mb-6">
+  1243→                            <div className="mono text-[9px] text-accent flex items-center gap-2">
+  1244→                              <Cpu size={10} /> {t.aiToolOfWeek} // REVIEW
+  1245→                            </div>
+  1246→                            <div className="mono text-[8px] text-text/20">{t.aiToolName}</div>
+  1247→                          </div>
+  1248→                          
+  1249→                          <h4 className="text-lg font-black uppercase tracking-tight mb-3">
+  1250→                            {t.aiToolTitle}
+  1251→                          </h4>
+  1252→                          
+  1253→                          <p className="text-xs text-text/70 leading-relaxed mb-4">
+  1254→                            {t.aiToolDesc}
+  1255→                          </p>
+  1256→                          
+  1257→                          <div className="bg-surface/40 p-3 border-l-2 border-accent mb-4">
+  1258→                            <span className="mono text-[8px] text-accent block mb-1 uppercase">{t.aiToolWorkflowLabel}</span>
+  1259→                            <p className="text-[11px] leading-snug">
+  1260→                              {t.aiToolWorkflow}
+  1261→                            </p>
+  1262→                          </div>
+  1263→
+  1264→                          <div className="grid grid-cols-4 gap-2 mb-4">
+  1265→                            {t.aiToolScores.map(s => (
+  1266→                              <div key={s.label} className="flex flex-col items-center p-2 bg-text/5 border border-text/10">
+  1267→                                <span className="mono text-[7px] text-text/40 mb-1">{s.label}</span>
+  1268→                                <span className="text-xs font-bold text-accent">{s.score}/5</span>
+  1269→                              </div>
+  1270→                            ))}
+  1271→                          </div>
+  1272→
+  1273→                          <p className="text-[10px] text-text/40 italic mb-4">
+  1274→                            {t.aiToolLimitation}
+  1275→                          </p>
+  1276→
+  1277→                          <p className="text-xs font-bold">
+  1278→                            {t.aiToolVerdict}
+  1279→                          </p>
+  1280→                        </div>
+  1281→                      </div>
+  1282→
+  1283→                      <div className="grid grid-cols-1 gap-4">
+  1284→                        <div className="bg-surface border border-border p-6 flex flex-col justify-between">
+  1285→                          <div>
+  1286→                            <div className="mono text-[9px] text-accent flex items-center gap-2 mb-6">
+  1287→                              <Globe size={10} /> {t.countryWatch} // WEEKLY
+  1288→                            </div>
+  1289→                            <div className="space-y-6">
+  1290→                              {t.countryWatchItems.map((item, i) => (
+  1291→                                <div key={i} className={`border-l-2 ${i === 0 ? 'border-accent' : 'border-text/20'} pl-4`}>
+  1292→                                  <p className="text-xs leading-snug">
+  1293→                                    <span className="font-bold">{item.flag} {item.country}</span> — {item.text}
+  1294→                                  </p>
+  1295→                                </div>
+  1296→                              ))}
+  1297→                            </div>
+  1298→                          </div>
+  1299→                        </div>
+  1300→                        <div className="grid grid-cols-2 gap-4">
+  1301→                          <div className="bg-surface border border-border p-4 flex flex-col justify-between">
+  1302→                            <div className="mono text-[8px] text-text/40 uppercase tracking-widest mb-2">{t.network}</div>
+  1303→                            <div className="text-2xl font-black tracking-tighter text-accent">23K+</div>
+  1304→                          </div>
+  1305→                          <div className="bg-surface border border-border p-4 flex flex-col justify-between">
+  1306→                            <div className="mono text-[8px] text-text/40 uppercase tracking-widest mb-2">{t.briefings}</div>
+  1307→                            <div className="text-2xl font-black tracking-tighter text-accent">150+</div>
+  1308→                          </div>
+  1309→                        </div>
+  1310→                      </div>
+  1311→                    </section>
+  1312→
+  1313→                    <section className="p-8 bg-bg">
+  1314→                      <div className="mono text-[9px] text-accent mb-6 flex items-center gap-2">
+  1315→                        <Linkedin size={10} /> {t.fiveLinks} // CURATED
+  1316→                      </div>
+  1317→                      <div className="space-y-4">
+  1318→                        {t.fiveLinksItems.map((link, i) => (
+  1319→                          <a key={i} href={link.url} target="_blank" rel="noopener noreferrer" className="group block border-b border-text/5 pb-4 last:border-0">
+  1320→                            <div className="flex justify-between items-start mb-1">
+  1321→                              <h5 className="text-sm font-bold group-hover:text-accent transition-colors">{link.title} — {link.source}</h5>
+  1322→                              <ArrowUpRight size={14} className="shrink-0 text-text/20 group-hover:text-accent transition-colors" />
+  1323→                            </div>
+  1324→                            <p className="text-xs text-text/60 leading-snug">{link.why}</p>
+  1325→                          </a>
+  1326→                        ))}
+  1327→                      </div>
+  1328→                    </section>
+  1329→
+  1330→                    <section className="p-8 bg-accent text-black flex-1">
+  1331→                      <div className="mono text-black/60 mb-4 font-bold text-[9px] tracking-widest">WPRO INTEL // EXECUTIVE</div>
+  1332→                      <h4 className="text-2xl font-black uppercase tracking-tighter leading-tight mb-6">
+  1333→                        {t.unlockFull}
+  1334→                      </h4>
+  1335→                      <div className="space-y-3 mb-6">
+  1336→                        {t.upgradeFeatures.map((item: string, i: number) => (
+  1337→                          <div key={i} className="flex items-center gap-2 mono text-[9px] text-black/70">
+  1338→                            <ChevronRight size={10} className="text-black/50 shrink-0" />
+  1339→                            {item}
+  1340→                          </div>
+  1341→                        ))}
+  1342→                      </div>
+  1343→                      <button
+  1344→                        onClick={() => window.location.href = '/members'}
+  1345→                        className="w-full bg-bg text-accent py-4 mono font-bold text-[10px] hover:opacity-90 transition-opacity flex items-center justify-center gap-2"
+  1346→                      >
+  1347→                        <Zap size={13} /> {t.upgradeCta}
+  1348→                      </button>
+  1349→                      <p className="mono text-[8px] text-black/40 mt-3 text-center">{t.cancelAny}</p>
+  1350→                    </section>
+  1351→                  </div>
+  1352→
+  1353→                  {/* Upgrade strip */}
+  1354→                  <div className="col-span-12">
+  1355→                    <div className="border-t border-border px-6 py-2 flex items-center justify-between gap-4 bg-surface/30">
+  1356→                      <span className="mono text-[8px] text-text/25">
+  1357→                        <span className="text-accent/70 font-bold">EXECUTIVE</span>
+  1358→                        {' · '}{t.dailyBriefingsStrip}
+  1359→                      </span>
+  1360→                      <button
+  1361→                        onClick={() => window.location.href = '/members'}
+  1362→                        className="mono text-[8px] border border-accent/30 text-accent/70 px-3 py-1 hover:bg-accent hover:text-black hover:border-accent transition-all whitespace-nowrap shrink-0"
+  1363→                      >
+  1364→                        {t.upgradeOpen}
+  1365→                      </button>
+  1366→                    </div>
+  1367→                  </div>
+  1368→                </div>
+  1369→              </motion.div>
+  1370→        </AnimatePresence>
+  1371→      </main>
+  1372→
+  1373→      {/* Footer */}
+  1374→      <footer className="border-t border-border bg-surface px-6 py-4">
+  1375→        <div className="max-w-7xl mx-auto">
+  1376→          <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+  1377→            <div className="flex items-center gap-6">
+  1378→              <div className="mono text-[9px] text-text/20">WProTalents // {t.rights}</div>
+  1379→              <div className="flex items-center gap-2 mono text-[9px] text-green-500/60">
+  1380→                <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
+  1381→                {t.systemsNominal}
+  1382→              </div>
+  1383→            </div>
+  1384→            <div className="flex gap-8 mono text-[9px] font-bold text-text/40">
+  1385→              <button onClick={() => setViewMode('Privacy')} className="hover:text-accent transition-colors">{t.privacy}</button>
+  1386→              <a href="mailto:info@wprotalents.lat" className="hover:text-accent transition-colors">{t.contact}</a>
+  1387→            </div>
+  1388→          </div>
+  1389→        </div>
+  1390→      </footer>
+  1391→
+  1392→      {/* Briefing Detail Modal */}
+  1393→      <AnimatePresence>
+  1394→        {selectedBriefing && (
+  1395→          <motion.div 
+  1396→            initial={{ opacity: 0 }}
+  1397→            animate={{ opacity: 1 }}
+  1398→            exit={{ opacity: 0 }}
+  1399→            className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-8 bg-bg/90 backdrop-blur-sm"
+  1400→          >
+  1401→            <motion.div 
+  1402→              initial={{ scale: 0.9, opacity: 0 }}
+  1403→              animate={{ scale: 1, opacity: 1 }}
+  1404→              exit={{ scale: 0.9, opacity: 0 }}
+  1405→              className="bg-bg border border-accent/30 w-full max-w-5xl max-h-full overflow-y-auto relative"
+  1406→            >
+  1407→              <button 
+  1408→                onClick={() => setSelectedBriefing(null)}
+  1409→                className="absolute top-6 right-6 p-2 bg-accent text-black hover:opacity-80 transition-opacity z-10"
+  1410→              >
+  1411→                <X size={20} />
+  1412→              </button>
+  1413→
+  1414→              <div className="p-8 md:p-16">
+  1415→                <header className="mb-16">
+  1416→                  <div className="flex items-center gap-3 mb-6">
+  1417→                    <span className="px-3 py-1 bg-accent text-black text-[10px] font-mono font-bold">{selectedBriefing.region}</span>
+  1418→                    <span className="mono text-[10px] text-text/40">{selectedBriefing.date}</span>
+  1419→                  </div>
+  1420→                  <h2 className="text-4xl md:text-6xl font-black tracking-tighter uppercase leading-[0.9] mb-8">
+  1421→                    {selectedBriefing.content[lang].title}
+  1422→                  </h2>
+  1423→                  <div className="h-1 w-24 bg-accent"></div>
+  1424→                </header>
+  1425→
+  1426→                <div className="space-y-16">
+  1427→                  {selectedBriefing.content[lang].sections.map((section, idx) => (
+  1428→                    <section key={idx} className="border-t border-border pt-10">
+  1429→                      <div className="mono text-accent mb-6 flex items-center gap-2">
+  1430→                        <Crosshair size={12} /> SECTION 0{idx + 1} // {section.heading}
+  1431→                      </div>
+  1432→                      <div className="space-y-6 text-lg leading-snug font-medium text-text/80">
+  1433→                        {section.paragraphs.map((p, pIdx) => (
+  1434→                          <p key={pIdx}>{p}</p>
+  1435→                        ))}
+  1436→                      </div>
+  1437→                      <div className="so-what mt-10">
+  1438→                        <span className="mono font-bold text-accent block mb-2 underline decoration-accent/30 tracking-widest">{t.actionable}</span>
+  1439→                        {section.soWhat}
+  1440→                      </div>
+  1441→                    </section>
+  1442→                  ))}
+  1443→                </div>
+  1444→              </div>
+  1445→            </motion.div>
+  1446→          </motion.div>
+  1447→        )}
+  1448→      </AnimatePresence>
+  1449→
+  1450→      {/* Intelligence Brief Detail Modal */}
+  1451→      <AnimatePresence>
+  1452→        {selectedIntelBrief && (
+  1453→          <motion.div 
+  1454→            initial={{ opacity: 0 }}
+  1455→            animate={{ opacity: 1 }}
+  1456→            exit={{ opacity: 0 }}
+  1457→            className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-bg/95 backdrop-blur-sm"
+  1458→            onClick={() => setSelectedIntelBrief(null)}
+  1459→          >
+  1460→            <motion.div 
+  1461→              initial={{ scale: 0.95, opacity: 0, y: 20 }}
+  1462→              animate={{ scale: 1, opacity: 1, y: 0 }}
+  1463→              exit={{ scale: 0.95, opacity: 0, y: 20 }}
+  1464→              className="bg-surface border border-border w-full max-w-3xl max-h-[90vh] overflow-y-auto relative p-8 md:p-12 rounded-2xl shadow-2xl"
+  1465→              onClick={e => e.stopPropagation()}
+  1466→            >
+  1467→              <button 
+  1468→                onClick={() => setSelectedIntelBrief(null)}
+  1469→                className="absolute top-6 right-6 p-2 hover:bg-bg rounded-full transition-colors text-text/40 hover:text-text"
+  1470→              >
+  1471→                <X size={24} />
+  1472→              </button>
+  1473→
+  1474→              <div className="flex items-center gap-4 mb-8">
+  1475→                <span className="px-3 py-1 bg-accent text-black mono text-[10px] font-bold uppercase tracking-widest rounded-full">
+  1476→                  {selectedIntelBrief.category}
+  1477→                </span>
+  1478→                <span className="px-3 py-1 bg-text text-bg mono text-[10px] font-bold uppercase tracking-widest rounded-full">
+  1479→                  {selectedIntelBrief.country_code}
+  1480→                </span>
+  1481→                {selectedIntelBrief.is_hiring_signal && (
+  1482→                  <span className="px-3 py-1 bg-green-500 text-black mono text-[10px] font-bold uppercase tracking-widest rounded-full flex items-center gap-1">
+  1483→                    <Zap size={10} /> Hiring Signal
+  1484→                  </span>
+  1485→                )}
+  1486→              </div>
+  1487→
+  1488→              <h2 className="text-4xl md:text-6xl font-black uppercase tracking-tighter mb-8 leading-none">
+  1489→                {selectedIntelBrief.subject_line}
+  1490→              </h2>
+  1491→
+  1492→              <div className={`prose ${theme === 'dark' ? 'prose-invert' : ''} max-w-none`}>
+  1493→                <div className="p-6 bg-bg border-l-4 border-accent mb-12">
+  1494→                  <h4 className="mono text-[10px] text-accent uppercase tracking-widest mb-4">The Teaser</h4>
+  1495→                  <p className="text-lg text-text/80 italic leading-relaxed">
+  1496→                    {selectedIntelBrief.free_teaser}
+  1497→                  </p>
+  1498→                </div>
+  1499→
+  1500→                <div className="space-y-8">
+  1501→                  <h4 className="mono text-[10px] text-text/40 uppercase tracking-widest">The Deep Dive</h4>
+  1502→                  {subscriptionStatus === 'premium' || isAdmin ? (
+  1503→                    <div className="text-text/80 leading-relaxed whitespace-pre-wrap text-lg">
+  1504→                      {selectedIntelBrief.paid_analysis}
+  1505→                    </div>
+  1506→                  ) : (
+  1507→                    <div className="relative p-12 bg-bg border border-border rounded-2xl text-center overflow-hidden">
+  1508→                      <div className="absolute inset-0 bg-gradient-to-b from-transparent to-bg/80 pointer-events-none" />
+  1509→                      <Lock className="mx-auto mb-6 text-accent" size={48} />
+  1510→                      <h3 className="text-2xl font-bold mb-4">Executive Analysis Locked</h3>
+  1511→                      <p className="text-text/40 mb-8 max-w-md mx-auto">
+  1512→                        This deep-dive analysis is exclusive to WProTalents Executive members.
+  1513→                      </p>
+  1514→                      <button 
+  1515→                        onClick={() => {
+  1516→                          setSelectedIntelBrief(null);
+  1517→                          document.getElementById('subscription-section')?.scrollIntoView({ behavior: 'smooth' });
+  1518→                        }}
+  1519→                        className="px-8 py-4 bg-accent text-black font-bold rounded-xl hover:opacity-90 transition-all"
+  1520→                      >
+  1521→                        Upgrade to Unlock
+  1522→                      </button>
+  1523→                    </div>
+  1524→                  )}
+  1525→                </div>
+  1526→
+  1527→                <div className="mt-12 pt-12 border-t border-border">
+  1528→                  <h4 className="mono text-[10px] text-text/40 uppercase tracking-widest mb-4">Internal Share Hook</h4>
+  1529→                  <div className="p-4 bg-surface border border-border rounded-xl flex items-center justify-between gap-4 group">
+  1530→                    <p className="text-sm text-text/60 italic">"{selectedIntelBrief.slack_hook}"</p>
+  1531→                    <button 
+  1532→                      onClick={() => {
+  1533→                        navigator.clipboard.writeText(selectedIntelBrief.slack_hook);
+  1534→                        alert('Copied to clipboard!');
+  1535→                      }}
+  1536→                      className="p-2 hover:bg-bg rounded-lg transition-colors text-accent flex items-center gap-2 mono text-[10px] font-bold"
+  1537→                    >
+  1538→                      <Copy size={14} /> Copy for Slack
+  1539→                    </button>
+  1540→                  </div>
+  1541→                </div>
+  1542→              </div>
+  1543→            </motion.div>
+  1544→          </motion.div>
+  1545→        )}
+  1546→      </AnimatePresence>
+  1547→    </div>
+  1548→  );
+  1549→}
+  1550→

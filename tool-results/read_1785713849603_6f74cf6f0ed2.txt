@@ -1,0 +1,662 @@
+     1→     1→<!DOCTYPE html>
+     2→     2→<html lang="en">
+     3→     3→<head>
+     4→     4→    <meta charset="UTF-8">
+     5→     5→    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+     6→     6→    <title>Latam Intel — LATAM Tech Workforce Intelligence</title>
+     7→     7→    <link rel="preconnect" href="https://fonts.googleapis.com">
+     8→     8→    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+     9→     9→    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    10→    10→    <style>
+    11→    11→        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    12→    12→
+    13→    13→        :root {
+    14→    14→            --bg: #050505;
+    15→    15→            --bg-2: #0a0a0a;
+    16→    16→            --surface: #111111;
+    17→    17→            --surface-2: #1a1a1a;
+    18→    18→            --border: #222222;
+    19→    19→            --border-bright: #333333;
+    20→    20→            --text: #e8e4df;
+    21→    21→            --text-muted: #8a8a8a;
+    22→    22→            --accent: #ff6b00;
+    23→    23→            --accent-bright: #ff8533;
+    24→    24→            --accent-dim: #cc5500;
+    25→    25→            --accent-glow: rgba(255, 107, 0, 0.15);
+    26→    26→        }
+    27→    27→
+    28→    28→        body {
+    29→    29→            font-family: 'Inter', ui-sans-serif, system-ui, sans-serif;
+    30→    30→            background: var(--bg);
+    31→    31→            color: var(--text);
+    32→    32→            line-height: 1.6;
+    33→    33→            min-height: 100vh;
+    34→    34→            overflow-x: hidden;
+    35→    35→        }
+    36→    36→
+    37→    37→        .grid-bg {
+    38→    38→            background-image:
+    39→    39→                linear-gradient(to right, rgba(255,255,255,0.025) 1px, transparent 1px),
+    40→    40→                linear-gradient(to bottom, rgba(255,255,255,0.025) 1px, transparent 1px);
+    41→    41→            background-size: 40px 40px;
+    42→    42→        }
+    43→    43→
+    44→    44→        .glow-orb {
+    45→    45→            position: absolute;
+    46→    46→            width: 600px;
+    47→    47→            height: 600px;
+    48→    48→            border-radius: 50%;
+    49→    49→            background: radial-gradient(circle, rgba(255,107,0,0.12) 0%, transparent 70%);
+    50→    50→            pointer-events: none;
+    51→    51→            filter: blur(80px);
+    52→    52→        }
+    53→    53→
+    54→    54→        nav {
+    55→    55→            position: fixed;
+    56→    56→            top: 0; left: 0; right: 0;
+    57→    57→            z-index: 1000;
+    58→    58→            padding: 1.25rem 2rem;
+    59→    59→            display: flex;
+    60→    60→            justify-content: space-between;
+    61→    61→            align-items: center;
+    62→    62→            background: rgba(5, 5, 5, 0.8);
+    63→    63→            backdrop-filter: blur(20px);
+    64→    64→            -webkit-backdrop-filter: blur(20px);
+    65→    65→            border-bottom: 1px solid rgba(255,107,0,0.08);
+    66→    66→        }
+    67→    67→
+    68→    68→        .logo {
+    69→    69→            display: flex;
+    70→    70→            align-items: center;
+    71→    71→            gap: 0.75rem;
+    72→    72→            text-decoration: none;
+    73→    73→        }
+    74→    74→
+    75→    75→        .logo-mark {
+    76→    76→            width: 36px;
+    77→    77→            height: 36px;
+    78→    78→            background: var(--accent);
+    79→    79→            border-radius: 8px;
+    80→    80→            display: flex;
+    81→    81→            align-items: center;
+    82→    82→            justify-content: center;
+    83→    83→            font-weight: 800;
+    84→    84→            font-size: 1.1rem;
+    85→    85→            color: white;
+    86→    86→            font-family: 'JetBrains Mono', monospace;
+    87→    87→        }
+    88→    88→
+    89→    89→        .logo-text { display: flex; flex-direction: column; line-height: 1.1; }
+    90→    90→        .logo-name { font-size: 1rem; font-weight: 700; color: var(--text); }
+    91→    91→        .logo-sub { font-size: 0.65rem; font-family: 'JetBrains Mono', monospace; text-transform: uppercase; letter-spacing: 0.15em; color: var(--text-muted); }
+    92→    92→
+    93→    93→        .nav-links { display: flex; align-items: center; gap: 2rem; }
+    94→    94→        .nav-link { font-size: 0.875rem; color: var(--text-muted); text-decoration: none; transition: color 0.2s; }
+    95→    95→        .nav-link:hover { color: var(--text); }
+    96→    96→
+    97→    97→        .nav-cta {
+    98→    98→            display: inline-flex;
+    99→    99→            align-items: center;
+   100→   100→            gap: 0.5rem;
+   101→   101→            padding: 0.6rem 1.25rem;
+   102→   102→            background: var(--accent);
+   103→   103→            color: white;
+   104→   104→            border: none;
+   105→   105→            border-radius: 8px;
+   106→   106→            font-size: 0.875rem;
+   107→   107→            font-weight: 600;
+   108→   108→            cursor: pointer;
+   109→   109→            text-decoration: none;
+   110→   110→            transition: all 0.2s;
+   111→   111→            font-family: inherit;
+   112→   112→        }
+   113→   113→
+   114→   114→        .nav-cta:hover {
+   115→   115→            background: var(--accent-bright);
+   116→   116→            box-shadow: 0 4px 20px rgba(255,107,0,0.3);
+   117→   117→            transform: translateY(-1px);
+   118→   118→        }
+   119→   119→
+   120→   120→        .hero {
+   121→   121→            min-height: 100vh;
+   122→   122→            display: flex;
+   123→   123→            flex-direction: column;
+   124→   124→            align-items: center;
+   125→   125→            justify-content: center;
+   126→   126→            text-align: center;
+   127→   127→            padding: 8rem 2rem 4rem;
+   128→   128→            position: relative;
+   129→   129→            overflow: hidden;
+   130→   130→        }
+   131→   131→
+   132→   132→        .hero-eyebrow {
+   133→   133→            display: inline-flex;
+   134→   134→            align-items: center;
+   135→   135→            gap: 0.5rem;
+   136→   136→            padding: 0.4rem 1rem;
+   137→   137→            border: 1px solid rgba(255,107,0,0.3);
+   138→   138→            border-radius: 100px;
+   139→   139→            font-family: 'JetBrains Mono', monospace;
+   140→   140→            font-size: 0.7rem;
+   141→   141→            text-transform: uppercase;
+   142→   142→            letter-spacing: 0.15em;
+   143→   143→            color: var(--accent);
+   144→   144→            background: rgba(255,107,0,0.06);
+   145→   145→            margin-bottom: 2rem;
+   146→   146→        }
+   147→   147→
+   148→   148→        .hero-eyebrow .dot {
+   149→   149→            width: 6px; height: 6px;
+   150→   150→            background: var(--accent);
+   151→   151→            border-radius: 50%;
+   152→   152→            animation: pulse 2s ease-in-out infinite;
+   153→   153→        }
+   154→   154→
+   155→   155→        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+   156→   156→
+   157→   157→        .hero h1 {
+   158→   158→            font-size: clamp(2.5rem, 6vw, 5rem);
+   159→   159→            font-weight: 800;
+   160→   160→            letter-spacing: -0.04em;
+   161→   161→            line-height: 1.05;
+   162→   162→            max-width: 900px;
+   163→   163→            margin-bottom: 1.5rem;
+   164→   164→            background: linear-gradient(135deg, #ffffff 0%, #e8e4df 60%, #ff6b00 100%);
+   165→   165→            -webkit-background-clip: text;
+   166→   166→            -webkit-text-fill-color: transparent;
+   167→   167→            background-clip: text;
+   168→   168→        }
+   169→   169→
+   170→   170→        .hero h1 span {
+   171→   171→            background: linear-gradient(135deg, var(--accent) 0%, #ffaa44 100%);
+   172→   172→            -webkit-background-clip: text;
+   173→   173→            -webkit-text-fill-color: transparent;
+   174→   174→            background-clip: text;
+   175→   175→        }
+   176→   176→
+   177→   177→        .hero p {
+   178→   178→            font-size: clamp(1rem, 2vw, 1.25rem);
+   179→   179→            color: var(--text-muted);
+   180→   180→            max-width: 580px;
+   181→   181→            margin-bottom: 2.5rem;
+   182→   182→            line-height: 1.7;
+   183→   183→        }
+   184→   184→
+   185→   185→        .hero-actions {
+   186→   186→            display: flex;
+   187→   187→            align-items: center;
+   188→   188→            gap: 1rem;
+   189→   189→            flex-wrap: wrap;
+   190→   190→            justify-content: center;
+   191→   191→        }
+   192→   192→
+   193→   193→        .btn-primary {
+   194→   194→            display: inline-flex;
+   195→   195→            align-items: center;
+   196→   196→            gap: 0.5rem;
+   197→   197→            padding: 0.85rem 2rem;
+   198→   198→            background: var(--accent);
+   199→   199→            color: white;
+   200→   200→            border: none;
+   201→   201→            border-radius: 10px;
+   202→   202→            font-size: 1rem;
+   203→   203→            font-weight: 700;
+   204→   204→            cursor: pointer;
+   205→   205→            text-decoration: none;
+   206→   206→            transition: all 0.2s;
+   207→   207→            font-family: inherit;
+   208→   208→        }
+   209→   209→
+   210→   210→        .btn-primary:hover {
+   211→   211→            background: var(--accent-bright);
+   212→   212→            box-shadow: 0 6px 30px rgba(255,107,0,0.4);
+   213→   213→            transform: translateY(-2px);
+   214→   214→        }
+   215→   215→
+   216→   216→        .btn-secondary {
+   217→   217→            display: inline-flex;
+   218→   218→            align-items: center;
+   219→   219→            gap: 0.5rem;
+   220→   220→            padding: 0.85rem 1.75rem;
+   221→   221→            background: transparent;
+   222→   222→            color: var(--text-muted);
+   223→   223→            border: 1px solid var(--border-bright);
+   224→   224→            border-radius: 10px;
+   225→   225→            font-size: 1rem;
+   226→   226→            font-weight: 500;
+   227→   227→            cursor: pointer;
+   228→   228→            text-decoration: none;
+   229→   229→            transition: all 0.2s;
+   230→   230→            font-family: inherit;
+   231→   231→        }
+   232→   232→
+   233→   233→        .btn-secondary:hover {
+   234→   234→            border-color: var(--accent-dim);
+   235→   235→            color: var(--text);
+   236→   236→            background: rgba(255,107,0,0.04);
+   237→   237→        }
+   238→   238→
+   239→   239→        .stats-bar {
+   240→   240→            display: flex;
+   241→   241→            align-items: center;
+   242→   242→            justify-content: center;
+   243→   243→            gap: 3rem;
+   244→   244→            padding: 1.5rem 2rem;
+   245→   245→            margin-top: 4rem;
+   246→   246→            border-top: 1px solid var(--border);
+   247→   247→            border-bottom: 1px solid var(--border);
+   248→   248→            flex-wrap: wrap;
+   249→   249→        }
+   250→   250→
+   251→   251→        .stat-item { text-align: center; }
+   252→   252→        .stat-value { font-size: 1.75rem; font-weight: 800; color: var(--accent); font-family: 'JetBrains Mono', monospace; letter-spacing: -0.03em; }
+   253→   253→        .stat-label { font-size: 0.7rem; font-family: 'JetBrains Mono', monospace; text-transform: uppercase; letter-spacing: 0.12em; color: var(--text-muted); margin-top: 0.25rem; }
+   254→   254→
+   255→   255→        .section { padding: 5rem 2rem; max-width: 1200px; margin: 0 auto; }
+   256→   256→        .section-label { font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.2em; color: var(--accent); margin-bottom: 1rem; }
+   257→   257→        .section-title { font-size: clamp(1.75rem, 3vw, 2.5rem); font-weight: 800; letter-spacing: -0.03em; margin-bottom: 1rem; }
+   258→   258→        .section-desc { font-size: 1.1rem; color: var(--text-muted); max-width: 600px; line-height: 1.7; }
+   259→   259→
+   260→   260→        .value-props { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; margin-top: 3rem; }
+   261→   261→
+   262→   262→        .value-prop {
+   263→   263→            background: var(--surface);
+   264→   264→            border: 1px solid var(--border);
+   265→   265→            border-radius: 16px;
+   266→   266→            padding: 2rem;
+   267→   267→            position: relative;
+   268→   268→            overflow: hidden;
+   269→   269→            transition: all 0.3s;
+   270→   270→            text-align: left;
+   271→   271→        }
+   272→   272→
+   273→   273→        .value-prop::before {
+   274→   274→            content: '';
+   275→   275→            position: absolute;
+   276→   276→            top: 0; left: 0; right: 0;
+   277→   277→            height: 1px;
+   278→   278→            background: linear-gradient(90deg, transparent, var(--accent), transparent);
+   279→   279→            opacity: 0;
+   280→   280→            transition: opacity 0.3s;
+   281→   281→        }
+   282→   282→
+   283→   283→        .value-prop:hover {
+   284→   284→            border-color: var(--accent-dim);
+   285→   285→            transform: translateY(-4px);
+   286→   286→            box-shadow: 0 20px 60px rgba(0,0,0,0.3), 0 0 40px rgba(255,107,0,0.08);
+   287→   287→        }
+   288→   288→
+   289→   289→        .value-prop:hover::before { opacity: 1; }
+   290→   290→
+   291→   291→        .value-prop-icon {
+   292→   292→            width: 48px; height: 48px;
+   293→   293→            background: rgba(255,107,0,0.1);
+   294→   294→            border: 1px solid rgba(255,107,0,0.2);
+   295→   295→            border-radius: 12px;
+   296→   296→            display: flex;
+   297→   297→            align-items: center;
+   298→   298→            justify-content: center;
+   299→   299→            font-size: 1.5rem;
+   300→   300→            margin-bottom: 1.25rem;
+   301→   301→        }
+   302→   302→
+   303→   303→        .value-prop h3 { font-size: 1.15rem; font-weight: 700; margin-bottom: 0.75rem; }
+   304→   304→        .value-prop p { font-size: 0.9rem; color: var(--text-muted); line-height: 1.7; }
+   305→   305→
+   306→   306→        .auth-section {
+   307→   307→            background: var(--surface);
+   308→   308→            border: 1px solid var(--border);
+   309→   309→            border-radius: 20px;
+   310→   310→            padding: 3rem;
+   311→   311→            max-width: 480px;
+   312→   312→            margin: 3rem auto 0;
+   313→   313→            position: relative;
+   314→   314→            overflow: hidden;
+   315→   315→        }
+   316→   316→
+   317→   317→        .auth-section::before {
+   318→   318→            content: '';
+   319→   319→            position: absolute;
+   320→   320→            top: 0; left: 0; right: 0;
+   321→   321→            height: 2px;
+   322→   322→            background: linear-gradient(90deg, transparent, var(--accent), transparent);
+   323→   323→        }
+   324→   324→
+   325→   325→        .auth-section h2 { font-size: 1.5rem; font-weight: 800; margin-bottom: 0.5rem; text-align: center; }
+   326→   326→        .auth-section .auth-sub { text-align: center; color: var(--text-muted); font-size: 0.9rem; margin-bottom: 2rem; }
+   327→   327→
+   328→   328→        .form-group { display: flex; flex-direction: column; gap: 0.4rem; margin-bottom: 1rem; }
+   329→   329→        .form-group label { font-size: 0.8rem; font-weight: 500; color: var(--text-muted); font-family: 'JetBrains Mono', monospace; text-transform: uppercase; letter-spacing: 0.08em; }
+   330→   330→        .form-group input { padding: 0.85rem 1rem; border: 1px solid var(--border-bright); border-radius: 10px; background: var(--bg-2); color: var(--text); font-size: 0.95rem; font-family: inherit; transition: all 0.2s; }
+   331→   331→        .form-group input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(255,107,0,0.15); }
+   332→   332→        .form-group input::placeholder { color: #555; }
+   333→   333→
+   334→   334→        .btn-full { width: 100%; padding: 0.9rem; background: var(--accent); color: white; border: none; border-radius: 10px; font-size: 1rem; font-weight: 700; cursor: pointer; font-family: inherit; transition: all 0.2s; margin-top: 0.5rem; }
+   335→   335→        .btn-full:hover { background: var(--accent-bright); box-shadow: 0 4px 20px rgba(255,107,0,0.3); }
+   336→   336→        .btn-full:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+   337→   337→
+   338→   338→        .btn-google { width: 100%; padding: 0.85rem; background: transparent; color: var(--text); border: 1px solid var(--border-bright); border-radius: 10px; font-size: 0.95rem; font-weight: 500; cursor: pointer; font-family: inherit; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 0.75rem; margin-top: 0.5rem; }
+   339→   339→        .btn-google:hover { border-color: var(--text-muted); background: var(--surface-2); }
+   340→   340→
+   341→   341→        .divider { display: flex; align-items: center; gap: 1rem; margin: 1.5rem 0; color: var(--text-muted); font-size: 0.8rem; }
+   342→   342→        .divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+   343→   343→
+   344→   344→        .message { padding: 0.85rem 1rem; border-radius: 8px; margin-bottom: 1rem; font-size: 0.875rem; display: none; }
+   345→   345→        .message.success { background: rgba(34, 197, 94, 0.1); border: 1px solid rgba(34, 197, 94, 0.3); color: #86efac; display: block; }
+   346→   346→        .message.error { background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); color: #fca5a5; display: block; }
+   347→   347→
+   348→   348→        .auth-links { text-align: center; margin-top: 1.5rem; font-size: 0.875rem; color: var(--text-muted); }
+   349→   349→        .auth-links a { color: var(--accent); text-decoration: none; cursor: pointer; font-weight: 500; }
+   350→   350→        .auth-links a:hover { text-decoration: underline; }
+   351→   351→
+   352→   352→        .dashboard-link { text-align: center; margin-top: 2rem; padding-top: 2rem; border-top: 1px solid var(--border); }
+   353→   353→        .dashboard-link a { color: var(--text-muted); font-size: 0.875rem; text-decoration: none; }
+   354→   354→        .dashboard-link a:hover { color: var(--text); }
+   355→   355→
+   356→   356→        .ticker-wrap { padding: 1.5rem 0; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); overflow: hidden; position: relative; }
+   357→   357→        .ticker-wrap::before, .ticker-wrap::after { content: ''; position: absolute; top: 0; bottom: 0; width: 120px; z-index: 2; }
+   358→   358→        .ticker-wrap::before { left: 0; background: linear-gradient(90deg, var(--bg), transparent); }
+   359→   359→        .ticker-wrap::after { right: 0; background: linear-gradient(-90deg, var(--bg), transparent); }
+   360→   360→
+   361→   361→        .ticker { display: flex; gap: 3rem; animation: ticker 40s linear infinite; white-space: nowrap; }
+   362→   362→        @keyframes ticker { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+   363→   363→
+   364→   364→        .ticker-item { font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.12em; color: var(--text-muted); display: flex; align-items: center; gap: 0.75rem; }
+   365→   365→        .ticker-item .tag { color: var(--accent); }
+   366→   366→
+   367→   367→        footer { padding: 3rem 2rem; border-top: 1px solid var(--border); text-align: center; }
+   368→   368→        footer p { font-size: 0.8rem; color: var(--text-muted); }
+   369→   369→        footer a { color: var(--accent); text-decoration: none; }
+   370→   370→        footer a:hover { text-decoration: underline; }
+   371→   371→
+   372→   372→        .spinner { display: inline-block; width: 16px; height: 16px; border: 2px solid rgba(255,255,255,0.3); border-top-color: white; border-radius: 50%; animation: spin 0.8s linear infinite; }
+   373→   373→        @keyframes spin { to { transform: rotate(360deg); } }
+   374→   374→
+   375→   375→        @media (max-width: 768px) {
+   376→   376→            nav { padding: 1rem 1.5rem; }
+   377→   377→            .nav-links { gap: 1rem; }
+   378→   378→            .nav-link { display: none; }
+   379→   379→            .hero { padding: 7rem 1.5rem 3rem; }
+   380→   380→            .stats-bar { gap: 2rem; }
+   381→   381→            .auth-section { padding: 2rem 1.5rem; margin: 2rem 1rem 0; }
+   382→   382→        }
+   383→   383→    </style>
+   384→   384→
+   385→   385→    <script async src="https://www.googletagmanager.com/gtag/js?id=G-0JPFP65WXE"></script>
+   386→   386→    <script>
+   387→   387→        window.dataLayer = window.dataLayer || [];
+   388→   388→        function gtag(){dataLayer.push(arguments);}
+   389→   389→        gtag('js', new Date());
+   390→   390→        gtag('config', 'G-0JPFP65WXE');
+   391→   391→    </script>
+   392→   392→</head>
+   393→   393→<body class="grid-bg">
+   394→   394→
+   395→   395→    <div class="glow-orb" style="top: -200px; left: 50%; transform: translateX(-50%);"></div>
+   396→   396→
+   397→   397→    <nav>
+   398→   398→        <a href="/" class="logo">
+   399→   399→            <div class="logo-mark">W</div>
+   400→   400→            <div class="logo-text">
+   401→   401→                <span class="logo-name">Latam Intel</span>
+   402→   402→                <span class="logo-sub">By WProTalents</span>
+   403→   403→            </div>
+   404→   404→        </a>
+   405→   405→        <div class="nav-links">
+   406→   406→            <a href="#features" class="nav-link">Features</a>
+   407→   407→            <a href="#pricing" class="nav-link">Pricing</a>
+   408→   408→            <a href="https://wprotalents.lat" class="nav-link" target="_blank" rel="noopener">WProTalents</a>
+   409→   409→            <a href="#" onclick="toggleAuth()" class="nav-cta">Get Access →</a>
+   410→   410→        </div>
+   411→   411→    </nav>
+   412→   412→
+   413→   413→    <section class="hero">
+   414→   414→        <div class="hero-eyebrow">
+   415→   415→            <span class="dot"></span>
+   416→   416→            LATAM Tech Workforce Intelligence
+   417→   417→        </div>
+   418→   418→        <h1>The Market Intel That <span>Wins</span> the Deal</h1>
+   419→   419→        <p>Real salary benchmarks, talent availability, and hiring signals across LATAM — built for companies that compete globally and professionals who know their worth.</p>
+   420→   420→        <div class="hero-actions">
+   421→   421→            <a href="#" onclick="toggleAuth()" class="btn-primary">
+   422→   422→                Access the Dashboard
+   423→   423→                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+   424→   424→            </a>
+   425→   425→            <a href="#features" class="btn-secondary">See Features</a>
+   426→   426→        </div>
+   427→   427→
+   428→   428→        <div class="stats-bar">
+   429→   429→            <div class="stat-item"><div class="stat-value">23K+</div><div class="stat-label">Network Nodes</div></div>
+   430→   430→            <div class="stat-item"><div class="stat-value">$0</div><div class="stat-label">Access Cost</div></div>
+   431→   431→            <div class="stat-item"><div class="stat-value">7</div><div class="stat-label">Live Job Sources</div></div>
+   432→   432→            <div class="stat-item"><div class="stat-value">3</div><div class="stat-label">Languages</div></div>
+   433→   433→        </div>
+   434→   434→    </section>
+   435→   435→
+   436→   436→    <div class="ticker-wrap">
+   437→   437→        <div class="ticker">
+   438→   438→            <span class="ticker-item"><span class="tag">LATAM</span> Senior AI/ML Engineers up 31% YoY</span>
+   439→   439→            <span class="ticker-item"><span class="tag">COP/USD</span> 4,127 · Rising</span>
+   440→   440→            <span class="ticker-item"><span class="tag">REMOTE</span> 67% of LATAM tech roles remote</span>
+   441→   441→            <span class="ticker-item"><span class="tag">BRAZIL</span> AI investment $2.1B Q1 2026</span>
+   442→   442→            <span class="ticker-item"><span class="tag">MARKET</span> React + Python: fastest-to-fill</span>
+   443→   443→            <span class="ticker-item"><span class="tag">LATAM</span> Mid-level salaries up 18%</span>
+   444→   444→            <span class="ticker-item"><span class="tag">COLOMBIA</span> Top nearshore fintech hub</span>
+   445→   445→            <span class="ticker-item"><span class="tag">REMOTE</span> 67% of LATAM tech roles remote</span>
+   446→   446→            <span class="ticker-item"><span class="tag">LATAM</span> Senior AI/ML Engineers up 31% YoY</span>
+   447→   447→            <span class="ticker-item"><span class="tag">COP/USD</span> 4,127 · Rising</span>
+   448→   448→            <span class="ticker-item"><span class="tag">REMOTE</span> 67% of LATAM tech roles remote</span>
+   449→   449→            <span class="ticker-item"><span class="tag">BRAZIL</span> AI investment $2.1B Q1 2026</span>
+   450→   450→        </div>
+   451→   451→    </div>
+   452→   452→
+   453→   453→    <section class="section" id="features">
+   454→   454→        <div class="section-label">// What You Get</div>
+   455→   455→        <h2 class="section-title">Everything to Win the Talent War</h2>
+   456→   456→        <p class="section-desc">Built for two audiences: LATAM tech professionals seeking their market value, and US/EU companies building LATAM teams.</p>
+   457→   457→
+   458→   458→        <div class="value-props">
+   459→   459→            <div class="value-prop">
+   460→   460→                <div class="value-prop-icon">💰</div>
+   461→   461→                <h3>Salary Benchmarks</h3>
+   462→   462→                <p>See what the market pays — local and remote (USD) — for every role, country, and seniority level across LATAM. Know your number before you negotiate.</p>
+   463→   463→            </div>
+   464→   464→            <div class="value-prop">
+   465→   465→                <div class="value-prop-icon">📡</div>
+   466→   466→                <h3>Live Job Intelligence</h3>
+   467→   467→                <p>7 job boards aggregated in real-time. Filter by region, role type, and salary. Updated every 30 minutes — no manual curation needed.</p>
+   468→   468→            </div>
+   469→   469→            <div class="value-prop">
+   470→   470→                <div class="value-prop-icon">🤖</div>
+   471→   471→                <h3>AI Market Briefings</h3>
+   472→   472→                <p>Weekly AI-generated talent market reports covering LATAM hiring trends, salary movements, and sector-level hiring signals.</p>
+   473→   473→            </div>
+   474→   474→            <div class="value-prop">
+   475→   475→                <div class="value-prop-icon">🌎</div>
+   476→   476→                <h3>Talent Pulse</h3>
+   477→   477→                <p>Real-time indicators on AI talent demand across USA, EU, and LATAM. Know where the market is hot before your competitors do.</p>
+   478→   478→            </div>
+   479→   479→            <div class="value-prop">
+   480→   480→                <div class="value-prop-icon">📊</div>
+   481→   481→                <h3>For Companies</h3>
+   482→   482→                <p>Source LATAM talent, benchmark offers, and get market intelligence for your hiring decisions — all in one portal built by headhunters with 20yr track record.</p>
+   483→   483→            </div>
+   484→   484→            <div class="value-prop">
+   485→   485→                <div class="value-prop-icon">🔐</div>
+   486→   486→                <h3>Premium Tier</h3>
+   487→   487→                <p>$29/mo Executive Membership unlocks full salary dashboards, all market intel reports, AI briefings, and priority placement in the WPro network.</p>
+   488→   488→            </div>
+   489→   489→        </div>
+   490→   490→    </section>
+   491→   491→
+   492→   492→    <section class="section" id="access">
+   493→   493→        <div style="text-align:center;">
+   494→   494→            <div class="section-label">// Start Free</div>
+   495→   495→            <h2 class="section-title">Get Intelligence Access</h2>
+   496→   496→            <p class="section-desc" style="margin: 0 auto 2rem;">Free tier gives you live jobs and salary previews. Upgrade when you're ready.</p>
+   497→   497→        </div>
+   498→   498→
+   499→   499→        <div class="auth-section" id="authBox">
+   500→   500→            <div id="authMessage" class="message"></div>
+   501→   501→
+   502→   502→            <div id="emailAuthForm">
+   503→   503→                <h2>Sign In</h2>
+   504→   504→                <p class="auth-sub">Access your intelligence dashboard</p>
+   505→   505→                <div class="form-group">
+   506→   506→                    <label for="email">Email Address</label>
+   507→   507→                    <input type="email" id="email" placeholder="you@example.com" autocomplete="email">
+   508→   508→                </div>
+   509→   509→                <button class="btn-full" id="sendMagicLink" onclick="sendMagicLink()">Send Magic Link</button>
+   510→   510→            </div>
+   511→   511→
+   512→   512→            <div id="emailSentMessage" style="display:none; text-align:center; padding: 1rem 0;">
+   513→   513→                <div style="font-size:2rem; margin-bottom:1rem;">✉️</div>
+   514→   514→                <p style="color: #86efac; font-weight:600; margin-bottom:0.5rem;">Check your inbox</p>
+   515→   515→                <p style="color: var(--text-muted); font-size:0.875rem;">We sent a magic link to your email. Click it to access the dashboard.</p>
+   516→   516→                <button onclick="resetEmailForm()" style="margin-top:1.5rem; background:none; border:1px solid var(--border-bright); color:var(--text-muted); padding:0.6rem 1.25rem; border-radius:8px; cursor:pointer; font-size:0.875rem; font-family:inherit;">Try another email</button>
+   517→   517→            </div>
+   518→   518→
+   519→   519→            <div class="divider">or</div>
+   520→   520→
+   521→   521→            <button class="btn-google" onclick="loginWithGoogle()">
+   522→   522→                <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+   523→   523→                    <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+   524→   524→                    <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+   525→   525→                    <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
+   526→   526→                    <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+   527→   527→                </svg>
+   528→   528→                Sign in with Google
+   529→   529→            </button>
+   530→   530→
+   531→   531→            <div class="auth-links">
+   532→   532→                <p id="loginPrompt">Don't have an account? <a onclick="toggleAuthMode()">Create one free</a></p>
+   533→   533→                <p id="signupPrompt" style="display:none;">Already have an account? <a onclick="toggleAuthMode()">Sign in</a></p>
+   534→   534→            </div>
+   535→   535→
+   536→   536→            <div class="dashboard-link">Already signed in? <a href="/dashboard.html">Go to Dashboard →</a></div>
+   537→   537→        </div>
+   538→   538→    </section>
+   539→   539→
+   540→   540→    <section class="section" id="pricing" style="padding-top:0;">
+   541→   541→        <div style="background: var(--surface); border: 1px solid rgba(255,107,0,0.2); border-radius: 20px; padding: 3rem; text-align:center; position:relative; overflow:hidden;">
+   542→   542→            <div style="position:absolute; top:0; left:0; right:0; height:2px; background: linear-gradient(90deg, transparent, var(--accent), transparent);"></div>
+   543→   543→            <div style="font-family: 'JetBrains Mono', monospace; font-size:0.7rem; text-transform:uppercase; letter-spacing:0.15em; color: var(--accent); margin-bottom:1rem;">// Executive Membership</div>
+   544→   544→            <h2 style="font-size:2.5rem; font-weight:800; margin-bottom:0.5rem;">$29<span style="font-size:1rem; font-weight:400; color:var(--text-muted);">/mo</span></h2>
+   545→   545→            <p style="color: var(--text-muted); margin-bottom:2rem;">Full market intelligence. Cancel anytime.</p>
+   546→   546→            <div style="display:flex; gap:1.5rem; justify-content:center; flex-wrap:wrap; text-align:left; max-width:500px; margin:0 auto 2rem;">
+   547→   547→                <div style="display:flex; align-items:flex-start; gap:0.5rem; font-size:0.9rem; color:var(--text-muted);"><span style="color:var(--accent); font-weight:700;">✓</span> Full salary benchmarks dashboard</div>
+   548→   548→                <div style="display:flex; align-items:flex-start; gap:0.5rem; font-size:0.9rem; color:var(--text-muted);"><span style="color:var(--accent); font-weight:700;">✓</span> All market intel reports</div>
+   549→   549→                <div style="display:flex; align-items:flex-start; gap:0.5rem; font-size:0.9rem; color:var(--text-muted);"><span style="color:var(--accent); font-weight:700;">✓</span> AI talent briefings</div>
+   550→   550→                <div style="display:flex; align-items:flex-start; gap:0.5rem; font-size:0.9rem; color:var(--text-muted);"><span style="color:var(--accent); font-weight:700;">✓</span> WPro network priority</div>
+   551→   551→                <div style="display:flex; align-items:flex-start; gap:0.5rem; font-size:0.9rem; color:var(--text-muted);"><span style="color:var(--accent); font-weight:700;">✓</span> LinkedIn profile boost</div>
+   552→   552→                <div style="display:flex; align-items:flex-start; gap:0.5rem; font-size:0.9rem; color:var(--text-muted);"><span style="color:var(--accent); font-weight:700;">✓</span> Company portal access</div>
+   553→   553→            </div>
+   554→   554→            <a href="#" onclick="toggleAuth()" class="btn-primary">Start Free — Upgrade Later</a>
+   555→   555→            <p style="font-size:0.75rem; color:var(--text-dim); margin-top:1rem; font-family: 'JetBrains Mono', monospace;">FOUNDING MEMBER PRICING · LIMITED SPOTS</p>
+   556→   556→        </div>
+   557→   557→    </section>
+   558→   558→
+   559→   559→    <footer>
+   560→   560→        <p>Latam Intel by <a href="https://wprotalents.lat" target="_blank" rel="noopener">WProTalents</a> · <a href="#">Terms</a> · <a href="#">Privacy</a> · <a href="mailto:info@wprotalents.lat">Contact</a></p>
+   561→   561→        <p style="margin-top:0.5rem; font-family:'JetBrains Mono', monospace; font-size:0.65rem; letter-spacing:0.1em; text-transform:uppercase;">© 2026 WProTalents · US · EU · LATAM</p>
+   562→   562→    </footer>
+   563→   563→
+   564→   564→    <script>
+   565→   565→        const SUPABASE_URL = 'https://qxvppedapgfchnnixyhj.supabase.co';
+   566→   566→        const SUPABASE_ANON_KEY = 'sb_publishable_mHTGchSQ7INFETDz0zshVQ_ebwwR2sw';
+   567→   567→
+   568→   568→        function showMessage(msg, type) {
+   569→   569→            const el = document.getElementById('authMessage');
+   570→   570→            el.textContent = msg;
+   571→   571→            el.className = 'message ' + type;
+   572→   572→        }
+   573→   573→
+   574→   574→        function hideMessage() { document.getElementById('authMessage').className = 'message'; }
+   575→   575→
+   576→   576→        function toggleAuth() {
+   577→   577→            document.getElementById('authBox').scrollIntoView({ behavior: 'smooth', block: 'center' });
+   578→   578→            gtag('event', 'cta_access_clicked', {});
+   579→   579→        }
+   580→   580→
+   581→   581→        async function sendMagicLink() {
+   582→   582→            const email = document.getElementById('email').value.trim();
+   583→   583→            if (!email) { showMessage('Please enter your email address.', 'error'); return; }
+   584→   584→            if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { showMessage('Please enter a valid email address.', 'error'); return; }
+   585→   585→
+   586→   586→            const btn = document.getElementById('sendMagicLink');
+   587→   587→            btn.disabled = true;
+   588→   588→            btn.innerHTML = '<span class="spinner"></span> Sending...';
+   589→   589→
+   590→   590→            try {
+   591→   591→                const res = await fetch(SUPABASE_URL + '/auth/v1/magiclink', {
+   592→   592→                    method: 'POST',
+   593→   593→                    headers: { 'Content-Type': 'application/json', 'apikey': SUPABASE_ANON_KEY },
+   594→   594→                    body: JSON.stringify({ email, gotrue_meta_security: {} })
+   595→   595→                });
+   596→   596→                if (res.ok) {
+   597→   597→                    document.getElementById('emailAuthForm').style.display = 'none';
+   598→   598→                    document.getElementById('emailSentMessage').style.display = 'block';
+   599→   599→                    hideMessage();
+   600→   600→                    gtag('event', 'magic_link_sent', { email_domain: email.split('@')[1] });
+   601→   601→                } else {
+   602→   602→                    const err = await res.json();
+   603→   603→                    showMessage(err.message || 'Failed to send magic link. Please try again.', 'error');
+   604→   604→                }
+   605→   605→            } catch (e) {
+   606→   606→                showMessage('Connection error. Please check your internet and try again.', 'error');
+   607→   607→            } finally {
+   608→   608→                btn.disabled = false;
+   609→   609→                btn.textContent = 'Send Magic Link';
+   610→   610→            }
+   611→   611→        }
+   612→   612→
+   613→   613→        function resetEmailForm() {
+   614→   614→            document.getElementById('emailAuthForm').style.display = 'block';
+   615→   615→            document.getElementById('emailSentMessage').style.display = 'none';
+   616→   616→            document.getElementById('email').value = '';
+   617→   617→            hideMessage();
+   618→   618→        }
+   619→   619→
+   620→   620→        function toggleAuthMode() {
+   621→   621→            const login = document.getElementById('loginPrompt');
+   622→   622→            const signup = document.getElementById('signupPrompt');
+   623→   623→            const h2 = document.querySelector('#authBox h2');
+   624→   624→            const sub = document.querySelector('#authBox .auth-sub');
+   625→   625→            login.style.display = login.style.display === 'none' ? 'block' : 'none';
+   626→   626→            signup.style.display = signup.style.display === 'none' ? 'block' : 'none';
+   627→   627→            if (h2) h2.textContent = login.style.display === 'none' ? 'Create Account' : 'Sign In';
+   628→   628→            if (sub) sub.textContent = login.style.display === 'none' ? 'Start your free intelligence access' : 'Access your intelligence dashboard';
+   629→   629→        }
+   630→   630→
+   631→   631→        function loginWithGoogle() {
+   632→   632→            showMessage('Google Sign-In coming soon — use email for now.', 'error');
+   633→   633→            gtag('event', 'google_signin_attempted', {});
+   634→   634→        }
+   635→   635→
+   636→   636→        function checkAuth() { if (localStorage.getItem('sb_auth_token')) window.location.href = '/dashboard.html'; }
+   637→   637→
+   638→   638→        if (window.location.hash.includes('#access_token=')) {
+   639→   639→            const params = new URLSearchParams(window.location.hash.substring(1));
+   640→   640→            const token = params.get('access_token');
+   641→   641→            if (token) {
+   642→   642→                localStorage.setItem('sb_auth_token', token);
+   643→   643→                gtag('event', 'login_success', { method: 'magic_link' });
+   644→   644→                setTimeout(() => window.location.href = '/dashboard.html', 1000);
+   645→   645→            }
+   646→   646→        }
+   647→   647→
+   648→   648→        window.addEventListener('load', () => {
+   649→   649→            checkAuth();
+   650→   650→            gtag('event', 'landing_page_view', { page_path: '/index.html' });
+   651→   651→        });
+   652→   652→
+   653→   653→        document.querySelectorAll('a[href^="#"]').forEach(a => {
+   654→   654→            a.addEventListener('click', e => {
+   655→   655→                const target = document.querySelector(a.getAttribute('href'));
+   656→   656→                if (target) { e.preventDefault(); target.scrollIntoView({ behavior: 'smooth' }); }
+   657→   657→            });
+   658→   658→        });
+   659→   659→    </script>
+   660→   660→</body>
+   661→   661→</html>
+   662→   662→

@@ -1,0 +1,696 @@
+     1→import { useState } from 'react';
+     2→import { motion, AnimatePresence } from 'motion/react';
+     3→import {
+     4→  DollarSign, Map, Zap, Wifi, RefreshCw, Sparkles,
+     5→  BarChart2, CheckCircle, Clock, Linkedin, ChevronRight,
+     6→  AlertTriangle, Target,
+     7→} from 'lucide-react';
+     8→import {
+     9→  computeMarketValue, computeSalaryGap, getBestMarkets, getSkillsROI, getRemoteReadiness,
+    10→  type CandidateInput, type RoleKey, type CountryCode, type EnglishLevel, type Lang,
+    11→} from '../lib/intelligence';
+    12→
+    13→// ─── Translations ─────────────────────────────────────────────────────────────
+    14→
+    15→const T = {
+    16→  EN: {
+    17→    sectionTitle: 'My Market Value',
+    18→    sectionDesc: 'Enter your profile — see your real market salary, best opportunities, and skills to learn for maximum ROI.',
+    19→    profileHeader: 'YOUR PROFILE',
+    20→    editBtn: 'Edit',
+    21→    roleLabel: 'Your Role',
+    22→    countryLabel: 'Your Country',
+    23→    yearsLabel: 'Years of Experience',
+    24→    englishLabel: 'English Level',
+    25→    salaryLabel: 'Current Salary — USD/year (optional)',
+    26→    salaryHint: 'We use this to show how much you may be leaving on the table.',
+    27→    skillsLabel: 'Your Current Skills (select all that apply)',
+    28→    remoteBtn: 'Remote Experience',
+    29→    portfolioBtn: 'Portfolio / GitHub',
+    30→    calcBtn: 'CALCULATE MY MARKET VALUE →',
+    31→    dataNote: 'Data from WProTalents mandates + LinkedIn Salary + Glassdoor LATAM. Q1 2026. Estimates ± 15%.',
+    32→    tabs: { value: 'Market Value', markets: 'Best Markets', skills: 'Skills ROI', readiness: 'Remote Readiness' },
+    33→    // Market Value panel
+    34→    marketSignal: 'MARKET SIGNAL',
+    35→    underpaidBy: 'You may be underpaid by',
+    36→    perYear: '/year',
+    37→    basedOn: 'Based on',
+    38→    in: 'in',
+    39→    marketMin: 'Market Min', marketMid: 'Market Mid', marketMax: 'Market Max',
+    40→    localSeniority: 'Local ·',
+    41→    benchmark: 'Benchmark · Your target',
+    42→    top25: 'Top 25% locally',
+    43→    goRemote: 'GO REMOTE → EARN MORE',
+    44→    remoteUplift: 'remote uplift',
+    45→    equivalentRole: 'Equivalent USD remote role ·',
+    46→    upliftVsLocal: '% uplift vs local',
+    47→    topPaying: 'Top paying country for your profile:',
+    48→    remoteYr: '/yr remote',
+    49→    percentileLabel: 'YOUR SALARY PERCENTILE (local market)',
+    50→    bottom10: 'Bottom 10%',
+    51→    top10: 'Top 10%',
+    52→    topPct: 'Top',
+    53→    // Best Markets panel
+    54→    marketsDesc: 'Ranked by demand vs competition for your role.',
+    55→    hot: 'Hot',
+    56→    strong: 'Strong',
+    57→    equal: '= high demand, low competition.',
+    58→    demandLabel: 'DEMAND',
+    59→    competitionLabel: 'COMPETITION',
+    60→    avgRemoteLabel: '/yr remote',
+    61→    // Skills ROI panel
+    62→    skillsDesc: "Skills you don't have yet — ranked by salary impact for your seniority level.",
+    63→    skillsEmpty: 'Your skill set looks strong for your role.',
+    64→    skillsEmptySub: 'Consider adding LLM / AI skills for the highest salary uplift.',
+    65→    totalUpside: 'TOTAL POTENTIAL UPSIDE',
+    66→    realisticNote: (n: number) => `If you added all ${n} skills above (realistic over 12–18 months)`,
+    67→    // Remote Readiness panel
+    68→    readinessScore: 'REMOTE READINESS SCORE',
+    69→    readyDesc: 'Your profile is ready for US & EU remote roles. Apply with confidence.',
+    70→    notReadyDesc: 'Close these gaps to unlock global remote opportunities.',
+    71→    strengthsLabel: '✓ STRENGTHS',
+    72→    gapsLabel: '⚡ GAPS TO CLOSE',
+    73→    topActionLabel: 'YOUR #1 NEXT ACTION',
+    74→    featuredBtn: 'GET FEATURED TO 23K+ HIRING MANAGERS →',
+    75→    // Bottom CTA
+    76→    ctaTitle: 'WANT US TO FIND YOU A ROLE AT THIS SALARY?',
+    77→    ctaDesc: 'WProTalents places senior LATAM tech talent with US & EU companies. Free for candidates.',
+    78→    ctaBtn: 'Work with WPro',
+    79→    currentLabel: 'Current',
+    80→    expLabel: 'Exp',
+    81→  },
+    82→  ES: {
+    83→    sectionTitle: 'Mi Valor de Mercado',
+    84→    sectionDesc: 'Ingresa tu perfil — ve tu salario real de mercado, mejores oportunidades y habilidades a aprender para máximo ROI.',
+    85→    profileHeader: 'TU PERFIL',
+    86→    editBtn: 'Editar',
+    87→    roleLabel: 'Tu Rol',
+    88→    countryLabel: 'Tu País',
+    89→    yearsLabel: 'Años de Experiencia',
+    90→    englishLabel: 'Nivel de Inglés',
+    91→    salaryLabel: 'Salario Actual — USD/año (opcional)',
+    92→    salaryHint: 'Usamos esto para mostrarte cuánto podrías estar dejando sobre la mesa.',
+    93→    skillsLabel: 'Tus Habilidades Actuales (selecciona todas las que apliquen)',
+    94→    remoteBtn: 'Experiencia Remota',
+    95→    portfolioBtn: 'Portfolio / GitHub',
+    96→    calcBtn: 'CALCULAR MI VALOR DE MERCADO →',
+    97→    dataNote: 'Datos de mandatos WProTalents + LinkedIn Salary + Glassdoor LATAM. Q1 2026. Estimaciones ± 15%.',
+    98→    tabs: { value: 'Valor de Mercado', markets: 'Mejores Mercados', skills: 'ROI de Habilidades', readiness: 'Preparación Remota' },
+    99→    marketSignal: 'SEÑAL DE MERCADO',
+   100→    underpaidBy: 'Podrías estar ganando de menos',
+   101→    perYear: '/año',
+   102→    basedOn: 'Basado en',
+   103→    in: 'en',
+   104→    marketMin: 'Mínimo', marketMid: 'Referencia', marketMax: 'Máximo',
+   105→    localSeniority: 'Local ·',
+   106→    benchmark: 'Referencia · Tu objetivo',
+   107→    top25: 'Top 25% local',
+   108→    goRemote: 'TRABAJA REMOTO → GANA MÁS',
+   109→    remoteUplift: 'prima remota',
+   110→    equivalentRole: 'Rol remoto equivalente en USD ·',
+   111→    upliftVsLocal: '% sobre salario local',
+   112→    topPaying: 'País que más paga para tu perfil:',
+   113→    remoteYr: '/año remoto',
+   114→    percentileLabel: 'TU PERCENTIL SALARIAL (mercado local)',
+   115→    bottom10: 'Percentil 10',
+   116→    top10: 'Percentil 90',
+   117→    topPct: 'Top',
+   118→    marketsDesc: 'Clasificados por demanda vs competencia para tu rol.',
+   119→    hot: 'Caliente',
+   120→    strong: 'Sólido',
+   121→    equal: '= alta demanda, baja competencia.',
+   122→    demandLabel: 'DEMANDA',
+   123→    competitionLabel: 'COMPETENCIA',
+   124→    avgRemoteLabel: '/año remoto',
+   125→    skillsDesc: 'Habilidades que aún no tienes — clasificadas por impacto salarial para tu nivel.',
+   126→    skillsEmpty: 'Tu conjunto de habilidades se ve sólido para tu rol.',
+   127→    skillsEmptySub: 'Considera agregar LLM / IA para el mayor incremento salarial.',
+   128→    totalUpside: 'POTENCIAL TOTAL DE AUMENTO',
+   129→    realisticNote: (n: number) => `Si agregas las ${n} habilidades anteriores (realista en 12–18 meses)`,
+   130→    readinessScore: 'PUNTAJE DE PREPARACIÓN REMOTA',
+   131→    readyDesc: 'Tu perfil está listo para roles remotos en EE.UU. y Europa. Postúlate con confianza.',
+   132→    notReadyDesc: 'Cierra estas brechas para acceder a oportunidades remotas globales.',
+   133→    strengthsLabel: '✓ FORTALEZAS',
+   134→    gapsLabel: '⚡ BRECHAS A CERRAR',
+   135→    topActionLabel: 'TU ACCIÓN #1 AHORA',
+   136→    featuredBtn: 'APARECER ANTE 23K+ HIRING MANAGERS →',
+   137→    ctaTitle: '¿QUIERES QUE TE ENCONTREMOS UN ROL CON ESTE SALARIO?',
+   138→    ctaDesc: 'WProTalents coloca talento tech senior de LATAM en empresas de EE.UU. y Europa. Gratis para candidatos.',
+   139→    ctaBtn: 'Trabajar con WPro',
+   140→    currentLabel: 'Actual',
+   141→    expLabel: 'Exp',
+   142→  },
+   143→  PT: {
+   144→    sectionTitle: 'Meu Valor de Mercado',
+   145→    sectionDesc: 'Insira seu perfil — veja seu salário real de mercado, melhores oportunidades e habilidades a aprender para máximo ROI.',
+   146→    profileHeader: 'SEU PERFIL',
+   147→    editBtn: 'Editar',
+   148→    roleLabel: 'Seu Cargo',
+   149→    countryLabel: 'Seu País',
+   150→    yearsLabel: 'Anos de Experiência',
+   151→    englishLabel: 'Nível de Inglês',
+   152→    salaryLabel: 'Salário Atual — USD/ano (opcional)',
+   153→    salaryHint: 'Usamos isso para mostrar quanto você pode estar deixando na mesa.',
+   154→    skillsLabel: 'Suas Habilidades Atuais (selecione todas que se aplicam)',
+   155→    remoteBtn: 'Experiência Remota',
+   156→    portfolioBtn: 'Portfolio / GitHub',
+   157→    calcBtn: 'CALCULAR MEU VALOR DE MERCADO →',
+   158→    dataNote: 'Dados de mandatos WProTalents + LinkedIn Salary + Glassdoor LATAM. Q1 2026. Estimativas ± 15%.',
+   159→    tabs: { value: 'Valor de Mercado', markets: 'Melhores Mercados', skills: 'ROI de Habilidades', readiness: 'Prontidão Remota' },
+   160→    marketSignal: 'SINAL DE MERCADO',
+   161→    underpaidBy: 'Você pode estar ganhando abaixo do mercado em',
+   162→    perYear: '/ano',
+   163→    basedOn: 'Com base em',
+   164→    in: 'em',
+   165→    marketMin: 'Mínimo', marketMid: 'Referência', marketMax: 'Máximo',
+   166→    localSeniority: 'Local ·',
+   167→    benchmark: 'Referência · Sua meta',
+   168→    top25: 'Top 25% local',
+   169→    goRemote: 'TRABALHE REMOTO → GANHE MAIS',
+   170→    remoteUplift: 'prêmio remoto',
+   171→    equivalentRole: 'Vaga remota equivalente em USD ·',
+   172→    upliftVsLocal: '% acima do salário local',
+   173→    topPaying: 'País que mais paga para o seu perfil:',
+   174→    remoteYr: '/ano remoto',
+   175→    percentileLabel: 'SEU PERCENTIL SALARIAL (mercado local)',
+   176→    bottom10: 'Percentil 10',
+   177→    top10: 'Percentil 90',
+   178→    topPct: 'Top',
+   179→    marketsDesc: 'Classificados por demanda vs concorrência para a sua função.',
+   180→    hot: 'Quente',
+   181→    strong: 'Sólido',
+   182→    equal: '= alta demanda, baixa concorrência.',
+   183→    demandLabel: 'DEMANDA',
+   184→    competitionLabel: 'CONCORRÊNCIA',
+   185→    avgRemoteLabel: '/ano remoto',
+   186→    skillsDesc: 'Habilidades que você ainda não tem — classificadas por impacto salarial para o seu nível.',
+   187→    skillsEmpty: 'Seu conjunto de habilidades parece sólido para a sua função.',
+   188→    skillsEmptySub: 'Considere adicionar LLM / IA para o maior aumento salarial.',
+   189→    totalUpside: 'POTENCIAL TOTAL DE AUMENTO',
+   190→    realisticNote: (n: number) => `Se você adicionar as ${n} habilidades acima (realista em 12–18 meses)`,
+   191→    readinessScore: 'PONTUAÇÃO DE PRONTIDÃO REMOTA',
+   192→    readyDesc: 'Seu perfil está pronto para vagas remotas nos EUA e Europa. Candidate-se com confiança.',
+   193→    notReadyDesc: 'Feche essas lacunas para acessar oportunidades remotas globais.',
+   194→    strengthsLabel: '✓ PONTOS FORTES',
+   195→    gapsLabel: '⚡ LACUNAS A FECHAR',
+   196→    topActionLabel: 'SUA AÇÃO #1 AGORA',
+   197→    featuredBtn: 'SER DESTAQUE PARA 23K+ HIRING MANAGERS →',
+   198→    ctaTitle: 'QUER QUE A GENTE ENCONTRE UMA VAGA COM ESSE SALÁRIO PARA VOCÊ?',
+   199→    ctaDesc: 'WProTalents conecta talentos sêniores do LATAM com empresas dos EUA e Europa. Gratuito para candidatos.',
+   200→    ctaBtn: 'Trabalhar com WPro',
+   201→    currentLabel: 'Atual',
+   202→    expLabel: 'Exp',
+   203→  },
+   204→};
+   205→
+   206→// ─── Role / country / english options (trilingual) ────────────────────────────
+   207→
+   208→const ROLE_OPTIONS: Record<Lang, { value: RoleKey; label: string }[]> = {
+   209→  EN: [
+   210→    { value: 'ai_ml', label: 'AI / ML Engineer' }, { value: 'llm', label: 'LLM Engineer' },
+   211→    { value: 'data', label: 'Data Scientist' }, { value: 'data_eng', label: 'Data Engineer' },
+   212→    { value: 'backend', label: 'Backend Engineer' }, { value: 'fullstack', label: 'Full Stack Engineer' },
+   213→    { value: 'frontend', label: 'Frontend Engineer' }, { value: 'devops', label: 'DevOps / SRE' },
+   214→    { value: 'product', label: 'Product Manager' }, { value: 'eng_manager', label: 'Engineering Manager' },
+   215→  ],
+   216→  ES: [
+   217→    { value: 'ai_ml', label: 'AI / ML Engineer' }, { value: 'llm', label: 'Ingeniero LLM' },
+   218→    { value: 'data', label: 'Científico de Datos' }, { value: 'data_eng', label: 'Ingeniero de Datos' },
+   219→    { value: 'backend', label: 'Desarrollador Backend' }, { value: 'fullstack', label: 'Desarrollador Full Stack' },
+   220→    { value: 'frontend', label: 'Desarrollador Frontend' }, { value: 'devops', label: 'DevOps / SRE' },
+   221→    { value: 'product', label: 'Product Manager' }, { value: 'eng_manager', label: 'Engineering Manager' },
+   222→  ],
+   223→  PT: [
+   224→    { value: 'ai_ml', label: 'Engenheiro AI / ML' }, { value: 'llm', label: 'Engenheiro LLM' },
+   225→    { value: 'data', label: 'Cientista de Dados' }, { value: 'data_eng', label: 'Engenheiro de Dados' },
+   226→    { value: 'backend', label: 'Desenvolvedor Backend' }, { value: 'fullstack', label: 'Desenvolvedor Full Stack' },
+   227→    { value: 'frontend', label: 'Desenvolvedor Frontend' }, { value: 'devops', label: 'DevOps / SRE' },
+   228→    { value: 'product', label: 'Product Manager' }, { value: 'eng_manager', label: 'Engineering Manager' },
+   229→  ],
+   230→};
+   231→
+   232→const COUNTRY_OPTIONS: { value: CountryCode; flag: string; label: string }[] = [
+   233→  { value: 'BR', flag: '🇧🇷', label: 'Brasil / Brazil' },
+   234→  { value: 'MX', flag: '🇲🇽', label: 'México / Mexico' },
+   235→  { value: 'CO', flag: '🇨🇴', label: 'Colombia' },
+   236→  { value: 'AR', flag: '🇦🇷', label: 'Argentina' },
+   237→  { value: 'CL', flag: '🇨🇱', label: 'Chile' },
+   238→];
+   239→
+   240→const ENGLISH_OPTIONS: Record<Lang, { value: EnglishLevel; label: string; desc: string }[]> = {
+   241→  EN: [
+   242→    { value: 'basic',          label: 'Basic',         desc: 'Can read but struggle in calls' },
+   243→    { value: 'conversational', label: 'Conversational', desc: 'Handle work calls with effort' },
+   244→    { value: 'fluent',         label: 'Fluent',         desc: 'Comfortable in all professional contexts' },
+   245→    { value: 'bilingual',      label: 'Bilingual',      desc: 'Native or near-native' },
+   246→  ],
+   247→  ES: [
+   248→    { value: 'basic',          label: 'Básico',          desc: 'Leo pero me cuesta en llamadas' },
+   249→    { value: 'conversational', label: 'Conversacional',   desc: 'Me defiendo en llamadas de trabajo' },
+   250→    { value: 'fluent',         label: 'Fluido',           desc: 'Cómodo en cualquier contexto profesional' },
+   251→    { value: 'bilingual',      label: 'Bilingüe',         desc: 'Nativo o casi nativo' },
+   252→  ],
+   253→  PT: [
+   254→    { value: 'basic',          label: 'Básico',       desc: 'Leio mas tenho dificuldade em chamadas' },
+   255→    { value: 'conversational', label: 'Conversacional',desc: 'Me viro em chamadas de trabalho' },
+   256→    { value: 'fluent',         label: 'Fluente',       desc: 'Confortável em qualquer contexto profissional' },
+   257→    { value: 'bilingual',      label: 'Bilíngue',      desc: 'Nativo ou quase nativo' },
+   258→  ],
+   259→};
+   260→
+   261→const SKILLS_LIST = [
+   262→  'Python', 'JavaScript', 'TypeScript', 'React', 'Node.js', 'Go', 'Rust', 'Java',
+   263→  'AWS', 'GCP', 'Azure', 'Docker', 'Kubernetes', 'Terraform',
+   264→  'PyTorch', 'TensorFlow', 'LLM / AI', 'dbt', 'Spark', 'SQL',
+   265→  'React Native', 'Next.js', 'FastAPI', 'GraphQL', 'Redis',
+   266→];
+   267→
+   268→// ─── Shared helpers ───────────────────────────────────────────────────────────
+   269→
+   270→const cls = {
+   271→  label: 'mono text-[8px] text-text/40 block mb-1.5 uppercase tracking-widest font-bold',
+   272→  select: 'w-full bg-bg border border-border px-3 py-2.5 mono text-[11px] text-text focus:outline-none focus:border-accent/50 transition-colors appearance-none',
+   273→  chip: (active: boolean) =>
+   274→    `px-2.5 py-1 mono text-[8px] border transition-all cursor-pointer select-none ${
+   275→      active ? 'bg-accent text-black border-accent font-bold' : 'border-border text-text/30 hover:border-text/30 hover:text-text/60'
+   276→    }`,
+   277→};
+   278→
+   279→function fmt(n: number) { return '$' + n.toLocaleString(); }
+   280→
+   281→type IntelTab = 'value' | 'markets' | 'skills' | 'readiness';
+   282→
+   283→// ─── Market Value Panel ───────────────────────────────────────────────────────
+   284→
+   285→function MarketValuePanel({ input, lang }: { input: CandidateInput; lang: Lang }) {
+   286→  const t = T[lang];
+   287→  const mv = computeMarketValue(input, lang);
+   288→  const gap = computeSalaryGap(input, lang);
+   289→  const roleName = ROLE_OPTIONS[lang].find(r => r.value === input.role)?.label ?? input.role;
+   290→  const countryName = COUNTRY_OPTIONS.find(c => c.value === input.country)?.label ?? input.country;
+   291→
+   292→  return (
+   293→    <div className="space-y-4">
+   294→      {mv.underpaidBy && mv.underpaidBy > 0 && (
+   295→        <motion.div initial={{ opacity: 0, scale: 0.97 }} animate={{ opacity: 1, scale: 1 }}
+   296→          className="border border-red-500/30 bg-red-500/5 p-5">
+   297→          <div className="flex items-start gap-3">
+   298→            <AlertTriangle size={18} className="text-red-400 shrink-0 mt-0.5" />
+   299→            <div>
+   300→              <p className="mono text-[9px] text-red-400 font-bold mb-1">{t.marketSignal}</p>
+   301→              <p className="text-lg font-black text-text">
+   302→                {t.underpaidBy}{' '}
+   303→                <span className="text-red-400">{fmt(mv.underpaidBy)}{t.perYear}</span>
+   304→              </p>
+   305→              <p className="mono text-[9px] text-text/40 mt-1">
+   306→                {t.basedOn} {mv.seniorityLabel} {roleName} {t.in} {countryName}
+   307→              </p>
+   308→            </div>
+   309→          </div>
+   310→        </motion.div>
+   311→      )}
+   312→
+   313→      <div className="grid grid-cols-1 sm:grid-cols-3 gap-px bg-border">
+   314→        {[
+   315→          { label: t.marketMin, value: fmt(mv.marketMin), sub: t.localSeniority + ' ' + mv.seniorityLabel, accent: false },
+   316→          { label: t.marketMid, value: fmt(mv.marketMid), sub: t.benchmark, accent: true },
+   317→          { label: t.marketMax, value: fmt(mv.marketMax), sub: t.top25, accent: false },
+   318→        ].map(({ label, value, sub, accent }) => (
+   319→          <div key={label} className={`p-5 text-center ${accent ? 'bg-accent/5' : 'bg-surface'}`}>
+   320→            <div className={`text-2xl font-black ${accent ? 'text-accent' : 'text-text'}`}>{value}</div>
+   321→            <div className="mono text-[8px] text-text/40 mt-1">{label}</div>
+   322→            <div className="mono text-[7px] text-text/20 mt-0.5">{sub}</div>
+   323→          </div>
+   324→        ))}
+   325→      </div>
+   326→
+   327→      <div className="border border-accent/20 bg-accent/5 p-5">
+   328→        <div className="flex items-center justify-between mb-3">
+   329→          <div>
+   330→            <p className="mono text-[8px] text-accent font-bold">{t.goRemote}</p>
+   331→            <p className="text-2xl font-black text-text mt-1">{fmt(mv.remoteMid)}<span className="text-sm font-normal text-text/40">{t.perYear}</span></p>
+   332→            <p className="mono text-[9px] text-text/40 mt-0.5">{t.equivalentRole} {mv.remoteUplift}{t.upliftVsLocal}</p>
+   333→          </div>
+   334→          <div className="text-right">
+   335→            <div className="text-3xl font-black text-accent">+{mv.remoteUplift}%</div>
+   336→            <div className="mono text-[8px] text-text/30">{t.remoteUplift}</div>
+   337→          </div>
+   338→        </div>
+   339→        <div className="pt-3 border-t border-accent/10">
+   340→          <p className="mono text-[8px] text-text/30">
+   341→            {t.topPaying} <span className="text-accent font-bold">{gap.topPayingFlag} {gap.topPayingCountry} — {fmt(gap.topPayingSalary)}{t.remoteYr}</span>
+   342→          </p>
+   343→        </div>
+   344→      </div>
+   345→
+   346→      {input.currentSalary && (
+   347→        <div className="border border-border p-4">
+   348→          <p className="mono text-[8px] text-text/40 mb-2">{t.percentileLabel}</p>
+   349→          <div className="relative h-2 bg-border rounded-full overflow-hidden">
+   350→            <motion.div initial={{ width: 0 }} animate={{ width: `${mv.percentile}%` }}
+   351→              transition={{ duration: 0.8, ease: 'easeOut' }} className="h-full bg-accent" />
+   352→          </div>
+   353→          <div className="flex justify-between mt-1">
+   354→            <span className="mono text-[7px] text-text/20">{t.bottom10}</span>
+   355→            <span className="mono text-[8px] text-accent font-bold">{t.topPct} {100 - mv.percentile}%</span>
+   356→            <span className="mono text-[7px] text-text/20">{t.top10}</span>
+   357→          </div>
+   358→        </div>
+   359→      )}
+   360→      <p className="mono text-[7px] text-text/20">{t.dataNote}</p>
+   361→    </div>
+   362→  );
+   363→}
+   364→
+   365→// ─── Best Markets Panel ───────────────────────────────────────────────────────
+   366→
+   367→function BestMarketsPanel({ input, lang }: { input: CandidateInput; lang: Lang }) {
+   368→  const t = T[lang];
+   369→  const markets = getBestMarkets(input, lang);
+   370→  const oppColor = {
+   371→    hot: 'text-orange-400 border-orange-400/30 bg-orange-400/5',
+   372→    strong: 'text-green-400 border-green-400/30 bg-green-400/5',
+   373→    saturated: 'text-yellow-400 border-yellow-400/30 bg-yellow-400/5',
+   374→  };
+   375→
+   376→  return (
+   377→    <div className="space-y-3">
+   378→      <p className="mono text-[9px] text-text/30 mb-4">{t.marketsDesc} <span className="text-accent">{t.hot}</span> {t.equal}</p>
+   379→      {markets.map((m, i) => (
+   380→        <motion.div key={m.country} initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }}
+   381→          transition={{ delay: i * 0.07 }} className="border border-border bg-surface p-4">
+   382→          <div className="flex items-start justify-between gap-3 mb-2">
+   383→            <div className="flex items-center gap-2">
+   384→              <span className="text-2xl">{m.flag}</span>
+   385→              <div>
+   386→                <p className="font-bold text-sm text-text">{m.name}</p>
+   387→                <p className="mono text-[8px] text-accent font-bold">{fmt(m.avgRemote)}{t.avgRemoteLabel}</p>
+   388→              </div>
+   389→            </div>
+   390→            <span className={`mono text-[8px] font-bold border px-2 py-0.5 ${oppColor[m.opportunityKey]}`}>
+   391→              {m.opportunity}
+   392→            </span>
+   393→          </div>
+   394→          <p className="mono text-[9px] text-text/40 leading-relaxed mb-3">{m.verdict}</p>
+   395→          <div className="flex gap-4">
+   396→            <div>
+   397→              <div className={`mono text-[7px] font-bold ${m.demand === 'High' || m.demand === 'Alta' ? 'text-green-400' : m.demand === 'Low' || m.demand === 'Baja' || m.demand === 'Baixa' ? 'text-red-400' : 'text-yellow-400'}`}>{m.demand}</div>
+   398→              <div className="mono text-[6px] text-text/20">{t.demandLabel}</div>
+   399→            </div>
+   400→            <div>
+   401→              <div className={`mono text-[7px] font-bold ${m.competition === 'Low' || m.competition === 'Baja' || m.competition === 'Baixa' ? 'text-green-400' : m.competition === 'High' || m.competition === 'Alta' ? 'text-red-400' : 'text-yellow-400'}`}>{m.competition}</div>
+   402→              <div className="mono text-[6px] text-text/20">{t.competitionLabel}</div>
+   403→            </div>
+   404→          </div>
+   405→        </motion.div>
+   406→      ))}
+   407→    </div>
+   408→  );
+   409→}
+   410→
+   411→// ─── Skills ROI Panel ─────────────────────────────────────────────────────────
+   412→
+   413→function SkillsROIPanel({ input, lang }: { input: CandidateInput; lang: Lang }) {
+   414→  const t = T[lang];
+   415→  const skills = getSkillsROI(input, lang);
+   416→  const demandColor = { 'Very High': 'text-red-400', High: 'text-orange-400', Medium: 'text-yellow-400' };
+   417→
+   418→  if (skills.length === 0) return (
+   419→    <div className="text-center py-12 border border-dashed border-border">
+   420→      <CheckCircle size={24} className="text-green-400 mx-auto mb-3" />
+   421→      <p className="mono text-[10px] text-text/40">{t.skillsEmpty}</p>
+   422→      <p className="mono text-[9px] text-text/20 mt-1">{t.skillsEmptySub}</p>
+   423→    </div>
+   424→  );
+   425→
+   426→  return (
+   427→    <div className="space-y-3">
+   428→      <p className="mono text-[9px] text-text/30 mb-4">{t.skillsDesc}</p>
+   429→      {skills.map((s, i) => (
+   430→        <motion.div key={s.skill} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
+   431→          transition={{ delay: i * 0.08 }} className="border border-border bg-surface p-4">
+   432→          <div className="flex items-start justify-between gap-3">
+   433→            <div className="flex-1">
+   434→              <div className="flex items-center gap-2 mb-1">
+   435→                <p className="font-bold text-sm text-text">{s.skill}</p>
+   436→                <span className={`mono text-[7px] font-bold ${demandColor[s.demand]}`}>{s.demand}</span>
+   437→              </div>
+   438→              <span className="mono text-[8px] text-text/40 flex items-center gap-1">
+   439→                <Clock size={8} /> {s.timeToLearn}
+   440→              </span>
+   441→            </div>
+   442→            <div className="text-right shrink-0">
+   443→              <div className="text-xl font-black text-accent">+{fmt(s.salaryBoost)}</div>
+   444→              <div className="mono text-[7px] text-text/30">{t.perYear}</div>
+   445→            </div>
+   446→          </div>
+   447→          <div className="mt-3 h-1 bg-border rounded-full overflow-hidden">
+   448→            <motion.div initial={{ width: 0 }}
+   449→              animate={{ width: `${Math.min(100, (s.salaryBoost / 25000) * 100)}%` }}
+   450→              transition={{ duration: 0.7, delay: i * 0.08 + 0.2 }}
+   451→              className="h-full bg-accent" />
+   452→          </div>
+   453→        </motion.div>
+   454→      ))}
+   455→      <div className="border border-border bg-bg p-4">
+   456→        <p className="mono text-[8px] text-text/40 mb-1">{t.totalUpside}</p>
+   457→        <p className="text-2xl font-black text-accent">+{fmt(skills.reduce((s, r) => s + r.salaryBoost, 0))}{t.perYear}</p>
+   458→        <p className="mono text-[8px] text-text/30 mt-1">{t.realisticNote(skills.length)}</p>
+   459→      </div>
+   460→    </div>
+   461→  );
+   462→}
+   463→
+   464→// ─── Remote Readiness Panel ───────────────────────────────────────────────────
+   465→
+   466→function RemoteReadinessPanel({ input, lang }: { input: CandidateInput; lang: Lang }) {
+   467→  const t = T[lang];
+   468→  const r = getRemoteReadiness(input, lang);
+   469→  const barColor = r.score >= 70 ? 'bg-green-400' : r.score >= 50 ? 'bg-yellow-400' : 'bg-red-400';
+   470→  const scoreColor = r.score >= 70 ? 'text-green-400' : r.score >= 50 ? 'text-yellow-400' : 'text-red-400';
+   471→
+   472→  return (
+   473→    <div className="space-y-4">
+   474→      <div className="border border-border bg-surface p-6 text-center">
+   475→        <p className="mono text-[8px] text-text/40 mb-3">{t.readinessScore}</p>
+   476→        <div className={`text-5xl font-black mb-1 ${scoreColor}`}>{r.score}</div>
+   477→        <div className="text-sm font-bold text-text mb-4">{r.label}</div>
+   478→        <div className="relative h-2 bg-border rounded-full overflow-hidden max-w-xs mx-auto">
+   479→          <motion.div initial={{ width: 0 }} animate={{ width: `${r.score}%` }}
+   480→            transition={{ duration: 1, ease: 'easeOut' }} className={`h-full ${barColor}`} />
+   481→        </div>
+   482→        <p className="mono text-[8px] text-text/30 mt-3">
+   483→          {r.ready ? t.readyDesc : t.notReadyDesc}
+   484→        </p>
+   485→      </div>
+   486→
+   487→      {r.strengths.length > 0 && (
+   488→        <div>
+   489→          <p className="mono text-[8px] text-green-400 font-bold mb-2">{t.strengthsLabel}</p>
+   490→          <div className="space-y-2">
+   491→            {r.strengths.map((s, i) => (
+   492→              <div key={i} className="flex items-start gap-2 border border-green-400/10 bg-green-400/5 px-3 py-2">
+   493→                <CheckCircle size={11} className="text-green-400 shrink-0 mt-0.5" />
+   494→                <p className="mono text-[9px] text-text/60">{s}</p>
+   495→              </div>
+   496→            ))}
+   497→          </div>
+   498→        </div>
+   499→      )}
+   500→
+   501→      {r.gaps.length > 0 && (
+   502→        <div>
+   503→          <p className="mono text-[8px] text-red-400 font-bold mb-2">{t.gapsLabel}</p>
+   504→          <div className="space-y-2">
+   505→            {r.gaps.map((g, i) => (
+   506→              <div key={i} className="flex items-start gap-2 border border-red-400/10 bg-red-400/5 px-3 py-2">
+   507→                <Target size={11} className="text-red-400 shrink-0 mt-0.5" />
+   508→                <p className="mono text-[9px] text-text/60">{g}</p>
+   509→              </div>
+   510→            ))}
+   511→          </div>
+   512→        </div>
+   513→      )}
+   514→
+   515→      <div className="border border-accent/20 bg-accent/5 p-4">
+   516→        <p className="mono text-[8px] text-accent font-bold mb-1">{t.topActionLabel}</p>
+   517→        <p className="mono text-[9px] text-text/60">{r.topAction}</p>
+   518→      </div>
+   519→
+   520→      {r.ready && (
+   521→        <button
+   522→          onClick={() => window.dispatchEvent(new CustomEvent('open-linkedin-boost'))}
+   523→          className="w-full py-3 bg-[#0077B5] text-white font-bold mono text-[10px] flex items-center justify-center gap-2 hover:opacity-90 transition-opacity"
+   524→        >
+   525→          <Linkedin size={14} /> {t.featuredBtn}
+   526→        </button>
+   527→      )}
+   528→    </div>
+   529→  );
+   530→}
+   531→
+   532→// ─── Main ─────────────────────────────────────────────────────────────────────
+   533→
+   534→const DEFAULT_INPUT: CandidateInput = {
+   535→  role: 'backend', country: 'BR', yearsExp: 4,
+   536→  englishLevel: 'conversational', currentSalary: undefined,
+   537→  skills: [], hasRemoteExp: false, hasPortfolio: false,
+   538→};
+   539→
+   540→export default function CandidateIntel({ lang = 'EN' }: { lang?: Lang }) {
+   541→  const t = T[lang];
+   542→  const [input, setInput] = useState<CandidateInput>(DEFAULT_INPUT);
+   543→  const [computed, setComputed] = useState(false);
+   544→  const [activeTab, setActiveTab] = useState<IntelTab>('value');
+   545→
+   546→  const set = <K extends keyof CandidateInput>(key: K, val: CandidateInput[K]) =>
+   547→    setInput(prev => ({ ...prev, [key]: val }));
+   548→  const toggleSkill = (skill: string) =>
+   549→    set('skills', input.skills.includes(skill) ? input.skills.filter(s => s !== skill) : [...input.skills, skill]);
+   550→
+   551→  const TABS: { id: IntelTab; label: string; icon: React.ElementType }[] = [
+   552→    { id: 'value',     label: t.tabs.value,     icon: DollarSign },
+   553→    { id: 'markets',   label: t.tabs.markets,   icon: Map },
+   554→    { id: 'skills',    label: t.tabs.skills,    icon: Zap },
+   555→    { id: 'readiness', label: t.tabs.readiness, icon: Wifi },
+   556→  ];
+   557→
+   558→  return (
+   559→    <div className="space-y-6">
+   560→      {/* Input form */}
+   561→      <div className="border border-border bg-surface">
+   562→        <div className="px-6 py-4 border-b border-border flex items-center gap-2">
+   563→          <Sparkles size={12} className="text-accent" />
+   564→          <span className="mono text-[9px] font-bold text-accent tracking-widest">{t.profileHeader}</span>
+   565→          {computed && (
+   566→            <button onClick={() => setComputed(false)}
+   567→              className="ml-auto mono text-[8px] text-text/30 hover:text-accent transition-colors flex items-center gap-1">
+   568→              <RefreshCw size={9} /> {t.editBtn}
+   569→            </button>
+   570→          )}
+   571→        </div>
+   572→
+   573→        <AnimatePresence mode="wait">
+   574→          {!computed ? (
+   575→            <motion.div key="form" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="p-6 space-y-5">
+   576→              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+   577→                <div>
+   578→                  <label className={cls.label}>{t.roleLabel} *</label>
+   579→                  <select value={input.role} onChange={e => set('role', e.target.value as RoleKey)} className={cls.select}>
+   580→                    {ROLE_OPTIONS[lang].map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
+   581→                  </select>
+   582→                </div>
+   583→                <div>
+   584→                  <label className={cls.label}>{t.countryLabel} *</label>
+   585→                  <select value={input.country} onChange={e => set('country', e.target.value as CountryCode)} className={cls.select}>
+   586→                    {COUNTRY_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.flag} {o.label}</option>)}
+   587→                  </select>
+   588→                </div>
+   589→              </div>
+   590→              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+   591→                <div>
+   592→                  <label className={cls.label}>{t.yearsLabel} *</label>
+   593→                  <input type="number" min={0} max={30} value={input.yearsExp}
+   594→                    onChange={e => set('yearsExp', Number(e.target.value))} className={cls.select} />
+   595→                </div>
+   596→                <div>
+   597→                  <label className={cls.label}>{t.englishLabel} *</label>
+   598→                  <select value={input.englishLevel} onChange={e => set('englishLevel', e.target.value as EnglishLevel)} className={cls.select}>
+   599→                    {ENGLISH_OPTIONS[lang].map(o => <option key={o.value} value={o.value}>{o.label} — {o.desc}</option>)}
+   600→                  </select>
+   601→                </div>
+   602→              </div>
+   603→              <div>
+   604→                <label className={cls.label}>{t.salaryLabel}</label>
+   605→                <p className="mono text-[8px] text-text/20 mb-1.5">{t.salaryHint}</p>
+   606→                <input type="number" min={0} step={500} placeholder="e.g. 12000"
+   607→                  value={input.currentSalary ?? ''}
+   608→                  onChange={e => set('currentSalary', e.target.value ? Number(e.target.value) : undefined)}
+   609→                  className={cls.select} />
+   610→              </div>
+   611→              <div>
+   612→                <label className={cls.label}>{t.skillsLabel}</label>
+   613→                <div className="flex flex-wrap gap-1.5">
+   614→                  {SKILLS_LIST.map(s => (
+   615→                    <button key={s} type="button" onClick={() => toggleSkill(s)} className={cls.chip(input.skills.includes(s))}>{s}</button>
+   616→                  ))}
+   617→                </div>
+   618→              </div>
+   619→              <div className="grid grid-cols-2 gap-3">
+   620→                <button type="button" onClick={() => set('hasRemoteExp', !input.hasRemoteExp)}
+   621→                  className={cls.chip(input.hasRemoteExp) + ' w-full justify-center py-2.5'}>
+   622→                  {input.hasRemoteExp ? '✓' : '○'} {t.remoteBtn}
+   623→                </button>
+   624→                <button type="button" onClick={() => set('hasPortfolio', !input.hasPortfolio)}
+   625→                  className={cls.chip(input.hasPortfolio) + ' w-full justify-center py-2.5'}>
+   626→                  {input.hasPortfolio ? '✓' : '○'} {t.portfolioBtn}
+   627→                </button>
+   628→              </div>
+   629→              <button onClick={() => setComputed(true)}
+   630→                className="w-full py-3.5 bg-accent text-black font-black mono text-[11px] hover:opacity-90 transition-opacity flex items-center justify-center gap-2">
+   631→                <BarChart2 size={14} /> {t.calcBtn}
+   632→              </button>
+   633→              <p className="mono text-[7px] text-text/20 text-center">{t.dataNote}</p>
+   634→            </motion.div>
+   635→          ) : (
+   636→            <motion.div key="summary" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+   637→              className="px-6 py-3 flex flex-wrap gap-4">
+   638→              {[
+   639→                { label: t.roleLabel, value: ROLE_OPTIONS[lang].find(r => r.value === input.role)?.label },
+   640→                { label: t.countryLabel, value: COUNTRY_OPTIONS.find(c => c.value === input.country)?.flag + ' ' + COUNTRY_OPTIONS.find(c => c.value === input.country)?.label.split(' /')[0] },
+   641→                { label: t.expLabel,   value: `${input.yearsExp}yr` },
+   642→                { label: t.englishLabel, value: ENGLISH_OPTIONS[lang].find(e => e.value === input.englishLevel)?.label },
+   643→                input.currentSalary ? { label: t.currentLabel, value: fmt(input.currentSalary) + '/yr' } : null,
+   644→              ].filter(Boolean).map((item, i) => (
+   645→                <div key={i}>
+   646→                  <p className="mono text-[7px] text-text/20">{item!.label}</p>
+   647→                  <p className="mono text-[9px] font-bold text-text">{item!.value}</p>
+   648→                </div>
+   649→              ))}
+   650→            </motion.div>
+   651→          )}
+   652→        </AnimatePresence>
+   653→      </div>
+   654→
+   655→      {/* Results */}
+   656→      <AnimatePresence>
+   657→        {computed && (
+   658→          <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.25 }}>
+   659→            <div className="flex items-center gap-1 border-b border-border mb-6 overflow-x-auto">
+   660→              {TABS.map(({ id, label, icon: Icon }) => (
+   661→                <button key={id} onClick={() => setActiveTab(id)}
+   662→                  className={`flex items-center gap-1.5 px-4 py-3 mono text-[9px] font-bold whitespace-nowrap border-b-2 transition-all ${
+   663→                    activeTab === id ? 'border-accent text-accent' : 'border-transparent text-text/40 hover:text-text'
+   664→                  }`}>
+   665→                  <Icon size={12} /> {label.toUpperCase()}
+   666→                </button>
+   667→              ))}
+   668→            </div>
+   669→
+   670→            <AnimatePresence mode="wait">
+   671→              <motion.div key={activeTab} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
+   672→                exit={{ opacity: 0 }} transition={{ duration: 0.15 }}>
+   673→                {activeTab === 'value'     && <MarketValuePanel     input={input} lang={lang} />}
+   674→                {activeTab === 'markets'   && <BestMarketsPanel     input={input} lang={lang} />}
+   675→                {activeTab === 'skills'    && <SkillsROIPanel       input={input} lang={lang} />}
+   676→                {activeTab === 'readiness' && <RemoteReadinessPanel input={input} lang={lang} />}
+   677→              </motion.div>
+   678→            </AnimatePresence>
+   679→
+   680→            <div className="mt-8 border border-accent/20 bg-accent/5 p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+   681→              <div>
+   682→                <p className="mono text-[9px] font-bold text-accent mb-1">{t.ctaTitle}</p>
+   683→                <p className="mono text-[8px] text-text/40">{t.ctaDesc}</p>
+   684→              </div>
+   685→              <a href="https://wprotalents.lat" target="_blank" rel="noopener noreferrer"
+   686→                className="mono text-[9px] font-bold bg-accent text-black px-5 py-2.5 hover:opacity-90 transition-opacity whitespace-nowrap flex items-center gap-2 shrink-0">
+   687→                {t.ctaBtn} <ChevronRight size={12} />
+   688→              </a>
+   689→            </div>
+   690→          </motion.div>
+   691→        )}
+   692→      </AnimatePresence>
+   693→    </div>
+   694→  );
+   695→}
+   696→
