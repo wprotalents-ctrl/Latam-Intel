@@ -143,7 +143,9 @@ create table if not exists public.subscribers (
   utm_source       text,
   utm_medium       text,
   subscribed_at    timestamptz not null default now(),
-  unsubscribed_at  timestamptz
+  unsubscribed_at  timestamptz,
+  premium_until    timestamptz,
+  updated_at       timestamptz default now()
 );
 
 alter table public.subscribers enable row level security;

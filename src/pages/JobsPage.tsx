@@ -400,10 +400,9 @@ function MarketValueTeaser({ lang = 'EN', isLoggedIn = false }: { lang?: string;
   const [shown, setShown] = useState(false);
   // Email gate — auto-unlock for logged-in users
   const [email, setEmail] = useState('');
-  const [captured, setCaptured] = useState(() => isLoggedIn);
+  const [emailConsent, setEmailConsent] = useState(false);
+  const [captured, setCaptured] = useState(false);
   const [capturing, setCapturing] = useState(false);
-  // If user logs in while component is mounted, unlock immediately
-  React.useEffect(() => { if (isLoggedIn) setCaptured(true); }, [isLoggedIn]);
 
   const ROLE_OPTS: Record<string, { value: RoleKey; label: string }[]> = {
     EN: [
@@ -449,15 +448,16 @@ function MarketValueTeaser({ lang = 'EN', isLoggedIn = false }: { lang?: string;
     if (!email || capturing) return;
     setCapturing(true);
     try {
-      // await Promise.allSettled([
-      //   fetch('https://leads.wprotalents.lat/', {
-      //     method: 'POST',
-      //     headers: { 'Content-Type': 'application/json' },
-      //     body: JSON.stringify({ email, role, country, yearsExp, source: 'market-value-teaser' }),
-      //   }),
-      // ]);
-    } finally {
+      const res = await fetch('/api/subscribe-newsletter', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, role, country, yearsExp, source: 'market-value-teaser' }),
+      });
+      if (!res.ok) throw new Error('Failed');
       setCaptured(true);
+    } catch {
+      setCapturing(false); // Show retry state
+    } finally {
       setCapturing(false);
     }
   }

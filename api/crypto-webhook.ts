@@ -3,6 +3,27 @@ import type { VercelRequest, VercelResponse } from "@vercel/node";
 import crypto from "crypto";
 import { db, admin } from "./_lib/firebase.js";
 
+async function updateSupabaseSubscriber(email: string, isPremium: boolean, premiumUntil?: string) {
+  const supabaseUrl = process.env.SUPABASE_URL;
+  const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!supabaseUrl || !supabaseKey || !email) return;
+  try {
+    const { createClient } = await import("@supabase/supabase-js");
+    const sb = createClient(supabaseUrl, supabaseKey);
+    await sb.from("subscribers").upsert(
+      {
+        email: email.toLowerCase().trim(),
+        is_premium: isPremium,
+        premium_until: premiumUntil || null,
+        updated_at: new Date().toISOString(),
+      },
+      { onConflict: "email" }
+    );
+  } catch (e: any) {
+    console.warn("[crypto-webhook] Supabase update error:", e.message);
+  }
+}
+
 export const config = { maxDuration: 15 };
 
 function verifySignature(rawBody: string, signature: string, secret: string): boolean {
@@ -31,38 +52,42 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   if (type === "charge:confirmed" || type === "charge:resolved") {
     const { userId, userEmail } = charge.metadata || {};
-    if (!userId) return res.status(400).json({ error: "No userId in metadata" });
-
     const now = new Date();
     const executiveUntil = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000); // +30 days
 
-    // Grant executive access in Firestore
-    await db.collection("users").doc(userId).set({
-      executiveUntil: admin.firestore.Timestamp.fromDate(executiveUntil),
-      executiveSince: admin.firestore.Timestamp.fromDate(now),
-      executiveEmail: userEmail || "",
-      updatedAt: admin.firestore.FieldValue.serverTimestamp(),
-    }, { merge: true });
+    // Write to Supabase subscribers table
+    await updateSupabaseSubscriber(userEmail || "", true, executiveUntil.toISOString());
 
-    // Update payment record
-    const paymentsSnap = await db.collection("users").doc(userId)
-      .collection("payments")
-      .where("chargeId", "==", charge.id)
-      .limit(1).get();
+    // Also update Firestore for backwards compat
+    if (userId) {
+      await db.collection("users").doc(userId).set({
+        executiveUntil: admin.firestore.Timestamp.fromDate(executiveUntil),
+        executiveSince: admin.firestore.Timestamp.fromDate(now),
+        executiveEmail: userEmail || "",
+        updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+      }, { merge: true });
 
-    if (!paymentsSnap.empty) {
-      await paymentsSnap.docs[0].ref.update({
-        status: "confirmed",
-        confirmedAt: now.toISOString(),
-        executiveUntil: executiveUntil.toISOString(),
-      });
+      // Update payment record
+      const paymentsSnap = await db.collection("users").doc(userId)
+        .collection("payments")
+        .where("chargeId", "==", charge.id)
+        .limit(1).get();
+
+      if (!paymentsSnap.empty) {
+        await paymentsSnap.docs[0].ref.update({
+          status: "confirmed",
+          confirmedAt: now.toISOString(),
+          executiveUntil: executiveUntil.toISOString(),
+        });
+      }
     }
 
-    console.log(`✅ Executive access granted to ${userId} until ${executiveUntil.toISOString()}`);
+    console.log(`Executive access granted to ${userEmail || userId} until ${executiveUntil.toISOString()}`);
   }
 
   if (type === "charge:failed") {
-    const { userId } = charge.metadata || {};
+    const { userId, userEmail } = charge.metadata || {};
+    await updateSupabaseSubscriber(userEmail || "", false);
     if (userId) {
       const paymentsSnap = await db.collection("users").doc(userId)
         .collection("payments")

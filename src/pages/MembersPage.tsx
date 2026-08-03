@@ -14,7 +14,6 @@ import ClientInsightsCard from '../components/ClientInsightsCard';
 import { generateHiringPlan, type HiringPlan } from '../lib/hiringPlan';
 import { estimateNetworkReach, type NetworkReach } from '../lib/networkReach';
 import type { MemberResource } from '../lib/supabase';
-import type { User } from 'firebase/auth';
 
 // @ts-ignore
 
@@ -116,133 +115,145 @@ interface AccessTabProps {
   lang: 'EN' | 'ES' | 'PT';
 }
 
-function AccessTab({ user, executiveUntil, lang }: AccessTabProps) {
+function AccessTab({ isPremium, lang }: { isPremium: boolean; lang: 'EN' | 'ES' | 'PT' }) {
+  const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
   const T = {
     EN: {
       active: 'Executive Access — Active',
-      expires: 'Expires',
-      daysLeft: 'days remaining',
-      renew: 'Renew for another 30 days — $29 USDC',
       noAccess: 'No active subscription',
-      payNow: 'Get Executive Access — $29 USDC',
-      payDesc: 'Pay once in crypto. Get 30 days of full Executive access — salary data, AI tools, and market intelligence.',
-      accepted: 'Accepted: USDC · USDT · ETH · BTC · DAI',
+      payCard: 'Pay with Card — $29/mo',
+      payCrypto: 'Pay with Crypto — $29',
+      payDesc: 'Full Executive access — salary data, AI tools, market intelligence, and WPro network priority.',
+      emailPlaceholder: 'Enter your email for the receipt',
+      accepted: 'Also accepted: USDC · USDT · ETH · BTC · DAI',
       connecting: 'Opening payment...',
       how: 'How it works',
-      step1: 'Click the button — a secure Coinbase Commerce page opens.',
-      step2: 'Pay $29 in any stablecoin or crypto.',
-      step3: 'Access activates automatically within seconds of confirmation.',
-      noStripe: 'No Stripe. No card. No subscription traps.',
-      history: 'Payment History',
-      pending: 'pending',
-      confirmed: 'confirmed',
+      step1: 'Click the button — a secure payment page opens.',
+      step2: 'Pay $29. Access activates automatically within seconds.',
+      step3: 'Return here — all premium content is unlocked.',
     },
     ES: {
       active: 'Acceso Ejecutivo — Activo',
-      expires: 'Vence el',
-      daysLeft: 'días restantes',
-      renew: 'Renovar 30 días más — $29 USDC',
       noAccess: 'Sin suscripción activa',
-      payNow: 'Obtener Acceso Ejecutivo — $29 USDC',
-      payDesc: 'Pago único en cripto. 30 días de acceso completo — datos salariales, herramientas IA e inteligencia de mercado.',
-      accepted: 'Aceptamos: USDC · USDT · ETH · BTC · DAI',
+      payCard: 'Pagar con Tarjeta — $29/mes',
+      payCrypto: 'Pagar con Cripto — $29',
+      payDesc: 'Acceso ejecutivo completo — datos salariales, herramientas IA e inteligencia de mercado.',
+      emailPlaceholder: 'Tu email para el recibo',
+      accepted: 'También aceptamos: USDC · USDT · ETH · BTC · DAI',
       connecting: 'Abriendo pago...',
       how: 'Cómo funciona',
-      step1: 'Haz clic — se abre una página segura de Coinbase Commerce.',
-      step2: 'Paga $29 en cualquier stablecoin o cripto.',
-      step3: 'El acceso se activa automáticamente en segundos.',
-      noStripe: 'Sin Stripe. Sin tarjeta. Sin trampas de suscripción.',
-      history: 'Historial de Pagos',
-      pending: 'pendiente',
-      confirmed: 'confirmado',
+      step1: 'Haz clic — se abre una página de pago segura.',
+      step2: 'Paga $29. El acceso se activa automáticamente.',
+      step3: 'Vuelve aquí — todo el contenido premium está desbloqueado.',
     },
     PT: {
       active: 'Acesso Executivo — Ativo',
-      expires: 'Expira em',
-      daysLeft: 'dias restantes',
-      renew: 'Renovar por mais 30 dias — $29 USDC',
       noAccess: 'Sem assinatura ativa',
-      payNow: 'Obter Acesso Executivo — $29 USDC',
-      payDesc: 'Pagamento único em cripto. 30 dias de acesso completo — dados salariais, ferramentas de IA e inteligência de mercado.',
-      accepted: 'Aceitos: USDC · USDT · ETH · BTC · DAI',
+      payCard: 'Pagar com Cartão — $29/mês',
+      payCrypto: 'Pagar com Cripto — $29',
+      payDesc: 'Acesso executivo completo — dados salariais, ferramentas IA e inteligência de mercado.',
+      emailPlaceholder: 'Seu email para o recibo',
+      accepted: 'Também aceitos: USDC · USDT · ETH · BTC · DAI',
       connecting: 'Abrindo pagamento...',
       how: 'Como funciona',
-      step1: 'Clique no botão — abre uma página segura do Coinbase Commerce.',
-      step2: 'Pague $29 em qualquer stablecoin ou cripto.',
-      step3: 'O acesso é ativado automaticamente em segundos após a confirmação.',
-      noStripe: 'Sem Stripe. Sem cartão. Sem armadilhas de assinatura.',
-      history: 'Histórico de Pagamentos',
-      pending: 'pendente',
-      confirmed: 'confirmado',
+      step1: 'Clique — abre uma página de pagamento segura.',
+      step2: 'Pague $29. O acesso é ativado automaticamente.',
+      step3: 'Volte aqui — todo o conteúdo premium está desbloqueado.',
     },
   };
   const t = T[lang];
 
-  const daysLeft = executiveUntil
-    ? Math.max(0, Math.ceil((executiveUntil.getTime() - Date.now()) / 86400000))
-    : 0;
+  const handleCardPay = async () => {
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      setError(lang === 'ES' ? 'Ingresa un email válido' : lang === 'PT' ? 'Insira um email válido' : 'Enter a valid email');
+      return;
+    }
+    setLoading(true); setError('');
+    try {
+      const res = await fetch('/api/create-checkout-session', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId: email, customerEmail: email }),
+      });
+      const data = await res.json();
+      if (data.url) window.location.href = data.url;
+      else setError(data.error || 'Payment creation failed.');
+    } catch {
+      setError('Network error.');
+    } finally { setLoading(false); }
+  };
 
-  const handlePay = async () => {
+  const handleCryptoPay = async () => {
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      setError(lang === 'ES' ? 'Ingresa un email válido' : lang === 'PT' ? 'Insira um email válido' : 'Enter a valid email');
+      return;
+    }
     setLoading(true); setError('');
     try {
       const res = await fetch('/api/create-crypto-charge', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId: user.uid, userEmail: user.email }),
+        body: JSON.stringify({ userId: email, userEmail: email }),
       });
       const data = await res.json();
       if (data.url) window.location.href = data.url;
-      else setError(data.error || 'Payment creation failed. Try again.');
+      else setError(data.error || 'Payment creation failed.');
     } catch {
-      setError('Network error. Please try again.');
-    } finally {
-      setLoading(false);
-    }
+      setError('Network error.');
+    } finally { setLoading(false); }
   };
 
   return (
     <div className="space-y-8 max-w-2xl">
       {/* Status card */}
-      <div className={`border p-6 ${executiveUntil ? 'border-accent/40 bg-accent/5' : 'border-border bg-surface/30'}`}>
+      <div className={`border p-6 ${isPremium ? 'border-accent/40 bg-accent/5' : 'border-border bg-surface/30'}`}>
         <div className="flex items-center gap-3 mb-4">
-          <div className={`w-2 h-2 rounded-full ${executiveUntil ? 'bg-accent' : 'bg-text/20'}`} />
+          <div className={`w-2 h-2 rounded-full ${isPremium ? 'bg-accent' : 'bg-text/20'}`} />
           <span className="mono text-[10px] font-bold tracking-widest uppercase">
-            {executiveUntil ? t.active : t.noAccess}
+            {isPremium ? t.active : t.noAccess}
           </span>
         </div>
-        {executiveUntil && (
-          <div className="space-y-2">
-            <div className="flex items-baseline gap-2">
-              <span className="text-4xl font-black text-accent">{daysLeft}</span>
-              <span className="text-text/50 mono text-[10px]">{t.daysLeft}</span>
-            </div>
-            <p className="mono text-[9px] text-text/40">
-              {t.expires} {executiveUntil.toLocaleDateString(lang === 'EN' ? 'en-US' : lang === 'ES' ? 'es-CO' : 'pt-BR', { day: 'numeric', month: 'long', year: 'numeric' })}
-            </p>
-            {/* Days bar */}
-            <div className="mt-3 h-1 bg-border">
-              <div className="h-1 bg-accent transition-all" style={{ width: `${Math.min(100, (daysLeft / 30) * 100)}%` }} />
-            </div>
-          </div>
-        )}
       </div>
 
-      {/* Pay button */}
-      <div>
-        <button
-          onClick={handlePay}
-          disabled={loading}
-          className="w-full py-4 bg-accent text-black font-black hover:opacity-90 transition flex items-center justify-center gap-3 disabled:opacity-50 mono text-[11px] tracking-widest"
-        >
-          <Coins size={18} />
-          {loading ? t.connecting : (executiveUntil ? t.renew : t.payNow)}
-        </button>
-        <p className="mono text-[8px] text-text/30 text-center mt-2">{t.accepted}</p>
-        {error && <p className="mono text-[9px] text-red-400 text-center mt-2">{error}</p>}
-      </div>
+      {!isPremium && (
+        <>
+          {/* Email input */}
+          <div>
+            <input
+              type="email"
+              placeholder={t.emailPlaceholder}
+              value={email}
+              onChange={e => setEmail(e.target.value)}
+              className="w-full bg-bg border border-border px-4 py-3 mono text-[11px] text-text placeholder-text-dim focus:outline-none focus:border-accent/50 transition-colors"
+            />
+            {error && <p className="mono text-[9px] text-red-400 mt-2">{error}</p>}
+          </div>
+
+          {/* Pay buttons */}
+          <div className="space-y-3">
+            <button
+              onClick={handleCardPay}
+              disabled={loading}
+              className="w-full py-4 bg-accent text-black font-black hover:opacity-90 transition flex items-center justify-center gap-3 disabled:opacity-50 mono text-[11px] tracking-widest"
+            >
+              <Crown size={18} />
+              {loading ? t.connecting : t.payCard}
+            </button>
+            <button
+              onClick={handleCryptoPay}
+              disabled={loading}
+              className="w-full py-3 bg-surface border border-border text-text font-bold hover:border-accent/40 transition flex items-center justify-center gap-3 disabled:opacity-50 mono text-[10px]"
+            >
+              <Coins size={16} />
+              {t.payCrypto}
+            </button>
+            <p className="mono text-[8px] text-text/30 text-center">{t.accepted}</p>
+          </div>
+        </>
+      )}
 
       {/* Live crypto prices */}
       <CryptoTicker lang={lang} />
@@ -258,8 +269,8 @@ function AccessTab({ user, executiveUntil, lang }: AccessTabProps) {
             </div>
           ))}
         </div>
-        <p className="mono text-[8px] text-text/25 mt-4 pt-4 border-t border-border">{t.noStripe}</p>
       </div>
+
     </div>
   );
 }
@@ -555,14 +566,40 @@ export default function MembersPage() {
     const saved = localStorage.getItem('wpro_lang');
     return (saved === 'EN' || saved === 'ES' || saved === 'PT') ? saved as any : 'EN';
   });
-  
-  // Create fake user object so component thinks you're logged in
-  const user: any = {
-    uid: 'public-user',
-    email: 'public@latam-intel.app',
-    displayName: 'Member',
-    photoURL: null,
-  };
+
+  // Premium verification
+  const [isPremium, setIsPremium] = useState(false);
+  const [verifyLoading, setVerifyLoading] = useState(true);
+
+  useEffect(() => {
+    // Check localStorage cache first
+    const premiumUntil = localStorage.getItem('wpro_premium_until');
+    if (premiumUntil && new Date(premiumUntil) > new Date()) {
+      setIsPremium(true);
+      setVerifyLoading(false);
+      return;
+    }
+
+    // Check URL params from payment redirect
+    const params = new URLSearchParams(window.location.search);
+    const emailParam = params.get('email');
+
+    if (emailParam) {
+      // Verify against the API
+      fetch(`/api/members/verify?email=${encodeURIComponent(emailParam)}`)
+        .then(r => r.json())
+        .then(data => {
+          if (data.isPremium) {
+            setIsPremium(true);
+            localStorage.setItem('wpro_premium_until', data.premiumUntil);
+          }
+        })
+        .catch(() => {})
+        .finally(() => setVerifyLoading(false));
+    } else {
+      setVerifyLoading(false);
+    }
+  }, []);
 
   const [activeTab, setActiveTab] = useState<Tab>('intel');
   const [dataLoading, setDataLoading] = useState(false);
@@ -571,7 +608,6 @@ export default function MembersPage() {
   const [networkReach, setNetworkReach] = useState<NetworkReach | null>(null);
   const [lastFormData, setLastFormData] = useState<ClientJobPostData | null>(null);
   const [insightsLoading, setInsightsLoading] = useState(false);
-  const [executiveUntil] = useState(new Date('2099-12-31'));
 
   // Load resources
   useEffect(() => {
@@ -688,8 +724,8 @@ export default function MembersPage() {
             </div>
           </div>
           <div className="flex items-center gap-3">
-            <div className="px-2 py-1 bg-accent/10 border border-accent/20 mono text-[9px] text-accent font-bold">
-              PUBLIC ACCESS
+            <div className={`px-2 py-1 mono text-[9px] font-bold ${isPremium ? 'bg-accent/10 border border-accent/20 text-accent' : 'bg-surface border border-border text-text/50'}`}>
+              {isPremium ? 'EXECUTIVE' : 'FREE'}
             </div>
           </div>
         </div>
@@ -699,7 +735,7 @@ export default function MembersPage() {
         {/* Welcome */}
         <div className="mb-8">
           <h1 className="text-3xl font-black tracking-tighter uppercase mb-1">
-            {ms.welcomeBack}, {user.displayName}
+            {ms.welcomeBack}
           </h1>
           <p className="text-text/50 text-sm">
             {ms.hubDesc}
@@ -754,36 +790,49 @@ export default function MembersPage() {
                   </div>
                 )}
                 {activeTab === 'access' && (
-                  <div className="p-6 bg-surface border border-border">
-                    <h3 className="text-lg font-bold mb-4">Free Beta Access</h3>
-                    <p className="text-text/60 mb-4">You have full access to all features during the beta period at no cost.</p>
-                    <div className="bg-accent/10 border border-accent/20 p-4 mb-4">
-                      <p className="mono text-[10px] text-accent">
-                        Access type: <span className="font-bold">FOUNDING MEMBER (FREE)</span>
-                      </p>
-                      <p className="mono text-[10px] text-text/40 mt-2">
-                        Special pricing when beta ends will be reserved for founding members.
-                      </p>
-                    </div>
-                  </div>
+                  <AccessTab isPremium={isPremium} lang={lang} />
                 )}
                 {activeTab === 'salary' && (
-                  <div>
-                    <div className="mb-6">
-                      <h2 className="text-xl font-black uppercase tracking-tighter mb-1">LATAM Salary Intelligence</h2>
-                      <p className="text-sm text-text/50">AI & tech roles, 5 countries. Updated Q1 2026.</p>
+                  isPremium ? (
+                    <div>
+                      <div className="mb-6">
+                        <h2 className="text-xl font-black uppercase tracking-tighter mb-1">LATAM Salary Intelligence</h2>
+                        <p className="text-sm text-text/50">AI & tech roles, 5 countries. Updated Q1 2026.</p>
+                      </div>
+                      <SalaryTable />
                     </div>
-                    <SalaryTable />
-                  </div>
+                  ) : (
+                    <div className="flex flex-col items-center justify-center py-24 text-center">
+                      <Lock className="text-accent mb-4" size={48} />
+                      <h3 className="text-xl font-bold mb-2">Salary Data Locked</h3>
+                      <p className="text-text/40 mb-6 max-w-md">Full salary benchmarks for 40+ roles across 5 LATAM countries are exclusive to Executive members.</p>
+                      <button
+                        onClick={() => setActiveTab('access')}
+                        className="px-8 py-3 bg-accent text-black font-bold rounded-lg mono text-[10px] hover:opacity-90 transition-opacity"
+                      >Upgrade to Unlock</button>
+                    </div>
+                  )
                 )}
                 {activeTab === 'resources' && (
-                  <div>
-                    <div className="mb-6">
-                      <h2 className="text-xl font-black uppercase tracking-tighter mb-1">WPro Resources</h2>
-                      <p className="text-sm text-text/50">Playbooks, templates, and tools — built from 20 years of LATAM recruiting.</p>
+                  isPremium ? (
+                    <div>
+                      <div className="mb-6">
+                        <h2 className="text-xl font-black uppercase tracking-tighter mb-1">WPro Resources</h2>
+                        <p className="text-sm text-text/50">Playbooks, templates, and tools — built from 20 years of LATAM recruiting.</p>
+                      </div>
+                      <ResourcesGrid resources={resources} />
                     </div>
-                    <ResourcesGrid resources={resources} />
-                  </div>
+                  ) : (
+                    <div className="flex flex-col items-center justify-center py-24 text-center">
+                      <Lock className="text-accent mb-4" size={48} />
+                      <h3 className="text-xl font-bold mb-2">Resources Locked</h3>
+                      <p className="text-text/40 mb-6 max-w-md">Playbooks, templates, and AI tools are exclusive to Executive members.</p>
+                      <button
+                        onClick={() => setActiveTab('access')}
+                        className="px-8 py-3 bg-accent text-black font-bold rounded-lg mono text-[10px] hover:opacity-90 transition-opacity"
+                      >Upgrade to Unlock</button>
+                    </div>
+                  )
                 )}
                 {activeTab === 'wpro' && (
                   <div>
