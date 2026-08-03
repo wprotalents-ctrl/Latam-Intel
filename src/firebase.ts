@@ -14,17 +14,12 @@ const app = initializeApp(firebaseConfig);
 export const db = getFirestore(app);
 export { doc, getDoc, setDoc, onSnapshot, collection, query, orderBy, limit, serverTimestamp };
 
-// Auth no-ops — app is now public
-export const auth = null;
-export const onAuthStateChanged = () => () => {};
-export const signOut = async () => {};
-export const GoogleAuthProvider = class {};
-export const signInWithPopup = async () => ({ user: null });
+
 
 export const handleFirestoreError = (error: any, operation: string, path: string) => {
   console.error(`Firestore ${operation} error at ${path}:`, error);
 };
 
 export enum FirestoreOperation {
-  GET = 'GET', SET = 'SET', UPDATE = 'UPDATE', DELETE = 'DELETE',
+  GET = 'GET', SET = 'SET', UPDATE = 'UPDATE', DELETE = 'DELETE', WRITE = 'WRITE', LIST = 'LIST',
 }

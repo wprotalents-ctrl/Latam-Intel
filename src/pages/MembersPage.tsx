@@ -109,12 +109,6 @@ function CryptoTicker({ lang = 'EN' }: { lang?: string }) {
   );
 }
 
-interface AccessTabProps {
-  user: User;
-  executiveUntil: Date | null;
-  lang: 'EN' | 'ES' | 'PT';
-}
-
 function AccessTab({ isPremium, lang }: { isPremium: boolean; lang: 'EN' | 'ES' | 'PT' }) {
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
@@ -411,7 +405,25 @@ function SalaryTable() {
 }
 
 // ─── WPro CTA ─────────────────────────────────────────────────────────────────
-function WProCTA() {
+function WProCTA({ lang }: { lang: 'EN' | 'ES' | 'PT' }) {
+  const ms = {
+    EN: {
+      hireFast: 'Hire LATAM Tech Talent — Fast',
+      hireDesc: '23,000+ verified AI & tech professionals. Senior roles filled in 21 days or less. US & EU companies only. Founder-led.',
+      statLabels: ['Time to hire', 'Verified talent', 'Offer acceptance', 'Cost vs US hiring'],
+    },
+    ES: {
+      hireFast: 'Contratar Talento Tech LATAM — Rápido',
+      hireDesc: '23.000+ professionles de IA y tech verificados. Vacantes senior cubiertas en 21 días o menos. Solo empresas USA y UE. Liderado por fundador.',
+      statLabels: ['Tiempo para contratar', 'Profesionales verificados', 'Aceptación de oferta', 'Costo vs contratación USA'],
+    },
+    PT: {
+      hireFast: 'Contratar Talento Tech LATAM — Rápido',
+      hireDesc: '23.000+ profissionais de IA e tech verificados. Vagas sênior preenchidas em 21 dias ou menos. Apenas empresas dos EUA e UE. Liderado pelo fundador.',
+      statLabels: ['Tempo para contratar', 'Profissionais verificados', 'Aceitação de oferta', 'Custo vs contratação nos EUA'],
+    },
+  }[lang];
+
   return (
     <div className="space-y-6">
 
@@ -612,12 +624,12 @@ export default function MembersPage() {
   // Load resources
   useEffect(() => {
     const mockResources: MemberResource[] = [
-      { id: '1', title: 'LATAM Salary Benchmarks', category: 'Salary Data', url: '/', description: 'Complete salary data for 40+ roles across 5 countries' },
-      { id: '2', title: 'Remote Salary Calculator', category: 'Salary Data', url: '/', description: 'Compare USD vs local currency compensation' },
-      { id: '3', title: 'AI Skills Roadmap 2026', category: 'Playbooks', url: '/', description: 'What to learn to 10x your market value in AI/ML' },
-      { id: '4', title: 'LATAM Recruitment Playbook', category: 'Playbooks', url: '/', description: '20 years of WProTalents founder recruiting strategy' },
-      { id: '5', title: 'Job Description Template', category: 'Templates', url: '/', description: 'Write JDs that attract top tier talent' },
-      { id: '6', title: 'Offer Letter Template', category: 'Templates', url: '/', description: 'Market-rate offer templates (USD + local)' },
+      { id: '1', title: 'LATAM Salary Benchmarks', category: 'Salary Data' as const, description: 'Complete salary data for 40+ roles across 5 countries', file_url: null, external_url: null, is_active: true, sort_order: 1, created_at: new Date().toISOString() },
+      { id: '2', title: 'Remote Salary Calculator', category: 'Salary Data' as const, description: 'Compare USD vs local currency compensation', file_url: null, external_url: null, is_active: true, sort_order: 2, created_at: new Date().toISOString() },
+      { id: '3', title: 'AI Skills Roadmap 2026', category: 'Playbooks' as const, description: 'What to learn to 10x your market value in AI/ML', file_url: null, external_url: null, is_active: true, sort_order: 3, created_at: new Date().toISOString() },
+      { id: '4', title: 'LATAM Recruitment Playbook', category: 'Playbooks' as const, description: '20 years of WProTalents founder recruiting strategy', file_url: null, external_url: null, is_active: true, sort_order: 4, created_at: new Date().toISOString() },
+      { id: '5', title: 'Job Description Template', category: 'Templates' as const, description: 'Write JDs that attract top tier talent', file_url: null, external_url: null, is_active: true, sort_order: 5, created_at: new Date().toISOString() },
+      { id: '6', title: 'Offer Letter Template', category: 'Templates' as const, description: 'Market-rate offer templates (USD + local)', file_url: null, external_url: null, is_active: true, sort_order: 6, created_at: new Date().toISOString() },
     ];
     setResources(mockResources);
   }, []);
@@ -874,7 +886,7 @@ export default function MembersPage() {
                       )}
                     </div>
 
-                    <WProCTA />
+                    <WProCTA lang={lang} />
                   </div>
                 )}
               </>

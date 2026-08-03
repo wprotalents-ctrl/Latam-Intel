@@ -51,10 +51,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const results: Record<string, any> = {};
     for (const [lang, content] of Object.entries(body)) {
       try {
-        const subject = content.subject || issue.subject_line;
+        const c = content as { subject?: string; body: string };
+        const subject = c.subject || issue.subject_line;
         const post = await beehiivCreatePost({
           title: `${subject} [${lang.toUpperCase()}]`,
-          content: content.body,
+          content: c.body,
           preview_text: issue.preview_text,
           status: 'published',
         });
@@ -63,9 +64,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         // Update the Beehiiv post ID on the issue
         if (post?.id && lang === 'en') {
           await sb.from('newsletter_issues').update(
-            { beehiiv_post_id: post.id },
-            { id: issue.id }
-          );
+            { beehiiv_post_id: post.id as string }
+          ).eq('id', issue.id);
         }
       } catch (e: any) {
         results[lang] = { success: false, error: e.message };
