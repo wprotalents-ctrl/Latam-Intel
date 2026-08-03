@@ -60,6 +60,15 @@ import RadarDetailsPage from './components/RadarDetailsPage';
 import { type HiringPlan } from './lib/hiringPlan';
 import { type NetworkReach } from './lib/networkReach';
 
+const COMPANY_RESOURCES = [
+  { tag: 'TALENT STRATEGY', color: 'text-violet-400', title: 'How to Build a High-Performance Distributed Team in LATAM', desc: 'Hiring frameworks, onboarding, and culture for remote-first tech companies.', url: 'https://hbr.org/topic/subject/hiring', source: 'Harvard Business Review' },
+  { tag: 'AI & HIRING', color: 'text-accent', title: 'How AI Is Transforming Talent Acquisition in 2026', desc: 'From sourcing automation to AI-assisted screening — what actually works.', url: 'https://www.linkedin.com/business/talent/blog', source: 'LinkedIn Talent Blog' },
+  { tag: 'MARKET DATA', color: 'text-emerald-400', title: 'LATAM Salary Benchmarks for Tech Roles — 2026 Report', desc: 'Up-to-date compensation data across Colombia, Brazil, Argentina, and Mexico.', url: 'https://www.levels.fyi', source: 'Levels.fyi' },
+  { tag: 'RETENTION', color: 'text-blue-400', title: 'Why Senior Engineers Leave — And How to Keep Them', desc: 'The real reasons your best people walk, and what actually retains top talent.', url: 'https://hbr.org/topic/subject/managing-people', source: 'HBR' },
+  { tag: 'JOB DESCRIPTIONS', color: 'text-yellow-400', title: 'How to Write Job Descriptions That Attract Senior Talent', desc: "Most JDs repel the best candidates. Here's what top companies do differently.", url: 'https://www.linkedin.com/business/talent/blog/talent-acquisition/how-to-write-a-job-description', source: 'LinkedIn Talent' },
+  { tag: 'REMOTE TEAMS', color: 'text-violet-400', title: 'Managing Across Time Zones: A Playbook for LATAM Remote Teams', desc: 'Async communication, performance reviews, and trust-building across cultures.', url: 'https://www.mckinsey.com/capabilities/people-and-organizational-performance/our-insights', source: 'McKinsey' },
+];
+
 const TRANSLATIONS = {
   EN: {
     dashboard: "Dashboard",
@@ -903,7 +912,173 @@ export default function App() {
               exit={{ opacity: 0 }}
               className="absolute inset-0 overflow-y-auto"
             >
-              <div className="grid grid-cols-12 gap-px bg-border min-h-full">
+              {portalType === 'company' ? (
+                /* ═══ COMPANY PORTAL ═══ */
+                <div className="max-w-7xl mx-auto p-6 md:p-8 space-y-6">
+                  {/* Company Tab Navigation */}
+                  <div className="flex items-center gap-2 border-b border-border pb-3">
+                    {([['intel', t.clientTabIntel], ['post', t.clientTabPost], ['radar', 'WPro CV Radar']] as const).map(([tab, label]) => (
+                      <button
+                        key={tab}
+                        onClick={() => setCompanyTab(tab as any)}
+                        className={`px-4 py-2 mono text-[10px] font-bold transition-all duration-200 flex items-center gap-2 rounded-t-md border-b-2 ${companyTab === tab ? 'text-accent border-accent bg-accent/5' : 'text-text-muted border-transparent hover:text-text hover:bg-surface'}`}
+                      >
+                        {label}
+                      </button>
+                    ))}
+                  </div>
+
+                  {/* Tab: Market Intelligence */}
+                  {companyTab === 'intel' && (
+                    <div className="space-y-6">
+                      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        {/* Market Intel Brief */}
+                        {marketIntelData.brief ? (
+                          <div className="bg-surface border border-accent/20 p-6 relative overflow-hidden">
+                            <div className="absolute top-0 right-0 p-4 opacity-5"><Zap size={48} className="text-accent" /></div>
+                            <div className="mono text-[9px] text-accent font-bold uppercase tracking-widest mb-3 flex items-center gap-2">
+                              <Brain size={10} /> AI Impact Brief
+                            </div>
+                            <p className="text-sm leading-relaxed text-text/80 italic">\"{marketIntelData.brief}\"</p>
+                          </div>
+                        ) : (
+                          <div className="bg-surface border border-border p-6">
+                            <div className="mono text-[9px] text-text/30 font-bold uppercase tracking-widest mb-3 flex items-center gap-2">
+                              <Brain size={10} /> AI Impact Brief
+                            </div>
+                            <p className="text-xs text-text/40 italic">Brief will appear once GEMINI_API_KEY is configured in Vercel env vars.</p>
+                          </div>
+                        )}
+
+                        {/* Live News */}
+                        <div className="bg-surface border border-border p-6">
+                          <div className="mono text-[9px] text-accent font-bold uppercase tracking-widest mb-4 flex items-center gap-2">
+                            <Newspaper size={10} /> {t.todayJobNews}
+                            <span className={`ml-auto text-[7px] px-1.5 py-0.5 border ${marketIntelData.news.length > 0 ? 'border-green-500/30 text-green-500' : 'border-text/10 text-text/20'}`}>
+                              {marketIntelData.news.length > 0 ? '● LIVE' : '○ OFFLINE'}
+                            </span>
+                          </div>
+                          {marketIntelData.news.length > 0 ? (
+                            <div className="space-y-3 max-h-80 overflow-y-auto">
+                              {marketIntelData.news.slice(0, 8).map((item, i) => (
+                                <a key={i} href={item.url} target="_blank" rel="noopener noreferrer" className="group flex items-start gap-3 p-2 hover:bg-bg transition-colors">
+                                  <span className="mono text-[8px] text-accent mt-0.5 shrink-0">{item.source?.slice(0, 12).toUpperCase()}</span>
+                                  <div className="min-w-0">
+                                    <h5 className="text-[11px] font-bold group-hover:text-accent transition-colors line-clamp-2">{item.title}</h5>
+                                    <span className="mono text-[7px] text-text/30">{item.publishedAt ? new Date(item.publishedAt).toLocaleDateString() : ''}</span>
+                                  </div>
+                                  <ArrowUpRight size={10} className="shrink-0 text-text/20 group-hover:text-accent mt-0.5" />
+                                </a>
+                              ))}
+                            </div>
+                          ) : (
+                            <p className="text-xs text-text/40 italic">News feed requires NEWSDATA_API_KEY in Vercel env vars.</p>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Company Intel Panel (skill demand, english levels, EOR tools) */}
+                      <CompanyIntelPanel lang={lang} />
+
+                      {/* Market Charts Row */}
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        {marketIntelData.trends.sectors.length > 0 && (
+                          <div className="bg-surface border border-border p-6">
+                            <div className="mono text-[9px] text-text/40 mb-4 flex items-center gap-2"><TrendingUp size={10} className="text-accent" /> TOP HIRING SECTORS</div>
+                            <div className="h-[200px] w-full"><ResponsiveContainer width="100%" height="100%"><BarChart data={marketIntelData.trends.sectors} layout="vertical"><CartesianGrid strokeDasharray="3 3" stroke="var(--border)" horizontal={false} /><XAxis type="number" hide /><YAxis dataKey="name" type="category" width={80} stroke="var(--text)" fontSize={8} tick={{ fill: 'var(--text)', opacity: 0.4 }} /><Tooltip contentStyle={{ backgroundColor: 'var(--surface)', border: '1px solid var(--border)', fontSize: '10px' }} itemStyle={{ color: 'var(--accent)' }} /><Bar dataKey="count" fill="var(--accent)" radius={[0, 2, 2, 0]} /></BarChart></ResponsiveContainer></div>
+                          </div>
+                        )}
+                        {marketIntelData.volume.length > 0 && (
+                          <div className="bg-surface border border-border p-6">
+                            <div className="mono text-[9px] text-text/40 mb-4 flex items-center gap-2"><Globe size={10} className="text-accent" /> LATAM JOB VOLUME</div>
+                            <div className="h-[200px] w-full"><ResponsiveContainer width="100%" height="100%"><BarChart data={marketIntelData.volume}><CartesianGrid strokeDasharray="3 3" stroke="var(--border)" vertical={false} /><XAxis dataKey="country" stroke="var(--text)" fontSize={8} tick={{ fill: 'var(--text)', opacity: 0.4 }} /><YAxis stroke="var(--text)" fontSize={8} tick={{ fill: 'var(--text)', opacity: 0.4 }} /><Tooltip contentStyle={{ backgroundColor: 'var(--surface)', border: '1px solid var(--border)', fontSize: '10px' }} itemStyle={{ color: 'var(--accent)' }} /><Bar dataKey="count" fill="var(--accent)" radius={[2, 2, 0, 0]} /></BarChart></ResponsiveContainer></div>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* FX Rates */}
+                      <div className="bg-surface border border-border p-6">
+                        <div className="mono text-[9px] text-text/40 mb-4 flex items-center gap-2">
+                          <Activity size={10} className="text-accent" /> {t.fxRates}
+                          {fxDate && <span className="text-[7px] text-text/20 ml-auto">{fxDate}</span>}
+                        </div>
+                        <div className="grid grid-cols-3 md:grid-cols-6 gap-2">
+                          {(fxRates.length > 0 ? fxRates : [
+                            { pair: 'COP/USD', rate: '—', change: '', flag: '🇨🇴' },
+                            { pair: 'BRL/USD', rate: '—', change: '', flag: '🇧🇷' },
+                            { pair: 'ARS/USD', rate: '—', change: '', flag: '🇦🇷' },
+                            { pair: 'MXN/USD', rate: '—', change: '', flag: '🇲🇽' },
+                            { pair: 'CLP/USD', rate: '—', change: '', flag: '🇨🇱' },
+                            { pair: 'PEN/USD', rate: '—', change: '', flag: '🇵🇪' },
+                          ]).map(fx => (
+                            <div key={fx.pair} className="bg-bg border border-border p-3 flex flex-col items-center">
+                              <span className="mono text-[7px] text-text/40 mb-1">{fx.flag} {fx.pair}</span>
+                              <span className="text-sm font-black text-text">{fx.rate}</span>
+                              {fx.change && <span className={`text-[7px] font-mono ${fx.change.startsWith('+') ? 'text-green-500' : 'text-red-500'}`}>{fx.change}</span>}
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Company Resources */}
+                      <div className="bg-surface border border-border p-6">
+                        <div className="mono text-[9px] text-accent font-bold uppercase tracking-widest mb-4 flex items-center gap-2">
+                          <Briefcase size={10} /> {t.clientResourcesTitle}
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                          {COMPANY_RESOURCES.map((a, i) => (
+                            <a key={i} href={a.url} target="_blank" rel="noopener noreferrer"
+                              className="group flex flex-col gap-1.5 p-4 bg-bg border border-border hover:border-accent/30 transition-colors">
+                              <div className="flex items-center justify-between">
+                                <span className={`mono text-[7px] font-bold ${a.color}`}>{a.tag}</span>
+                                <span className="mono text-[7px] text-text/20">{a.source}</span>
+                              </div>
+                              <h5 className="text-xs font-bold leading-snug group-hover:text-accent transition-colors">{a.title}</h5>
+                              <p className="mono text-[9px] text-text/40 leading-snug line-clamp-2">{a.desc}</p>
+                            </a>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Tab: Post a Role */}
+                  {companyTab === 'post' && (
+                    <div className="space-y-6">
+                      <div>
+                        <h3 className="text-lg font-black uppercase tracking-tight mb-1">{t.clientPostTitle}</h3>
+                        <p className="text-xs text-text/50">{t.clientPostSubtitle}</p>
+                      </div>
+                      <ClientJobPostForm
+                        onSubmit={(data) => { setClientFormData(data); setJobPostSaved(true); setTimeout(() => setJobPostSaved(false), 3000); }}
+                      />
+                      {jobPostSaved && (
+                        <div className="p-4 bg-green-500/10 border border-green-500/30 text-green-500 mono text-[10px] flex items-center gap-2">
+                          <CheckCircle2 size={14} /> Role posted successfully — distributed to 23K+ candidates
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  {/* Tab: CV Radar */}
+                  {companyTab === 'radar' && (
+                    <div className="space-y-6">
+                      <div>
+                        <h3 className="text-lg font-black uppercase tracking-tight mb-1">WPro CV Radar</h3>
+                        <p className="text-xs text-text/50">Automated candidate matching for your talent requirements</p>
+                      </div>
+                      <CVRadarDashboard
+                        clientId="demo-client"
+                        lang={lang.toLowerCase() as 'en' | 'es' | 'pt'}
+                        onCreateRadar={() => {}}
+                        onViewRadar={(id) => setSelectedRadarId(id)}
+                      />
+                    </div>
+                  )}
+                </div>
+              ) : (
+                /* ═══ CANDIDATE PORTAL ═══ */
+                <div className="grid grid-cols-12 gap-px bg-border min-h-full">
                 {/* Main content */}
                 <div className="col-span-12 lg:col-span-8 flex flex-col gap-px bg-border">
                   {/* Top Row: Map and Radar */}
@@ -1046,14 +1221,7 @@ export default function App() {
                       <div className="mono text-[9px] text-accent font-bold uppercase tracking-widest">Company Resources // Curated for You</div>
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                      {[
-                        { tag: 'TALENT STRATEGY', color: 'text-violet-400', title: 'How to Build a High-Performance Distributed Team in LATAM', desc: 'Hiring frameworks, onboarding, and culture for remote-first tech companies.', url: 'https://hbr.org/topic/subject/hiring', source: 'Harvard Business Review' },
-                        { tag: 'AI & HIRING', color: 'text-accent', title: 'How AI Is Transforming Talent Acquisition in 2026', desc: 'From sourcing automation to AI-assisted screening — what actually works.', url: 'https://www.linkedin.com/business/talent/blog', source: 'LinkedIn Talent Blog' },
-                        { tag: 'MARKET DATA', color: 'text-emerald-400', title: 'LATAM Salary Benchmarks for Tech Roles — 2026 Report', desc: 'Up-to-date compensation data across Colombia, Brazil, Argentina, and Mexico.', url: 'https://www.levels.fyi', source: 'Levels.fyi' },
-                        { tag: 'RETENTION', color: 'text-blue-400', title: 'Why Senior Engineers Leave — And How to Keep Them', desc: 'The real reasons your best people walk, and what actually retains top talent.', url: 'https://hbr.org/topic/subject/managing-people', source: 'HBR' },
-                        { tag: 'JOB DESCRIPTIONS', color: 'text-yellow-400', title: 'How to Write Job Descriptions That Attract Senior Talent', desc: "Most JDs repel the best candidates. Here's what top companies do differently.", url: 'https://www.linkedin.com/business/talent/blog/talent-acquisition/how-to-write-a-job-description', source: 'LinkedIn Talent' },
-                        { tag: 'REMOTE TEAMS', color: 'text-violet-400', title: 'Managing Across Time Zones: A Playbook for LATAM Remote Teams', desc: 'Async communication, performance reviews, and trust-building across cultures.', url: 'https://www.mckinsey.com/capabilities/people-and-organizational-performance/our-insights', source: 'McKinsey' },
-                      ].map((a, i) => (
+                      {COMPANY_RESOURCES.map((a, i) => (
                         <a key={i} href={a.url} target="_blank" rel="noopener noreferrer"
                           className="group flex flex-col gap-1.5 p-4 bg-surface border border-border hover:border-accent/30 transition-colors">
                           <div className="flex items-center justify-between">
@@ -1069,7 +1237,6 @@ export default function App() {
                       ))}
                     </div>
                   </div>
-                  <div className="flex-1 bg-bg" />
                 </div>
 
                 {/* Sidebar */}
@@ -1258,29 +1425,29 @@ export default function App() {
                     </div>
                   </section>
 
-                  <section className="p-8 bg-bg">
-                    <div className="mono text-[9px] text-accent mb-6 flex items-center gap-2">
+                  <section className="p-6 bg-bg">
+                    <div className="mono text-[9px] text-accent mb-4 flex items-center gap-2">
                       <Linkedin size={10} /> {t.fiveLinks} // CURATED
                     </div>
-                    <div className="space-y-4">
+                    <div className="space-y-3">
                       {t.fiveLinksItems.map((link, i) => (
-                        <a key={i} href={link.url} target="_blank" rel="noopener noreferrer" className="group block border-b border-text/5 pb-4 last:border-0">
+                        <a key={i} href={link.url} target="_blank" rel="noopener noreferrer" className="group block border-b border-text/5 pb-3 last:border-0">
                           <div className="flex justify-between items-start mb-1">
-                            <h5 className="text-sm font-bold group-hover:text-accent transition-colors">{link.title} — {link.source}</h5>
-                            <ArrowUpRight size={14} className="shrink-0 text-text/20 group-hover:text-accent transition-colors" />
+                            <h5 className="text-[11px] font-bold group-hover:text-accent transition-colors leading-snug">{link.title} — {link.source}</h5>
+                            <ArrowUpRight size={12} className="shrink-0 text-text/20 group-hover:text-accent transition-colors mt-0.5" />
                           </div>
-                          <p className="text-xs text-text/60 leading-snug">{link.why}</p>
+                          <p className="text-[10px] text-text/50 leading-snug">{link.why}</p>
                         </a>
                       ))}
                     </div>
                   </section>
 
-                  <section className="p-8 bg-accent text-black flex-1">
-                    <div className="mono text-black/60 mb-4 font-bold text-[9px] tracking-widest">WPRO INTEL // EXECUTIVE</div>
-                    <h4 className="text-2xl font-black uppercase tracking-tighter leading-tight mb-6">
+                  <section className="p-6 bg-accent text-black">
+                    <div className="mono text-black/50 mb-3 font-bold text-[9px] tracking-widest">WPRO INTEL // EXECUTIVE</div>
+                    <h4 className="text-xl font-black uppercase tracking-tighter leading-tight mb-4">
                       {t.unlockFull}
                     </h4>
-                    <div className="space-y-3 mb-6">
+                    <div className="space-y-2.5 mb-5">
                       {t.upgradeFeatures.map((item: string, i: number) => (
                         <div key={i} className="flex items-center gap-2 mono text-[9px] text-black/70">
                           <ChevronRight size={10} className="text-black/50 shrink-0" />
@@ -1290,11 +1457,11 @@ export default function App() {
                     </div>
                     <button
                       onClick={() => window.location.href = '/members'}
-                      className="w-full bg-bg text-accent py-4 mono font-bold text-[10px] hover:opacity-90 transition-opacity flex items-center justify-center gap-2"
+                      className="w-full bg-bg text-accent py-3 mono font-bold text-[10px] hover:opacity-90 transition-opacity flex items-center justify-center gap-2"
                     >
                       <Zap size={13} /> {t.upgradeCta}
                     </button>
-                    <p className="mono text-[8px] text-black/40 mt-3 text-center">{t.cancelAny}</p>
+                    <p className="mono text-[8px] text-black/40 mt-2 text-center">{t.cancelAny}</p>
                   </section>
                 </div>
 
@@ -1314,6 +1481,7 @@ export default function App() {
                   </div>
                 </div>
               </div>
+              )}
             </motion.div>
           )}
 
