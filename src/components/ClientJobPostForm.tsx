@@ -71,7 +71,7 @@ export default function ClientJobPostForm({ onSubmit, loading = false }: Props) 
 
     setSaving(true);
     try {
-      const res = await fetch('/api/save-job-post', {
+      const res = await fetch('/api/submissions?action=job-post', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),

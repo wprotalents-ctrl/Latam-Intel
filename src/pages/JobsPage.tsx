@@ -448,7 +448,7 @@ function MarketValueTeaser({ lang = 'EN', isLoggedIn = false }: { lang?: string;
     if (!email || capturing) return;
     setCapturing(true);
     try {
-      const res = await fetch('/api/subscribe-newsletter', {
+      const res = await fetch('/api/members?action=subscribe', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, role, country, yearsExp, source: 'market-value-teaser' }),

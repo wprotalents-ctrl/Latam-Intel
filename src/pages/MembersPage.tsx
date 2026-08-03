@@ -167,7 +167,7 @@ function AccessTab({ isPremium, lang }: { isPremium: boolean; lang: 'EN' | 'ES' 
     }
     setLoading(true); setError('');
     try {
-      const res = await fetch('/api/create-checkout-session', {
+      const res = await fetch('/api/payments?action=checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ userId: email, customerEmail: email }),
@@ -187,7 +187,7 @@ function AccessTab({ isPremium, lang }: { isPremium: boolean; lang: 'EN' | 'ES' 
     }
     setLoading(true); setError('');
     try {
-      const res = await fetch('/api/create-crypto-charge', {
+      const res = await fetch('/api/payments?action=crypto-charge', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ userId: email, userEmail: email }),
@@ -598,7 +598,7 @@ export default function MembersPage() {
 
     if (emailParam) {
       // Verify against the API
-      fetch(`/api/members/verify?email=${encodeURIComponent(emailParam)}`)
+      fetch(`/api/members?action=verify&email=${encodeURIComponent(emailParam)}`)
         .then(r => r.json())
         .then(data => {
           if (data.isPremium) {
