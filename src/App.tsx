@@ -70,6 +70,18 @@ const TRANSLATIONS = {
     forCompanies: "For Companies",
     marketIntel: "Market Intel",
     tagline: "WProTalents: Strategic Talent Acquisition & AI Market Intelligence",
+    // Candidate portal copy (job seekers)
+    candidateTagline: "Find your next remote role. Know your real market value.",
+    candidateHeroDesc: "Get hired by US and EU companies. Live LATAM salary benchmarks, a 23K+ candidate network, and weekly AI job market briefings — all free.",
+    candidateStatsLine1: "23K+ LATAM candidates in network",
+    candidateStatsLine2: "Live salary benchmarks (local + remote USD)",
+    candidateStatsLine3: "Weekly AI job market briefings",
+    // Company portal copy (hiring managers / HR)
+    companyTagline: "Hire senior LATAM tech. Faster. With real market data.",
+    companyHeroDesc: "Direct access to 23,000+ vetted LATAM professionals. Live salary benchmarks for comp planning, automated candidate matching, and role distribution to matched talent within 48 hours.",
+    companyStatsLine1: "23K+ vetted LATAM professionals",
+    companyStatsLine2: "Live comp benchmarks across 5 countries",
+    companyStatsLine3: "Role-to-candidate match in <48 hours",
     signal: "WPro Signal",
     heroDesc: "Founder-led headhunting. We bypass the open market to connect US and EU firms with 23,000+ global professionals — with unmatched depth in LATAM.",
     viewIntel: "Access Talent Intelligence",
@@ -1170,21 +1182,30 @@ export default function App() {
                       </div>
                     )}
 
-                    {/* Company Resources // Curated Articles */}
+                    {/* Resources // Curated Articles — different per portal */}
                     <div className="bg-bg p-6 border-b border-border">
                       <div className="flex items-center gap-2 mb-5">
                         <Briefcase size={10} className="text-accent" />
-                        <div className="mono text-[9px] text-accent font-bold uppercase tracking-widest">Company Resources // Curated for You</div>
+                        <div className="mono text-[9px] text-accent font-bold uppercase tracking-widest">
+                          {(portalType as string) === 'company' ? 'Company Resources // Curated for You' : 'Career Resources // For Job Seekers'}
+                        </div>
                       </div>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                        {[
+                        {((portalType as string) === 'company' ? [
                           { tag: 'TALENT STRATEGY', color: 'text-violet-400', title: 'How to Build a High-Performance Distributed Team in LATAM', desc: 'Hiring frameworks, onboarding, and culture for remote-first tech companies.', url: 'https://hbr.org/topic/subject/hiring', source: 'Harvard Business Review' },
                           { tag: 'AI & HIRING', color: 'text-accent', title: 'How AI Is Transforming Talent Acquisition in 2026', desc: 'From sourcing automation to AI-assisted screening — what actually works.', url: 'https://www.linkedin.com/business/talent/blog', source: 'LinkedIn Talent Blog' },
                           { tag: 'MARKET DATA', color: 'text-emerald-400', title: 'LATAM Salary Benchmarks for Tech Roles — 2026 Report', desc: 'Up-to-date compensation data across Colombia, Brazil, Argentina, and Mexico.', url: 'https://www.levels.fyi', source: 'Levels.fyi' },
                           { tag: 'RETENTION', color: 'text-blue-400', title: 'Why Senior Engineers Leave — And How to Keep Them', desc: 'The real reasons your best people walk, and what actually retains top talent.', url: 'https://hbr.org/topic/subject/managing-people', source: 'HBR' },
                           { tag: 'JOB DESCRIPTIONS', color: 'text-yellow-400', title: 'How to Write Job Descriptions That Attract Senior Talent', desc: 'Most JDs repel the best candidates. Here\'s what top companies do differently.', url: 'https://www.linkedin.com/business/talent/blog/talent-acquisition/how-to-write-a-job-description', source: 'LinkedIn Talent' },
                           { tag: 'REMOTE TEAMS', color: 'text-violet-400', title: 'Managing Across Time Zones: A Playbook for LATAM Remote Teams', desc: 'Async communication, performance reviews, and trust-building across cultures.', url: 'https://www.mckinsey.com/capabilities/people-and-organizational-performance/our-insights', source: 'McKinsey' },
-                        ].map((a, i) => (
+                        ] : [
+                          { tag: 'SALARY', color: 'text-emerald-400', title: 'How to Negotiate Your Remote-USD Salary (Without Losing the Offer)', desc: 'Frameworks for benchmarking your rate, presenting comp data, and closing 10-20% above the initial offer.', url: 'https://hbr.org/2021/11/how-to-negotiate-your-job-offer', source: 'Harvard Business Review' },
+                          { tag: 'LINKEDIN', color: 'text-accent', title: 'The LinkedIn Profile Formula That Gets Recruiters to Reach Out', desc: 'Optimise every section — headline, about, experience — to appear in passive recruiter searches.', url: 'https://www.linkedin.com/business/talent/blog/talent-acquisition/linkedin-profile-tips-for-job-seekers', source: 'LinkedIn Talent Blog' },
+                          { tag: 'RESUME', color: 'text-yellow-400', title: 'Beat the ATS: 10 Steps to Get Your Resume Past the Robots', desc: 'Over 75% of resumes never reach a human. Here\'s the checklist top LATAM candidates use.', url: 'https://www.jobscan.co/blog/beat-applicant-tracking-system/', source: 'Jobscan' },
+                          { tag: 'INTERVIEW', color: 'text-blue-400', title: 'The STAR Method: Master Behavioural Interview Questions', desc: 'Situation, Task, Action, Result — the one framework that works for every behavioural question.', url: 'https://www.themuse.com/advice/star-interview-method', source: 'The Muse' },
+                          { tag: 'BANKING', color: 'text-violet-400', title: 'Getting Paid in USD as a LATAM Contractor: Banking & Taxes', desc: 'Invoicing, FX-efficient banking, and contractor taxes — the full back-office for US clients.', url: 'https://wise.com/us/blog/how-to-invoice-international-clients', source: 'Wise' },
+                          { tag: 'REMOTE', color: 'text-pink-400', title: 'GitLab\'s All-Remote Guide (The Industry Gold Standard)', desc: 'The most detailed, battle-tested remote work guide on the internet — built by a 2,000-person remote company.', url: 'https://about.gitlab.com/company/culture/all-remote/guide/', source: 'GitLab' },
+                        ]).map((a, i) => (
                           <a key={i} href={a.url} target="_blank" rel="noopener noreferrer"
                             className="group flex flex-col gap-1.5 p-4 bg-surface border border-border hover:border-accent/30 transition-colors">
                             <div className="flex items-center justify-between">
@@ -1206,6 +1227,36 @@ export default function App() {
 
                   {/* Sidebar */}
                   <div className="col-span-12 lg:col-span-4 flex flex-col gap-px bg-border">
+                    {portalType === 'candidate' && (
+                      <section className="p-8 bg-bg border-b border-border">
+                        <div className="flex items-center gap-2 mb-4">
+                          <Cpu size={10} className="text-accent" />
+                          <span className="mono text-[9px] text-accent font-bold uppercase tracking-widest">
+                            AI Tools for Job Seekers
+                          </span>
+                        </div>
+                        <div className="space-y-3">
+                          {[
+                            { tag: 'RESUME', color: 'text-emerald-400', title: 'Teal — AI Resume Builder Tailored to JD', desc: 'Matches your resume to specific job descriptions with ATS optimization. Free tier, used by 2M+ candidates.', url: 'https://www.tealhq.com', source: 'Teal' },
+                            { tag: 'LINKEDIN', color: 'text-blue-400', title: 'Resume Worded — LinkedIn Profile Optimizer', desc: 'AI-powered LinkedIn review: keyword density, headline scoring, recruiter-friendly structure.', url: 'https://resumeworded.com', source: 'Resume Worded' },
+                            { tag: 'INTERVIEW', color: 'text-accent', title: 'Final Round AI — Live Interview Copilot', desc: 'Real-time answer suggestions during live coding and behavioral interviews. Discrete overlay.', url: 'https://www.finalroundai.com', source: 'Final Round AI' },
+                            { tag: 'CODE PRACTICE', color: 'text-yellow-400', title: 'LeetCode + NeetCode 150 — FAANG Prep', desc: 'The standard interview prep. NeetCode 150 = curated, difficulty-tagged, video solutions.', url: 'https://neetcode.io', source: 'NeetCode' },
+                            { tag: 'LEARNING', color: 'text-violet-400', title: 'DeepLearning.AI — Andrew Ng Courses (Free Audit)', desc: 'Industry-standard AI/ML upskilling. Most LATAM senior candidates cite this in interviews.', url: 'https://www.deeplearning.ai/courses/', source: 'DeepLearning.AI' },
+                            { tag: 'BANKING', color: 'text-pink-400', title: 'Wise — Multi-Currency Account for USD Invoicing', desc: 'Receive USD/EUR from US clients with 5x cheaper FX than banks. The de facto standard for LATAM contractors.', url: 'https://wise.com/us/blog/how-to-invoice-international-clients', source: 'Wise' },
+                          ].map((t, i) => (
+                            <a key={i} href={t.url} target="_blank" rel="noopener noreferrer"
+                              className="group block p-3 bg-surface border border-border hover:border-accent/30 transition-colors">
+                              <div className="flex items-center justify-between mb-1">
+                                <span className={`mono text-[7px] font-bold ${t.color}`}>{t.tag}</span>
+                                <span className="mono text-[7px] text-text/20">{t.source}</span>
+                              </div>
+                              <h6 className="text-[10px] font-bold leading-snug group-hover:text-accent transition-colors line-clamp-2">{t.title}</h6>
+                              <p className="mono text-[8px] text-text/40 leading-snug mt-1 line-clamp-2">{t.desc}</p>
+                            </a>
+                          ))}
+                        </div>
+                      </section>
+                    )}
                     {widgets.pulse !== false && <section className="p-8 bg-bg">
                       <div className="flex items-center justify-between mb-8">
                         <div className="mono text-[9px] text-text/40 flex items-center gap-2">
@@ -1354,6 +1405,8 @@ export default function App() {
                       </section>
                     )}
 
+                    {((portalType as string) === 'company') && (
+                    <>
                     <section className="p-8 bg-bg grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="bg-surface border border-border p-6 flex flex-col justify-between">
                         <div>
@@ -1444,6 +1497,8 @@ export default function App() {
                         ))}
                       </div>
                     </section>
+                    </>
+                    )}
 
                     <section className="p-8 bg-accent text-black flex-1">
                       <div className="mono text-black/60 mb-4 font-bold text-[9px] tracking-widest">WPRO INTEL // EXECUTIVE</div>
