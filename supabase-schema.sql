@@ -195,3 +195,116 @@ insert into public.member_resources (title, description, category, external_url,
   ('Offer Letter Templates (EN/ES/PT)', 'Legal-reviewed templates for remote hires across LATAM jurisdictions.', 'Templates', null, 4),
   ('Q1 2026 AI Jobs Impact Report', 'Which LATAM sectors gained and lost the most jobs due to automation in Q1.', 'Reports', null, 5)
 on conflict do nothing;
+
+-- ============================================================
+-- SALARY BENCHMARKS (monthly auto-refresh source of truth)
+-- Updated by: api/cron/refresh-salary-data.ts (Vercel cron, 1st of month)
+-- Read by:    src/lib/intelligence.ts at module load
+-- Fallback:   const BASE_SALARY / REMOTE_MULT in intelligence.ts if table empty
+-- ============================================================
+create table if not exists public.salary_benchmarks (
+  id              uuid primary key default gen_random_uuid(),
+  role            text not null check (role in (
+                    'ai_ml','llm','data','backend','frontend','fullstack',
+                    'devops','product','data_eng','eng_manager'
+                  )),
+  country         text not null check (country in ('BR','MX','CO','AR','CL')),
+  base_salary     integer not null,         -- local market mid-level (3-5yr) USD/yr
+  remote_mult     numeric(4,2) not null,    -- uplift multiplier for remote-USD rates
+  source          text,                     -- 'WProTalents mandates', 'Glassdoor LATAM', etc.
+  effective_from  date not null default current_date,
+  created_at      timestamptz not null default now(),
+  unique (role, country, effective_from)
+);
+create index if not exists salary_benchmarks_lookup_idx
+  on public.salary_benchmarks (role, country, effective_from desc);
+
+alter table public.salary_benchmarks enable row level security;
+-- Public read: salary data is meant to be visible to anyone
+drop policy if exists salary_benchmarks_read on public.salary_benchmarks;
+create policy salary_benchmarks_read on public.salary_benchmarks
+  for select using (true);
+-- Service role bypasses RLS for the cron writer, so no insert policy needed
+
+-- Seed with current values (so first deploy works without waiting for cron)
+insert into public.salary_benchmarks (role, country, base_salary, remote_mult, source, effective_from) values
+  ('ai_ml',       'BR', 18000, 3.00, 'WProTalents mandates + Glassdoor LATAM, Q3 2026', current_date),
+  ('ai_ml',       'MX', 16000, 3.20, 'WProTalents mandates + Glassdoor LATAM, Q3 2026', current_date),
+  ('ai_ml',       'CO', 14000, 3.40, 'WProTalents mandates + Glassdoor LATAM, Q3 2026', current_date),
+  ('ai_ml',       'AR', 12000, 3.72, 'WProTalents mandates + Glassdoor LATAM, Q3 2026', current_date),
+  ('ai_ml',       'CL', 18000, 3.00, 'WProTalents mandates + Glassdoor LATAM, Q3 2026', current_date),
+  ('llm',         'BR', 21000, 3.00, 'WProTalents mandates + Glassdoor LATAM, Q3 2026', current_date),
+  ('llm',         'MX', 19000, 3.20, 'WProTalents mandates + Glassdoor LATAM, Q3 2026', current_date),
+  ('llm',         'CO', 17000, 3.40, 'WProTalents mandates + Glassdoor LATAM, Q3 2026', current_date),
+  ('llm',         'AR', 15000, 3.72, 'WProTalents mandates + Glassdoor LATAM, Q3 2026', current_date),
+  ('llm',         'CL', 21000, 3.00, 'WProTalents mandates + Glassdoor LATAM, Q3 2026', current_date),
+  ('data',        'BR', 15000, 3.00, 'WProTalents mandates + Glassdoor LATAM, Q3 2026', current_date),
+  ('data',        'MX', 13500, 3.20, 'WProTalents mandates + Glassdoor LATAM, Q3 2026', current_date),
+  ('data',        'CO', 12000, 3.40, 'WProTalents mandates + Glassdoor LATAM, Q3 2026', current_date),
+  ('data',        'AR', 10500, 3.72, 'WProTalents mandates + Glassdoor LATAM, Q3 2026', current_date),
+  ('data',        'CL', 15000, 3.00, 'WProTalents mandates + Glassdoor LATAM, Q3 2026', current_date),
+  ('backend',     'BR', 14000, 3.00, 'WProTalents mandates + Glassdoor LATAM, Q3 2026', current_date),
+  ('backend',     'MX', 12500, 3.20, 'WProTalents mandates + Glassdoor LATAM, Q3 2026', current_date),
+  ('backend',     'CO', 11000, 3.40, 'WProTalents mandates + Glassdoor LATAM, Q3 2026', current_date),
+  ('backend',     'AR',  9500, 3.72, 'WProTalents mandates + Glassdoor LATAM, Q3 2026', current_date),
+  ('backend',     'CL', 14000, 3.00, 'WProTalents mandates + Glassdoor LATAM, Q3 2026', current_date),
+  ('frontend',    'BR', 12500, 3.00, 'WProTalents mandates + Glassdoor LATAM, Q3 2026', current_date),
+  ('frontend',    'MX', 11000, 3.20, 'WProTalents mandates + Glassdoor LATAM, Q3 2026', current_date),
+  ('frontend',    'CO',  9500, 3.40, 'WProTalents mandates + Glassdoor LATAM, Q3 2026', current_date),
+  ('frontend',    'AR',  8000, 3.72, 'WProTalents mandates + Glassdoor LATAM, Q3 2026', current_date),
+  ('frontend',    'CL', 12500, 3.00, 'WProTalents mandates + Glassdoor LATAM, Q3 2026', current_date),
+  ('fullstack',   'BR', 14000, 3.00, 'WProTalents mandates + Glassdoor LATAM, Q3 2026', current_date),
+  ('fullstack',   'MX', 12500, 3.20, 'WProTalents mandates + Glassdoor LATAM, Q3 2026', current_date),
+  ('fullstack',   'CO', 11000, 3.40, 'WProTalents mandates + Glassdoor LATAM, Q3 2026', current_date),
+  ('fullstack',   'AR',  9500, 3.72, 'WProTalents mandates + Glassdoor LATAM, Q3 2026', current_date),
+  ('fullstack',   'CL', 14000, 3.00, 'WProTalents mandates + Glassdoor LATAM, Q3 2026', current_date),
+  ('devops',      'BR', 16000, 3.00, 'WProTalents mandates + Glassdoor LATAM, Q3 2026', current_date),
+  ('devops',      'MX', 14500, 3.20, 'WProTalents mandates + Glassdoor LATAM, Q3 2026', current_date),
+  ('devops',      'CO', 13000, 3.40, 'WProTalents mandates + Glassdoor LATAM, Q3 2026', current_date),
+  ('devops',      'AR', 11500, 3.72, 'WProTalents mandates + Glassdoor LATAM, Q3 2026', current_date),
+  ('devops',      'CL', 16000, 3.00, 'WProTalents mandates + Glassdoor LATAM, Q3 2026', current_date),
+  ('product',     'BR', 14500, 3.00, 'WProTalents mandates + Glassdoor LATAM, Q3 2026', current_date),
+  ('product',     'MX', 13000, 3.20, 'WProTalents mandates + Glassdoor LATAM, Q3 2026', current_date),
+  ('product',     'CO', 11500, 3.40, 'WProTalents mandates + Glassdoor LATAM, Q3 2026', current_date),
+  ('product',     'AR', 10000, 3.72, 'WProTalents mandates + Glassdoor LATAM, Q3 2026', current_date),
+  ('product',     'CL', 14500, 3.00, 'WProTalents mandates + Glassdoor LATAM, Q3 2026', current_date),
+  ('data_eng',    'BR', 16000, 3.00, 'WProTalents mandates + Glassdoor LATAM, Q3 2026', current_date),
+  ('data_eng',    'MX', 14500, 3.20, 'WProTalents mandates + Glassdoor LATAM, Q3 2026', current_date),
+  ('data_eng',    'CO', 13000, 3.40, 'WProTalents mandates + Glassdoor LATAM, Q3 2026', current_date),
+  ('data_eng',    'AR', 11500, 3.72, 'WProTalents mandates + Glassdoor LATAM, Q3 2026', current_date),
+  ('data_eng',    'CL', 16000, 3.00, 'WProTalents mandates + Glassdoor LATAM, Q3 2026', current_date),
+  ('eng_manager', 'BR', 26000, 3.00, 'WProTalents mandates + Glassdoor LATAM, Q3 2026', current_date),
+  ('eng_manager', 'MX', 23000, 3.20, 'WProTalents mandates + Glassdoor LATAM, Q3 2026', current_date),
+  ('eng_manager', 'CO', 20000, 3.40, 'WProTalents mandates + Glassdoor LATAM, Q3 2026', current_date),
+  ('eng_manager', 'AR', 17000, 3.72, 'WProTalents mandates + Glassdoor LATAM, Q3 2026', current_date),
+  ('eng_manager', 'CL', 26000, 3.00, 'WProTalents mandates + Glassdoor LATAM, Q3 2026', current_date)
+on conflict (role, country, effective_from) do nothing;
+
+-- ============================================================
+-- SALARY BENCHMARKS PROPOSED (admin staging area)
+-- Admin writes proposed new values here. The monthly cron
+-- (api/cron-refresh-salary.ts) promotes approved=true rows
+-- into the live salary_benchmarks table.
+-- ============================================================
+create table if not exists public.salary_benchmarks_proposed (
+  id           uuid primary key default gen_random_uuid(),
+  role         text not null check (role in (
+                 'ai_ml','llm','data','backend','frontend','fullstack',
+                 'devops','product','data_eng','eng_manager'
+               )),
+  country      text not null check (country in ('BR','MX','CO','AR','CL')),
+  base_salary  integer not null,
+  remote_mult  numeric(4,2) not null,
+  source       text,
+  approved     boolean not null default false,
+  proposed_by  text,                       -- admin email / identifier
+  created_at   timestamptz not null default now()
+);
+create index if not exists salary_benchmarks_proposed_lookup_idx
+  on public.salary_benchmarks_proposed (role, country, approved, created_at desc);
+
+alter table public.salary_benchmarks_proposed enable row level security;
+-- Only service role (cron + admin) can read/write; no anon access
+drop policy if exists salary_benchmarks_proposed_no_anon on public.salary_benchmarks_proposed;
+create policy salary_benchmarks_proposed_no_anon on public.salary_benchmarks_proposed
+  for all using (auth.role() = 'service_role') with check (auth.role() = 'service_role');

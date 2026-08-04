@@ -18,5 +18,8 @@
     { "source": "/api/webhooks/coinbase", "destination": "/api/webhooks?type=coinbase" },
     { "source": "/members", "destination": "/index.html" },
     { "source": "/((?!api/).*)", "destination": "/index.html" }
+  ],
+  "crons": [
+    { "path": "/api/cron-refresh-salary", "schedule": "0 8 1 * *" }
   ]
 }

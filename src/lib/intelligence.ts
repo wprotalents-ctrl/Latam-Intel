@@ -76,17 +76,24 @@ export interface RemoteReadinessResult {
 const BASE_SALARY: Record<RoleKey, Record<CountryCode, number>> = {
   // Local market pay (USD/yr) — mid-level, 3–5yr exp — Q1 2026
   // Source: WProTalents mandates, Glassdoor LATAM, LinkedIn Salary
-  ai_ml:       { BR: 18000, MX: 16000, CO: 14000, AR: 12000, CL: 16000 },
-  llm:         { BR: 22000, MX: 19000, CO: 17000, AR: 15000, CL: 19000 },
-  data:        { BR: 15000, MX: 13500, CO: 12000, AR: 10500, CL: 13500 },
-  backend:     { BR: 14000, MX: 12500, CO: 11000, AR: 9500,  CL: 12500 },
-  frontend:    { BR: 12000, MX: 11000, CO: 9500,  AR: 8000,  CL: 11000 },
-  fullstack:   { BR: 14000, MX: 12500, CO: 11000, AR: 10000, CL: 12500 },
-  devops:      { BR: 16000, MX: 14500, CO: 13000, AR: 11500, CL: 14500 },
-  product:     { BR: 14000, MX: 13000, CO: 11500, AR: 10000, CL: 13000 },
-  data_eng:    { BR: 16000, MX: 14500, CO: 13000, AR: 11500, CL: 14500 },
-  eng_manager: { BR: 26000, MX: 23000, CO: 20000, AR: 18000, CL: 23000 },
+  ai_ml:       { BR: 18000, MX: 16000, CO: 14000, AR: 12000, CL: 18000 },
+  llm:         { BR: 21000, MX: 19000, CO: 17000, AR: 15000, CL: 21000 },
+  data:        { BR: 15000, MX: 13500, CO: 12000, AR: 10500, CL: 15000 },
+  backend:     { BR: 14000, MX: 12500, CO: 11000, AR: 9500,  CL: 14000 },
+  frontend:    { BR: 12500, MX: 11000, CO: 9500,  AR: 8000,  CL: 12500 },
+  fullstack:   { BR: 14000, MX: 12500, CO: 11000, AR: 9500,  CL: 14000 },
+  devops:      { BR: 16000, MX: 14500, CO: 13000, AR: 11500, CL: 16000 },
+  product:     { BR: 14500, MX: 13000, CO: 11500, AR: 10000, CL: 14500 },
+  data_eng:    { BR: 16000, MX: 14500, CO: 13000, AR: 11500, CL: 16000 },
+  eng_manager: { BR: 26000, MX: 23000, CO: 20000, AR: 17000, CL: 26000 },
 };
+
+// NOTE on auto-update strategy: BASE_SALARY is the local market mid-level (3-5yr)
+// anchor. The REMOTE_MULT table (below) is what converts it to remote-USD rates
+// matching Juan's real mandate data. To keep this current without code changes,
+// a monthly Vercel cron job (api/cron/refresh-salary-data.ts) writes fresh values
+// to a `salary_benchmarks` Supabase table, and the calculator reads from there
+// first and falls back to this const only if the table is empty. See HANDOFF.md §5.
 
 const SENIORITY_MULT: Record<SeniorityKey, number> = {
   junior: 0.55, mid: 1.00, senior: 1.55, staff: 2.20,
@@ -94,7 +101,7 @@ const SENIORITY_MULT: Record<SeniorityKey, number> = {
 
 const REMOTE_MULT: Record<CountryCode, number> = {
   // Uplift when working for US/EU company vs local market — 2026
-  BR: 2.80, MX: 2.60, CO: 3.00, AR: 3.50, CL: 2.40,
+  BR: 3.00, MX: 3.20, CO: 3.40, AR: 3.72, CL: 3.00,
 };
 
 const ENGLISH_MULT: Record<EnglishLevel, number> = {
@@ -102,6 +109,71 @@ const ENGLISH_MULT: Record<EnglishLevel, number> = {
 };
 
 const RANGE_SPREAD = 0.30;
+
+// ─── Live data override (monthly auto-refresh) ────────────────────────────────
+// BASE_SALARY and REMOTE_MULT above are the hardcoded defaults. If Supabase has
+// a `salary_benchmarks` table populated by the monthly cron job
+// (api/cron/refresh-salary-data.ts), those values override the consts at module
+// load. The override is non-blocking — if Supabase is unreachable or the table
+// is empty, the consts above are used as-is. To trigger a manual refresh, the
+// admin can hit POST /api/cron/refresh-salary-data with the CRON_SECRET header.
+
+import { createClient, type SupabaseClient } from '@supabase/supabase-js';
+
+let _supabase: SupabaseClient | null = null;
+function getSupabase(): SupabaseClient | null {
+  if (_supabase) return _supabase;
+  const url = (import.meta as any).env?.VITE_SUPABASE_URL as string | undefined;
+  const key = (import.meta as any).env?.VITE_SUPABASE_ANON_KEY as string | undefined;
+  if (!url || !key || url.includes('your-project')) return null;
+  _supabase = createClient(url, key, { auth: { persistSession: false } });
+  return _supabase;
+}
+
+interface SalaryBenchmarkRow {
+  role: RoleKey;
+  country: CountryCode;
+  base_salary: number;
+  remote_mult: number;
+  effective_from: string; // ISO date
+}
+
+let _overrideApplied = false;
+async function applyLiveOverrides(): Promise<void> {
+  if (_overrideApplied) return;
+  _overrideApplied = true;
+  try {
+    const sb = getSupabase();
+    if (!sb) return;
+    const { data, error } = await sb
+      .from('salary_benchmarks')
+      .select('role,country,base_salary,remote_mult,effective_from')
+      .order('effective_from', { ascending: false });
+    if (error || !data || data.length === 0) return;
+    // Use the most recent row per (role, country) — defensive against duplicate runs
+    const seen = new Set<string>();
+    for (const row of (data as SalaryBenchmarkRow[])) {
+      const k = `${row.role}:${row.country}`;
+      if (seen.has(k)) continue;
+      seen.add(k);
+      if (typeof row.base_salary === 'number' && BASE_SALARY[row.role]?.[row.country] !== undefined) {
+        BASE_SALARY[row.role][row.country] = row.base_salary;
+      }
+      if (typeof row.remote_mult === 'number' && REMOTE_MULT[row.country] !== undefined) {
+        REMOTE_MULT[row.country] = row.remote_mult;
+      }
+    }
+    // Touch the arrays so TS doesn't flag them as never-mutated when isolatedModules is on
+    void BASE_SALARY; void REMOTE_MULT;
+  } catch (e) {
+    // Soft-fail — consts remain in effect
+    console.warn('[intelligence] salary_benchmarks override failed, using consts:', e);
+  }
+}
+
+// Fire-and-forget at module load. The first render uses consts; the next
+// interaction will reflect live data once this resolves.
+void applyLiveOverrides();
 
 // ─── Translations ─────────────────────────────────────────────────────────────
 
@@ -210,8 +282,8 @@ const SKILLS_ROI_TABLE: { skill: string; boost: number; time: Record<Lang, strin
 
 function getSeniority(yearsExp: number): SeniorityKey {
   if (yearsExp <= 2) return 'junior';
-  if (yearsExp <= 5) return 'mid';
-  if (yearsExp <= 8) return 'senior';
+  if (yearsExp <= 4) return 'mid';
+  if (yearsExp <= 7) return 'senior';
   return 'staff';
 }
 
