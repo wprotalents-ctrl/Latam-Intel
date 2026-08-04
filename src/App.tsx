@@ -36,7 +36,8 @@ import {
   Sun,
   Copy,
   CheckCircle2,
-  Lock
+  Lock,
+  BarChart2
 } from 'lucide-react';
 import { 
   BarChart, 
@@ -56,6 +57,7 @@ import ClientJobPostForm, { type ClientJobPostData } from './components/ClientJo
 import CompanyIntelPanel from './components/CompanyIntelPanel';
 import CandidateIntel from './components/CandidateIntel';
 import CVRadarDashboard from './components/CVRadarDashboard';
+import SalaryCalculator from './components/SalaryCalculator';
 import RadarDetailsPage from './components/RadarDetailsPage';
 import { type HiringPlan } from './lib/hiringPlan';
 import { type NetworkReach } from './lib/networkReach';
@@ -683,7 +685,7 @@ export default function App() {
   const [clientFormData, setClientFormData] = useState<ClientJobPostData | null>(null);
   const [clientInsightsLoading, setClientInsightsLoading] = useState(false);
   const [jobPostSaved, setJobPostSaved] = useState(false);
-  const [companyTab, setCompanyTab] = useState<'intel' | 'post' | 'radar'>('intel');
+  const [companyTab, setCompanyTab] = useState<'intel' | 'salary' | 'post' | 'radar'>('intel');
   const [selectedRadarId, setSelectedRadarId] = useState<string | null>(null);
   const [briefings, setBriefings] = useState<Briefing[]>(MOCK_BRIEFINGS);
   const [intelBriefs, setIntelBriefs] = useState<IntelligenceBrief[]>([]);
@@ -895,6 +897,12 @@ export default function App() {
                 <Brain size={11} /> Market Intel
               </button>
               <button
+                onClick={() => setCompanyTab('salary')}
+                className={`px-3 py-1.5 mono text-[10px] flex items-center gap-1.5 rounded-md transition-colors ${companyTab === 'salary' ? 'text-accent bg-accent/10 border border-accent/20' : 'text-text-muted hover:text-text border border-transparent'}`}
+              >
+                <BarChart2 size={11} /> Salary
+              </button>
+              <button
                 onClick={() => setCompanyTab('post')}
                 className={`px-3 py-1.5 mono text-[10px] flex items-center gap-1.5 rounded-md transition-colors ${companyTab === 'post' ? 'text-accent bg-accent/10 border border-accent/20' : 'text-text-muted hover:text-text border border-transparent'}`}
               >
@@ -940,6 +948,27 @@ export default function App() {
                     <CompanyIntelPanel lang={lang} />
                   </div>
                 )}
+                {companyTab === 'salary' && (
+                  <div>
+                    <div className="mb-4">
+                      <h2 className="text-xl font-black uppercase tracking-tight flex items-center gap-2">
+                        <BarChart2 size={16} className="text-accent" />
+                        Salary Benchmarks
+                      </h2>
+                      <p className="mono text-[9px] text-text/40 mt-1">
+                        Live LATAM tech rates by role, country, and seniority — for comp planning and headcount budgeting
+                      </p>
+                    </div>
+                    <SalaryCalculator lang={lang} emailGate={false} />
+                    <div className="mt-4 p-4 bg-surface border border-border text-xs text-text/60">
+                      <p className="font-bold text-text/80 mb-1">For HR &amp; Hiring Managers</p>
+                      All numbers shown are remote-USD benchmarks derived from real WProTalents mandates,
+                      cross-referenced with Glassdoor LATAM and Levels.fyi. Updated monthly via the cron at
+                      <code className="mx-1 px-1 bg-bg mono text-accent">/api/cron-refresh-salary</code>.
+                      Use this for comp planning, headcount budgeting, and rate card design.
+                    </div>
+                  </div>
+                )}
                 {companyTab === 'post' && (
                   <div>
                     <div className="mb-4">
@@ -950,7 +979,6 @@ export default function App() {
                       <p className="mono text-[9px] text-text/40 mt-1">{t.clientPostSubtitle}</p>
                     </div>
                     <ClientJobPostForm
-                      lang={lang}
                       onSubmit={(data: ClientJobPostData) => {
                         setJobPostSaved(true);
                         setTimeout(() => setJobPostSaved(false), 3000);
@@ -1005,6 +1033,10 @@ export default function App() {
             <div className="grid grid-cols-12 gap-px bg-border min-h-full">
               {/* Main content */}
               <div className="col-span-12 lg:col-span-8 flex flex-col gap-px bg-border">
+                {/* Salary Calculator — top of dashboard for candidates */}
+                <div className="p-4 lg:p-6 bg-bg">
+                  <SalaryCalculator lang={lang} />
+                </div>
                 {/* Top Row: Map and Radar */}
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-px bg-border">
                       {widgets.map !== false && (
