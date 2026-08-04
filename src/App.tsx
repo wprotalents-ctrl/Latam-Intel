@@ -651,6 +651,14 @@ export default function App() {
   const [isSyncing, setIsSyncing] = useState(false);
   const [isCustomizeOpen, setIsCustomizeOpen] = useState(false);
   const [showUpgrade, setShowUpgrade] = useState(false);
+
+  // Auth/paywall state — disabled for free portal. Re-enable when login is implemented.
+  // All references in the JSX are gated on these constants, so removing the auth UI
+  // without changing these would have caused runtime crashes.
+  const userRole: 'candidate' | 'company' = 'candidate';
+  const isAdmin = false;
+  const subscriptionStatus: 'free' | 'premium' = 'free';
+
   const [widgets, setWidgets] = useState<Record<string, boolean>>(() => {
     try {
       const saved = localStorage.getItem('wpro-widgets');
@@ -868,35 +876,7 @@ export default function App() {
             </button>
           )}
 
-          {/* User Menu */}
-          {false ? (
-            <div className="flex items-center gap-3">
-              <div className="hidden sm:flex flex-col items-end">
-                <span className="mono text-[9px] text-text font-bold">{user.displayName || 'User'}</span>
-                <button
-                  onClick={() => signOut(auth)}
-                  className="mono text-[8px] text-text-muted hover:text-accent transition-colors flex items-center gap-1"
-                >
-                  <LogOut size={10} /> Sign Out
-                </button>
-              </div>
-              <div className="w-8 h-8 rounded-full bg-accent/20 border border-accent/40 flex items-center justify-center overflow-hidden">
-                {user.photoURL ? (
-                  <img src={user.photoURL} alt="Profile" className="w-full h-full object-cover" />
-                ) : (
-                  <UserIcon size={15} className="text-accent" />
-                )}
-              </div>
-            </div>
-          ) : (
-            <button
-              onClick={() => setIsAuthModalOpen(true)}
-              className="px-4 py-2 bg-accent text-white font-semibold text-xs rounded-lg flex items-center gap-2 hover:bg-accent-bright transition-all duration-150 shadow-md"
-              style={{ boxShadow: '0 2px 12px rgba(255,107,0,0.25)' }}
-            >
-              <LogIn size={14} /> Login
-            </button>
-          )}
+          {/* Auth removed — free portal, no login. Re-add later when login is implemented. */}
 
           {/* Mobile menu */}
           <button className="md:hidden p-2 border border-border rounded-lg text-text-muted hover:text-text">
