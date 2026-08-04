@@ -1,0 +1,4401 @@
+diff --git a/.env.example b/.env.example
+index 22fb6e9..c58e664 100644
+--- a/.env.example
++++ b/.env.example
+@@ -14,16 +14,13 @@ VITE_SUPABASE_ANON_KEY=eyJ...
+ SUPABASE_URL=https://your-project.supabase.co
+ SUPABASE_SERVICE_ROLE_KEY=eyJ...
+ 
+-# ─── Stripe ───────────────────────────────────────────────────────────────────
+-VITE_STRIPE_PUBLISHABLE_KEY=pk_live_...
+-STRIPE_SECRET_KEY=sk_live_...
+-STRIPE_WEBHOOK_SECRET=whsec_...
++# ─── Lemon Squeezy (card payments — $29/mo) ─────────────────────────────────
++# Checkout URL is hardcoded in api/create-checkout-session.ts
++# Webhook secret for real-time subscription events
++LEMON_SQUEEZY_WEBHOOK_SECRET=
++LEMON_SQUEEZY_API_KEY=
+ 
+-# Create these in Stripe Dashboard → Products
+-# $29/mo "LATAM INTEL Executive" recurring price
+-VITE_STRIPE_PRO_PRICE_ID=price_...
+-
+-# ─── Coinbase Commerce (crypto payments) ──────────────────────────────────────
++# ─── Coinbase Commerce (crypto payments — $29 one-time) ───────────────────────
+ COINBASE_COMMERCE_API_KEY=
+ COINBASE_COMMERCE_WEBHOOK_SECRET=
+ 
+@@ -56,6 +53,7 @@ THEIRSTACK_API_KEY=
+ # Generate with: openssl rand -hex 32
+ CRON_SECRET=
+ 
+-# ─── Server ───────────────────────────────────────────────────────────────────
++# ─── App ───────────────────────────────────────────────────────────────────
++APP_URL=https://latam-intel.vercel.app
+ PORT=3000
+ NODE_ENV=development
+diff --git a/.gitignore b/.gitignore
+index 5a86d2a..fb00e97 100644
+--- a/.gitignore
++++ b/.gitignore
+@@ -6,3 +6,4 @@ coverage/
+ *.log
+ .env*
+ !.env.example
++tool-results/
+diff --git a/DEPLOY.md b/DEPLOY.md
+index 13433ed..54d2a20 100755
+--- a/DEPLOY.md
++++ b/DEPLOY.md
+@@ -1,183 +1,130 @@
+ # LATAM INTEL — Deploy Guide
+-### From zero to live on intel.wprotalents.lat (100% free)
++### From zero to live on intel.wprotalents.lat (100% free stack)
+ 
+ ---
+ 
+-## PART 1 — Push all the new code to GitHub
++## PART 1 — Push code to GitHub
+ 
+-### Step 1 — Copy the new files into your local Latam-Intel folder
++### Step 1 — Clone and verify
+ 
+-Open **File Explorer** and go to your local `Latam-Intel` folder (wherever you cloned the repo).
+-
+-Copy these files from your "Latam Intellingece Dashboard" folder into it:
+-
+-```
+-Latam-Intel/
+-├── api/                        ← NEW — copy this entire folder
+-│   ├── _lib/
+-│   │   ├── firebase.ts
+-│   │   ├── supabase.ts
+-│   │   ├── gemini.ts
+-│   │   ├── cors.ts
+-│   │   ├── news.ts
+-│   │   └── beehiiv.ts
+-│   ├── jobs.ts
+-│   ├── ping.ts
+-│   ├── subscribe-newsletter.ts
+-│   ├── create-checkout-session.ts
+-│   ├── create-crypto-charge.ts
+-│   ├── members/verify.ts
+-│   ├── market-intel/news.ts
+-│   ├── market-intel/brief.ts
+-│   ├── market-intel/trends.ts
+-│   ├── market-intel/volume.ts
+-│   ├── market-intel/sync.ts
+-│   ├── newsletter/generate.ts
+-│   ├── newsletter/send.ts
+-│   └── webhooks/
+-│       ├── stripe.ts
+-│       └── coinbase.ts
+-├── src/
+-│   ├── lib/supabase.ts         ← NEW
+-│   ├── pages/MembersPage.tsx   ← NEW
+-│   └── main.tsx                ← REPLACE existing
+-├── vercel.json                 ← NEW
+-├── package.json                ← REPLACE existing
+-├── supabase-schema.sql         ← NEW (run in Supabase, don't push)
+-└── .env.example                ← REPLACE existing
++```bash
++git clone https://github.com/wprotalents-ctrl/Latam-Intel
++cd Latam-Intel
++npm install
++npx tsc --noEmit   # must pass clean (0 errors)
++npx vite build    # must succeed
+ ```
+ 
+-### Step 2 — Open a terminal in your Latam-Intel folder
+-
+-On Windows: hold **Shift**, right-click in the folder → "Open PowerShell window here"
+-
+-### Step 3 — Push to GitHub
++### Step 2 — Push to GitHub
+ 
+ ```bash
+ git add -A
+-git commit -m "feat: Vercel API routes, Members page, newsletter automation"
++git commit -m "feat: LATAM Intel v2 — Lemon Squeezy + Coinbase payments"
+ git push
+ ```
+ 
+-Done. Your code is now on GitHub.
+-
+ ---
+ 
+-## PART 2 — Connect to Vercel (your existing account)
++## PART 2 — Connect to Vercel
+ 
+-### Step 4 — Import the Latam-Intel repo on Vercel
++### Step 3 — Import on Vercel
+ 
+-1. Go to **vercel.com** → click **Add New Project**
+-2. Select **Import Git Repository**
+-3. Find `Latam-Intel` in the list → click **Import**
+-4. Vercel auto-detects Vite — leave all build settings as-is
+-5. **Don't click Deploy yet** — you need env vars first (next step)
++1. Go to **vercel.com** → **Add New Project**
++2. Select **Import Git Repository** → find `Latam-Intel` → **Import**
++3. Vercel auto-detects Vite — leave build settings as-is
++4. **Don't click Deploy yet** — add env vars first
+ 
+-### Step 5 — Add environment variables in Vercel
+-
+-In the "Environment Variables" section before deploying, add these one by one.
+-Get the values from the services listed below.
++### Step 4 — Environment Variables
+ 
+ | Variable | Where to get it |
+ |---|---|
+ | `GEMINI_API_KEY` | [aistudio.google.com/apikey](https://aistudio.google.com/apikey) — free |
+ | `VITE_GEMINI_API_KEY` | Same key as above |
+-| `STRIPE_SECRET_KEY` | Stripe Dashboard → Developers → API keys |
+-| `VITE_STRIPE_PUBLISHABLE_KEY` | Same page, the `pk_live_` key |
+-| `STRIPE_WEBHOOK_SECRET` | Add after Step 8 below |
+-| `VITE_STRIPE_PRO_PRICE_ID` | After creating product in Step 7 |
+ | `SUPABASE_URL` | Supabase project → Settings → API |
+-| `SUPABASE_SERVICE_ROLE_KEY` | Same page |
++| `SUPABASE_SERVICE_ROLE_KEY` | Same page, service role key |
+ | `VITE_SUPABASE_URL` | Same URL |
+-| `VITE_SUPABASE_ANON_KEY` | Same page, the `anon public` key |
++| `VITE_SUPABASE_ANON_KEY` | Same page, anon public key |
+ | `BEEHIIV_API_KEY` | app.beehiiv.com → Settings → API |
+ | `BEEHIIV_PUB_ID` | Same page — starts with `pub_` |
+ | `RESEND_API_KEY` | resend.com → API Keys → Create |
+ | `NEWSDATA_API_KEY` | newsdata.io → Dashboard (free signup) |
+ | `COINBASE_COMMERCE_API_KEY` | commerce.coinbase.com → Settings → API |
+-| `CRON_SECRET` | Make up any random string, e.g. `latamintel2026abc` |
++| `COINBASE_COMMERCE_WEBHOOK_SECRET` | Coinbase Commerce → Webhook settings |
++| `LEMON_SQUEEZY_WEBHOOK_SECRET` | Lemon Squeezy → Settings → Webhooks |
++| `LEMON_SQUEEZY_API_KEY` | Lemon Squeezy → Settings → API |
++| `CRON_SECRET` | Generate: `openssl rand -hex 32` |
++| `APP_URL` | `https://latam-intel.vercel.app` (or your custom domain) |
+ 
+-### Step 6 — Click Deploy
++### Step 5 — Click Deploy
+ 
+ Vercel builds and deploys. You get a URL like `latam-intel.vercel.app`.
+-The site is live. Now let's connect your real domain.
+ 
+ ---
+ 
+ ## PART 3 — Connect intel.wprotalents.lat
+ 
+-### Step 7 — Add the domain in Vercel
++### Step 6 — Add domain in Vercel
+ 
+-1. Go to your project on Vercel → **Settings** → **Domains**
+-2. Type `intel.wprotalents.lat` → click **Add**
+-3. Vercel shows you a CNAME record to add
++1. Vercel → **Settings** → **Domains** → type `intel.wprotalents.lat` → **Add**
++2. Vercel shows a CNAME record
+ 
+-### Step 8 — Add DNS record in Namecheap
++### Step 7 — DNS record in Namecheap
+ 
+-1. Log in to **Namecheap** → click **Manage** on `wprotalents.lat`
+-2. Go to **Advanced DNS** tab
+-3. Click **Add New Record**
+-4. Fill in:
++1. **Namecheap** → Manage `wprotalents.lat` → **Advanced DNS**
++2. **Add New Record:**
+    - **Type:** CNAME Record
+    - **Host:** `intel`
+    - **Value:** `cname.vercel-dns.com`
+    - **TTL:** Automatic
+-5. Click the ✓ checkmark to save
+-
+-Wait 5–10 minutes. Vercel auto-provisions SSL. Your site is live at `intel.wprotalents.lat`.
++3. Save. Wait 5–10 min for SSL. Live at `intel.wprotalents.lat`.
+ 
+ ---
+ 
+-## PART 4 — Set up Stripe to take $29/mo payments
+-
+-### Step 9 — Create your product in Stripe
+-
+-1. Go to **stripe.com** → **Products** → **Add Product**
+-2. Fill in:
+-   - **Name:** LATAM INTEL Executive
+-   - **Description:** Full Workforce Daily, salary data, AI tools, WPro resources
+-   - **Pricing:** Recurring, $29.00 / month
+-3. Click **Save Product**
+-4. Copy the **Price ID** (starts with `price_`)
+-5. Go back to Vercel → Settings → Environment Variables → add `VITE_STRIPE_PRO_PRICE_ID` = that price ID
+-6. Redeploy (Vercel → Deployments → click the 3 dots → Redeploy)
+-
+-### Step 10 — Set up Stripe Webhook
+-
+-1. Stripe Dashboard → **Developers** → **Webhooks** → **Add Endpoint**
+-2. **Endpoint URL:** `https://intel.wprotalents.lat/api/webhooks/stripe`
+-3. **Events to listen for:** select these two:
+-   - `checkout.session.completed`
+-   - `customer.subscription.deleted`
+-4. Click **Add Endpoint**
+-5. Click **Reveal** under "Signing secret" → copy the `whsec_...` value
+-6. Go to Vercel → add env var `STRIPE_WEBHOOK_SECRET` = that value
++## PART 4 — Set up payments ($29/mo card + $29 crypto)
++
++### Card payments — Lemon Squeezy
++
++The checkout URL is hardcoded in `api/create-checkout-session.ts` pointing to your
++Lemon Squeezy product. No additional client-side keys needed.
++
++1. Go to **lemonsqueezy.com** → your store → **Settings** → **API**
++2. Copy the API key → add as `LEMON_SQUEEZY_API_KEY` in Vercel env vars
++3. Go to **Settings** → **Webhooks** → **Create Webhook**
++4. **URL:** `https://intel.wprotalents.lat/api/webhooks/lemon-squeezy`
++5. **Events:** `subscription_created`, `subscription_updated`, `subscription_cancelled`
++6. Copy the signing secret → add as `LEMON_SQUEEZY_WEBHOOK_SECRET` in Vercel
++7. Redeploy
++
++### Crypto payments — Coinbase Commerce
++
++1. Go to **commerce.coinbase.com** → **Settings** → **API Key** → Create
++2. Copy the API key → add as `COINBASE_COMMERCE_API_KEY` in Vercel
++3. Go to **Settings** → **Webhook Subscriptions** → Create
++4. **URL:** `https://intel.wprotalents.lat/api/crypto-webhook`
++5. **Events:** `charge:confirmed`
++6. Copy the shared secret → add as `COINBASE_COMMERCE_WEBHOOK_SECRET` in Vercel
+ 7. Redeploy
+ 
+ ---
+ 
+ ## PART 5 — Set up the database
+ 
+-### Step 11 — Run the Supabase schema
++### Step 8 — Run the Supabase schema
+ 
+-1. Go to **supabase.com** → your project → **SQL Editor**
+-2. Open `supabase-schema.sql` (in your folder)
+-3. Paste the entire contents → click **Run**
+-4. Done — all tables created with security rules
++1. **supabase.com** → your project → **SQL Editor**
++2. Open `supabase-schema.sql` → paste → **Run**
++3. All tables created with RLS policies
+ 
+ ---
+ 
+-## PART 6 — Automate the newsletter (Monday 8am)
+-
+-### Step 12 — Set up Vercel Cron Jobs (free)
++## PART 6 — Automate the newsletter (Monday 12:00 UTC)
+ 
+-Add this to your `vercel.json` (already included):
++Vercel Cron Jobs are configured in `vercel.json`:
+ 
+-The cron runs two endpoints every Monday at 8am:
+-1. `POST /api/newsletter/generate` — Gemini writes the issue from real news
+-2. `POST /api/newsletter/send` — Pushes it to Beehiiv, everyone gets the teaser
++1. **12:00 UTC Monday** — `POST /api/newsletter/generate` — Gemini writes the issue
++2. **13:00 UTC Monday** — `POST /api/newsletter/send` — Pushes to Beehiiv
+ 
+-To trigger manually at any time (for testing):
++Manual trigger (for testing):
+ ```bash
+ curl -X POST https://intel.wprotalents.lat/api/newsletter/generate \
+   -H "x-cron-secret: YOUR_CRON_SECRET"
+@@ -188,57 +135,32 @@ curl -X POST https://intel.wprotalents.lat/api/newsletter/send \
+ 
+ ---
+ 
+-## PART 7 — Add the dashboard link to wprotalents.lat
+-
+-### Step 13 — Link from your main site
+-
+-In your WProTalents site code, add this button wherever makes sense
+-(hero section, nav, footer):
+-
+-```html
+-<!-- HTML version -->
+-<a href="https://intel.wprotalents.lat">
+-  LATAM AI Intelligence Dashboard →
+-</a>
+-
+-<!-- React version -->
+-<a
+-  href="https://intel.wprotalents.lat"
+-  target="_blank"
+-  rel="noopener noreferrer"
+-  className="your-button-class"
+->
+-  AI Job Market Intelligence →
+-</a>
+-```
+-
+-Push that change → Vercel redeploys `wprotalents.lat` automatically.
+-
+----
+-
+-## Quick checklist before sharing the link
++## Pre-launch checklist
+ 
+ - [ ] `intel.wprotalents.lat` loads the dashboard
+-- [ ] `/members` shows the paywall (not logged in)
+-- [ ] Google Sign-In works
++- [ ] `/members` shows the paywall (free state)
++- [ ] Language toggle (EN/ES/PT) works
+ - [ ] Newsletter subscribe form works (check Beehiiv dashboard)
+-- [ ] Stripe test payment works (use card `4242 4242 4242 4242`, any future date, any CVC)
+-- [ ] After payment, `/members` shows full content
++- [ ] Lemon Squeezy card payment redirects to checkout
++- [ ] Coinbase Commerce crypto payment creates a charge
++- [ ] After payment, `/members?email=...` verifies and unlocks content
+ - [ ] Run newsletter generate once manually to confirm AI works
++- [ ] `npx tsc --noEmit` passes clean before every commit
+ 
+ ---
+ 
+-## Your free stack summary
++## Free stack summary
+ 
+-| Service | Cost | Limit before paying |
++| Service | Cost | Notes |
+ |---|---|---|
+ | Vercel | $0 | 100GB bandwidth/mo |
+ | Supabase | $0 | 500MB database |
+-| Firebase | $0 | 1GB storage, 50K reads/day |
++| Firebase Firestore | $0 | 1GB storage, 50K reads/day |
+ | Gemini API | $0 | 1M tokens/day |
+ | Beehiiv | $0 | 2,500 subscribers |
+ | Resend | $0 | 3,000 emails/mo |
+-| Stripe | $0 | 2.9% + 30¢ per transaction only |
++| Lemon Squeezy | $0 | 5% + 50¢ per transaction |
++| Coinbase Commerce | $0 | 1% per transaction |
+ | Newsdata.io | $0 | 200 req/day (we use ~6/day) |
+ 
+-**First dollar comes in when someone pays $29. You keep $27.89 after Stripe fees.**
++**Revenue: $29/mo per subscriber. After Lemon Squeezy fees: ~$27.05.**
+diff --git a/LINKEDIN_TEMPLATES.md b/LINKEDIN_TEMPLATES.md
+new file mode 100644
+index 0000000..f8f8f87
+--- /dev/null
++++ b/LINKEDIN_TEMPLATES.md
+@@ -0,0 +1,160 @@
++# LinkedIn Announcement Templates
++
++## Template 1 — Launch Announcement (EN)
++
++---
++
++We just launched LATAM Intel.
++
++After 20 years recruiting tech talent across Latin America, I got tired of watching hiring managers fly blind.
++
++So we built what I always wanted: real-time intelligence on the LATAM tech workforce.
++
++What's inside:
++
++→ AI-powered market briefings — updated weekly
++→ Salary benchmarks for 40+ roles across 5 countries
++→ Job market signals — who's hiring, where, and for what
++→ Market Value Calculator — know your worth before you negotiate
++
++It's free during beta.
++
++Try it: https://intel.wprotalents.lat
++
++If you're hiring in LATAM — or you're a tech professional there — this is built for you.
++
++#LATAM #TechTalent #HiringIntelligence #WorkforceIntel
++
++---
++
++## Template 2 — Launch Announcement (ES)
++
++---
++
++Acabamos de lanzar LATAM Intel.
++
++Después de 20 años reclutando talento tech en América Latina, me cansé de ver a los hiring managers tomar decisiones a ciegas.
++
++Así que construimos lo que siempre quise: inteligencia en tiempo real sobre la fuerza laboral tech de LATAM.
++
++Qué incluye:
++
++→ Briefings de mercado con IA — actualizados cada semana
++→ Benchmarks salariales para 40+ roles en 5 países
++→ Señales del mercado laboral — quién contrata, dónde y para qué
++→ Calculadora de Valor de Mercado — conoce tu valor antes de negociar
++
++Está gratis durante la beta.
++
++Pruébalo: https://intel.wprotalents.lat
++
++Si estás contratando en LATAM — o eres un profesional tech ahí — esto fue construido para ti.
++
++#LATAM #TalentoTech #InteligenciaLaboral
++
++---
++
++## Template 3 — Launch Announcement (PT)
++
++---
++
++Acabamos de lançar o LATAM Intel.
++
++Depois de 20 anos recrutando talento tech na América Latina, cansei de ver hiring managers tomar decisões no escuro.
++
++Então construímos o que eu sempre quis: inteligência em tempo real sobre o mercado de trabalho tech da LATAM.
++
++O que inclui:
++
++→ Briefings de mercado com IA — atualizados semanalmente
++→ Benchmarks salariais para 40+ cargos em 5 países
++→ Sinais do mercado de trabalho — quem está contratando, onde e para quê
++→ Calculadora de Valor de Mercado — conheça seu valor antes de negociar
++
++Está grátis durante a beta.
++
++Experimente: https://intel.wprotalents.lat
++
++Se você está contratando na LATAM — ou é um profissional tech por aí — isso foi construído para você.
++
++#LATAM #TalentoTech #InteligênciaDeMercado
++
++---
++
++## Template 4 — Feature Spotlight: Salary Intel (EN)
++
++---
++
++Most salary data for LATAM tech roles is either outdated, US-centric, or behind a $500 paywall.
++
++We fixed that.
++
++LATAM Intel now has salary benchmarks for 40+ roles across Brazil, Mexico, Colombia, Argentina, and Chile.
++
++Data sources: real placements, candidate conversations, and market signals from our 23,000+ professional network.
++
++Not estimates. Not surveys. Real placement data from 20 years of execution.
++
++See for yourself: https://intel.wprotalents.lat/members
++
++#SalaryTransparency #LATAMTech #CompensationData
++
++---
++
++## Template 5 — Founder Story (EN)
++
++---
++
++20 years ago I started recruiting tech talent in Latin America.
++
++Back then, companies saw LATAM as a cost play. "Cheap engineers."
++
++Today, the narrative has flipped.
++
++The best ML engineers I've placed in the last 12 months? Based in São Paulo, Medellín, and Buenos Aires.
++
++US companies aren't hiring LATAM talent to save money anymore. They're hiring them because they can't find equivalent talent domestically.
++
++That shift is why we built LATAM Intel — to give hiring leaders the data they need to make fast, informed decisions about a market that most still don't understand.
++
++If you're a CTO, VP Engineering, or Head of Talent at a US/EU company — you should be looking at LATAM.
++
++The data is here: https://intel.wprotalents.lat
++
++#FounderJourney #LATAMTech #TalentAcquisition #HiringStrategy
++
++---
++
++## Template 6 — Short/Tech-Hacker Style (EN)
++
++---
++
++I built a real-time LATAM tech workforce intelligence dashboard.
++
++Features:
++- AI-generated weekly market briefings
++- Live job board with smart filters
++- Salary intel: 40+ roles × 5 countries
++- Market Value Calculator
++- Tri-lingual (EN/ES/PT)
++
++Stack: React + Vite + Gemini AI + Vercel
++Payments: Lemon Squeezy + Coinbase Commerce
++Newsletter: Beehiiv API
++
++All free during beta → https://intel.wprotalents.lat
++
++Show me your dashboard. What are you building?
++
++#BuildInPublic #LATAM #TechStack #IndieHacker
++
++---
++
++## Usage Notes
++
++- **Template 1-3**: Use for the launch post. Pick one language or post all three on separate days.
++- **Template 4**: Use 1-2 weeks after launch to drive Members page signups.
++- **Template 5**: Use for thought leadership / founder branding posts.
++- **Template 6**: Use in tech groups, Build in Public communities, Hacker News threads.
++- Always add a relevant image or screenshot of the dashboard when posting.
++- Best posting times: 8-10am EST (Tue-Thu) for US audience; 9-11am BRT for LATAM audience.
+diff --git a/README.md b/README.md
+index aede727..34a962a 100644
+--- a/README.md
++++ b/README.md
+@@ -1,20 +1,76 @@
+-<div align="center">
+-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
+-</div>
++# LATAM INTEL — AI Workforce Intelligence
+ 
+-# Run and deploy your AI Studio app
++Live at [intel.wprotalents.lat](https://intel.wprotalents.lat)
+ 
+-This contains everything you need to run your app locally.
++Real-time LATAM tech workforce intelligence for hiring managers, recruiters, and candidates. Built by [WProTalents](https://wprotalents.lat) — 20 years recruiting C-level and tech talent across Latin America.
+ 
+-View your app in AI Studio: https://ai.studio/apps/9279f702-e40c-457b-b350-29aa2957fe9a
++## What it does
+ 
+-## Run Locally
++- **Market Intelligence Dashboard** — AI-powered briefings on LATAM tech workforce trends
++- **Job Board** — Aggregated tech jobs across LATAM, US, and Europe with smart filters
++- **Salary Intel** — Benchmarks for 40+ roles across 5 LATAM countries (Executive only)
++- **Market Value Calculator** — Enter your profile, see your real market salary
++- **Newsletter** — Weekly "Workforce Daily" brief via Beehiiv (AI-generated, tri-lingual)
++- **Payment** — $29/mo Executive access via Lemon Squeezy (card) or Coinbase Commerce (crypto)
+ 
+-**Prerequisites:**  Node.js
++## Stack
+ 
++| Layer | Tech |
++|---|---|
++| Frontend | React 19 + Vite + TypeScript, Tailwind CSS, Framer Motion |
++| Hosting | Vercel (serverless API routes) |
++| Database | Firebase Firestore (read cache) + Supabase (subscribers, payments) |
++| AI | Gemini 3.1 Pro (briefings, market intel) |
++| Newsletter | Beehiiv API |
++| Payments | Lemon Squeezy (card) + Coinbase Commerce (crypto) |
++| News | Newsdata.io + News API |
+ 
+-1. Install dependencies:
+-   `npm install`
+-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
+-3. Run the app:
+-   `npm run dev`
++## Quick start
++
++```bash
++npm install
++cp .env.example .env.local  # fill in your keys
++npm run dev                 # http://localhost:5173
++```
++
++### Type check before every commit
++
++```bash
++npx tsc --noEmit   # must pass clean (0 errors)
++```
++
++### Build
++
++```bash
++npx vite build    # outputs to dist/
++```
++
++## Project structure
++
++```
++api/                    # Vercel serverless API routes
++  _lib/                 # Shared helpers (beehiiv, cors, firebase, supabase, news)
++  members/verify.ts     # Premium verification endpoint
++  webhooks/             # Lemon Squeezy + Coinbase webhooks
++  newsletter/           # Automated weekly generate + send
++  create-checkout-session.ts  # Lemon Squeezy checkout
++  create-crypto-charge.ts     # Coinbase Commerce charge
++src/
++  App.tsx              # Main dashboard (EN/ES/PT i18n)
++  pages/
++    JobsPage.tsx       # Job board + market value calculator
++    MembersPage.tsx    # Premium hub (salary, resources, hiring tools)
++    PrivacyPage.tsx    # Privacy policy
++  components/          # React components
++  lib/                 # Client-side logic (intelligence, hiring plan, etc.)
++  hooks/               # Custom React hooks
++vercel.json            # Build config + cron jobs + rewrites
++```
++
++## Deployment
++
++See [DEPLOY.md](DEPLOY.md) for the full step-by-step guide.
++
++## License
++
++Proprietary — WProTalents
+diff --git a/api/_lib/beehiiv.ts b/api/_lib/beehiiv.ts
+new file mode 100644
+index 0000000..fef6169
+--- /dev/null
++++ b/api/_lib/beehiiv.ts
+@@ -0,0 +1,79 @@
++// api/_lib/beehiiv.ts — Beehiiv newsletter API wrapper
++
++const BASE = 'https://api.beehiiv.com/v2';
++
++export async function beehiivCreateSubscriber(email: string, opts?: {
++  utm_source?: string;
++  utm_medium?: string;
++  subscriber_type?: string;
++}) {
++  const key = process.env.BEEHIIV_API_KEY;
++  const pubId = process.env.BEEHIIV_PUB_ID;
++  if (!key || !pubId) {
++    console.warn('[beehiiv] BEEHIIV_API_KEY or BEEHIIV_PUB_ID not set — subscriber not pushed to Beehiiv');
++    return null;
++  }
++
++  try {
++    const res = await fetch(`${BASE}/publications/${pubId}/subscriptions`, {
++      method: 'POST',
++      headers: {
++        'Content-Type': 'application/json',
++        'Authorization': `Bearer ${key}`,
++      },
++      body: JSON.stringify({
++        email,
++        utm_source: opts?.utm_source || 'latam-intel',
++        utm_medium: opts?.utm_medium || 'organic',
++        reactivate_existing: true,
++        send_welcome_email: true,
++        custom_fields: [
++          ...(opts?.subscriber_type ? [{ name: 'subscriber_type', value: opts.subscriber_type }] : []),
++        ],
++      }),
++    });
++    if (!res.ok) {
++      const err = await res.json().catch(() => ({}));
++      console.warn('[beehiiv] subscribe failed:', res.status, err);
++      return null;
++    }
++    return await res.json();
++  } catch (e: any) {
++    console.warn('[beehiiv] subscribe error:', e.message);
++    return null;
++  }
++}
++
++export async function beehiivCreatePost(post: {
++  title: string;
++  content: string;
++  subtitle?: string;
++  preview_text?: string;
++  status?: 'draft' | 'published';
++  newsletter_id?: string;
++}) {
++  const key = process.env.BEEHIIV_API_KEY;
++  const pubId = process.env.BEEHIIV_PUB_ID;
++  if (!key || !pubId) throw new Error('BEEHIIV_API_KEY or BEEHIIV_PUB_ID not set');
++
++  const res = await fetch(`${BASE}/publications/${pubId}/posts`, {
++    method: 'POST',
++    headers: {
++      'Content-Type': 'application/json',
++      'Authorization': `Bearer ${key}`,
++    },
++    body: JSON.stringify({
++      title: post.title,
++      content: post.content,
++      subtitle: post.subtitle || '',
++      preview_text: post.preview_text || '',
++      status: post.status || 'published',
++      ...(post.newsletter_id ? { newsletter_id: post.newsletter_id } : {}),
++    }),
++  });
++  if (!res.ok) {
++    const err = await res.json().catch(() => ({}));
++    throw new Error(`Beehiiv post creation failed: ${res.status} ${JSON.stringify(err)}`);
++  }
++  return await res.json();
++}
+diff --git a/api/crypto-webhook.ts b/api/crypto-webhook.ts
+index 56b1227..ac89bc1 100644
+--- a/api/crypto-webhook.ts
++++ b/api/crypto-webhook.ts
+@@ -3,6 +3,27 @@ import type { VercelRequest, VercelResponse } from "@vercel/node";
+ import crypto from "crypto";
+ import { db, admin } from "./_lib/firebase.js";
+ 
++async function updateSupabaseSubscriber(email: string, isPremium: boolean, premiumUntil?: string) {
++  const supabaseUrl = process.env.SUPABASE_URL;
++  const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
++  if (!supabaseUrl || !supabaseKey || !email) return;
++  try {
++    const { createClient } = await import("@supabase/supabase-js");
++    const sb = createClient(supabaseUrl, supabaseKey);
++    await sb.from("subscribers").upsert(
++      {
++        email: email.toLowerCase().trim(),
++        is_premium: isPremium,
++        premium_until: premiumUntil || null,
++        updated_at: new Date().toISOString(),
++      },
++      { onConflict: "email" }
++    );
++  } catch (e: any) {
++    console.warn("[crypto-webhook] Supabase update error:", e.message);
++  }
++}
++
+ export const config = { maxDuration: 15 };
+ 
+ function verifySignature(rawBody: string, signature: string, secret: string): boolean {
+@@ -31,38 +52,42 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
+ 
+   if (type === "charge:confirmed" || type === "charge:resolved") {
+     const { userId, userEmail } = charge.metadata || {};
+-    if (!userId) return res.status(400).json({ error: "No userId in metadata" });
+-
+     const now = new Date();
+     const executiveUntil = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000); // +30 days
+ 
+-    // Grant executive access in Firestore
+-    await db.collection("users").doc(userId).set({
+-      executiveUntil: admin.firestore.Timestamp.fromDate(executiveUntil),
+-      executiveSince: admin.firestore.Timestamp.fromDate(now),
+-      executiveEmail: userEmail || "",
+-      updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+-    }, { merge: true });
+-
+-    // Update payment record
+-    const paymentsSnap = await db.collection("users").doc(userId)
+-      .collection("payments")
+-      .where("chargeId", "==", charge.id)
+-      .limit(1).get();
+-
+-    if (!paymentsSnap.empty) {
+-      await paymentsSnap.docs[0].ref.update({
+-        status: "confirmed",
+-        confirmedAt: now.toISOString(),
+-        executiveUntil: executiveUntil.toISOString(),
+-      });
++    // Write to Supabase subscribers table
++    await updateSupabaseSubscriber(userEmail || "", true, executiveUntil.toISOString());
++
++    // Also update Firestore for backwards compat
++    if (userId) {
++      await db.collection("users").doc(userId).set({
++        executiveUntil: admin.firestore.Timestamp.fromDate(executiveUntil),
++        executiveSince: admin.firestore.Timestamp.fromDate(now),
++        executiveEmail: userEmail || "",
++        updatedAt: admin.firestore.FieldValue.serverTimestamp(),
++      }, { merge: true });
++
++      // Update payment record
++      const paymentsSnap = await db.collection("users").doc(userId)
++        .collection("payments")
++        .where("chargeId", "==", charge.id)
++        .limit(1).get();
++
++      if (!paymentsSnap.empty) {
++        await paymentsSnap.docs[0].ref.update({
++          status: "confirmed",
++          confirmedAt: now.toISOString(),
++          executiveUntil: executiveUntil.toISOString(),
++        });
++      }
+     }
+ 
+-    console.log(`✅ Executive access granted to ${userId} until ${executiveUntil.toISOString()}`);
++    console.log(`Executive access granted to ${userEmail || userId} until ${executiveUntil.toISOString()}`);
+   }
+ 
+   if (type === "charge:failed") {
+-    const { userId } = charge.metadata || {};
++    const { userId, userEmail } = charge.metadata || {};
++    await updateSupabaseSubscriber(userEmail || "", false);
+     if (userId) {
+       const paymentsSnap = await db.collection("users").doc(userId)
+         .collection("payments")
+diff --git a/api/cvradar.ts b/api/cvradar.ts
+new file mode 100644
+index 0000000..b54c68a
+--- /dev/null
++++ b/api/cvradar.ts
+@@ -0,0 +1,153 @@
++import type { VercelRequest, VercelResponse } from '@vercel/node';
++import { db } from './_lib/firebase';
++import admin from 'firebase-admin';
++
++/*
++  Consolidated CV Radar API — replaces:
++    cvradar/create.ts      → POST /
++    cvradar/list.ts       → GET /
++    cvradar/[radarId].ts → GET|PUT|DELETE /:id
++    cvradar/match/update.ts → POST /:id/match
++*/
++
++export default async function handler(req: VercelRequest, res: VercelResponse) {
++  res.setHeader('Access-Control-Allow-Origin', '*');
++  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
++  if (req.method === 'OPTIONS') return res.status(200).end();
++
++  const clientId = (req.query.clientId as string) || (req.body && req.body.clientId);
++  const radarId = req.query.radarId as string;
++
++  // POST /api/cvradar — create radar
++  if (req.method === 'POST' && !radarId) {
++    const { radarName, criteria, notificationEmail, matchThreshold, notifyOnMatch } = req.body || {};
++
++    if (!radarName || !criteria || !notificationEmail) {
++      return res.status(400).json({ error: 'radarName, criteria, and notificationEmail are required' });
++    }
++    if (!notificationEmail.includes('@')) {
++      return res.status(400).json({ error: 'Valid notificationEmail required' });
++    }
++
++    try {
++      const radarRef = await db
++        .collection('clients')
++        .doc(req.body.clientId as string)
++        .collection('cvRadars')
++        .add({
++          radarName,
++          criteria,
++          isActive: true,
++          notificationEmail,
++          notifyOnMatch: notifyOnMatch !== false,
++          matchThreshold: matchThreshold || 75,
++          createdAt: admin.firestore.Timestamp.now(),
++          updatedAt: admin.firestore.Timestamp.now(),
++        });
++      return res.status(201).json({ success: true, radarId: radarRef.id });
++    } catch (err) {
++      console.error('cvradar create error:', err);
++      return res.status(500).json({ error: 'Failed to create radar' });
++    }
++  }
++
++  // GET /api/cvradar — list radars for client
++  if (req.method === 'GET' && !radarId) {
++    if (!clientId) return res.status(400).json({ error: 'clientId is required' });
++
++    try {
++      const snap = await db
++        .collection('clients')
++        .doc(clientId)
++        .collection('cvRadars')
++        .orderBy('createdAt', 'desc')
++        .get();
++
++      const radars = await Promise.all(
++        snap.docs.map(async (doc) => {
++          const data = doc.data();
++          const matchesSnap = await doc.ref.collection('matches').where('status', '==', 'new').get();
++          return {
++            id: doc.id,
++            radarName: data.radarName,
++            isActive: data.isActive,
++            matchThreshold: data.matchThreshold,
++            newMatches: matchesSnap.size,
++            lastMatchedAt: data.lastMatchedAt,
++            createdAt: data.createdAt,
++          };
++        })
++      );
++      return res.status(200).json({ success: true, radars, totalCount: radars.length });
++    } catch (err) {
++      console.error('cvradar list error:', err);
++      return res.status(500).json({ error: 'Failed to list radars' });
++    }
++  }
++
++  // /:id — single radar operations
++  if (radarId) {
++    if (!clientId) return res.status(400).json({ error: 'clientId is required' });
++
++    const radarRef = db
++      .collection('clients')
++      .doc(clientId)
++      .collection('cvRadars')
++      .doc(radarId);
++
++    // GET /api/cvradar?radarId=xxx
++    if (req.method === 'GET') {
++      try {
++        const doc = await radarRef.get();
++        if (!doc.exists) return res.status(404).json({ error: 'Radar not found' });
++        return res.status(200).json({ success: true, radar: { id: doc.id, ...doc.data() } });
++      } catch (err) {
++        console.error('cvradar get error:', err);
++        return res.status(500).json({ error: 'Failed to get radar' });
++      }
++    }
++
++    // PUT /api/cvradar?radarId=xxx
++    if (req.method === 'PUT') {
++      try {
++        const updates = { ...req.body, updatedAt: admin.firestore.Timestamp.now() };
++        delete updates.radarId;
++        await radarRef.update(updates);
++        return res.status(200).json({ success: true, message: 'Radar updated' });
++      } catch (err) {
++        console.error('cvradar update error:', err);
++        return res.status(500).json({ error: 'Failed to update radar' });
++      }
++    }
++
++    // DELETE /api/cvradar?radarId=xxx
++    if (req.method === 'DELETE') {
++      try {
++        await radarRef.delete();
++        return res.status(200).json({ success: true, message: 'Radar deleted' });
++      } catch (err) {
++        console.error('cvradar delete error:', err);
++        return res.status(500).json({ error: 'Failed to delete radar' });
++      }
++    }
++
++    // POST /api/cvradar?radarId=xxx/match — update match status
++    if (req.method === 'POST') {
++      const { matchId, status, candidateProfile } = req.body || {};
++      if (!matchId) return res.status(400).json({ error: 'matchId is required' });
++
++      try {
++        const matchRef = radarRef.collection('matches').doc(matchId);
++        const updates: Record<string, unknown> = { status, updatedAt: admin.firestore.Timestamp.now() };
++        if (candidateProfile) updates.candidateProfile = candidateProfile;
++        await matchRef.update(updates);
++        return res.status(200).json({ success: true, message: 'Match updated' });
++      } catch (err) {
++        console.error('cvradar match update error:', err);
++        return res.status(500).json({ error: 'Failed to update match' });
++      }
++    }
++  }
++
++  return res.status(405).json({ error: 'Method not allowed' });
++}
+diff --git a/api/cvradar/[radarId].ts b/api/cvradar/[radarId].ts
+deleted file mode 100644
+index 2729e53..0000000
+--- a/api/cvradar/[radarId].ts
++++ /dev/null
+@@ -1,119 +0,0 @@
+-import type { VercelRequest, VercelResponse } from '@vercel/node';
+-import { db } from '../_lib/firebase';
+-import admin from 'firebase-admin';
+-
+-export default async function handler(req: VercelRequest, res: VercelResponse) {
+-  res.setHeader('Access-Control-Allow-Origin', '*');
+-  res.setHeader('Access-Control-Allow-Methods', 'GET, PUT, DELETE, OPTIONS');
+-  if (req.method === 'OPTIONS') return res.status(200).end();
+-
+-  const { clientId, radarId } = req.query;
+-
+-  if (!clientId || !radarId) {
+-    return res.status(400).json({ error: 'clientId and radarId are required' });
+-  }
+-
+-  const radarRef = db.collection('clients').doc(clientId as string).collection('cvRadars').doc(radarId as string);
+-
+-  try {
+-    // GET - Retrieve radar with its matches
+-    if (req.method === 'GET') {
+-      const radarSnap = await radarRef.get();
+-
+-      if (!radarSnap.exists) {
+-        return res.status(404).json({ error: 'Radar not found' });
+-      }
+-
+-      const radar = radarSnap.data();
+-
+-      // Fetch all matches for this radar
+-      const matchesSnap = await radarRef.collection('matches').orderBy('createdAt', 'desc').get();
+-      const matches = matchesSnap.docs.map((doc) => {
+-        const data = doc.data();
+-        return {
+-          matchId: doc.id,
+-          candidateId: data.candidateId,
+-          candidateName: data.candidateName,
+-          candidateEmail: data.candidateEmail || '',
+-          matchScore: data.matchScore,
+-          matchBreakdown: data.matchBreakdown || {
+-            skillsScore: 0,
+-            experienceScore: 0,
+-            locationScore: 0,
+-            salaryScore: 0,
+-          },
+-          reasoning: data.reasoning || [],
+-          status: data.status,
+-          createdAt: data.createdAt,
+-          candidateProfile: data.candidateProfile || {},
+-        };
+-      });
+-
+-      // Calculate stats
+-      const byStatus = matches.reduce(
+-        (acc, m) => {
+-          acc[m.status] = (acc[m.status] || 0) + 1;
+-          return acc;
+-        },
+-        {} as Record<string, number>
+-      );
+-
+-      return res.status(200).json({
+-        success: true,
+-        radar: {
+-          id: radarSnap.id,
+-          ...radar,
+-        },
+-        matches,
+-        stats: {
+-          totalMatches: matches.length,
+-          avgScore: matches.length > 0 ? Math.round(matches.reduce((sum, m) => sum + m.matchScore, 0) / matches.length) : 0,
+-          byStatus,
+-        },
+-      });
+-    }
+-
+-    // PUT - Update radar
+-    if (req.method === 'PUT') {
+-      const { radarName, criteria, isActive, matchThreshold, notifyOnMatch } = req.body;
+-
+-      const updateData: any = {};
+-      if (radarName !== undefined) updateData.radarName = radarName;
+-      if (criteria !== undefined) updateData.criteria = criteria;
+-      if (isActive !== undefined) updateData.isActive = isActive;
+-      if (matchThreshold !== undefined) updateData.matchThreshold = matchThreshold;
+-      if (notifyOnMatch !== undefined) updateData.notifyOnMatch = notifyOnMatch;
+-      updateData.updatedAt = admin.firestore.Timestamp.now();
+-
+-      if (Object.keys(updateData).length === 1) {
+-        // Only updatedAt was set
+-        return res.status(400).json({ error: 'No fields to update' });
+-      }
+-
+-      await radarRef.update(updateData);
+-
+-      return res.status(200).json({
+-        success: true,
+-        message: 'Radar updated successfully',
+-      });
+-    }
+-
+-    // DELETE - Soft delete (mark as inactive)
+-    if (req.method === 'DELETE') {
+-      await radarRef.update({
+-        isActive: false,
+-        updatedAt: admin.firestore.Timestamp.now(),
+-      });
+-
+-      return res.status(200).json({
+-        success: true,
+-        message: 'Radar deleted successfully',
+-      });
+-    }
+-
+-    return res.status(405).json({ error: 'Method not allowed' });
+-  } catch (err) {
+-    console.error('cvradar/[radarId] error:', err);
+-    return res.status(500).json({ error: 'Failed to process request' });
+-  }
+-}
+diff --git a/api/cvradar/create.ts b/api/cvradar/create.ts
+deleted file mode 100644
+index aae8b17..0000000
+--- a/api/cvradar/create.ts
++++ /dev/null
+@@ -1,48 +0,0 @@
+-import type { VercelRequest, VercelResponse } from '@vercel/node';
+-import { db } from '../_lib/firebase';
+-import admin from 'firebase-admin';
+-
+-export default async function handler(req: VercelRequest, res: VercelResponse) {
+-  res.setHeader('Access-Control-Allow-Origin', '*');
+-  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+-  if (req.method === 'OPTIONS') return res.status(200).end();
+-  if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
+-
+-  const { clientId, radarName, criteria, notificationEmail, matchThreshold, notifyOnMatch } = req.body;
+-
+-  // Validate required fields
+-  if (!clientId || !radarName || !criteria) {
+-    return res.status(400).json({ error: 'clientId, radarName, and criteria are required' });
+-  }
+-
+-  if (!notificationEmail || !notificationEmail.includes('@')) {
+-    return res.status(400).json({ error: 'Valid notificationEmail is required' });
+-  }
+-
+-  try {
+-    // Create radar document in Firestore
+-    const radarRef = await db
+-      .collection('clients')
+-      .doc(clientId)
+-      .collection('cvRadars')
+-      .add({
+-        radarName,
+-        criteria,
+-        isActive: true,
+-        notificationEmail,
+-        notifyOnMatch: notifyOnMatch !== false, // Default to true
+-        matchThreshold: matchThreshold || 75,
+-        createdAt: admin.firestore.Timestamp.now(),
+-        updatedAt: admin.firestore.Timestamp.now(),
+-      });
+-
+-    return res.status(201).json({
+-      success: true,
+-      radarId: radarRef.id,
+-      message: `CV Radar "${radarName}" created successfully`,
+-    });
+-  } catch (err) {
+-    console.error('cvradar/create error:', err);
+-    return res.status(500).json({ error: 'Failed to create radar' });
+-  }
+-}
+diff --git a/api/cvradar/list.ts b/api/cvradar/list.ts
+deleted file mode 100644
+index 5f1eafa..0000000
+--- a/api/cvradar/list.ts
++++ /dev/null
+@@ -1,54 +0,0 @@
+-import type { VercelRequest, VercelResponse } from '@vercel/node';
+-import { db } from '../_lib/firebase';
+-
+-export default async function handler(req: VercelRequest, res: VercelResponse) {
+-  res.setHeader('Access-Control-Allow-Origin', '*');
+-  res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
+-  if (req.method === 'OPTIONS') return res.status(200).end();
+-  if (req.method !== 'GET') return res.status(405).json({ error: 'Method not allowed' });
+-
+-  const clientId = req.query.clientId as string;
+-
+-  if (!clientId) {
+-    return res.status(400).json({ error: 'clientId query parameter is required' });
+-  }
+-
+-  try {
+-    // Fetch all radars for the client
+-    const snap = await db
+-      .collection('clients')
+-      .doc(clientId)
+-      .collection('cvRadars')
+-      .orderBy('createdAt', 'desc')
+-      .get();
+-
+-    const radars = await Promise.all(
+-      snap.docs.map(async (doc) => {
+-        const data = doc.data();
+-
+-        // Count matches for each radar
+-        const matchesSnap = await doc.ref.collection('matches').where('status', '==', 'new').get();
+-        const newMatchCount = matchesSnap.size;
+-
+-        return {
+-          id: doc.id,
+-          radarName: data.radarName,
+-          isActive: data.isActive,
+-          matchThreshold: data.matchThreshold,
+-          newMatches: newMatchCount,
+-          lastMatchedAt: data.lastMatchedAt,
+-          createdAt: data.createdAt,
+-        };
+-      })
+-    );
+-
+-    return res.status(200).json({
+-      success: true,
+-      radars,
+-      totalCount: radars.length,
+-    });
+-  } catch (err) {
+-    console.error('cvradar/list error:', err);
+-    return res.status(500).json({ error: 'Failed to list radars' });
+-  }
+-}
+diff --git a/api/cvradar/match/update.ts b/api/cvradar/match/update.ts
+deleted file mode 100644
+index 1205fdb..0000000
+--- a/api/cvradar/match/update.ts
++++ /dev/null
+@@ -1,46 +0,0 @@
+-import { VercelRequest, VercelResponse } from '@vercel/node';
+-import { db } from '../../_lib/firebase';
+-
+-export default async function handler(req: VercelRequest, res: VercelResponse) {
+-  if (req.method !== 'PATCH') {
+-    return res.status(405).json({ error: 'Method not allowed' });
+-  }
+-
+-  const { radarId, matchId, clientId, status, clientNotes } = req.body;
+-
+-  if (!radarId || !matchId || !clientId || !status) {
+-    return res.status(400).json({ error: 'Missing required fields' });
+-  }
+-
+-  try {
+-    // Update match status in Firestore
+-    const matchRef = db
+-      .collection('clients')
+-      .doc(clientId)
+-      .collection('cvRadars')
+-      .doc(radarId)
+-      .collection('matches')
+-      .doc(matchId);
+-
+-    const updateData: Record<string, any> = {
+-      status,
+-      clientActionAt: new Date(),
+-    };
+-
+-    if (clientNotes) {
+-      updateData.clientNotes = clientNotes;
+-    }
+-
+-    await matchRef.update(updateData);
+-
+-    return res.status(200).json({
+-      success: true,
+-      message: 'Match status updated',
+-      matchId,
+-      status,
+-    });
+-  } catch (error) {
+-    console.error('Error updating match:', error);
+-    return res.status(500).json({ error: 'Failed to update match' });
+-  }
+-}
+diff --git a/api/members/verify.ts b/api/members/verify.ts
+index e1e7345..302ff12 100755
+--- a/api/members/verify.ts
++++ b/api/members/verify.ts
+@@ -1,25 +1,48 @@
+ import type { VercelRequest, VercelResponse } from "@vercel/node";
+-import { db } from "../_lib/firebase.js";
+ import { handleCors } from "../_lib/cors.js";
+ 
+ export default async function handler(req: VercelRequest, res: VercelResponse) {
+   if (handleCors(req, res)) return;
+   if (req.method !== "GET") return res.status(405).end();
+ 
+-  const { uid } = req.query as { uid: string };
+-  if (!uid) return res.status(400).json({ error: "uid required" });
++  const { email } = req.query as { email?: string };
++  if (!email) return res.status(400).json({ error: "email required" });
++
++  // Look up subscriber in Supabase by email
++  const supabaseUrl = process.env.SUPABASE_URL;
++  const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
++  if (!supabaseUrl || !supabaseKey) {
++    return res.status(500).json({ error: "Supabase not configured" });
++  }
+ 
+   try {
+-    const doc = await db.collection("users").doc(uid).get();
+-    if (!doc.exists) return res.json({ isPremium: false, subscriptionStatus: "free" });
++    const { createClient } = await import("@supabase/supabase-js");
++    const sb = createClient(supabaseUrl, supabaseKey);
++
++    // Check subscribers table for premium status
++    const { data: subscriber, error } = await sb
++      .from("subscribers")
++      .select("is_premium, premium_until")
++      .eq("email", email.toLowerCase().trim())
++      .single();
++
++    if (error || !subscriber) {
++      return res.json({ isPremium: false, subscriptionStatus: "free" });
++    }
++
++    // If premium_until is set and still in the future, user is premium
++    let isPremium = !!subscriber.is_premium;
++    if (subscriber.premium_until) {
++      isPremium = new Date(subscriber.premium_until) > new Date();
++    }
+ 
+-    const data = doc.data()!;
+     res.json({
+-      isPremium: data.subscriptionStatus === "premium",
+-      subscriptionStatus: data.subscriptionStatus || "free",
+-      paymentMethod: data.paymentMethod || null,
++      isPremium,
++      subscriptionStatus: isPremium ? "premium" : "free",
++      premiumUntil: subscriber.premium_until || null,
+     });
+   } catch (e: any) {
++    console.error("[members/verify] error:", e.message);
+     res.status(500).json({ error: e.message });
+   }
+ }
+diff --git a/api/newsletter/generate.ts b/api/newsletter/generate.ts
+new file mode 100644
+index 0000000..0c2298a
+--- /dev/null
++++ b/api/newsletter/generate.ts
+@@ -0,0 +1,109 @@
++// api/newsletter/generate.ts — generate weekly newsletter via Gemini
++// Triggered by Vercel Cron (GET) or manual curl (POST with x-cron-secret)
++import type { VercelRequest, VercelResponse } from '@vercel/node';
++import { handleCors } from '../_lib/cors.js';
++import { fetchFreshNews } from '../_lib/news.js';
++import { getGemini, GEMINI_FLASH } from '../_lib/gemini.js';
++
++export const config = { maxDuration: 60 };
++
++// Vercel Cron sends GET; manual triggers use POST with x-cron-secret
++// We accept both, but only verify the secret for POST.
++export default async function handler(req: VercelRequest, res: VercelResponse) {
++  // CORS preflight
++  if (handleCors(req, res)) return;
++
++  // For POST requests, verify cron secret
++  if (req.method === 'POST') {
++    const secret = req.headers['x-cron-secret'] as string;
++    if (!secret || secret !== process.env.CRON_SECRET) {
++      return res.status(401).json({ error: 'Invalid or missing x-cron-secret' });
++    }
++  }
++
++  // Only allow GET (cron) and POST (manual)
++  if (req.method !== 'GET' && req.method !== 'POST') {
++    return res.status(405).end();
++  }
++
++  try {
++    // 1. Fetch recent news
++    const news = await fetchFreshNews(true);
++    const newsContext = news.slice(0, 10).map((a, i) => `${i + 1}. ${a.title}`).join('\n');
++
++    // 2. Generate newsletter content in 3 languages
++    const ai = getGemini();
++
++    const prompt = `You are the editor of "Workforce Daily" by WProTalents — a LATAM tech workforce intelligence newsletter.
++Based on the following recent news headlines about LATAM tech/hiring/AI, write a newsletter issue.
++
++RECENT NEWS:\n${newsContext}
++
++TODAY'S DATE CONTEXT: August 2026
++
++Generate the output as a JSON object with this exact structure (no markdown, just raw JSON):
++{
++  "week_label": "Week 31 · Aug 2026",
++  "subject_line": { "EN": "", "ES": "", "PT": "" },
++  "preview_text": { "EN": "", "ES": "", "PT": "" },
++  "free_teaser": { "EN": "", "ES": "", "PT": "" },
++  "body_html": { "EN": "", "ES": "", "PT": "" }
++}
++
++Rules:
++- Subject lines should be compelling, under 80 chars, mention LATAM + AI/salaries/hiring
++- Free teaser: 2-3 sentences teasing the key insight, ends with a CTA to subscribe
++- Body HTML: use simple HTML (h2, h3, p, ul, li, strong, em, br). No inline styles. Keep it scannable.
++- Content must be specific, data-driven, and actionable for LATAM tech professionals
++- Include at least: a lead story, 3-4 key takeaways with bullet points, and a "So What" section
++- Keep total body under 800 words per language
++- The ES and PT versions should be proper translations, not just English with different words`;
++
++    const r = await ai.models.generateContent({
++      model: GEMINI_FLASH,
++      contents: prompt,
++      config: {
++    responseMimeType: 'application/json',
++  },
++    });
++
++    const parsed = JSON.parse(r.text);
++
++    // 3. Store in Supabase
++    const issueId = `workforce-daily-${new Date().toISOString().slice(0, 10)}`;
++    const supabaseUrl = process.env.SUPABASE_URL;
++    const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
++
++    if (supabaseUrl && supabaseKey) {
++      const { createClient } = await import('@supabase/supabase-js');
++      const sb = createClient(supabaseUrl, supabaseKey);
++      await sb.from('newsletter_issues').upsert(
++        {
++          id: issueId,
++          week_label: parsed.week_label,
++          subject_line: parsed.subject_line.EN,
++          preview_text: parsed.preview_text.EN,
++          category: 'Workforce Daily',
++          free_teaser: parsed.free_teaser.EN,
++          paid_analysis: {
++            en: { subject: parsed.subject_line.EN, body: parsed.body_html.EN },
++            es: { subject: parsed.subject_line.ES, body: parsed.body_html.ES },
++            pt: { subject: parsed.subject_line.PT, body: parsed.body_html.PT },
++          },
++          published_at: new Date().toISOString(),
++        },
++        { onConflict: 'id' }
++      );
++    }
++
++    return res.json({
++      success: true,
++      issueId,
++      subject: parsed.subject_line.EN,
++      week_label: parsed.week_label,
++    });
++  } catch (e: any) {
++    console.error('[newsletter/generate] error:', e.message);
++    return res.status(500).json({ error: e.message });
++  }
++}
+diff --git a/api/newsletter/send.ts b/api/newsletter/send.ts
+new file mode 100644
+index 0000000..dea0c1e
+--- /dev/null
++++ b/api/newsletter/send.ts
+@@ -0,0 +1,85 @@
++// api/newsletter/send.ts — send latest newsletter draft to Beehiiv
++import type { VercelRequest, VercelResponse } from '@vercel/node';
++import { handleCors } from '../_lib/cors.js';
++import { beehiivCreatePost } from '../_lib/beehiiv.js';
++
++export const config = { maxDuration: 30 };
++
++export default async function handler(req: VercelRequest, res: VercelResponse) {
++  if (handleCors(req, res)) return;
++
++  // For POST requests, verify cron secret
++  if (req.method === 'POST') {
++    const secret = req.headers['x-cron-secret'] as string;
++    if (!secret || secret !== process.env.CRON_SECRET) {
++      return res.status(401).json({ error: 'Invalid or missing x-cron-secret' });
++    }
++  }
++
++  if (req.method !== 'GET' && req.method !== 'POST') {
++    return res.status(405).end();
++  }
++
++  try {
++    // 1. Fetch the most recent draft from Supabase
++    const supabaseUrl = process.env.SUPABASE_URL;
++    const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
++    if (!supabaseUrl || !supabaseKey) {
++      return res.status(500).json({ error: 'Supabase not configured' });
++    }
++
++    const { createClient } = await import('@supabase/supabase-js');
++    const sb = createClient(supabaseUrl, supabaseKey);
++
++    const { data: issue, error } = await sb
++      .from('newsletter_issues')
++      .select('*')
++      .order('published_at', { ascending: false })
++      .limit(1)
++      .single();
++
++    if (error || !issue) {
++      return res.status(404).json({ error: 'No newsletter draft found. Run generate first.' });
++    }
++
++    const body = issue.paid_analysis;
++    if (!body || !body.en) {
++      return res.status(400).json({ error: 'Draft has no body content' });
++    }
++
++    // 2. Send each language version to Beehiiv
++    const results: Record<string, any> = {};
++    for (const [lang, content] of Object.entries(body)) {
++      try {
++        const c = content as { subject?: string; body: string };
++        const subject = c.subject || issue.subject_line;
++        const post = await beehiivCreatePost({
++          title: `${subject} [${lang.toUpperCase()}]`,
++          content: c.body,
++          preview_text: issue.preview_text,
++          status: 'published',
++        });
++        results[lang] = { success: true, postId: post?.id };
++
++        // Update the Beehiiv post ID on the issue
++        if (post?.id && lang === 'en') {
++          await sb.from('newsletter_issues').update(
++            { beehiiv_post_id: post.id as string }
++          ).eq('id', issue.id);
++        }
++      } catch (e: any) {
++        results[lang] = { success: false, error: e.message };
++      }
++    }
++
++    return res.json({
++      success: true,
++      issueId: issue.id,
++      subject: issue.subject_line,
++      results,
++    });
++  } catch (e: any) {
++    console.error('[newsletter/send] error:', e.message);
++    return res.status(500).json({ error: e.message });
++  }
++}
+diff --git a/api/subscribe-newsletter.ts b/api/subscribe-newsletter.ts
+new file mode 100644
+index 0000000..4fa0947
+--- /dev/null
++++ b/api/subscribe-newsletter.ts
+@@ -0,0 +1,47 @@
++// api/subscribe-newsletter.ts — capture email + push to Supabase + Beehiiv
++import type { VercelRequest, VercelResponse } from "@vercel/node";
++import { handleCors } from "./_lib/cors.js";
++import { beehiivCreateSubscriber } from "./_lib/beehiiv.js";
++
++export default async function handler(req: VercelRequest, res: VercelResponse) {
++  if (handleCors(req, res)) return;
++  if (req.method !== "POST") return res.status(405).end();
++
++  const { email, role, country, yearsExp, source } = req.body;
++  if (!email || typeof email !== "string" || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
++    return res.status(400).json({ error: "Valid email is required" });
++  }
++
++  // 1. Upsert to Supabase subscribers table
++  const supabaseUrl = process.env.SUPABASE_URL;
++  const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
++  if (supabaseUrl && supabaseKey) {
++    try {
++      const { createClient } = await import("@supabase/supabase-js");
++      const sb = createClient(supabaseUrl, supabaseKey);
++      await sb.from("subscribers").upsert(
++        {
++          email: email.toLowerCase().trim(),
++          subscriber_type: role || "reader",
++          language: "EN", // will be enriched from frontend context later
++          country: country || null,
++          utm_source: source || "market-value-teaser",
++          subscribed_at: new Date().toISOString(),
++        },
++        { onConflict: "email" }
++      );
++    } catch (e: any) {
++      console.error("[subscribe-newsletter] Supabase upsert error:", e.message);
++    }
++  } else {
++    console.warn("[subscribe-newsletter] SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY not set");
++  }
++
++  // 2. Push to Beehiiv (fire-and-forget, don't block response)
++  beehiivCreateSubscriber(email.toLowerCase().trim(), {
++    utm_source: source || "market-value-teaser",
++    subscriber_type: role || "reader",
++  }).catch(() => {});
++
++  return res.json({ success: true });
++}
+diff --git a/api/webhooks/lemon-squeezy.ts b/api/webhooks/lemon-squeezy.ts
+index 3c15c9c..d033da4 100644
+--- a/api/webhooks/lemon-squeezy.ts
++++ b/api/webhooks/lemon-squeezy.ts
+@@ -2,7 +2,28 @@
+ import type { VercelRequest, VercelResponse } from "@vercel/node";
+ import crypto from "crypto";
+ import { db, admin } from "../_lib/firebase.js";
+-import { syncUserToSupabase } from "../_lib/supabase.js";
++
++async function updateSupabaseSubscriber(email: string, isPremium: boolean, premiumUntil?: string) {
++  const supabaseUrl = process.env.SUPABASE_URL;
++  const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
++  if (!supabaseUrl || !supabaseKey) return;
++  try {
++    const { createClient } = await import("@supabase/supabase-js");
++    const sb = createClient(supabaseUrl, supabaseKey);
++    await sb.from("subscribers").upsert(
++      {
++        email: email.toLowerCase().trim(),
++        is_premium: isPremium,
++        premium_until: premiumUntil || null,
++        updated_at: new Date().toISOString(),
++        // Ensure the row exists even if never subscribed to newsletter
++      },
++      { onConflict: "email" }
++    );
++  } catch (e: any) {
++    console.warn("[lemon-squeezy webhook] Supabase update error:", e.message);
++  }
++}
+ 
+ export default async function handler(req: VercelRequest, res: VercelResponse) {
+   if (req.method !== "POST") return res.status(405).end();
+@@ -19,25 +40,33 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
+   const userId   = meta?.user_id;
+   const email    = req.body?.data?.attributes?.user_email;
+   const status   = req.body?.data?.attributes?.status;
++  const renewsAt = req.body?.data?.attributes?.renews_at;
++  const endsAt   = req.body?.data?.attributes?.ends_at;
+ 
+   try {
+     if (event === "subscription_created" || (event === "subscription_updated" && status === "active")) {
++      // Calculate premium_until: use renews_at or ends_at, or default to 30 days from now
++      const premiumUntil = (renewsAt || endsAt) || new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString();
++      if (email) {
++        await updateSupabaseSubscriber(email, true, premiumUntil);
++      }
+       if (userId) {
+         await db.collection("users").doc(userId).set(
+           { subscriptionStatus: "premium", updatedAt: admin.firestore.FieldValue.serverTimestamp() },
+           { merge: true }
+         );
+-        if (email) await syncUserToSupabase(userId, email, "premium");
+       }
+     }
+ 
+     if (event === "subscription_cancelled" || event === "subscription_expired") {
++      if (email) {
++        await updateSupabaseSubscriber(email, false);
++      }
+       if (userId) {
+         await db.collection("users").doc(userId).set(
+           { subscriptionStatus: "free", updatedAt: admin.firestore.FieldValue.serverTimestamp() },
+           { merge: true }
+         );
+-        if (email) await syncUserToSupabase(userId, email, "free");
+       }
+     }
+ 
+diff --git a/index.html b/index.html
+index c3b4ba9..a0fa7f1 100644
+--- a/index.html
++++ b/index.html
+@@ -1,661 +1,22 @@
+ <!DOCTYPE html>
+ <html lang="en">
+ <head>
+-    <meta charset="UTF-8">
+-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+-    <title>Latam Intel — LATAM Tech Workforce Intelligence</title>
+-    <link rel="preconnect" href="https://fonts.googleapis.com">
+-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+-    <style>
+-        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+-
+-        :root {
+-            --bg: #050505;
+-            --bg-2: #0a0a0a;
+-            --surface: #111111;
+-            --surface-2: #1a1a1a;
+-            --border: #222222;
+-            --border-bright: #333333;
+-            --text: #e8e4df;
+-            --text-muted: #8a8a8a;
+-            --accent: #ff6b00;
+-            --accent-bright: #ff8533;
+-            --accent-dim: #cc5500;
+-            --accent-glow: rgba(255, 107, 0, 0.15);
+-        }
+-
+-        body {
+-            font-family: 'Inter', ui-sans-serif, system-ui, sans-serif;
+-            background: var(--bg);
+-            color: var(--text);
+-            line-height: 1.6;
+-            min-height: 100vh;
+-            overflow-x: hidden;
+-        }
+-
+-        .grid-bg {
+-            background-image:
+-                linear-gradient(to right, rgba(255,255,255,0.025) 1px, transparent 1px),
+-                linear-gradient(to bottom, rgba(255,255,255,0.025) 1px, transparent 1px);
+-            background-size: 40px 40px;
+-        }
+-
+-        .glow-orb {
+-            position: absolute;
+-            width: 600px;
+-            height: 600px;
+-            border-radius: 50%;
+-            background: radial-gradient(circle, rgba(255,107,0,0.12) 0%, transparent 70%);
+-            pointer-events: none;
+-            filter: blur(80px);
+-        }
+-
+-        nav {
+-            position: fixed;
+-            top: 0; left: 0; right: 0;
+-            z-index: 1000;
+-            padding: 1.25rem 2rem;
+-            display: flex;
+-            justify-content: space-between;
+-            align-items: center;
+-            background: rgba(5, 5, 5, 0.8);
+-            backdrop-filter: blur(20px);
+-            -webkit-backdrop-filter: blur(20px);
+-            border-bottom: 1px solid rgba(255,107,0,0.08);
+-        }
+-
+-        .logo {
+-            display: flex;
+-            align-items: center;
+-            gap: 0.75rem;
+-            text-decoration: none;
+-        }
+-
+-        .logo-mark {
+-            width: 36px;
+-            height: 36px;
+-            background: var(--accent);
+-            border-radius: 8px;
+-            display: flex;
+-            align-items: center;
+-            justify-content: center;
+-            font-weight: 800;
+-            font-size: 1.1rem;
+-            color: white;
+-            font-family: 'JetBrains Mono', monospace;
+-        }
+-
+-        .logo-text { display: flex; flex-direction: column; line-height: 1.1; }
+-        .logo-name { font-size: 1rem; font-weight: 700; color: var(--text); }
+-        .logo-sub { font-size: 0.65rem; font-family: 'JetBrains Mono', monospace; text-transform: uppercase; letter-spacing: 0.15em; color: var(--text-muted); }
+-
+-        .nav-links { display: flex; align-items: center; gap: 2rem; }
+-        .nav-link { font-size: 0.875rem; color: var(--text-muted); text-decoration: none; transition: color 0.2s; }
+-        .nav-link:hover { color: var(--text); }
+-
+-        .nav-cta {
+-            display: inline-flex;
+-            align-items: center;
+-            gap: 0.5rem;
+-            padding: 0.6rem 1.25rem;
+-            background: var(--accent);
+-            color: white;
+-            border: none;
+-            border-radius: 8px;
+-            font-size: 0.875rem;
+-            font-weight: 600;
+-            cursor: pointer;
+-            text-decoration: none;
+-            transition: all 0.2s;
+-            font-family: inherit;
+-        }
+-
+-        .nav-cta:hover {
+-            background: var(--accent-bright);
+-            box-shadow: 0 4px 20px rgba(255,107,0,0.3);
+-            transform: translateY(-1px);
+-        }
+-
+-        .hero {
+-            min-height: 100vh;
+-            display: flex;
+-            flex-direction: column;
+-            align-items: center;
+-            justify-content: center;
+-            text-align: center;
+-            padding: 8rem 2rem 4rem;
+-            position: relative;
+-            overflow: hidden;
+-        }
+-
+-        .hero-eyebrow {
+-            display: inline-flex;
+-            align-items: center;
+-            gap: 0.5rem;
+-            padding: 0.4rem 1rem;
+-            border: 1px solid rgba(255,107,0,0.3);
+-            border-radius: 100px;
+-            font-family: 'JetBrains Mono', monospace;
+-            font-size: 0.7rem;
+-            text-transform: uppercase;
+-            letter-spacing: 0.15em;
+-            color: var(--accent);
+-            background: rgba(255,107,0,0.06);
+-            margin-bottom: 2rem;
+-        }
+-
+-        .hero-eyebrow .dot {
+-            width: 6px; height: 6px;
+-            background: var(--accent);
+-            border-radius: 50%;
+-            animation: pulse 2s ease-in-out infinite;
+-        }
+-
+-        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+-
+-        .hero h1 {
+-            font-size: clamp(2.5rem, 6vw, 5rem);
+-            font-weight: 800;
+-            letter-spacing: -0.04em;
+-            line-height: 1.05;
+-            max-width: 900px;
+-            margin-bottom: 1.5rem;
+-            background: linear-gradient(135deg, #ffffff 0%, #e8e4df 60%, #ff6b00 100%);
+-            -webkit-background-clip: text;
+-            -webkit-text-fill-color: transparent;
+-            background-clip: text;
+-        }
+-
+-        .hero h1 span {
+-            background: linear-gradient(135deg, var(--accent) 0%, #ffaa44 100%);
+-            -webkit-background-clip: text;
+-            -webkit-text-fill-color: transparent;
+-            background-clip: text;
+-        }
+-
+-        .hero p {
+-            font-size: clamp(1rem, 2vw, 1.25rem);
+-            color: var(--text-muted);
+-            max-width: 580px;
+-            margin-bottom: 2.5rem;
+-            line-height: 1.7;
+-        }
+-
+-        .hero-actions {
+-            display: flex;
+-            align-items: center;
+-            gap: 1rem;
+-            flex-wrap: wrap;
+-            justify-content: center;
+-        }
+-
+-        .btn-primary {
+-            display: inline-flex;
+-            align-items: center;
+-            gap: 0.5rem;
+-            padding: 0.85rem 2rem;
+-            background: var(--accent);
+-            color: white;
+-            border: none;
+-            border-radius: 10px;
+-            font-size: 1rem;
+-            font-weight: 700;
+-            cursor: pointer;
+-            text-decoration: none;
+-            transition: all 0.2s;
+-            font-family: inherit;
+-        }
+-
+-        .btn-primary:hover {
+-            background: var(--accent-bright);
+-            box-shadow: 0 6px 30px rgba(255,107,0,0.4);
+-            transform: translateY(-2px);
+-        }
+-
+-        .btn-secondary {
+-            display: inline-flex;
+-            align-items: center;
+-            gap: 0.5rem;
+-            padding: 0.85rem 1.75rem;
+-            background: transparent;
+-            color: var(--text-muted);
+-            border: 1px solid var(--border-bright);
+-            border-radius: 10px;
+-            font-size: 1rem;
+-            font-weight: 500;
+-            cursor: pointer;
+-            text-decoration: none;
+-            transition: all 0.2s;
+-            font-family: inherit;
+-        }
+-
+-        .btn-secondary:hover {
+-            border-color: var(--accent-dim);
+-            color: var(--text);
+-            background: rgba(255,107,0,0.04);
+-        }
+-
+-        .stats-bar {
+-            display: flex;
+-            align-items: center;
+-            justify-content: center;
+-            gap: 3rem;
+-            padding: 1.5rem 2rem;
+-            margin-top: 4rem;
+-            border-top: 1px solid var(--border);
+-            border-bottom: 1px solid var(--border);
+-            flex-wrap: wrap;
+-        }
+-
+-        .stat-item { text-align: center; }
+-        .stat-value { font-size: 1.75rem; font-weight: 800; color: var(--accent); font-family: 'JetBrains Mono', monospace; letter-spacing: -0.03em; }
+-        .stat-label { font-size: 0.7rem; font-family: 'JetBrains Mono', monospace; text-transform: uppercase; letter-spacing: 0.12em; color: var(--text-muted); margin-top: 0.25rem; }
+-
+-        .section { padding: 5rem 2rem; max-width: 1200px; margin: 0 auto; }
+-        .section-label { font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.2em; color: var(--accent); margin-bottom: 1rem; }
+-        .section-title { font-size: clamp(1.75rem, 3vw, 2.5rem); font-weight: 800; letter-spacing: -0.03em; margin-bottom: 1rem; }
+-        .section-desc { font-size: 1.1rem; color: var(--text-muted); max-width: 600px; line-height: 1.7; }
+-
+-        .value-props { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; margin-top: 3rem; }
+-
+-        .value-prop {
+-            background: var(--surface);
+-            border: 1px solid var(--border);
+-            border-radius: 16px;
+-            padding: 2rem;
+-            position: relative;
+-            overflow: hidden;
+-            transition: all 0.3s;
+-            text-align: left;
+-        }
+-
+-        .value-prop::before {
+-            content: '';
+-            position: absolute;
+-            top: 0; left: 0; right: 0;
+-            height: 1px;
+-            background: linear-gradient(90deg, transparent, var(--accent), transparent);
+-            opacity: 0;
+-            transition: opacity 0.3s;
+-        }
+-
+-        .value-prop:hover {
+-            border-color: var(--accent-dim);
+-            transform: translateY(-4px);
+-            box-shadow: 0 20px 60px rgba(0,0,0,0.3), 0 0 40px rgba(255,107,0,0.08);
+-        }
+-
+-        .value-prop:hover::before { opacity: 1; }
+-
+-        .value-prop-icon {
+-            width: 48px; height: 48px;
+-            background: rgba(255,107,0,0.1);
+-            border: 1px solid rgba(255,107,0,0.2);
+-            border-radius: 12px;
+-            display: flex;
+-            align-items: center;
+-            justify-content: center;
+-            font-size: 1.5rem;
+-            margin-bottom: 1.25rem;
+-        }
+-
+-        .value-prop h3 { font-size: 1.15rem; font-weight: 700; margin-bottom: 0.75rem; }
+-        .value-prop p { font-size: 0.9rem; color: var(--text-muted); line-height: 1.7; }
+-
+-        .auth-section {
+-            background: var(--surface);
+-            border: 1px solid var(--border);
+-            border-radius: 20px;
+-            padding: 3rem;
+-            max-width: 480px;
+-            margin: 3rem auto 0;
+-            position: relative;
+-            overflow: hidden;
+-        }
+-
+-        .auth-section::before {
+-            content: '';
+-            position: absolute;
+-            top: 0; left: 0; right: 0;
+-            height: 2px;
+-            background: linear-gradient(90deg, transparent, var(--accent), transparent);
+-        }
+-
+-        .auth-section h2 { font-size: 1.5rem; font-weight: 800; margin-bottom: 0.5rem; text-align: center; }
+-        .auth-section .auth-sub { text-align: center; color: var(--text-muted); font-size: 0.9rem; margin-bottom: 2rem; }
+-
+-        .form-group { display: flex; flex-direction: column; gap: 0.4rem; margin-bottom: 1rem; }
+-        .form-group label { font-size: 0.8rem; font-weight: 500; color: var(--text-muted); font-family: 'JetBrains Mono', monospace; text-transform: uppercase; letter-spacing: 0.08em; }
+-        .form-group input { padding: 0.85rem 1rem; border: 1px solid var(--border-bright); border-radius: 10px; background: var(--bg-2); color: var(--text); font-size: 0.95rem; font-family: inherit; transition: all 0.2s; }
+-        .form-group input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(255,107,0,0.15); }
+-        .form-group input::placeholder { color: #555; }
+-
+-        .btn-full { width: 100%; padding: 0.9rem; background: var(--accent); color: white; border: none; border-radius: 10px; font-size: 1rem; font-weight: 700; cursor: pointer; font-family: inherit; transition: all 0.2s; margin-top: 0.5rem; }
+-        .btn-full:hover { background: var(--accent-bright); box-shadow: 0 4px 20px rgba(255,107,0,0.3); }
+-        .btn-full:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+-
+-        .btn-google { width: 100%; padding: 0.85rem; background: transparent; color: var(--text); border: 1px solid var(--border-bright); border-radius: 10px; font-size: 0.95rem; font-weight: 500; cursor: pointer; font-family: inherit; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 0.75rem; margin-top: 0.5rem; }
+-        .btn-google:hover { border-color: var(--text-muted); background: var(--surface-2); }
+-
+-        .divider { display: flex; align-items: center; gap: 1rem; margin: 1.5rem 0; color: var(--text-muted); font-size: 0.8rem; }
+-        .divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+-
+-        .message { padding: 0.85rem 1rem; border-radius: 8px; margin-bottom: 1rem; font-size: 0.875rem; display: none; }
+-        .message.success { background: rgba(34, 197, 94, 0.1); border: 1px solid rgba(34, 197, 94, 0.3); color: #86efac; display: block; }
+-        .message.error { background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); color: #fca5a5; display: block; }
+-
+-        .auth-links { text-align: center; margin-top: 1.5rem; font-size: 0.875rem; color: var(--text-muted); }
+-        .auth-links a { color: var(--accent); text-decoration: none; cursor: pointer; font-weight: 500; }
+-        .auth-links a:hover { text-decoration: underline; }
+-
+-        .dashboard-link { text-align: center; margin-top: 2rem; padding-top: 2rem; border-top: 1px solid var(--border); }
+-        .dashboard-link a { color: var(--text-muted); font-size: 0.875rem; text-decoration: none; }
+-        .dashboard-link a:hover { color: var(--text); }
+-
+-        .ticker-wrap { padding: 1.5rem 0; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); overflow: hidden; position: relative; }
+-        .ticker-wrap::before, .ticker-wrap::after { content: ''; position: absolute; top: 0; bottom: 0; width: 120px; z-index: 2; }
+-        .ticker-wrap::before { left: 0; background: linear-gradient(90deg, var(--bg), transparent); }
+-        .ticker-wrap::after { right: 0; background: linear-gradient(-90deg, var(--bg), transparent); }
+-
+-        .ticker { display: flex; gap: 3rem; animation: ticker 40s linear infinite; white-space: nowrap; }
+-        @keyframes ticker { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+-
+-        .ticker-item { font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.12em; color: var(--text-muted); display: flex; align-items: center; gap: 0.75rem; }
+-        .ticker-item .tag { color: var(--accent); }
+-
+-        footer { padding: 3rem 2rem; border-top: 1px solid var(--border); text-align: center; }
+-        footer p { font-size: 0.8rem; color: var(--text-muted); }
+-        footer a { color: var(--accent); text-decoration: none; }
+-        footer a:hover { text-decoration: underline; }
+-
+-        .spinner { display: inline-block; width: 16px; height: 16px; border: 2px solid rgba(255,255,255,0.3); border-top-color: white; border-radius: 50%; animation: spin 0.8s linear infinite; }
+-        @keyframes spin { to { transform: rotate(360deg); } }
+-
+-        @media (max-width: 768px) {
+-            nav { padding: 1rem 1.5rem; }
+-            .nav-links { gap: 1rem; }
+-            .nav-link { display: none; }
+-            .hero { padding: 7rem 1.5rem 3rem; }
+-            .stats-bar { gap: 2rem; }
+-            .auth-section { padding: 2rem 1.5rem; margin: 2rem 1rem 0; }
+-        }
+-    </style>
+-
+-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-0JPFP65WXE"></script>
+-    <script>
+-        window.dataLayer = window.dataLayer || [];
+-        function gtag(){dataLayer.push(arguments);}
+-        gtag('js', new Date());
+-        gtag('config', 'G-0JPFP65WXE');
+-    </script>
++  <meta charset="UTF-8">
++  <meta name="viewport" content="width=device-width, initial-scale=1.0">
++  <title>Latam Intel — LATAM Tech Workforce Intelligence</title>
++  <link rel="preconnect" href="https://fonts.googleapis.com">
++  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
++  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
++  <script async src="https://www.googletagmanager.com/gtag/js?id=G-0JPFP65WXE"></script>
++  <script>
++    window.dataLayer = window.dataLayer || [];
++    function gtag(){dataLayer.push(arguments);}
++    gtag('js', new Date());
++    gtag('config', 'G-0JPFP65WXE');
++  </script>
+ </head>
+-<body class="grid-bg">
+-
+-    <div class="glow-orb" style="top: -200px; left: 50%; transform: translateX(-50%);"></div>
+-
+-    <nav>
+-        <a href="/" class="logo">
+-            <div class="logo-mark">W</div>
+-            <div class="logo-text">
+-                <span class="logo-name">Latam Intel</span>
+-                <span class="logo-sub">By WProTalents</span>
+-            </div>
+-        </a>
+-        <div class="nav-links">
+-            <a href="#features" class="nav-link">Features</a>
+-            <a href="#pricing" class="nav-link">Pricing</a>
+-            <a href="https://wprotalents.lat" class="nav-link" target="_blank" rel="noopener">WProTalents</a>
+-            <a href="#" onclick="toggleAuth()" class="nav-cta">Get Access →</a>
+-        </div>
+-    </nav>
+-
+-    <section class="hero">
+-        <div class="hero-eyebrow">
+-            <span class="dot"></span>
+-            LATAM Tech Workforce Intelligence
+-        </div>
+-        <h1>The Market Intel That <span>Wins</span> the Deal</h1>
+-        <p>Real salary benchmarks, talent availability, and hiring signals across LATAM — built for companies that compete globally and professionals who know their worth.</p>
+-        <div class="hero-actions">
+-            <a href="#" onclick="toggleAuth()" class="btn-primary">
+-                Access the Dashboard
+-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+-            </a>
+-            <a href="#features" class="btn-secondary">See Features</a>
+-        </div>
+-
+-        <div class="stats-bar">
+-            <div class="stat-item"><div class="stat-value">23K+</div><div class="stat-label">Network Nodes</div></div>
+-            <div class="stat-item"><div class="stat-value">$0</div><div class="stat-label">Access Cost</div></div>
+-            <div class="stat-item"><div class="stat-value">7</div><div class="stat-label">Live Job Sources</div></div>
+-            <div class="stat-item"><div class="stat-value">3</div><div class="stat-label">Languages</div></div>
+-        </div>
+-    </section>
+-
+-    <div class="ticker-wrap">
+-        <div class="ticker">
+-            <span class="ticker-item"><span class="tag">LATAM</span> Senior AI/ML Engineers up 31% YoY</span>
+-            <span class="ticker-item"><span class="tag">COP/USD</span> 4,127 · Rising</span>
+-            <span class="ticker-item"><span class="tag">REMOTE</span> 67% of LATAM tech roles remote</span>
+-            <span class="ticker-item"><span class="tag">BRAZIL</span> AI investment $2.1B Q1 2026</span>
+-            <span class="ticker-item"><span class="tag">MARKET</span> React + Python: fastest-to-fill</span>
+-            <span class="ticker-item"><span class="tag">LATAM</span> Mid-level salaries up 18%</span>
+-            <span class="ticker-item"><span class="tag">COLOMBIA</span> Top nearshore fintech hub</span>
+-            <span class="ticker-item"><span class="tag">REMOTE</span> 67% of LATAM tech roles remote</span>
+-            <span class="ticker-item"><span class="tag">LATAM</span> Senior AI/ML Engineers up 31% YoY</span>
+-            <span class="ticker-item"><span class="tag">COP/USD</span> 4,127 · Rising</span>
+-            <span class="ticker-item"><span class="tag">REMOTE</span> 67% of LATAM tech roles remote</span>
+-            <span class="ticker-item"><span class="tag">BRAZIL</span> AI investment $2.1B Q1 2026</span>
+-        </div>
+-    </div>
+-
+-    <section class="section" id="features">
+-        <div class="section-label">// What You Get</div>
+-        <h2 class="section-title">Everything to Win the Talent War</h2>
+-        <p class="section-desc">Built for two audiences: LATAM tech professionals seeking their market value, and US/EU companies building LATAM teams.</p>
+-
+-        <div class="value-props">
+-            <div class="value-prop">
+-                <div class="value-prop-icon">💰</div>
+-                <h3>Salary Benchmarks</h3>
+-                <p>See what the market pays — local and remote (USD) — for every role, country, and seniority level across LATAM. Know your number before you negotiate.</p>
+-            </div>
+-            <div class="value-prop">
+-                <div class="value-prop-icon">📡</div>
+-                <h3>Live Job Intelligence</h3>
+-                <p>7 job boards aggregated in real-time. Filter by region, role type, and salary. Updated every 30 minutes — no manual curation needed.</p>
+-            </div>
+-            <div class="value-prop">
+-                <div class="value-prop-icon">🤖</div>
+-                <h3>AI Market Briefings</h3>
+-                <p>Weekly AI-generated talent market reports covering LATAM hiring trends, salary movements, and sector-level hiring signals.</p>
+-            </div>
+-            <div class="value-prop">
+-                <div class="value-prop-icon">🌎</div>
+-                <h3>Talent Pulse</h3>
+-                <p>Real-time indicators on AI talent demand across USA, EU, and LATAM. Know where the market is hot before your competitors do.</p>
+-            </div>
+-            <div class="value-prop">
+-                <div class="value-prop-icon">📊</div>
+-                <h3>For Companies</h3>
+-                <p>Source LATAM talent, benchmark offers, and get market intelligence for your hiring decisions — all in one portal built by headhunters with 20yr track record.</p>
+-            </div>
+-            <div class="value-prop">
+-                <div class="value-prop-icon">🔐</div>
+-                <h3>Premium Tier</h3>
+-                <p>$29/mo Executive Membership unlocks full salary dashboards, all market intel reports, AI briefings, and priority placement in the WPro network.</p>
+-            </div>
+-        </div>
+-    </section>
+-
+-    <section class="section" id="access">
+-        <div style="text-align:center;">
+-            <div class="section-label">// Start Free</div>
+-            <h2 class="section-title">Get Intelligence Access</h2>
+-            <p class="section-desc" style="margin: 0 auto 2rem;">Free tier gives you live jobs and salary previews. Upgrade when you're ready.</p>
+-        </div>
+-
+-        <div class="auth-section" id="authBox">
+-            <div id="authMessage" class="message"></div>
+-
+-            <div id="emailAuthForm">
+-                <h2>Sign In</h2>
+-                <p class="auth-sub">Access your intelligence dashboard</p>
+-                <div class="form-group">
+-                    <label for="email">Email Address</label>
+-                    <input type="email" id="email" placeholder="you@example.com" autocomplete="email">
+-                </div>
+-                <button class="btn-full" id="sendMagicLink" onclick="sendMagicLink()">Send Magic Link</button>
+-            </div>
+-
+-            <div id="emailSentMessage" style="display:none; text-align:center; padding: 1rem 0;">
+-                <div style="font-size:2rem; margin-bottom:1rem;">✉️</div>
+-                <p style="color: #86efac; font-weight:600; margin-bottom:0.5rem;">Check your inbox</p>
+-                <p style="color: var(--text-muted); font-size:0.875rem;">We sent a magic link to your email. Click it to access the dashboard.</p>
+-                <button onclick="resetEmailForm()" style="margin-top:1.5rem; background:none; border:1px solid var(--border-bright); color:var(--text-muted); padding:0.6rem 1.25rem; border-radius:8px; cursor:pointer; font-size:0.875rem; font-family:inherit;">Try another email</button>
+-            </div>
+-
+-            <div class="divider">or</div>
+-
+-            <button class="btn-google" onclick="loginWithGoogle()">
+-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+-                    <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+-                    <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+-                    <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
+-                    <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+-                </svg>
+-                Sign in with Google
+-            </button>
+-
+-            <div class="auth-links">
+-                <p id="loginPrompt">Don't have an account? <a onclick="toggleAuthMode()">Create one free</a></p>
+-                <p id="signupPrompt" style="display:none;">Already have an account? <a onclick="toggleAuthMode()">Sign in</a></p>
+-            </div>
+-
+-            <div class="dashboard-link">Already signed in? <a href="/dashboard.html">Go to Dashboard →</a></div>
+-        </div>
+-    </section>
+-
+-    <section class="section" id="pricing" style="padding-top:0;">
+-        <div style="background: var(--surface); border: 1px solid rgba(255,107,0,0.2); border-radius: 20px; padding: 3rem; text-align:center; position:relative; overflow:hidden;">
+-            <div style="position:absolute; top:0; left:0; right:0; height:2px; background: linear-gradient(90deg, transparent, var(--accent), transparent);"></div>
+-            <div style="font-family: 'JetBrains Mono', monospace; font-size:0.7rem; text-transform:uppercase; letter-spacing:0.15em; color: var(--accent); margin-bottom:1rem;">// Executive Membership</div>
+-            <h2 style="font-size:2.5rem; font-weight:800; margin-bottom:0.5rem;">$29<span style="font-size:1rem; font-weight:400; color:var(--text-muted);">/mo</span></h2>
+-            <p style="color: var(--text-muted); margin-bottom:2rem;">Full market intelligence. Cancel anytime.</p>
+-            <div style="display:flex; gap:1.5rem; justify-content:center; flex-wrap:wrap; text-align:left; max-width:500px; margin:0 auto 2rem;">
+-                <div style="display:flex; align-items:flex-start; gap:0.5rem; font-size:0.9rem; color:var(--text-muted);"><span style="color:var(--accent); font-weight:700;">✓</span> Full salary benchmarks dashboard</div>
+-                <div style="display:flex; align-items:flex-start; gap:0.5rem; font-size:0.9rem; color:var(--text-muted);"><span style="color:var(--accent); font-weight:700;">✓</span> All market intel reports</div>
+-                <div style="display:flex; align-items:flex-start; gap:0.5rem; font-size:0.9rem; color:var(--text-muted);"><span style="color:var(--accent); font-weight:700;">✓</span> AI talent briefings</div>
+-                <div style="display:flex; align-items:flex-start; gap:0.5rem; font-size:0.9rem; color:var(--text-muted);"><span style="color:var(--accent); font-weight:700;">✓</span> WPro network priority</div>
+-                <div style="display:flex; align-items:flex-start; gap:0.5rem; font-size:0.9rem; color:var(--text-muted);"><span style="color:var(--accent); font-weight:700;">✓</span> LinkedIn profile boost</div>
+-                <div style="display:flex; align-items:flex-start; gap:0.5rem; font-size:0.9rem; color:var(--text-muted);"><span style="color:var(--accent); font-weight:700;">✓</span> Company portal access</div>
+-            </div>
+-            <a href="#" onclick="toggleAuth()" class="btn-primary">Start Free — Upgrade Later</a>
+-            <p style="font-size:0.75rem; color:var(--text-dim); margin-top:1rem; font-family: 'JetBrains Mono', monospace;">FOUNDING MEMBER PRICING · LIMITED SPOTS</p>
+-        </div>
+-    </section>
+-
+-    <footer>
+-        <p>Latam Intel by <a href="https://wprotalents.lat" target="_blank" rel="noopener">WProTalents</a> · <a href="#">Terms</a> · <a href="#">Privacy</a> · <a href="mailto:info@wprotalents.lat">Contact</a></p>
+-        <p style="margin-top:0.5rem; font-family:'JetBrains Mono', monospace; font-size:0.65rem; letter-spacing:0.1em; text-transform:uppercase;">© 2026 WProTalents · US · EU · LATAM</p>
+-    </footer>
+-
+-    <script>
+-        const SUPABASE_URL = 'https://qxvppedapgfchnnixyhj.supabase.co';
+-        const SUPABASE_ANON_KEY = 'sb_publishable_mHTGchSQ7INFETDz0zshVQ_ebwwR2sw';
+-
+-        function showMessage(msg, type) {
+-            const el = document.getElementById('authMessage');
+-            el.textContent = msg;
+-            el.className = 'message ' + type;
+-        }
+-
+-        function hideMessage() { document.getElementById('authMessage').className = 'message'; }
+-
+-        function toggleAuth() {
+-            document.getElementById('authBox').scrollIntoView({ behavior: 'smooth', block: 'center' });
+-            gtag('event', 'cta_access_clicked', {});
+-        }
+-
+-        async function sendMagicLink() {
+-            const email = document.getElementById('email').value.trim();
+-            if (!email) { showMessage('Please enter your email address.', 'error'); return; }
+-            if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { showMessage('Please enter a valid email address.', 'error'); return; }
+-
+-            const btn = document.getElementById('sendMagicLink');
+-            btn.disabled = true;
+-            btn.innerHTML = '<span class="spinner"></span> Sending...';
+-
+-            try {
+-                const res = await fetch(SUPABASE_URL + '/auth/v1/magiclink', {
+-                    method: 'POST',
+-                    headers: { 'Content-Type': 'application/json', 'apikey': SUPABASE_ANON_KEY },
+-                    body: JSON.stringify({ email, gotrue_meta_security: {} })
+-                });
+-                if (res.ok) {
+-                    document.getElementById('emailAuthForm').style.display = 'none';
+-                    document.getElementById('emailSentMessage').style.display = 'block';
+-                    hideMessage();
+-                    gtag('event', 'magic_link_sent', { email_domain: email.split('@')[1] });
+-                } else {
+-                    const err = await res.json();
+-                    showMessage(err.message || 'Failed to send magic link. Please try again.', 'error');
+-                }
+-            } catch (e) {
+-                showMessage('Connection error. Please check your internet and try again.', 'error');
+-            } finally {
+-                btn.disabled = false;
+-                btn.textContent = 'Send Magic Link';
+-            }
+-        }
+-
+-        function resetEmailForm() {
+-            document.getElementById('emailAuthForm').style.display = 'block';
+-            document.getElementById('emailSentMessage').style.display = 'none';
+-            document.getElementById('email').value = '';
+-            hideMessage();
+-        }
+-
+-        function toggleAuthMode() {
+-            const login = document.getElementById('loginPrompt');
+-            const signup = document.getElementById('signupPrompt');
+-            const h2 = document.querySelector('#authBox h2');
+-            const sub = document.querySelector('#authBox .auth-sub');
+-            login.style.display = login.style.display === 'none' ? 'block' : 'none';
+-            signup.style.display = signup.style.display === 'none' ? 'block' : 'none';
+-            if (h2) h2.textContent = login.style.display === 'none' ? 'Create Account' : 'Sign In';
+-            if (sub) sub.textContent = login.style.display === 'none' ? 'Start your free intelligence access' : 'Access your intelligence dashboard';
+-        }
+-
+-        function loginWithGoogle() {
+-            showMessage('Google Sign-In coming soon — use email for now.', 'error');
+-            gtag('event', 'google_signin_attempted', {});
+-        }
+-
+-        function checkAuth() { if (localStorage.getItem('sb_auth_token')) window.location.href = '/dashboard.html'; }
+-
+-        if (window.location.hash.includes('#access_token=')) {
+-            const params = new URLSearchParams(window.location.hash.substring(1));
+-            const token = params.get('access_token');
+-            if (token) {
+-                localStorage.setItem('sb_auth_token', token);
+-                gtag('event', 'login_success', { method: 'magic_link' });
+-                setTimeout(() => window.location.href = '/dashboard.html', 1000);
+-            }
+-        }
+-
+-        window.addEventListener('load', () => {
+-            checkAuth();
+-            gtag('event', 'landing_page_view', { page_path: '/index.html' });
+-        });
+-
+-        document.querySelectorAll('a[href^="#"]').forEach(a => {
+-            a.addEventListener('click', e => {
+-                const target = document.querySelector(a.getAttribute('href'));
+-                if (target) { e.preventDefault(); target.scrollIntoView({ behavior: 'smooth' }); }
+-            });
+-        });
+-    </script>
++<body>
++  <div id="root"></div>
++  <script type="module" src="/src/main.tsx"></script>
+ </body>
+-</html>
++</html>
+\ No newline at end of file
+diff --git a/package-lock.json b/package-lock.json
+index 4d8b1d4..d0f1212 100644
+--- a/package-lock.json
++++ b/package-lock.json
+@@ -398,7 +398,6 @@
+       "cpu": [
+         "ppc64"
+       ],
+-      "dev": true,
+       "license": "MIT",
+       "optional": true,
+       "os": [
+@@ -415,7 +414,6 @@
+       "cpu": [
+         "arm"
+       ],
+-      "dev": true,
+       "license": "MIT",
+       "optional": true,
+       "os": [
+@@ -432,7 +430,6 @@
+       "cpu": [
+         "arm64"
+       ],
+-      "dev": true,
+       "license": "MIT",
+       "optional": true,
+       "os": [
+@@ -449,7 +446,6 @@
+       "cpu": [
+         "x64"
+       ],
+-      "dev": true,
+       "license": "MIT",
+       "optional": true,
+       "os": [
+@@ -466,7 +462,6 @@
+       "cpu": [
+         "arm64"
+       ],
+-      "dev": true,
+       "license": "MIT",
+       "optional": true,
+       "os": [
+@@ -483,7 +478,6 @@
+       "cpu": [
+         "x64"
+       ],
+-      "dev": true,
+       "license": "MIT",
+       "optional": true,
+       "os": [
+@@ -500,7 +494,6 @@
+       "cpu": [
+         "arm64"
+       ],
+-      "dev": true,
+       "license": "MIT",
+       "optional": true,
+       "os": [
+@@ -517,7 +510,6 @@
+       "cpu": [
+         "x64"
+       ],
+-      "dev": true,
+       "license": "MIT",
+       "optional": true,
+       "os": [
+@@ -534,7 +526,6 @@
+       "cpu": [
+         "arm"
+       ],
+-      "dev": true,
+       "license": "MIT",
+       "optional": true,
+       "os": [
+@@ -551,7 +542,6 @@
+       "cpu": [
+         "arm64"
+       ],
+-      "dev": true,
+       "license": "MIT",
+       "optional": true,
+       "os": [
+@@ -568,7 +558,6 @@
+       "cpu": [
+         "ia32"
+       ],
+-      "dev": true,
+       "license": "MIT",
+       "optional": true,
+       "os": [
+@@ -585,7 +574,6 @@
+       "cpu": [
+         "loong64"
+       ],
+-      "dev": true,
+       "license": "MIT",
+       "optional": true,
+       "os": [
+@@ -602,7 +590,6 @@
+       "cpu": [
+         "mips64el"
+       ],
+-      "dev": true,
+       "license": "MIT",
+       "optional": true,
+       "os": [
+@@ -619,7 +606,6 @@
+       "cpu": [
+         "ppc64"
+       ],
+-      "dev": true,
+       "license": "MIT",
+       "optional": true,
+       "os": [
+@@ -636,7 +622,6 @@
+       "cpu": [
+         "riscv64"
+       ],
+-      "dev": true,
+       "license": "MIT",
+       "optional": true,
+       "os": [
+@@ -653,7 +638,6 @@
+       "cpu": [
+         "s390x"
+       ],
+-      "dev": true,
+       "license": "MIT",
+       "optional": true,
+       "os": [
+@@ -670,7 +654,6 @@
+       "cpu": [
+         "x64"
+       ],
+-      "dev": true,
+       "license": "MIT",
+       "optional": true,
+       "os": [
+@@ -687,7 +670,6 @@
+       "cpu": [
+         "arm64"
+       ],
+-      "dev": true,
+       "license": "MIT",
+       "optional": true,
+       "os": [
+@@ -704,7 +686,6 @@
+       "cpu": [
+         "x64"
+       ],
+-      "dev": true,
+       "license": "MIT",
+       "optional": true,
+       "os": [
+@@ -721,7 +702,6 @@
+       "cpu": [
+         "arm64"
+       ],
+-      "dev": true,
+       "license": "MIT",
+       "optional": true,
+       "os": [
+@@ -738,7 +718,6 @@
+       "cpu": [
+         "x64"
+       ],
+-      "dev": true,
+       "license": "MIT",
+       "optional": true,
+       "os": [
+@@ -755,7 +734,6 @@
+       "cpu": [
+         "arm64"
+       ],
+-      "dev": true,
+       "license": "MIT",
+       "optional": true,
+       "os": [
+@@ -772,7 +750,6 @@
+       "cpu": [
+         "x64"
+       ],
+-      "dev": true,
+       "license": "MIT",
+       "optional": true,
+       "os": [
+@@ -789,7 +766,6 @@
+       "cpu": [
+         "arm64"
+       ],
+-      "dev": true,
+       "license": "MIT",
+       "optional": true,
+       "os": [
+@@ -806,7 +782,6 @@
+       "cpu": [
+         "ia32"
+       ],
+-      "dev": true,
+       "license": "MIT",
+       "optional": true,
+       "os": [
+@@ -823,7 +798,6 @@
+       "cpu": [
+         "x64"
+       ],
+-      "dev": true,
+       "license": "MIT",
+       "optional": true,
+       "os": [
+@@ -2154,7 +2128,6 @@
+       "cpu": [
+         "arm"
+       ],
+-      "dev": true,
+       "license": "MIT",
+       "optional": true,
+       "os": [
+@@ -2168,7 +2141,6 @@
+       "cpu": [
+         "arm64"
+       ],
+-      "dev": true,
+       "license": "MIT",
+       "optional": true,
+       "os": [
+@@ -2182,7 +2154,6 @@
+       "cpu": [
+         "arm64"
+       ],
+-      "dev": true,
+       "license": "MIT",
+       "optional": true,
+       "os": [
+@@ -2196,7 +2167,6 @@
+       "cpu": [
+         "x64"
+       ],
+-      "dev": true,
+       "license": "MIT",
+       "optional": true,
+       "os": [
+@@ -2210,7 +2180,6 @@
+       "cpu": [
+         "arm64"
+       ],
+-      "dev": true,
+       "license": "MIT",
+       "optional": true,
+       "os": [
+@@ -2224,7 +2193,6 @@
+       "cpu": [
+         "x64"
+       ],
+-      "dev": true,
+       "license": "MIT",
+       "optional": true,
+       "os": [
+@@ -2238,7 +2206,6 @@
+       "cpu": [
+         "arm"
+       ],
+-      "dev": true,
+       "license": "MIT",
+       "optional": true,
+       "os": [
+@@ -2252,7 +2219,6 @@
+       "cpu": [
+         "arm"
+       ],
+-      "dev": true,
+       "license": "MIT",
+       "optional": true,
+       "os": [
+@@ -2266,7 +2232,6 @@
+       "cpu": [
+         "arm64"
+       ],
+-      "dev": true,
+       "license": "MIT",
+       "optional": true,
+       "os": [
+@@ -2280,7 +2245,6 @@
+       "cpu": [
+         "arm64"
+       ],
+-      "dev": true,
+       "license": "MIT",
+       "optional": true,
+       "os": [
+@@ -2294,7 +2258,6 @@
+       "cpu": [
+         "loong64"
+       ],
+-      "dev": true,
+       "license": "MIT",
+       "optional": true,
+       "os": [
+@@ -2308,7 +2271,6 @@
+       "cpu": [
+         "loong64"
+       ],
+-      "dev": true,
+       "license": "MIT",
+       "optional": true,
+       "os": [
+@@ -2322,7 +2284,6 @@
+       "cpu": [
+         "ppc64"
+       ],
+-      "dev": true,
+       "license": "MIT",
+       "optional": true,
+       "os": [
+@@ -2336,7 +2297,6 @@
+       "cpu": [
+         "ppc64"
+       ],
+-      "dev": true,
+       "license": "MIT",
+       "optional": true,
+       "os": [
+@@ -2350,7 +2310,6 @@
+       "cpu": [
+         "riscv64"
+       ],
+-      "dev": true,
+       "license": "MIT",
+       "optional": true,
+       "os": [
+@@ -2364,7 +2323,6 @@
+       "cpu": [
+         "riscv64"
+       ],
+-      "dev": true,
+       "license": "MIT",
+       "optional": true,
+       "os": [
+@@ -2378,7 +2336,6 @@
+       "cpu": [
+         "s390x"
+       ],
+-      "dev": true,
+       "license": "MIT",
+       "optional": true,
+       "os": [
+@@ -2392,7 +2349,6 @@
+       "cpu": [
+         "x64"
+       ],
+-      "dev": true,
+       "license": "MIT",
+       "optional": true,
+       "os": [
+@@ -2406,7 +2362,6 @@
+       "cpu": [
+         "x64"
+       ],
+-      "dev": true,
+       "license": "MIT",
+       "optional": true,
+       "os": [
+@@ -2420,7 +2375,6 @@
+       "cpu": [
+         "x64"
+       ],
+-      "dev": true,
+       "license": "MIT",
+       "optional": true,
+       "os": [
+@@ -2434,7 +2388,6 @@
+       "cpu": [
+         "arm64"
+       ],
+-      "dev": true,
+       "license": "MIT",
+       "optional": true,
+       "os": [
+@@ -2448,7 +2401,6 @@
+       "cpu": [
+         "arm64"
+       ],
+-      "dev": true,
+       "license": "MIT",
+       "optional": true,
+       "os": [
+@@ -2462,7 +2414,6 @@
+       "cpu": [
+         "ia32"
+       ],
+-      "dev": true,
+       "license": "MIT",
+       "optional": true,
+       "os": [
+@@ -2476,7 +2427,6 @@
+       "cpu": [
+         "x64"
+       ],
+-      "dev": true,
+       "license": "MIT",
+       "optional": true,
+       "os": [
+@@ -2490,7 +2440,6 @@
+       "cpu": [
+         "x64"
+       ],
+-      "dev": true,
+       "license": "MIT",
+       "optional": true,
+       "os": [
+@@ -3215,6 +3164,16 @@
+       "dev": true,
+       "license": "MIT"
+     },
++    "node_modules/@types/react": {
++      "version": "19.2.18",
++      "resolved": "https://registry.npmjs.org/@types/react/-/react-19.2.18.tgz",
++      "integrity": "sha512-AnzbBERsrLKtk2XSfTbYRLjQPdy116Sty4q+T+Bp3IC4l6jNBvreVPAHmpq9qhXQM7CXZPjLVmGMw9sy+hxQ3w==",
++      "license": "MIT",
++      "peer": true,
++      "dependencies": {
++        "csstype": "^3.2.2"
++      }
++    },
+     "node_modules/@types/request": {
+       "version": "2.48.13",
+       "resolved": "https://registry.npmjs.org/@types/request/-/request-2.48.13.tgz",
+@@ -5633,6 +5592,13 @@
+         "node": ">= 8"
+       }
+     },
++    "node_modules/csstype": {
++      "version": "3.2.3",
++      "resolved": "https://registry.npmjs.org/csstype/-/csstype-3.2.3.tgz",
++      "integrity": "sha512-z1HGKcYy2xA8AGQfwrn0PAy+PB7X/GSj3UVJW9qKyn43xWa+gl5nXmU4qqLMRzWVLFC8KusUX8T/0kCiOYpAIQ==",
++      "license": "MIT",
++      "peer": true
++    },
+     "node_modules/d3-array": {
+       "version": "3.2.4",
+       "resolved": "https://registry.npmjs.org/d3-array/-/d3-array-3.2.4.tgz",
+@@ -6100,7 +6066,7 @@
+       "version": "0.27.4",
+       "resolved": "https://registry.npmjs.org/esbuild/-/esbuild-0.27.4.tgz",
+       "integrity": "sha512-Rq4vbHnYkK5fws5NF7MYTU68FPRE1ajX7heQ/8QXXWqNgqqJ/GkmmyxIzUnf2Sr/bakf8l54716CcMGHYhMrrQ==",
+-      "dev": true,
++      "devOptional": true,
+       "hasInstallScript": true,
+       "license": "MIT",
+       "bin": {
+@@ -6735,7 +6701,6 @@
+       "version": "6.5.0",
+       "resolved": "https://registry.npmjs.org/fdir/-/fdir-6.5.0.tgz",
+       "integrity": "sha512-tIbYtZbucOs0BRGqPJkshJUYdL+SDH7dVM8gjy+ERp3WAUjLEFJE+02kanyHtwjWOnwrKYBiwAmM0p4kLJAnXg==",
+-      "dev": true,
+       "license": "MIT",
+       "engines": {
+         "node": ">=12.0.0"
+@@ -7084,7 +7049,6 @@
+       "version": "2.3.3",
+       "resolved": "https://registry.npmjs.org/fsevents/-/fsevents-2.3.3.tgz",
+       "integrity": "sha512-5xoDfX+fL7faATnagmWPpbFtwh/R77WmMMqqHGS65C3vvB0YHrgF+B1YmZ3441tMj5n63k0212XNoJwzlhffQw==",
+-      "dev": true,
+       "hasInstallScript": true,
+       "license": "MIT",
+       "optional": true,
+@@ -7208,7 +7172,7 @@
+       "version": "4.13.7",
+       "resolved": "https://registry.npmjs.org/get-tsconfig/-/get-tsconfig-4.13.7.tgz",
+       "integrity": "sha512-7tN6rFgBlMgpBML5j8typ92BKFi2sFQvIdpAqLA2beia5avZDrMs0FLZiM5etShWq5irVyGcGMEA1jcDaK7A/Q==",
+-      "dev": true,
++      "devOptional": true,
+       "license": "MIT",
+       "dependencies": {
+         "resolve-pkg-maps": "^1.0.0"
+@@ -9507,7 +9471,6 @@
+       "version": "3.3.11",
+       "resolved": "https://registry.npmjs.org/nanoid/-/nanoid-3.3.11.tgz",
+       "integrity": "sha512-N8SpfPUnUp1bK+PMYW8qSWdl9U+wwNWI4QKxOYDy9JAro3WMX7p2OeVRF9v+347pnakNevPmiHhNmZ2HbFA76w==",
+-      "dev": true,
+       "funding": [
+         {
+           "type": "github",
+@@ -9905,7 +9868,6 @@
+       "version": "4.0.4",
+       "resolved": "https://registry.npmjs.org/picomatch/-/picomatch-4.0.4.tgz",
+       "integrity": "sha512-QP88BAKvMam/3NxH6vj2o21R6MjxZUAd6nlwAS/pnGvN9IVLocLHxGYIzFhg6fUQ+5th6P4dv4eW9jX3DSIj7A==",
+-      "dev": true,
+       "license": "MIT",
+       "engines": {
+         "node": ">=12"
+@@ -9924,7 +9886,6 @@
+       "version": "8.5.8",
+       "resolved": "https://registry.npmjs.org/postcss/-/postcss-8.5.8.tgz",
+       "integrity": "sha512-OW/rX8O/jXnm82Ey1k44pObPtdblfiuWnrd8X7GJ7emImCOstunGbXUpp7HdBrFQX6rJzn3sPT397Wp5aCwCHg==",
+-      "dev": true,
+       "funding": [
+         {
+           "type": "opencollective",
+@@ -10456,7 +10417,7 @@
+       "version": "1.0.0",
+       "resolved": "https://registry.npmjs.org/resolve-pkg-maps/-/resolve-pkg-maps-1.0.0.tgz",
+       "integrity": "sha512-seS2Tj26TBVOC2NIc2rOe2y2ZO7efxITtLZcGSOnHHNOQ7CkiUBfw0Iw2ck6xkIhPwLhKNLS8BO+hEpngQlqzw==",
+-      "dev": true,
++      "devOptional": true,
+       "license": "MIT",
+       "funding": {
+         "url": "https://github.com/privatenumber/resolve-pkg-maps?sponsor=1"
+@@ -10501,7 +10462,6 @@
+       "version": "4.60.1",
+       "resolved": "https://registry.npmjs.org/rollup/-/rollup-4.60.1.tgz",
+       "integrity": "sha512-VmtB2rFU/GroZ4oL8+ZqXgSA38O6GR8KSIvWmEFv63pQ0G6KaBH9s07PO8XTXP4vI+3UJUEypOfjkGfmSBBR0w==",
+-      "dev": true,
+       "license": "MIT",
+       "dependencies": {
+         "@types/estree": "1.0.8"
+@@ -11236,7 +11196,6 @@
+       "version": "0.2.15",
+       "resolved": "https://registry.npmjs.org/tinyglobby/-/tinyglobby-0.2.15.tgz",
+       "integrity": "sha512-j2Zq4NyQYG5XMST4cbs02Ak8iJUdxRM0XI5QyxXuZOzKOINmWurp3smXu3y5wDcJrptwpSjgXHzIQxR0omXljQ==",
+-      "dev": true,
+       "license": "MIT",
+       "dependencies": {
+         "fdir": "^6.5.0",
+@@ -11393,7 +11352,7 @@
+       "version": "4.21.0",
+       "resolved": "https://registry.npmjs.org/tsx/-/tsx-4.21.0.tgz",
+       "integrity": "sha512-5C1sg4USs1lfG0GFb2RLXsdpXqBSEhAaA/0kPL01wxzpMqLILNxIxIOKiILz+cdg/pLnOUxFYOR5yhHU666wbw==",
+-      "dev": true,
++      "devOptional": true,
+       "license": "MIT",
+       "dependencies": {
+         "esbuild": "~0.27.0",
+@@ -12053,7 +12012,6 @@
+       "version": "6.4.1",
+       "resolved": "https://registry.npmjs.org/vite/-/vite-6.4.1.tgz",
+       "integrity": "sha512-+Oxm7q9hDoLMyJOYfUYBuHQo+dkAloi33apOPP56pzj+vsdJDzr+j1NISE5pyaAuKL4A3UD34qd0lx5+kfKp2g==",
+-      "dev": true,
+       "license": "MIT",
+       "dependencies": {
+         "esbuild": "^0.25.0",
+@@ -12131,7 +12089,6 @@
+       "cpu": [
+         "ppc64"
+       ],
+-      "dev": true,
+       "license": "MIT",
+       "optional": true,
+       "os": [
+@@ -12148,7 +12105,6 @@
+       "cpu": [
+         "arm"
+       ],
+-      "dev": true,
+       "license": "MIT",
+       "optional": true,
+       "os": [
+@@ -12165,7 +12121,6 @@
+       "cpu": [
+         "arm64"
+       ],
+-      "dev": true,
+       "license": "MIT",
+       "optional": true,
+       "os": [
+@@ -12182,7 +12137,6 @@
+       "cpu": [
+         "x64"
+       ],
+-      "dev": true,
+       "license": "MIT",
+       "optional": true,
+       "os": [
+@@ -12199,7 +12153,6 @@
+       "cpu": [
+         "arm64"
+       ],
+-      "dev": true,
+       "license": "MIT",
+       "optional": true,
+       "os": [
+@@ -12216,7 +12169,6 @@
+       "cpu": [
+         "x64"
+       ],
+-      "dev": true,
+       "license": "MIT",
+       "optional": true,
+       "os": [
+@@ -12233,7 +12185,6 @@
+       "cpu": [
+         "arm64"
+       ],
+-      "dev": true,
+       "license": "MIT",
+       "optional": true,
+       "os": [
+@@ -12250,7 +12201,6 @@
+       "cpu": [
+         "x64"
+       ],
+-      "dev": true,
+       "license": "MIT",
+       "optional": true,
+       "os": [
+@@ -12267,7 +12217,6 @@
+       "cpu": [
+         "arm"
+       ],
+-      "dev": true,
+       "license": "MIT",
+       "optional": true,
+       "os": [
+@@ -12284,7 +12233,6 @@
+       "cpu": [
+         "arm64"
+       ],
+-      "dev": true,
+       "license": "MIT",
+       "optional": true,
+       "os": [
+@@ -12301,7 +12249,6 @@
+       "cpu": [
+         "ia32"
+       ],
+-      "dev": true,
+       "license": "MIT",
+       "optional": true,
+       "os": [
+@@ -12318,7 +12265,6 @@
+       "cpu": [
+         "loong64"
+       ],
+-      "dev": true,
+       "license": "MIT",
+       "optional": true,
+       "os": [
+@@ -12335,7 +12281,6 @@
+       "cpu": [
+         "mips64el"
+       ],
+-      "dev": true,
+       "license": "MIT",
+       "optional": true,
+       "os": [
+@@ -12352,7 +12297,6 @@
+       "cpu": [
+         "ppc64"
+       ],
+-      "dev": true,
+       "license": "MIT",
+       "optional": true,
+       "os": [
+@@ -12369,7 +12313,6 @@
+       "cpu": [
+         "riscv64"
+       ],
+-      "dev": true,
+       "license": "MIT",
+       "optional": true,
+       "os": [
+@@ -12386,7 +12329,6 @@
+       "cpu": [
+         "s390x"
+       ],
+-      "dev": true,
+       "license": "MIT",
+       "optional": true,
+       "os": [
+@@ -12403,7 +12345,6 @@
+       "cpu": [
+         "x64"
+       ],
+-      "dev": true,
+       "license": "MIT",
+       "optional": true,
+       "os": [
+@@ -12420,7 +12361,6 @@
+       "cpu": [
+         "arm64"
+       ],
+-      "dev": true,
+       "license": "MIT",
+       "optional": true,
+       "os": [
+@@ -12437,7 +12377,6 @@
+       "cpu": [
+         "x64"
+       ],
+-      "dev": true,
+       "license": "MIT",
+       "optional": true,
+       "os": [
+@@ -12454,7 +12393,6 @@
+       "cpu": [
+         "arm64"
+       ],
+-      "dev": true,
+       "license": "MIT",
+       "optional": true,
+       "os": [
+@@ -12471,7 +12409,6 @@
+       "cpu": [
+         "x64"
+       ],
+-      "dev": true,
+       "license": "MIT",
+       "optional": true,
+       "os": [
+@@ -12488,7 +12425,6 @@
+       "cpu": [
+         "arm64"
+       ],
+-      "dev": true,
+       "license": "MIT",
+       "optional": true,
+       "os": [
+@@ -12505,7 +12441,6 @@
+       "cpu": [
+         "x64"
+       ],
+-      "dev": true,
+       "license": "MIT",
+       "optional": true,
+       "os": [
+@@ -12522,7 +12457,6 @@
+       "cpu": [
+         "arm64"
+       ],
+-      "dev": true,
+       "license": "MIT",
+       "optional": true,
+       "os": [
+@@ -12539,7 +12473,6 @@
+       "cpu": [
+         "ia32"
+       ],
+-      "dev": true,
+       "license": "MIT",
+       "optional": true,
+       "os": [
+@@ -12556,7 +12489,6 @@
+       "cpu": [
+         "x64"
+       ],
+-      "dev": true,
+       "license": "MIT",
+       "optional": true,
+       "os": [
+@@ -12570,7 +12502,6 @@
+       "version": "0.25.12",
+       "resolved": "https://registry.npmjs.org/esbuild/-/esbuild-0.25.12.tgz",
+       "integrity": "sha512-bbPBYYrtZbkt6Os6FiTLCTFxvq4tt3JKall1vRwshA3fdVztsLAatFaZobhkBC8/BrPetoa0oksYoKXoG4ryJg==",
+-      "dev": true,
+       "hasInstallScript": true,
+       "license": "MIT",
+       "bin": {
+diff --git a/src/App.tsx b/src/App.tsx
+index 131fc95..4ba0e2a 100644
+--- a/src/App.tsx
++++ b/src/App.tsx
+@@ -35,7 +35,8 @@ import {
+   Newspaper,
+   Sun,
+   Copy,
+-  CheckCircle2
++  CheckCircle2,
++  Lock
+ } from 'lucide-react';
+ import { 
+   BarChart, 
+@@ -48,8 +49,6 @@ import {
+ } from 'recharts';
+ import { MOCK_BRIEFINGS, getRecentBriefings } from './services/intelService';
+ import { Language, Briefing, IntelligenceBrief } from './types';
+-import { db, handleFirestoreError, FirestoreOperation } from './firebase';
+-import { onSnapshot, doc, getDoc, setDoc, collection, query, orderBy, limit, serverTimestamp } from 'firebase/firestore';
+ import { SubscriptionSection } from './components/SubscriptionSection';
+ import JobsPage from './pages/JobsPage';
+ import PrivacyPage from './pages/PrivacyPage';
+@@ -65,6 +64,8 @@ const TRANSLATIONS = {
+   EN: {
+     dashboard: "Dashboard",
+     jobs: "Jobs",
++    forCandidates: "For Candidates",
++    forCompanies: "For Companies",
+     marketIntel: "Market Intel",
+     tagline: "WProTalents: Strategic Talent Acquisition & AI Market Intelligence",
+     signal: "WPro Signal",
+@@ -207,6 +208,8 @@ const TRANSLATIONS = {
+   ES: {
+     dashboard: "Panel",
+     jobs: "Empleos",
++    forCandidates: "Para Candidatos",
++    forCompanies: "Para Empresas",
+     marketIntel: "Inteligencia de Mercado",
+     tagline: "Inteligencia del Mercado Laboral de IA y Tendencias Globales",
+     signal: "Señal de Empleos IA",
+@@ -348,6 +351,8 @@ const TRANSLATIONS = {
+   PT: {
+     dashboard: "Painel",
+     jobs: "Empregos",
++    forCandidates: "Para Candidatos",
++    forCompanies: "Para Empresas",
+     marketIntel: "Inteligência de Mercado",
+     tagline: "Inteligência do Mercado de Trabalho de IA e Tendências Globais",
+     signal: "Sinal de Empregos de IA",
+@@ -646,6 +651,14 @@ export default function App() {
+     const saved = localStorage.getItem('wpro_lang');
+     return (saved === 'EN' || saved === 'ES' || saved === 'PT') ? saved as Language : 'EN';
+   });
++  const [portalType, setPortalType] = useState<'candidate' | 'company'>(() => {
++    const saved = localStorage.getItem('wpro_portal');
++    return (saved === 'candidate' || saved === 'company') ? saved : 'candidate';
++  });
++  const togglePortal = (type: 'candidate' | 'company') => {
++    setPortalType(type);
++    localStorage.setItem('wpro_portal', type);
++  };
+   const [viewMode, setViewMode] = useState<'Dashboard' | 'Jobs' | 'Privacy'>('Dashboard');
+   const [currentTime, setCurrentTime] = useState(new Date());
+   const [isSyncing, setIsSyncing] = useState(false);
+@@ -759,7 +772,7 @@ export default function App() {
+         const data = await response.json();
+         alert(`Sync successful! New briefing ID: ${data.briefingId}`);
+         // Re-fetch briefings
+-        const recent = await getRecentBriefings(20, subscriptionStatus === 'premium' || isAdmin);
++        const recent = await getRecentBriefings(20, false);
+         setBriefings(recent);
+       } else {
+         alert('Sync failed. Check server logs.');
+@@ -801,7 +814,7 @@ export default function App() {
+               <LayoutDashboard size={13} />
+               {t.dashboard}
+             </button>
+-            {userRole === 'candidate' && (
++            {portalType === 'candidate' && (
+               <button
+                 onClick={() => setViewMode('Jobs')}
+                 className={`px-4 py-1.5 mono text-[10px] transition-all duration-200 flex items-center gap-2 rounded-md ${viewMode === 'Jobs' ? 'text-accent bg-accent/10 border border-accent/20' : 'text-text-muted hover:text-text hover:bg-surface-2 border border-transparent'}`}
+@@ -856,47 +869,21 @@ export default function App() {
+             {theme === 'dark' ? <Sun size={15} /> : <Moon size={15} />}
+           </button>
+ 
+-          {/* Admin Sync */}
+-          {isAdmin && (
++          {/* Portal Toggle: For Candidates / For Companies */}
++          <div className="hidden md:flex border border-border rounded-lg overflow-hidden">
+             <button
+-              onClick={handleSyncIntelligence}
+-              disabled={isSyncing}
+-              className="hidden lg:flex items-center gap-2 px-3 py-1.5 bg-accent/10 border border-accent/30 text-accent mono text-[9px] font-bold rounded-lg hover:bg-accent/20 transition-all disabled:opacity-50"
++              onClick={() => togglePortal('candidate')}
++              className={`px-3 py-1.5 text-[9px] font-mono font-bold transition-all duration-150 flex items-center gap-1.5 ${portalType === 'candidate' ? 'bg-accent text-black' : 'bg-surface text-text-muted hover:bg-surface-2 hover:text-text'}`}
+             >
+-              <RefreshCw size={11} className={isSyncing ? 'animate-spin' : ''} />
+-              {isSyncing ? 'Syncing...' : 'Sync'}
++              <UserIcon size={11} /> {t.forCandidates}
+             </button>
+-          )}
+-
+-          {/* User Menu */}
+-          {false ? (
+-            <div className="flex items-center gap-3">
+-              <div className="hidden sm:flex flex-col items-end">
+-                <span className="mono text-[9px] text-text font-bold">{user.displayName || 'User'}</span>
+-                <button
+-                  onClick={() => signOut(auth)}
+-                  className="mono text-[8px] text-text-muted hover:text-accent transition-colors flex items-center gap-1"
+-                >
+-                  <LogOut size={10} /> Sign Out
+-                </button>
+-              </div>
+-              <div className="w-8 h-8 rounded-full bg-accent/20 border border-accent/40 flex items-center justify-center overflow-hidden">
+-                {user.photoURL ? (
+-                  <img src={user.photoURL} alt="Profile" className="w-full h-full object-cover" />
+-                ) : (
+-                  <UserIcon size={15} className="text-accent" />
+-                )}
+-              </div>
+-            </div>
+-          ) : (
+             <button
+-              onClick={() => setIsAuthModalOpen(true)}
+-              className="px-4 py-2 bg-accent text-white font-semibold text-xs rounded-lg flex items-center gap-2 hover:bg-accent-bright transition-all duration-150 shadow-md"
+-              style={{ boxShadow: '0 2px 12px rgba(255,107,0,0.25)' }}
++              onClick={() => togglePortal('company')}
++              className={`px-3 py-1.5 text-[9px] font-mono font-bold transition-all duration-150 flex items-center gap-1.5 ${portalType === 'company' ? 'bg-accent text-black' : 'bg-surface text-text-muted hover:bg-surface-2 hover:text-text'}`}
+             >
+-              <LogIn size={14} /> Login
++              <Briefcase size={11} /> {t.forCompanies}
+             </button>
+-          )}
++          </div>
+ 
+           {/* Mobile menu */}
+           <button className="md:hidden p-2 border border-border rounded-lg text-text-muted hover:text-text">
+@@ -1365,9 +1352,7 @@ export default function App() {
+                     </div>
+                   </div>
+                 </div>
+-              )}
+-            </motion.div>
+-          )}
++              </motion.div>
+         </AnimatePresence>
+       </main>
+ 
+@@ -1500,7 +1485,7 @@ export default function App() {
+ 
+                 <div className="space-y-8">
+                   <h4 className="mono text-[10px] text-text/40 uppercase tracking-widest">The Deep Dive</h4>
+-                  {subscriptionStatus === 'premium' || isAdmin ? (
++                  {false ? (
+                     <div className="text-text/80 leading-relaxed whitespace-pre-wrap text-lg">
+                       {selectedIntelBrief.paid_analysis}
+                     </div>
+diff --git a/src/components/AuthModal.tsx b/src/components/AuthModal.tsx
+deleted file mode 100644
+index d0e5bcb..0000000
+--- a/src/components/AuthModal.tsx
++++ /dev/null
+@@ -1,430 +0,0 @@
+-import React, { useState } from 'react';
+-import { motion, AnimatePresence } from 'motion/react';
+-import { X, ShieldCheck, Mail, Lock, Eye, EyeOff, ArrowRight, RotateCcw, Briefcase, User as UserIcon } from 'lucide-react';
+-import {
+-  auth, googleProvider, signInWithPopup, db,
+-  createUserWithEmailAndPassword, signInWithEmailAndPassword,
+-  sendPasswordResetEmail
+-} from '../firebase';
+-import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore';
+-
+-// --- Translations ---
+-const translations = {
+-  EN: {
+-    selectRole: 'SELECT ROLE',
+-    resetPw: 'RESET PASSWORD',
+-    signIn: 'SIGN IN',
+-    createAccount: 'CREATE ACCOUNT',
+-    howJoining: 'How are you joining WProTalents? This helps us show you the right experience.',
+-    candidate: "I'm a Candidate",
+-    candidateDesc: 'Browse AI & tech roles across LATAM, USA & EU',
+-    company: "I'm a Company",
+-    companyDesc: 'Access market intel and talent acquisition tools',
+-    youSelected: 'You selected:',
+-    continueGoogle: 'Continue with Google',
+-    or: 'OR',
+-    emailPlaceholder: 'Email address',
+-    passwordPlaceholder: 'Password',
+-    forgotPassword: 'Forgot password?',
+-    changeRole: '← Change role',
+-    sendResetLink: 'SEND RESET LINK',
+-    backToSignIn: '← Back to sign in',
+-    resetLinkSent: 'Reset link sent — check your inbox.',
+-    loading: '...',
+-    noAccount: 'No account? Sign up',
+-    alreadyAccount: 'Already have an account? Sign in',
+-  },
+-  ES: {
+-    selectRole: 'SELECCIONAR ROL',
+-    resetPw: 'RESTABLECER CONTRASEÑA',
+-    signIn: 'INICIAR SESIÓN',
+-    createAccount: 'CREAR CUENTA',
+-    howJoining: '¿Cómo te unes a WProTalents? Esto nos ayuda a mostrarte la experiencia adecuada.',
+-    candidate: 'Soy Candidato',
+-    candidateDesc: 'Explora roles de IA y tecnología en LATAM, EE. UU. y UE',
+-    company: 'Soy Empresa',
+-    companyDesc: 'Accede a inteligencia de mercado y herramientas de adquisición de talento',
+-    youSelected: 'Seleccionaste:',
+-    continueGoogle: 'Continuar con Google',
+-    or: 'O',
+-    emailPlaceholder: 'Correo electrónico',
+-    passwordPlaceholder: 'Contraseña',
+-    forgotPassword: '¿Olvidaste tu contraseña?',
+-    changeRole: '← Cambiar rol',
+-    sendResetLink: 'ENVIAR ENLACE DE RESTABLECIMIENTO',
+-    backToSignIn: '← Volver a iniciar sesión',
+-    resetLinkSent: 'Enlace de restablecimiento enviado — revisa tu correo.',
+-    loading: '...',
+-    noAccount: '¿No tienes cuenta? Regístrate',
+-    alreadyAccount: '¿Ya tienes cuenta? Inicia sesión',
+-  },
+-  PT: {
+-    selectRole: 'SELECIONAR FUNÇÃO',
+-    resetPw: 'REDEFINIR SENHA',
+-    signIn: 'ENTRAR',
+-    createAccount: 'CRIAR CONTA',
+-    howJoining: 'Como você está se juntando à WProTalents? Isso nos ajuda a mostrar a experiência certa.',
+-    candidate: 'Sou Candidato',
+-    candidateDesc: 'Explore vagas de IA e tecnologia na LATAM, EUA e UE',
+-    company: 'Sou Empresa',
+-    companyDesc: 'Acesse inteligência de mercado e ferramentas de aquisição de talentos',
+-    youSelected: 'Você selecionou:',
+-    continueGoogle: 'Continuar com Google',
+-    or: 'OU',
+-    emailPlaceholder: 'E-mail',
+-    passwordPlaceholder: 'Senha',
+-    forgotPassword: 'Esqueceu a senha?',
+-    changeRole: '← Alterar função',
+-    sendResetLink: 'ENVIAR LINK DE REDEFINIÇÃO',
+-    backToSignIn: '← Voltar para entrar',
+-    resetLinkSent: 'Link de redefinição enviado — verifique seu e-mail.',
+-    loading: '...',
+-    noAccount: 'Não tem conta? Cadastre-se',
+-    alreadyAccount: 'Já tem conta? Entre',
+-  }
+-};
+-
+-type Language = 'EN' | 'ES' | 'PT';
+-type Mode = 'role' | 'auth' | 'reset' | 'signin' | 'signup';
+-
+-interface AuthModalProps {
+-  isOpen: boolean;
+-  onClose: () => void;
+-}
+-
+-async function ensureUserDoc(user: { uid: string; email: string | null; displayName: string | null; photoURL: string | null }) {
+-  const ref = doc(db, 'users', user.uid);
+-  const snap = await getDoc(ref).catch(() => null);
+-  if (!snap || !snap.exists()) {
+-    await setDoc(ref, {
+-      uid: user.uid,
+-      email: user.email,
+-      displayName: user.displayName || user.email?.split('@')[0] || 'User',
+-      photoURL: user.photoURL,
+-      subscriptionStatus: 'free',
+-      createdAt: serverTimestamp(),
+-      updatedAt: serverTimestamp(),
+-    }).catch(() => {});
+-    return null;
+-  }
+-  return snap.data()?.role || null;
+-}
+-
+-async function saveUserRole(uid: string, role: 'candidate' | 'company') {
+-  const ref = doc(db, 'users', uid);
+-  try {
+-    await setDoc(ref, { role, updatedAt: serverTimestamp() }, { merge: true });
+-  } catch (err) {
+-    console.error('[saveUserRole] failed to save role:', err);
+-  }
+-}
+-
+-export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
+-  // Get language from localStorage (same as main app)
+-  const getLang = (): Language => {
+-    const saved = localStorage.getItem('wpro_lang');
+-    if (saved === 'EN' || saved === 'ES' || saved === 'PT') return saved;
+-    return 'EN';
+-  };
+-  const [lang, setLang] = useState<Language>(getLang);
+-  const t = translations[lang];
+-
+-  const [mode, setMode] = useState<Mode>('role');
+-  const [email, setEmail] = useState('');
+-  const [password, setPassword] = useState('');
+-  const [showPw, setShowPw] = useState(false);
+-  const [loading, setLoading] = useState(false);
+-  const [error, setError] = useState('');
+-  const [resetSent, setResetSent] = useState(false);
+-  const [selectedRole, setSelectedRole] = useState<'candidate' | 'company' | null>(null);
+-
+-  const reset = () => { setEmail(''); setPassword(''); setError(''); setResetSent(false); };
+-
+-  const handleClose = () => {
+-    setMode('role');
+-    setSelectedRole(null);
+-    reset();
+-    onClose();
+-  };
+-
+-  const friendlyError = (code: string) => {
+-    const map: Record<string, string> = {
+-      'auth/email-already-in-use': 'That email already has an account. Sign in instead.',
+-      'auth/invalid-email': 'Please enter a valid email address.',
+-      'auth/weak-password': 'Password must be at least 6 characters.',
+-      'auth/user-not-found': 'No account with that email. Sign up instead.',
+-      'auth/wrong-password': 'Incorrect password.',
+-      'auth/invalid-credential': 'Incorrect email or password.',
+-      'auth/too-many-requests': 'Too many attempts. Try again later.',
+-      'auth/unauthorized-domain': 'Google sign-in is not enabled for this domain. Use email & password below.',
+-      'auth/popup-closed-by-user': 'Sign-in cancelled.',
+-      'auth/operation-not-allowed': 'This sign-in method is not enabled. Please contact the administrator.',
+-      'auth/popup-blocked': 'Popup was blocked by your browser. Please allow popups for this site.',
+-      'auth/network-request-failed': 'Network error. Check your connection and try again.',
+-      'auth/internal-error': 'An internal error occurred. Try again or use email & password.',
+-    };
+-    return map[code] || `Something went wrong (${code}). Please try again.`;
+-  };
+-
+-  const finalizeAuth = async (user: { uid: string; email: string | null; displayName: string | null; photoURL: string | null }) => {
+-    await ensureUserDoc(user);
+-    if (selectedRole) {
+-      // Role save is best-effort — never block login if it fails
+-      await saveUserRole(user.uid, selectedRole).catch(err =>
+-        console.error('[finalizeAuth] role save failed:', err)
+-      );
+-    }
+-    handleClose();
+-  };
+-
+-  const handleEmail = async (e: React.FormEvent) => {
+-    e.preventDefault();
+-    setLoading(true);
+-    setError('');
+-    try {
+-      let result;
+-      if (mode === 'signup') {
+-        result = await createUserWithEmailAndPassword(auth, email, password);
+-      } else {
+-        result = await signInWithEmailAndPassword(auth, email, password);
+-      }
+-      await finalizeAuth(result.user);
+-    } catch (err: any) {
+-      setError(friendlyError(err.code));
+-    } finally {
+-      setLoading(false);
+-    }
+-  };
+-
+-  const handleReset = async (e: React.FormEvent) => {
+-    e.preventDefault();
+-    setLoading(true);
+-    setError('');
+-    try {
+-      await sendPasswordResetEmail(auth, email);
+-      setResetSent(true);
+-    } catch (err: any) {
+-      setError(friendlyError(err.code));
+-    } finally {
+-      setLoading(false);
+-    }
+-  };
+-
+-  const handleGoogle = async () => {
+-    if (!selectedRole && mode !== 'signin' && mode !== 'signup') {
+-      setError('Please select a role first.');
+-      return;
+-    }
+-    setLoading(true);
+-    setError('');
+-    try {
+-      const result = await signInWithPopup(auth, googleProvider);
+-      await finalizeAuth(result.user);
+-    } catch (err: any) {
+-      setError(friendlyError(err.code));
+-    } finally {
+-      setLoading(false);
+-    }
+-  };
+-
+-  const handleRoleSelect = (role: 'candidate' | 'company') => {
+-    setSelectedRole(role);
+-    setMode('auth');
+-  };
+-
+-  // Language switcher inside modal (optional but useful)
+-  const LanguageSwitcher = () => (
+-    <div className="flex items-center gap-1 absolute top-4 right-12">
+-      {(['EN', 'ES', 'PT'] as Language[]).map((l) => (
+-        <button
+-          key={l}
+-          onClick={() => { setLang(l); localStorage.setItem('wpro_lang', l); }}
+-          className={`text-[8px] font-mono px-1.5 py-0.5 rounded-sm transition-colors ${lang === l ? 'bg-accent text-black' : 'text-text/40 hover:text-text/80'}`}
+-        >
+-          {l}
+-        </button>
+-      ))}
+-    </div>
+-  );
+-
+-  return (
+-    <AnimatePresence>
+-      {isOpen && (
+-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-bg/80 backdrop-blur-sm">
+-          <motion.div
+-            initial={{ opacity: 0, scale: 0.95, y: 16 }}
+-            animate={{ opacity: 1, scale: 1, y: 0 }}
+-            exit={{ opacity: 0, scale: 0.95, y: 16 }}
+-            transition={{ duration: 0.15 }}
+-            className="w-full max-w-sm bg-surface border border-border shadow-2xl relative"
+-          >
+-            <LanguageSwitcher />
+-            <div className="flex items-center justify-between px-6 py-4 border-b border-border">
+-              <div className="flex items-center gap-2">
+-                <ShieldCheck size={14} className="text-accent" />
+-                <span className="mono text-[10px] text-accent font-bold tracking-widest">
+-                  {mode === 'role' && t.selectRole}
+-                  {mode === 'reset' && t.resetPw}
+-                  {mode === 'auth' && (selectedRole ? t.signIn : '')}
+-                  {mode === 'signin' && t.signIn}
+-                  {mode === 'signup' && t.createAccount}
+-                </span>
+-              </div>
+-              <button onClick={handleClose} className="text-text/30 hover:text-text transition-colors">
+-                <X size={16} />
+-              </button>
+-            </div>
+-
+-            <div className="p-6">
+-              {/* Role selection screen */}
+-              {mode === 'role' && (
+-                <div>
+-                  <p className="mono text-[10px] text-text/50 mb-6 leading-relaxed">
+-                    {t.howJoining}
+-                  </p>
+-                  <div className="flex flex-col gap-3">
+-                    <button
+-                      onClick={() => handleRoleSelect('candidate')}
+-                      className="flex items-center gap-4 w-full border border-border hover:border-accent/60 bg-bg hover:bg-text/5 p-4 text-left transition-all group"
+-                    >
+-                      <div className="w-9 h-9 border border-border group-hover:border-accent/40 flex items-center justify-center flex-shrink-0 transition-colors">
+-                        <UserIcon size={16} className="text-text/40 group-hover:text-accent transition-colors" />
+-                      </div>
+-                      <div>
+-                        <div className="mono text-[11px] text-text font-bold mb-0.5">{t.candidate}</div>
+-                        <div className="mono text-[9px] text-text/40">{t.candidateDesc}</div>
+-                      </div>
+-                    </button>
+-                    <button
+-                      onClick={() => handleRoleSelect('company')}
+-                      className="flex items-center gap-4 w-full border border-border hover:border-accent/60 bg-bg hover:bg-text/5 p-4 text-left transition-all group"
+-                    >
+-                      <div className="w-9 h-9 border border-border group-hover:border-accent/40 flex items-center justify-center flex-shrink-0 transition-colors">
+-                        <Briefcase size={16} className="text-text/40 group-hover:text-accent transition-colors" />
+-                      </div>
+-                      <div>
+-                        <div className="mono text-[11px] text-text font-bold mb-0.5">{t.company}</div>
+-                        <div className="mono text-[9px] text-text/40">{t.companyDesc}</div>
+-                      </div>
+-                    </button>
+-                  </div>
+-                </div>
+-              )}
+-
+-              {/* Auth screen (after role selected) */}
+-              {mode === 'auth' && (
+-                <>
+-                  <div className="mb-4 text-center">
+-                    <p className="mono text-[10px] text-text/60">
+-                      {t.youSelected} <span className="text-accent font-bold">{selectedRole === 'candidate' ? t.candidate : t.company}</span>
+-                    </p>
+-                  </div>
+-
+-                  <button
+-                    onClick={handleGoogle}
+-                    disabled={loading}
+-                    className="w-full flex items-center justify-center gap-3 border border-border bg-bg hover:border-accent/40 py-2.5 mono text-[10px] text-text/60 hover:text-text transition-all mb-4 disabled:opacity-40"
+-                  >
+-                    <img src="https://www.google.com/favicon.ico" alt="" className="w-3.5 h-3.5" />
+-                    {t.continueGoogle}
+-                  </button>
+-
+-                  <div className="flex items-center gap-3 mb-4">
+-                    <div className="flex-1 h-px bg-border" />
+-                    <span className="mono text-[8px] text-text/20">{t.or}</span>
+-                    <div className="flex-1 h-px bg-border" />
+-                  </div>
+-
+-                  <form onSubmit={handleEmail} className="space-y-3">
+-                    <div className="relative">
+-                      <Mail size={12} className="absolute left-3 top-1/2 -translate-y-1/2 text-text/25" />
+-                      <input
+-                        type="email"
+-                        placeholder={t.emailPlaceholder}
+-                        value={email}
+-                        onChange={e => setEmail(e.target.value)}
+-                        required
+-                        className="w-full bg-bg border border-border pl-9 pr-4 py-2.5 mono text-[11px] text-text placeholder:text-text/20 focus:outline-none focus:border-accent/40 transition-colors"
+-                      />
+-                    </div>
+-                    <div className="relative">
+-                      <Lock size={12} className="absolute left-3 top-1/2 -translate-y-1/2 text-text/25" />
+-                      <input
+-                        type={showPw ? 'text' : 'password'}
+-                        placeholder={t.passwordPlaceholder}
+-                        value={password}
+-                        onChange={e => setPassword(e.target.value)}
+-                        required
+-                        minLength={6}
+-                        className="w-full bg-bg border border-border pl-9 pr-10 py-2.5 mono text-[11px] text-text placeholder:text-text/20 focus:outline-none focus:border-accent/40 transition-colors"
+-                      />
+-                      <button type="button" onClick={() => setShowPw(v => !v)} className="absolute right-3 top-1/2 -translate-y-1/2 text-text/25 hover:text-text/60">
+-                        {showPw ? <EyeOff size={12} /> : <Eye size={12} />}
+-                      </button>
+-                    </div>
+-                    <button
+-                      type="submit"
+-                      disabled={loading}
+-                      className="w-full flex items-center justify-center gap-2 bg-accent text-black py-2.5 mono text-[10px] font-bold hover:opacity-90 transition-opacity disabled:opacity-50"
+-                    >
+-                      {loading ? t.loading : (mode === 'signup' ? t.createAccount : t.signIn)}
+-                      {!loading && <ArrowRight size={11} />}
+-                    </button>
+-                  </form>
+-
+-                  <div className="mt-4 flex items-center justify-between">
+-                    <button onClick={() => { setMode('role'); setSelectedRole(null); reset(); }} className="mono text-[9px] text-text/30 hover:text-accent transition-colors">
+-                      {t.changeRole}
+-                    </button>
+-                    <button onClick={() => { setMode('reset'); reset(); }} className="mono text-[9px] text-text/30 hover:text-text/60 transition-colors">
+-                      {t.forgotPassword}
+-                    </button>
+-                  </div>
+-                </>
+-              )}
+-
+-              {/* Reset password screen */}
+-              {mode === 'reset' && (
+-                <form onSubmit={handleReset} className="space-y-3">
+-                  <div className="relative">
+-                    <Mail size={12} className="absolute left-3 top-1/2 -translate-y-1/2 text-text/25" />
+-                    <input
+-                      type="email"
+-                      placeholder={t.emailPlaceholder}
+-                      value={email}
+-                      onChange={e => setEmail(e.target.value)}
+-                      required
+-                      className="w-full bg-bg border border-border pl-9 pr-4 py-2.5 mono text-[11px] text-text placeholder:text-text/20 focus:outline-none focus:border-accent/40 transition-colors"
+-                    />
+-                  </div>
+-                  <button
+-                    type="submit"
+-                    disabled={loading}
+-                    className="w-full flex items-center justify-center gap-2 bg-accent text-black py-2.5 mono text-[10px] font-bold hover:opacity-90 transition-opacity disabled:opacity-50"
+-                  >
+-                    {loading ? t.loading : t.sendResetLink}
+-                    {!loading && <ArrowRight size={11} />}
+-                  </button>
+-                  <button onClick={() => { setMode('auth'); reset(); }} className="w-full mt-2 mono text-[9px] text-text/30 hover:text-accent transition-colors">
+-                    {t.backToSignIn}
+-                  </button>
+-                </form>
+-              )}
+-
+-              {error && (
+-                <div className="mt-4 px-3 py-2 border border-red-500/20 bg-red-500/5 mono text-[9px] text-red-400">
+-                  {error}
+-                </div>
+-              )}
+-              {resetSent && (
+-                <div className="mt-4 px-3 py-2 border border-green-500/20 bg-green-500/5 mono text-[9px] text-green-400">
+-                  {t.resetLinkSent}
+-                </div>
+-              )}
+-            </div>
+-          </motion.div>
+-        </div>
+-      )}
+-    </AnimatePresence>
+-  );
+-};
+diff --git a/src/components/CVRadarDashboard.tsx b/src/components/CVRadarDashboard.tsx
+index b4eac9b..7925eb6 100644
+--- a/src/components/CVRadarDashboard.tsx
++++ b/src/components/CVRadarDashboard.tsx
+@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'motion/react';
+ import {
+   Plus, Search, Filter, TrendingUp, AlertCircle, 
+   Loader2, Eye, Mail, CheckCircle2, Clock, Zap,
+-  ChevronRight, Trash2, Toggle2
++  ChevronRight, Trash2, ToggleLeft
+ } from 'lucide-react';
+ 
+ interface Radar {
+@@ -294,11 +294,11 @@ export default function CVRadarDashboard({
+                   <button
+                     onClick={() => onViewRadar(radar.id)}
+                     className="p-1.5 hover:bg-accent/10 hover:text-accent transition-colors rounded"
+-                    title={t.table.view}
++                    title={t.view}
+                   >
+                     <Eye size={12} />
+                   </button>
+-                  <button className="p-1.5 hover:bg-red-500/10 hover:text-red-400 transition-colors rounded" title={t.table.delete}>
++                  <button className="p-1.5 hover:bg-red-500/10 hover:text-red-400 transition-colors rounded" title={t.delete}>
+                     <Trash2 size={12} />
+                   </button>
+                 </div>
+diff --git a/src/components/CVRadarForm.tsx b/src/components/CVRadarForm.tsx
+index 5889eb5..3075ee6 100644
+--- a/src/components/CVRadarForm.tsx
++++ b/src/components/CVRadarForm.tsx
+@@ -123,7 +123,7 @@ export default function CVRadarForm({ clientId, onSuccess, onCancel }: CVRadarFo
+         {} as Record<string, any>
+       );
+ 
+-      const res = await fetch('/api/cvradar/create', {
++      const res = await fetch('/api/cvradar', {
+         method: 'POST',
+         headers: { 'Content-Type': 'application/json' },
+         body: JSON.stringify({
+diff --git a/src/components/CandidateIntel.tsx b/src/components/CandidateIntel.tsx
+index c7ef831..9f26960 100644
+--- a/src/components/CandidateIntel.tsx
++++ b/src/components/CandidateIntel.tsx
+@@ -394,11 +394,11 @@ function BestMarketsPanel({ input, lang }: { input: CandidateInput; lang: Lang }
+           <p className="mono text-[9px] text-text/40 leading-relaxed mb-3">{m.verdict}</p>
+           <div className="flex gap-4">
+             <div>
+-              <div className={`mono text-[7px] font-bold ${m.demand === 'High' || m.demand === 'Alta' ? 'text-green-400' : m.demand === 'Low' || m.demand === 'Baja' || m.demand === 'Baixa' ? 'text-red-400' : 'text-yellow-400'}`}>{m.demand}</div>
++              <div className={`mono text-[7px] font-bold ${m.demand === 'High' ? 'text-green-400' : m.demand === 'Low' ? 'text-red-400' : 'text-yellow-400'}`}>{m.demand}</div>
+               <div className="mono text-[6px] text-text/20">{t.demandLabel}</div>
+             </div>
+             <div>
+-              <div className={`mono text-[7px] font-bold ${m.competition === 'Low' || m.competition === 'Baja' || m.competition === 'Baixa' ? 'text-green-400' : m.competition === 'High' || m.competition === 'Alta' ? 'text-red-400' : 'text-yellow-400'}`}>{m.competition}</div>
++              <div className={`mono text-[7px] font-bold ${m.competition === 'Low' ? 'text-green-400' : m.competition === 'High' ? 'text-red-400' : 'text-yellow-400'}`}>{m.competition}</div>
+               <div className="mono text-[6px] text-text/20">{t.competitionLabel}</div>
+             </div>
+           </div>
+diff --git a/src/firebase.ts b/src/firebase.ts
+index b6f5ca3..cef2118 100644
+--- a/src/firebase.ts
++++ b/src/firebase.ts
+@@ -14,17 +14,12 @@ const app = initializeApp(firebaseConfig);
+ export const db = getFirestore(app);
+ export { doc, getDoc, setDoc, onSnapshot, collection, query, orderBy, limit, serverTimestamp };
+ 
+-// Auth no-ops — app is now public
+-export const auth = null;
+-export const onAuthStateChanged = () => () => {};
+-export const signOut = async () => {};
+-export const GoogleAuthProvider = class {};
+-export const signInWithPopup = async () => ({ user: null });
++
+ 
+ export const handleFirestoreError = (error: any, operation: string, path: string) => {
+   console.error(`Firestore ${operation} error at ${path}:`, error);
+ };
+ 
+ export enum FirestoreOperation {
+-  GET = 'GET', SET = 'SET', UPDATE = 'UPDATE', DELETE = 'DELETE',
++  GET = 'GET', SET = 'SET', UPDATE = 'UPDATE', DELETE = 'DELETE', WRITE = 'WRITE', LIST = 'LIST',
+ }
+\ No newline at end of file
+diff --git a/src/index.css b/src/index.css
+index e81c7d2..c949784 100644
+--- a/src/index.css
++++ b/src/index.css
+@@ -254,19 +254,60 @@
+ 
+ /* ── Badge / Tag Styles ── */
+ .badge {
+-  @apply inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-mono uppercase tracking-wider;
++  display: inline-flex;
++  align-items: center;
++  gap: 0.375rem;
++  padding: 0.25rem 0.625rem;
++  border-radius: 9999px;
++  font-size: 10px;
++  font-family: var(--font-mono);
++  text-transform: uppercase;
++  letter-spacing: 0.05em;
+ }
+ 
+ .badge-accent {
+-  @apply badge bg-accent/10 text-accent border border-accent/20;
++  display: inline-flex;
++  align-items: center;
++  gap: 0.375rem;
++  padding: 0.25rem 0.625rem;
++  border-radius: 9999px;
++  font-size: 10px;
++  font-family: var(--font-mono);
++  text-transform: uppercase;
++  letter-spacing: 0.05em;
++  background: rgba(255, 107, 0, 0.1);
++  color: var(--accent);
++  border: 1px solid rgba(255, 107, 0, 0.2);
+ }
+ 
+ .badge-muted {
+-  @apply badge bg-surface-2 text-text-muted border border-border;
++  display: inline-flex;
++  align-items: center;
++  gap: 0.375rem;
++  padding: 0.25rem 0.625rem;
++  border-radius: 9999px;
++  font-size: 10px;
++  font-family: var(--font-mono);
++  text-transform: uppercase;
++  letter-spacing: 0.05em;
++  background: var(--surface-2);
++  color: var(--text-muted);
++  border: 1px solid var(--border);
+ }
+ 
+ .badge-live {
+-  @apply badge bg-accent/10 text-accent border border-accent/30;
++  display: inline-flex;
++  align-items: center;
++  gap: 0.375rem;
++  padding: 0.25rem 0.625rem;
++  border-radius: 9999px;
++  font-size: 10px;
++  font-family: var(--font-mono);
++  text-transform: uppercase;
++  letter-spacing: 0.05em;
++  background: rgba(255, 107, 0, 0.1);
++  color: var(--accent);
++  border: 1px solid rgba(255, 107, 0, 0.3);
+ }
+ 
+ /* ── Form Inputs ── */
+diff --git a/src/pages/JobsPage.tsx b/src/pages/JobsPage.tsx
+index 59c370f..36a6b84 100644
+--- a/src/pages/JobsPage.tsx
++++ b/src/pages/JobsPage.tsx
+@@ -400,10 +400,9 @@ function MarketValueTeaser({ lang = 'EN', isLoggedIn = false }: { lang?: string;
+   const [shown, setShown] = useState(false);
+   // Email gate — auto-unlock for logged-in users
+   const [email, setEmail] = useState('');
+-  const [captured, setCaptured] = useState(() => isLoggedIn);
++  const [emailConsent, setEmailConsent] = useState(false);
++  const [captured, setCaptured] = useState(false);
+   const [capturing, setCapturing] = useState(false);
+-  // If user logs in while component is mounted, unlock immediately
+-  React.useEffect(() => { if (isLoggedIn) setCaptured(true); }, [isLoggedIn]);
+ 
+   const ROLE_OPTS: Record<string, { value: RoleKey; label: string }[]> = {
+     EN: [
+@@ -449,15 +448,16 @@ function MarketValueTeaser({ lang = 'EN', isLoggedIn = false }: { lang?: string;
+     if (!email || capturing) return;
+     setCapturing(true);
+     try {
+-      // await Promise.allSettled([
+-      //   fetch('https://leads.wprotalents.lat/', {
+-      //     method: 'POST',
+-      //     headers: { 'Content-Type': 'application/json' },
+-      //     body: JSON.stringify({ email, role, country, yearsExp, source: 'market-value-teaser' }),
+-      //   }),
+-      // ]);
+-    } finally {
++      const res = await fetch('/api/subscribe-newsletter', {
++        method: 'POST',
++        headers: { 'Content-Type': 'application/json' },
++        body: JSON.stringify({ email, role, country, yearsExp, source: 'market-value-teaser' }),
++      });
++      if (!res.ok) throw new Error('Failed');
+       setCaptured(true);
++    } catch {
++      setCapturing(false); // Show retry state
++    } finally {
+       setCapturing(false);
+     }
+   }
+diff --git a/src/pages/MembersPage.tsx b/src/pages/MembersPage.tsx
+index 08c8014..f942324 100755
+--- a/src/pages/MembersPage.tsx
++++ b/src/pages/MembersPage.tsx
+@@ -14,7 +14,6 @@ import ClientInsightsCard from '../components/ClientInsightsCard';
+ import { generateHiringPlan, type HiringPlan } from '../lib/hiringPlan';
+ import { estimateNetworkReach, type NetworkReach } from '../lib/networkReach';
+ import type { MemberResource } from '../lib/supabase';
+-import type { User } from 'firebase/auth';
+ 
+ // @ts-ignore
+ 
+@@ -110,139 +109,145 @@ function CryptoTicker({ lang = 'EN' }: { lang?: string }) {
+   );
+ }
+ 
+-interface AccessTabProps {
+-  user: User;
+-  executiveUntil: Date | null;
+-  lang: 'EN' | 'ES' | 'PT';
+-}
+-
+-function AccessTab({ user, executiveUntil, lang }: AccessTabProps) {
++function AccessTab({ isPremium, lang }: { isPremium: boolean; lang: 'EN' | 'ES' | 'PT' }) {
++  const [email, setEmail] = useState('');
+   const [loading, setLoading] = useState(false);
+   const [error, setError] = useState('');
+ 
+   const T = {
+     EN: {
+       active: 'Executive Access — Active',
+-      expires: 'Expires',
+-      daysLeft: 'days remaining',
+-      renew: 'Renew for another 30 days — $29 USDC',
+       noAccess: 'No active subscription',
+-      payNow: 'Get Executive Access — $29 USDC',
+-      payDesc: 'Pay once in crypto. Get 30 days of full Executive access — salary data, AI tools, and market intelligence.',
+-      accepted: 'Accepted: USDC · USDT · ETH · BTC · DAI',
++      payCard: 'Pay with Card — $29/mo',
++      payCrypto: 'Pay with Crypto — $29',
++      payDesc: 'Full Executive access — salary data, AI tools, market intelligence, and WPro network priority.',
++      emailPlaceholder: 'Enter your email for the receipt',
++      accepted: 'Also accepted: USDC · USDT · ETH · BTC · DAI',
+       connecting: 'Opening payment...',
+       how: 'How it works',
+-      step1: 'Click the button — a secure Coinbase Commerce page opens.',
+-      step2: 'Pay $29 in any stablecoin or crypto.',
+-      step3: 'Access activates automatically within seconds of confirmation.',
+-      noStripe: 'No Stripe. No card. No subscription traps.',
+-      history: 'Payment History',
+-      pending: 'pending',
+-      confirmed: 'confirmed',
++      step1: 'Click the button — a secure payment page opens.',
++      step2: 'Pay $29. Access activates automatically within seconds.',
++      step3: 'Return here — all premium content is unlocked.',
+     },
+     ES: {
+       active: 'Acceso Ejecutivo — Activo',
+-      expires: 'Vence el',
+-      daysLeft: 'días restantes',
+-      renew: 'Renovar 30 días más — $29 USDC',
+       noAccess: 'Sin suscripción activa',
+-      payNow: 'Obtener Acceso Ejecutivo — $29 USDC',
+-      payDesc: 'Pago único en cripto. 30 días de acceso completo — datos salariales, herramientas IA e inteligencia de mercado.',
+-      accepted: 'Aceptamos: USDC · USDT · ETH · BTC · DAI',
++      payCard: 'Pagar con Tarjeta — $29/mes',
++      payCrypto: 'Pagar con Cripto — $29',
++      payDesc: 'Acceso ejecutivo completo — datos salariales, herramientas IA e inteligencia de mercado.',
++      emailPlaceholder: 'Tu email para el recibo',
++      accepted: 'También aceptamos: USDC · USDT · ETH · BTC · DAI',
+       connecting: 'Abriendo pago...',
+       how: 'Cómo funciona',
+-      step1: 'Haz clic — se abre una página segura de Coinbase Commerce.',
+-      step2: 'Paga $29 en cualquier stablecoin o cripto.',
+-      step3: 'El acceso se activa automáticamente en segundos.',
+-      noStripe: 'Sin Stripe. Sin tarjeta. Sin trampas de suscripción.',
+-      history: 'Historial de Pagos',
+-      pending: 'pendiente',
+-      confirmed: 'confirmado',
++      step1: 'Haz clic — se abre una página de pago segura.',
++      step2: 'Paga $29. El acceso se activa automáticamente.',
++      step3: 'Vuelve aquí — todo el contenido premium está desbloqueado.',
+     },
+     PT: {
+       active: 'Acesso Executivo — Ativo',
+-      expires: 'Expira em',
+-      daysLeft: 'dias restantes',
+-      renew: 'Renovar por mais 30 dias — $29 USDC',
+       noAccess: 'Sem assinatura ativa',
+-      payNow: 'Obter Acesso Executivo — $29 USDC',
+-      payDesc: 'Pagamento único em cripto. 30 dias de acesso completo — dados salariais, ferramentas de IA e inteligência de mercado.',
+-      accepted: 'Aceitos: USDC · USDT · ETH · BTC · DAI',
++      payCard: 'Pagar com Cartão — $29/mês',
++      payCrypto: 'Pagar com Cripto — $29',
++      payDesc: 'Acesso executivo completo — dados salariais, ferramentas IA e inteligência de mercado.',
++      emailPlaceholder: 'Seu email para o recibo',
++      accepted: 'Também aceitos: USDC · USDT · ETH · BTC · DAI',
+       connecting: 'Abrindo pagamento...',
+       how: 'Como funciona',
+-      step1: 'Clique no botão — abre uma página segura do Coinbase Commerce.',
+-      step2: 'Pague $29 em qualquer stablecoin ou cripto.',
+-      step3: 'O acesso é ativado automaticamente em segundos após a confirmação.',
+-      noStripe: 'Sem Stripe. Sem cartão. Sem armadilhas de assinatura.',
+-      history: 'Histórico de Pagamentos',
+-      pending: 'pendente',
+-      confirmed: 'confirmado',
++      step1: 'Clique — abre uma página de pagamento segura.',
++      step2: 'Pague $29. O acesso é ativado automaticamente.',
++      step3: 'Volte aqui — todo o conteúdo premium está desbloqueado.',
+     },
+   };
+   const t = T[lang];
+ 
+-  const daysLeft = executiveUntil
+-    ? Math.max(0, Math.ceil((executiveUntil.getTime() - Date.now()) / 86400000))
+-    : 0;
++  const handleCardPay = async () => {
++    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
++      setError(lang === 'ES' ? 'Ingresa un email válido' : lang === 'PT' ? 'Insira um email válido' : 'Enter a valid email');
++      return;
++    }
++    setLoading(true); setError('');
++    try {
++      const res = await fetch('/api/create-checkout-session', {
++        method: 'POST',
++        headers: { 'Content-Type': 'application/json' },
++        body: JSON.stringify({ userId: email, customerEmail: email }),
++      });
++      const data = await res.json();
++      if (data.url) window.location.href = data.url;
++      else setError(data.error || 'Payment creation failed.');
++    } catch {
++      setError('Network error.');
++    } finally { setLoading(false); }
++  };
+ 
+-  const handlePay = async () => {
++  const handleCryptoPay = async () => {
++    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
++      setError(lang === 'ES' ? 'Ingresa un email válido' : lang === 'PT' ? 'Insira um email válido' : 'Enter a valid email');
++      return;
++    }
+     setLoading(true); setError('');
+     try {
+       const res = await fetch('/api/create-crypto-charge', {
+         method: 'POST',
+         headers: { 'Content-Type': 'application/json' },
+-        body: JSON.stringify({ userId: user.uid, userEmail: user.email }),
++        body: JSON.stringify({ userId: email, userEmail: email }),
+       });
+       const data = await res.json();
+       if (data.url) window.location.href = data.url;
+-      else setError(data.error || 'Payment creation failed. Try again.');
++      else setError(data.error || 'Payment creation failed.');
+     } catch {
+-      setError('Network error. Please try again.');
+-    } finally {
+-      setLoading(false);
+-    }
++      setError('Network error.');
++    } finally { setLoading(false); }
+   };
+ 
+   return (
+     <div className="space-y-8 max-w-2xl">
+       {/* Status card */}
+-      <div className={`border p-6 ${executiveUntil ? 'border-accent/40 bg-accent/5' : 'border-border bg-surface/30'}`}>
++      <div className={`border p-6 ${isPremium ? 'border-accent/40 bg-accent/5' : 'border-border bg-surface/30'}`}>
+         <div className="flex items-center gap-3 mb-4">
+-          <div className={`w-2 h-2 rounded-full ${executiveUntil ? 'bg-accent' : 'bg-text/20'}`} />
++          <div className={`w-2 h-2 rounded-full ${isPremium ? 'bg-accent' : 'bg-text/20'}`} />
+           <span className="mono text-[10px] font-bold tracking-widest uppercase">
+-            {executiveUntil ? t.active : t.noAccess}
++            {isPremium ? t.active : t.noAccess}
+           </span>
+         </div>
+-        {executiveUntil && (
+-          <div className="space-y-2">
+-            <div className="flex items-baseline gap-2">
+-              <span className="text-4xl font-black text-accent">{daysLeft}</span>
+-              <span className="text-text/50 mono text-[10px]">{t.daysLeft}</span>
+-            </div>
+-            <p className="mono text-[9px] text-text/40">
+-              {t.expires} {executiveUntil.toLocaleDateString(lang === 'EN' ? 'en-US' : lang === 'ES' ? 'es-CO' : 'pt-BR', { day: 'numeric', month: 'long', year: 'numeric' })}
+-            </p>
+-            {/* Days bar */}
+-            <div className="mt-3 h-1 bg-border">
+-              <div className="h-1 bg-accent transition-all" style={{ width: `${Math.min(100, (daysLeft / 30) * 100)}%` }} />
+-            </div>
+-          </div>
+-        )}
+       </div>
+ 
+-      {/* Pay button */}
+-      <div>
+-        <button
+-          onClick={handlePay}
+-          disabled={loading}
+-          className="w-full py-4 bg-accent text-black font-black hover:opacity-90 transition flex items-center justify-center gap-3 disabled:opacity-50 mono text-[11px] tracking-widest"
+-        >
+-          <Coins size={18} />
+-          {loading ? t.connecting : (executiveUntil ? t.renew : t.payNow)}
+-        </button>
+-        <p className="mono text-[8px] text-text/30 text-center mt-2">{t.accepted}</p>
+-        {error && <p className="mono text-[9px] text-red-400 text-center mt-2">{error}</p>}
+-      </div>
++      {!isPremium && (
++        <>
++          {/* Email input */}
++          <div>
++            <input
++              type="email"
++              placeholder={t.emailPlaceholder}
++              value={email}
++              onChange={e => setEmail(e.target.value)}
++              className="w-full bg-bg border border-border px-4 py-3 mono text-[11px] text-text placeholder-text-dim focus:outline-none focus:border-accent/50 transition-colors"
++            />
++            {error && <p className="mono text-[9px] text-red-400 mt-2">{error}</p>}
++          </div>
++
++          {/* Pay buttons */}
++          <div className="space-y-3">
++            <button
++              onClick={handleCardPay}
++              disabled={loading}
++              className="w-full py-4 bg-accent text-black font-black hover:opacity-90 transition flex items-center justify-center gap-3 disabled:opacity-50 mono text-[11px] tracking-widest"
++            >
++              <Crown size={18} />
++              {loading ? t.connecting : t.payCard}
++            </button>
++            <button
++              onClick={handleCryptoPay}
++              disabled={loading}
++              className="w-full py-3 bg-surface border border-border text-text font-bold hover:border-accent/40 transition flex items-center justify-center gap-3 disabled:opacity-50 mono text-[10px]"
++            >
++              <Coins size={16} />
++              {t.payCrypto}
++            </button>
++            <p className="mono text-[8px] text-text/30 text-center">{t.accepted}</p>
++          </div>
++        </>
++      )}
+ 
+       {/* Live crypto prices */}
+       <CryptoTicker lang={lang} />
+@@ -258,8 +263,8 @@ function AccessTab({ user, executiveUntil, lang }: AccessTabProps) {
+             </div>
+           ))}
+         </div>
+-        <p className="mono text-[8px] text-text/25 mt-4 pt-4 border-t border-border">{t.noStripe}</p>
+       </div>
++
+     </div>
+   );
+ }
+@@ -400,7 +405,25 @@ function SalaryTable() {
+ }
+ 
+ // ─── WPro CTA ─────────────────────────────────────────────────────────────────
+-function WProCTA() {
++function WProCTA({ lang }: { lang: 'EN' | 'ES' | 'PT' }) {
++  const ms = {
++    EN: {
++      hireFast: 'Hire LATAM Tech Talent — Fast',
++      hireDesc: '23,000+ verified AI & tech professionals. Senior roles filled in 21 days or less. US & EU companies only. Founder-led.',
++      statLabels: ['Time to hire', 'Verified talent', 'Offer acceptance', 'Cost vs US hiring'],
++    },
++    ES: {
++      hireFast: 'Contratar Talento Tech LATAM — Rápido',
++      hireDesc: '23.000+ professionles de IA y tech verificados. Vacantes senior cubiertas en 21 días o menos. Solo empresas USA y UE. Liderado por fundador.',
++      statLabels: ['Tiempo para contratar', 'Profesionales verificados', 'Aceptación de oferta', 'Costo vs contratación USA'],
++    },
++    PT: {
++      hireFast: 'Contratar Talento Tech LATAM — Rápido',
++      hireDesc: '23.000+ profissionais de IA e tech verificados. Vagas sênior preenchidas em 21 dias ou menos. Apenas empresas dos EUA e UE. Liderado pelo fundador.',
++      statLabels: ['Tempo para contratar', 'Profissionais verificados', 'Aceitação de oferta', 'Custo vs contratação nos EUA'],
++    },
++  }[lang];
++
+   return (
+     <div className="space-y-6">
+ 
+@@ -555,14 +578,40 @@ export default function MembersPage() {
+     const saved = localStorage.getItem('wpro_lang');
+     return (saved === 'EN' || saved === 'ES' || saved === 'PT') ? saved as any : 'EN';
+   });
+-  
+-  // Create fake user object so component thinks you're logged in
+-  const user: any = {
+-    uid: 'public-user',
+-    email: 'public@latam-intel.app',
+-    displayName: 'Member',
+-    photoURL: null,
+-  };
++
++  // Premium verification
++  const [isPremium, setIsPremium] = useState(false);
++  const [verifyLoading, setVerifyLoading] = useState(true);
++
++  useEffect(() => {
++    // Check localStorage cache first
++    const premiumUntil = localStorage.getItem('wpro_premium_until');
++    if (premiumUntil && new Date(premiumUntil) > new Date()) {
++      setIsPremium(true);
++      setVerifyLoading(false);
++      return;
++    }
++
++    // Check URL params from payment redirect
++    const params = new URLSearchParams(window.location.search);
++    const emailParam = params.get('email');
++
++    if (emailParam) {
++      // Verify against the API
++      fetch(`/api/members/verify?email=${encodeURIComponent(emailParam)}`)
++        .then(r => r.json())
++        .then(data => {
++          if (data.isPremium) {
++            setIsPremium(true);
++            localStorage.setItem('wpro_premium_until', data.premiumUntil);
++          }
++        })
++        .catch(() => {})
++        .finally(() => setVerifyLoading(false));
++    } else {
++      setVerifyLoading(false);
++    }
++  }, []);
+ 
+   const [activeTab, setActiveTab] = useState<Tab>('intel');
+   const [dataLoading, setDataLoading] = useState(false);
+@@ -571,17 +620,16 @@ export default function MembersPage() {
+   const [networkReach, setNetworkReach] = useState<NetworkReach | null>(null);
+   const [lastFormData, setLastFormData] = useState<ClientJobPostData | null>(null);
+   const [insightsLoading, setInsightsLoading] = useState(false);
+-  const [executiveUntil] = useState(new Date('2099-12-31'));
+ 
+   // Load resources
+   useEffect(() => {
+     const mockResources: MemberResource[] = [
+-      { id: '1', title: 'LATAM Salary Benchmarks', category: 'Salary Data', url: '/', description: 'Complete salary data for 40+ roles across 5 countries' },
+-      { id: '2', title: 'Remote Salary Calculator', category: 'Salary Data', url: '/', description: 'Compare USD vs local currency compensation' },
+-      { id: '3', title: 'AI Skills Roadmap 2026', category: 'Playbooks', url: '/', description: 'What to learn to 10x your market value in AI/ML' },
+-      { id: '4', title: 'LATAM Recruitment Playbook', category: 'Playbooks', url: '/', description: '20 years of WProTalents founder recruiting strategy' },
+-      { id: '5', title: 'Job Description Template', category: 'Templates', url: '/', description: 'Write JDs that attract top tier talent' },
+-      { id: '6', title: 'Offer Letter Template', category: 'Templates', url: '/', description: 'Market-rate offer templates (USD + local)' },
++      { id: '1', title: 'LATAM Salary Benchmarks', category: 'Salary Data' as const, description: 'Complete salary data for 40+ roles across 5 countries', file_url: null, external_url: null, is_active: true, sort_order: 1, created_at: new Date().toISOString() },
++      { id: '2', title: 'Remote Salary Calculator', category: 'Salary Data' as const, description: 'Compare USD vs local currency compensation', file_url: null, external_url: null, is_active: true, sort_order: 2, created_at: new Date().toISOString() },
++      { id: '3', title: 'AI Skills Roadmap 2026', category: 'Playbooks' as const, description: 'What to learn to 10x your market value in AI/ML', file_url: null, external_url: null, is_active: true, sort_order: 3, created_at: new Date().toISOString() },
++      { id: '4', title: 'LATAM Recruitment Playbook', category: 'Playbooks' as const, description: '20 years of WProTalents founder recruiting strategy', file_url: null, external_url: null, is_active: true, sort_order: 4, created_at: new Date().toISOString() },
++      { id: '5', title: 'Job Description Template', category: 'Templates' as const, description: 'Write JDs that attract top tier talent', file_url: null, external_url: null, is_active: true, sort_order: 5, created_at: new Date().toISOString() },
++      { id: '6', title: 'Offer Letter Template', category: 'Templates' as const, description: 'Market-rate offer templates (USD + local)', file_url: null, external_url: null, is_active: true, sort_order: 6, created_at: new Date().toISOString() },
+     ];
+     setResources(mockResources);
+   }, []);
+@@ -688,8 +736,8 @@ export default function MembersPage() {
+             </div>
+           </div>
+           <div className="flex items-center gap-3">
+-            <div className="px-2 py-1 bg-accent/10 border border-accent/20 mono text-[9px] text-accent font-bold">
+-              PUBLIC ACCESS
++            <div className={`px-2 py-1 mono text-[9px] font-bold ${isPremium ? 'bg-accent/10 border border-accent/20 text-accent' : 'bg-surface border border-border text-text/50'}`}>
++              {isPremium ? 'EXECUTIVE' : 'FREE'}
+             </div>
+           </div>
+         </div>
+@@ -699,7 +747,7 @@ export default function MembersPage() {
+         {/* Welcome */}
+         <div className="mb-8">
+           <h1 className="text-3xl font-black tracking-tighter uppercase mb-1">
+-            {ms.welcomeBack}, {user.displayName}
++            {ms.welcomeBack}
+           </h1>
+           <p className="text-text/50 text-sm">
+             {ms.hubDesc}
+@@ -754,36 +802,49 @@ export default function MembersPage() {
+                   </div>
+                 )}
+                 {activeTab === 'access' && (
+-                  <div className="p-6 bg-surface border border-border">
+-                    <h3 className="text-lg font-bold mb-4">Free Beta Access</h3>
+-                    <p className="text-text/60 mb-4">You have full access to all features during the beta period at no cost.</p>
+-                    <div className="bg-accent/10 border border-accent/20 p-4 mb-4">
+-                      <p className="mono text-[10px] text-accent">
+-                        Access type: <span className="font-bold">FOUNDING MEMBER (FREE)</span>
+-                      </p>
+-                      <p className="mono text-[10px] text-text/40 mt-2">
+-                        Special pricing when beta ends will be reserved for founding members.
+-                      </p>
+-                    </div>
+-                  </div>
++                  <AccessTab isPremium={isPremium} lang={lang} />
+                 )}
+                 {activeTab === 'salary' && (
+-                  <div>
+-                    <div className="mb-6">
+-                      <h2 className="text-xl font-black uppercase tracking-tighter mb-1">LATAM Salary Intelligence</h2>
+-                      <p className="text-sm text-text/50">AI & tech roles, 5 countries. Updated Q1 2026.</p>
++                  isPremium ? (
++                    <div>
++                      <div className="mb-6">
++                        <h2 className="text-xl font-black uppercase tracking-tighter mb-1">LATAM Salary Intelligence</h2>
++                        <p className="text-sm text-text/50">AI & tech roles, 5 countries. Updated Q1 2026.</p>
++                      </div>
++                      <SalaryTable />
+                     </div>
+-                    <SalaryTable />
+-                  </div>
++                  ) : (
++                    <div className="flex flex-col items-center justify-center py-24 text-center">
++                      <Lock className="text-accent mb-4" size={48} />
++                      <h3 className="text-xl font-bold mb-2">Salary Data Locked</h3>
++                      <p className="text-text/40 mb-6 max-w-md">Full salary benchmarks for 40+ roles across 5 LATAM countries are exclusive to Executive members.</p>
++                      <button
++                        onClick={() => setActiveTab('access')}
++                        className="px-8 py-3 bg-accent text-black font-bold rounded-lg mono text-[10px] hover:opacity-90 transition-opacity"
++                      >Upgrade to Unlock</button>
++                    </div>
++                  )
+                 )}
+                 {activeTab === 'resources' && (
+-                  <div>
+-                    <div className="mb-6">
+-                      <h2 className="text-xl font-black uppercase tracking-tighter mb-1">WPro Resources</h2>
+-                      <p className="text-sm text-text/50">Playbooks, templates, and tools — built from 20 years of LATAM recruiting.</p>
++                  isPremium ? (
++                    <div>
++                      <div className="mb-6">
++                        <h2 className="text-xl font-black uppercase tracking-tighter mb-1">WPro Resources</h2>
++                        <p className="text-sm text-text/50">Playbooks, templates, and tools — built from 20 years of LATAM recruiting.</p>
++                      </div>
++                      <ResourcesGrid resources={resources} />
+                     </div>
+-                    <ResourcesGrid resources={resources} />
+-                  </div>
++                  ) : (
++                    <div className="flex flex-col items-center justify-center py-24 text-center">
++                      <Lock className="text-accent mb-4" size={48} />
++                      <h3 className="text-xl font-bold mb-2">Resources Locked</h3>
++                      <p className="text-text/40 mb-6 max-w-md">Playbooks, templates, and AI tools are exclusive to Executive members.</p>
++                      <button
++                        onClick={() => setActiveTab('access')}
++                        className="px-8 py-3 bg-accent text-black font-bold rounded-lg mono text-[10px] hover:opacity-90 transition-opacity"
++                      >Upgrade to Unlock</button>
++                    </div>
++                  )
+                 )}
+                 {activeTab === 'wpro' && (
+                   <div>
+@@ -825,7 +886,7 @@ export default function MembersPage() {
+                       )}
+                     </div>
+ 
+-                    <WProCTA />
++                    <WProCTA lang={lang} />
+                   </div>
+                 )}
+               </>
+diff --git a/src/pages/MembersPage_clean.tsx b/src/pages/MembersPage_clean.tsx
+new file mode 100644
+index 0000000..e69de29
+diff --git a/supabase-schema.sql b/supabase-schema.sql
+index 2d10a24..74ec7c5 100755
+--- a/supabase-schema.sql
++++ b/supabase-schema.sql
+@@ -143,7 +143,9 @@ create table if not exists public.subscribers (
+   utm_source       text,
+   utm_medium       text,
+   subscribed_at    timestamptz not null default now(),
+-  unsubscribed_at  timestamptz
++  unsubscribed_at  timestamptz,
++  premium_until    timestamptz,
++  updated_at       timestamptz default now()
+ );
+ 
+ alter table public.subscribers enable row level security;
+diff --git a/tsconfig.json b/tsconfig.json
+index 464ccb8..7c25ab1 100644
+--- a/tsconfig.json
++++ b/tsconfig.json
+@@ -25,10 +25,9 @@
+   "exclude": [
+     "node_modules",
+     "dist",
+-    "src",
+     "functions",
+     "api/_lib/supabase.ts",
+     "api/webhooks",
+     "backend"
+   ]
+-}
++}
+\ No newline at end of file
+diff --git a/vercel.json b/vercel.json
+index a4b6925..af3b061 100755
+--- a/vercel.json
++++ b/vercel.json
+@@ -1,6 +1,16 @@
+ {
+   "buildCommand": "vite build",
+   "outputDirectory": "dist",
++  "crons": [
++    {
++      "path": "/api/newsletter/generate",
++      "schedule": "0 12 * * 1"
++    },
++    {
++      "path": "/api/newsletter/send",
++      "schedule": "0 13 * * 1"
++    }
++  ],
+   "rewrites": [
+     { "source": "/api/market-intel/:section", "destination": "/api/market-intel?section=:section" },
+     { "source": "/members", "destination": "/index.html" },

@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import {
   Plus, Search, Filter, TrendingUp, AlertCircle, 
   Loader2, Eye, Mail, CheckCircle2, Clock, Zap,
-  ChevronRight, Trash2, Toggle2
+  ChevronRight, Trash2, ToggleLeft
 } from 'lucide-react';
 
 interface Radar {
@@ -294,11 +294,11 @@ export default function CVRadarDashboard({
                   <button
                     onClick={() => onViewRadar(radar.id)}
                     className="p-1.5 hover:bg-accent/10 hover:text-accent transition-colors rounded"
-                    title={t.table.view}
+                    title={t.view}
                   >
                     <Eye size={12} />
                   </button>
-                  <button className="p-1.5 hover:bg-red-500/10 hover:text-red-400 transition-colors rounded" title={t.table.delete}>
+                  <button className="p-1.5 hover:bg-red-500/10 hover:text-red-400 transition-colors rounded" title={t.delete}>
                     <Trash2 size={12} />
                   </button>
                 </div>

@@ -1,14 +1,26 @@
-// @ts-nocheck
+// api/payments.ts — consolidated: create-checkout-session + create-crypto-charge
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 import { handleCors } from "./_lib/cors.js";
 import { db } from "./_lib/firebase.js";
 
-export const config = { maxDuration: 15 };
+// ── Lemon Squeezy checkout ──────────────────────────────────────────────────
+const CHECKOUT_BASE =
+  "https://wprotalentslatamintel.lemonsqueezy.com/checkout/buy/480f510e-92ae-46f8-b238-da14e7cfe44f";
 
-export default async function handler(req: VercelRequest, res: VercelResponse) {
-  if (handleCors(req, res)) return;
-  if (req.method !== "POST") return res.status(405).json({ error: "Method not allowed" });
+async function createLemonSqueezyCheckout(req: VercelRequest, res: VercelResponse) {
+  const { userId, customerEmail } = req.body;
+  if (!userId) return res.status(400).json({ error: "userId required" });
 
+  const params = new URLSearchParams();
+  if (customerEmail) params.set("checkout[email]", customerEmail);
+  params.set("checkout[custom][user_id]", userId);
+
+  const url = `${CHECKOUT_BASE}?${params.toString()}`;
+  res.json({ url });
+}
+
+// ── Coinbase Commerce charge ────────────────────────────────────────────────
+async function createCryptoCharge(req: VercelRequest, res: VercelResponse) {
   const API_KEY = process.env.COINBASE_COMMERCE_API_KEY;
   if (!API_KEY) return res.status(500).json({ error: "Coinbase Commerce not configured" });
 
@@ -53,5 +65,19 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   } catch (e: any) {
     console.error("Coinbase charge error:", e.message);
     res.status(500).json({ error: e.message });
+  }
+}
+
+// ── Dispatcher ──────────────────────────────────────────────────────────────
+export default async function handler(req: VercelRequest, res: VercelResponse) {
+  if (handleCors(req, res)) return;
+  if (req.method !== "POST") return res.status(405).end();
+
+  const action = (req.query.action as string) || req.body?.action;
+
+  switch (action) {
+    case "checkout":    return await createLemonSqueezyCheckout(req, res);
+    case "crypto-charge": return await createCryptoCharge(req, res);
+    default: return res.status(400).json({ error: 'Use ?action=checkout or ?action=crypto-charge' });
   }
 }

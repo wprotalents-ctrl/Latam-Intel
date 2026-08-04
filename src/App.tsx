@@ -651,6 +651,14 @@ export default function App() {
   const [isSyncing, setIsSyncing] = useState(false);
   const [isCustomizeOpen, setIsCustomizeOpen] = useState(false);
   const [showUpgrade, setShowUpgrade] = useState(false);
+
+  // Auth/paywall state — disabled for free portal. Re-enable when login is implemented.
+  // All references in the JSX are gated on these constants, so removing the auth UI
+  // without changing these would have caused runtime crashes.
+  const userRole: 'candidate' | 'company' = 'candidate';
+  const isAdmin = false;
+  const subscriptionStatus: 'free' | 'premium' = 'free';
+
   const [widgets, setWidgets] = useState<Record<string, boolean>>(() => {
     try {
       const saved = localStorage.getItem('wpro-widgets');
@@ -868,35 +876,7 @@ export default function App() {
             </button>
           )}
 
-          {/* User Menu */}
-          {false ? (
-            <div className="flex items-center gap-3">
-              <div className="hidden sm:flex flex-col items-end">
-                <span className="mono text-[9px] text-text font-bold">{user.displayName || 'User'}</span>
-                <button
-                  onClick={() => signOut(auth)}
-                  className="mono text-[8px] text-text-muted hover:text-accent transition-colors flex items-center gap-1"
-                >
-                  <LogOut size={10} /> Sign Out
-                </button>
-              </div>
-              <div className="w-8 h-8 rounded-full bg-accent/20 border border-accent/40 flex items-center justify-center overflow-hidden">
-                {user.photoURL ? (
-                  <img src={user.photoURL} alt="Profile" className="w-full h-full object-cover" />
-                ) : (
-                  <UserIcon size={15} className="text-accent" />
-                )}
-              </div>
-            </div>
-          ) : (
-            <button
-              onClick={() => setIsAuthModalOpen(true)}
-              className="px-4 py-2 bg-accent text-white font-semibold text-xs rounded-lg flex items-center gap-2 hover:bg-accent-bright transition-all duration-150 shadow-md"
-              style={{ boxShadow: '0 2px 12px rgba(255,107,0,0.25)' }}
-            >
-              <LogIn size={14} /> Login
-            </button>
-          )}
+          {/* Auth removed — free portal, no login. Re-add later when login is implemented. */}
 
           {/* Mobile menu */}
           <button className="md:hidden p-2 border border-border rounded-lg text-text-muted hover:text-text">
@@ -912,14 +892,14 @@ export default function App() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="absolute inset-0 overflow-y-auto"
+            className="h-full overflow-y-auto"
           >
             {/* Dashboard */}
-            <div className="grid grid-cols-12 gap-px bg-border min-h-full">
+            <div className="flex flex-col lg:flex-row min-h-full">
               {/* Main content */}
-              <div className="col-span-12 lg:col-span-8 flex flex-col gap-px bg-border">
+              <div className="w-full lg:w-2/3 flex flex-col">
                 {/* Top Row: Map and Radar */}
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-px bg-border">
+                    <div className="grid grid-cols-1 md:grid-cols-3 border-b border-border">
                       {widgets.map !== false && (
                         <div className="md:col-span-2 bg-bg relative min-h-[400px]">
                           <div className="absolute top-4 left-4 z-20 flex items-center gap-2 mono text-[9px] bg-surface/80 p-2 border border-border">
@@ -957,7 +937,7 @@ export default function App() {
                     </div>
 
                     {/* Middle Row: Conflict Monitor and News */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-px bg-border">
+                    <div className="grid grid-cols-1 md:grid-cols-2 border-b border-border">
                       <div className="bg-bg p-6 flex flex-col">
                         <div className="flex items-center justify-between mb-6">
                           <div className="mono text-[9px] text-accent flex items-center gap-2">
@@ -1081,12 +1061,12 @@ export default function App() {
                         ))}
                       </div>
                     </div>
-                    {/* Filler: fills remaining height so bg-border gap doesn't show */}
+                    {/* Filler: fills remaining height */}
                     <div className="flex-1 bg-bg" />
                   </div>
 
                   {/* Sidebar */}
-                  <div className="col-span-12 lg:col-span-4 flex flex-col gap-px bg-border">
+                  <div className="w-full lg:w-1/3 flex flex-col border-t border-border lg:border-t-0 lg:border-l border-border">
                     {widgets.pulse !== false && <section className="p-8 bg-bg">
                       <div className="flex items-center justify-between mb-8">
                         <div className="mono text-[9px] text-text/40 flex items-center gap-2">
@@ -1348,26 +1328,22 @@ export default function App() {
                       <p className="mono text-[8px] text-black/40 mt-3 text-center">{t.cancelAny}</p>
                     </section>
                   </div>
-
-                  {/* Upgrade strip */}
-                  <div className="col-span-12">
-                    <div className="border-t border-border px-6 py-2 flex items-center justify-between gap-4 bg-surface/30">
-                      <span className="mono text-[8px] text-text/25">
-                        <span className="text-accent/70 font-bold">EXECUTIVE</span>
-                        {' · '}{t.dailyBriefingsStrip}
-                      </span>
-                      <button
-                        onClick={() => window.location.href = '/members'}
-                        className="mono text-[8px] border border-accent/30 text-accent/70 px-3 py-1 hover:bg-accent hover:text-black hover:border-accent transition-all whitespace-nowrap shrink-0"
-                      >
-                        {t.upgradeOpen}
-                      </button>
-                    </div>
-                  </div>
                 </div>
-              )}
+
+                {/* Upgrade strip — full width below the main+sidebar row */}
+                <div className="border-t border-border px-6 py-2 flex items-center justify-between gap-4 bg-surface/30">
+                  <span className="mono text-[8px] text-text/25">
+                    <span className="text-accent/70 font-bold">EXECUTIVE</span>
+                    {' · '}{t.dailyBriefingsStrip}
+                  </span>
+                  <button
+                    onClick={() => window.location.href = '/members'}
+                    className="mono text-[8px] border border-accent/30 text-accent/70 px-3 py-1 hover:bg-accent hover:text-black hover:border-accent transition-all whitespace-nowrap shrink-0"
+                  >
+                    {t.upgradeOpen}
+                  </button>
+                </div>
             </motion.div>
-          )}
         </AnimatePresence>
       </main>
 

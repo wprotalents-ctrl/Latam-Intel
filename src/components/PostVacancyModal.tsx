@@ -146,7 +146,7 @@ export default function PostVacancyModal({ isOpen, onClose, lang = 'EN' }: Props
     e.preventDefault();
     setStatus('loading');
     try {
-      await fetch('/api/post-vacancy', {
+      await fetch('/api/submissions?action=vacancy', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ ...form, lang }),

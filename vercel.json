@@ -1,9 +1,25 @@
 {
-  "buildCommand": "vite build",
+  "buildCommand": "npx vite build",
   "outputDirectory": "dist",
+  "installCommand": "npm install",
+  "crons": [
+    {
+      "path": "/api/newsletter/generate",
+      "schedule": "0 12 * * 1"
+    },
+    {
+      "path": "/api/newsletter/send",
+      "schedule": "0 13 * * 1"
+    }
+  ],
   "rewrites": [
     { "source": "/api/market-intel/:section", "destination": "/api/market-intel?section=:section" },
+    { "source": "/api/webhooks/lemon-squeezy", "destination": "/api/webhooks?type=lemon-squeezy" },
+    { "source": "/api/webhooks/coinbase", "destination": "/api/webhooks?type=coinbase" },
     { "source": "/members", "destination": "/index.html" },
     { "source": "/((?!api/).*)", "destination": "/index.html" }
+  ],
+  "crons": [
+    { "path": "/api/cron-refresh-salary", "schedule": "0 8 1 * *" }
   ]
 }

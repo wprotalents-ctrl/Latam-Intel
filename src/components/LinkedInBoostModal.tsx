@@ -166,7 +166,7 @@ export default function LinkedInBoostModal({ isOpen, onClose, lang = 'EN' }: Pro
     e.preventDefault();
     setStatus('loading');
     try {
-      await fetch('/api/linkedin-boost', {
+      await fetch('/api/submissions?action=linkedin-boost', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ ...form, generatedPost: post, lang }),

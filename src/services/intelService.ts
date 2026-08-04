@@ -4,7 +4,10 @@ import { Language, Briefing, Category, IntelligenceBrief } from "../types";
 import { db, handleFirestoreError, FirestoreOperation } from "../firebase";
 import { doc, setDoc, collection, getDocs, query, orderBy, limit, where, serverTimestamp } from "firebase/firestore";
 
-const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY || "" });
+// GEMINI_API_KEY is a server-side env var. The browser doesn't have it.
+// Any Gemini calls must go through the /api/market-intel/brief endpoint instead.
+// If you really need a client-side key, use VITE_GEMINI_API_KEY (and add the VITE_ prefix in Vercel).
+const ai = new GoogleGenAI({ apiKey: (import.meta as any).env?.VITE_GEMINI_API_KEY || "" });
 
 export const MOCK_BRIEFINGS: Briefing[] = [
   {

@@ -394,11 +394,11 @@ function BestMarketsPanel({ input, lang }: { input: CandidateInput; lang: Lang }
           <p className="mono text-[9px] text-text/40 leading-relaxed mb-3">{m.verdict}</p>
           <div className="flex gap-4">
             <div>
-              <div className={`mono text-[7px] font-bold ${m.demand === 'High' || m.demand === 'Alta' ? 'text-green-400' : m.demand === 'Low' || m.demand === 'Baja' || m.demand === 'Baixa' ? 'text-red-400' : 'text-yellow-400'}`}>{m.demand}</div>
+              <div className={`mono text-[7px] font-bold ${m.demand === 'High' ? 'text-green-400' : m.demand === 'Low' ? 'text-red-400' : 'text-yellow-400'}`}>{m.demand}</div>
               <div className="mono text-[6px] text-text/20">{t.demandLabel}</div>
             </div>
             <div>
-              <div className={`mono text-[7px] font-bold ${m.competition === 'Low' || m.competition === 'Baja' || m.competition === 'Baixa' ? 'text-green-400' : m.competition === 'High' || m.competition === 'Alta' ? 'text-red-400' : 'text-yellow-400'}`}>{m.competition}</div>
+              <div className={`mono text-[7px] font-bold ${m.competition === 'Low' ? 'text-green-400' : m.competition === 'High' ? 'text-red-400' : 'text-yellow-400'}`}>{m.competition}</div>
               <div className="mono text-[6px] text-text/20">{t.competitionLabel}</div>
             </div>
           </div>

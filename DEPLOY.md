@@ -1,183 +1,130 @@
 # LATAM INTEL — Deploy Guide
-### From zero to live on intel.wprotalents.lat (100% free)
+### From zero to live on intel.wprotalents.lat (100% free stack)
 
 ---
 
-## PART 1 — Push all the new code to GitHub
+## PART 1 — Push code to GitHub
 
-### Step 1 — Copy the new files into your local Latam-Intel folder
+### Step 1 — Clone and verify
 
-Open **File Explorer** and go to your local `Latam-Intel` folder (wherever you cloned the repo).
-
-Copy these files from your "Latam Intellingece Dashboard" folder into it:
-
-```
-Latam-Intel/
-├── api/                        ← NEW — copy this entire folder
-│   ├── _lib/
-│   │   ├── firebase.ts
-│   │   ├── supabase.ts
-│   │   ├── gemini.ts
-│   │   ├── cors.ts
-│   │   ├── news.ts
-│   │   └── beehiiv.ts
-│   ├── jobs.ts
-│   ├── ping.ts
-│   ├── subscribe-newsletter.ts
-│   ├── create-checkout-session.ts
-│   ├── create-crypto-charge.ts
-│   ├── members/verify.ts
-│   ├── market-intel/news.ts
-│   ├── market-intel/brief.ts
-│   ├── market-intel/trends.ts
-│   ├── market-intel/volume.ts
-│   ├── market-intel/sync.ts
-│   ├── newsletter/generate.ts
-│   ├── newsletter/send.ts
-│   └── webhooks/
-│       ├── stripe.ts
-│       └── coinbase.ts
-├── src/
-│   ├── lib/supabase.ts         ← NEW
-│   ├── pages/MembersPage.tsx   ← NEW
-│   └── main.tsx                ← REPLACE existing
-├── vercel.json                 ← NEW
-├── package.json                ← REPLACE existing
-├── supabase-schema.sql         ← NEW (run in Supabase, don't push)
-└── .env.example                ← REPLACE existing
+```bash
+git clone https://github.com/wprotalents-ctrl/Latam-Intel
+cd Latam-Intel
+npm install
+npx tsc --noEmit   # must pass clean (0 errors)
+npx vite build    # must succeed
 ```
 
-### Step 2 — Open a terminal in your Latam-Intel folder
-
-On Windows: hold **Shift**, right-click in the folder → "Open PowerShell window here"
-
-### Step 3 — Push to GitHub
+### Step 2 — Push to GitHub
 
 ```bash
 git add -A
-git commit -m "feat: Vercel API routes, Members page, newsletter automation"
+git commit -m "feat: LATAM Intel v2 — Lemon Squeezy + Coinbase payments"
 git push
 ```
 
-Done. Your code is now on GitHub.
-
 ---
 
-## PART 2 — Connect to Vercel (your existing account)
+## PART 2 — Connect to Vercel
 
-### Step 4 — Import the Latam-Intel repo on Vercel
+### Step 3 — Import on Vercel
 
-1. Go to **vercel.com** → click **Add New Project**
-2. Select **Import Git Repository**
-3. Find `Latam-Intel` in the list → click **Import**
-4. Vercel auto-detects Vite — leave all build settings as-is
-5. **Don't click Deploy yet** — you need env vars first (next step)
+1. Go to **vercel.com** → **Add New Project**
+2. Select **Import Git Repository** → find `Latam-Intel` → **Import**
+3. Vercel auto-detects Vite — leave build settings as-is
+4. **Don't click Deploy yet** — add env vars first
 
-### Step 5 — Add environment variables in Vercel
-
-In the "Environment Variables" section before deploying, add these one by one.
-Get the values from the services listed below.
+### Step 4 — Environment Variables
 
 | Variable | Where to get it |
 |---|---|
 | `GEMINI_API_KEY` | [aistudio.google.com/apikey](https://aistudio.google.com/apikey) — free |
 | `VITE_GEMINI_API_KEY` | Same key as above |
-| `STRIPE_SECRET_KEY` | Stripe Dashboard → Developers → API keys |
-| `VITE_STRIPE_PUBLISHABLE_KEY` | Same page, the `pk_live_` key |
-| `STRIPE_WEBHOOK_SECRET` | Add after Step 8 below |
-| `VITE_STRIPE_PRO_PRICE_ID` | After creating product in Step 7 |
 | `SUPABASE_URL` | Supabase project → Settings → API |
-| `SUPABASE_SERVICE_ROLE_KEY` | Same page |
+| `SUPABASE_SERVICE_ROLE_KEY` | Same page, service role key |
 | `VITE_SUPABASE_URL` | Same URL |
-| `VITE_SUPABASE_ANON_KEY` | Same page, the `anon public` key |
+| `VITE_SUPABASE_ANON_KEY` | Same page, anon public key |
 | `BEEHIIV_API_KEY` | app.beehiiv.com → Settings → API |
 | `BEEHIIV_PUB_ID` | Same page — starts with `pub_` |
 | `RESEND_API_KEY` | resend.com → API Keys → Create |
 | `NEWSDATA_API_KEY` | newsdata.io → Dashboard (free signup) |
 | `COINBASE_COMMERCE_API_KEY` | commerce.coinbase.com → Settings → API |
-| `CRON_SECRET` | Make up any random string, e.g. `latamintel2026abc` |
+| `COINBASE_COMMERCE_WEBHOOK_SECRET` | Coinbase Commerce → Webhook settings |
+| `LEMON_SQUEEZY_WEBHOOK_SECRET` | Lemon Squeezy → Settings → Webhooks |
+| `LEMON_SQUEEZY_API_KEY` | Lemon Squeezy → Settings → API |
+| `CRON_SECRET` | Generate: `openssl rand -hex 32` |
+| `APP_URL` | `https://latam-intel.vercel.app` (or your custom domain) |
 
-### Step 6 — Click Deploy
+### Step 5 — Click Deploy
 
 Vercel builds and deploys. You get a URL like `latam-intel.vercel.app`.
-The site is live. Now let's connect your real domain.
 
 ---
 
 ## PART 3 — Connect intel.wprotalents.lat
 
-### Step 7 — Add the domain in Vercel
+### Step 6 — Add domain in Vercel
 
-1. Go to your project on Vercel → **Settings** → **Domains**
-2. Type `intel.wprotalents.lat` → click **Add**
-3. Vercel shows you a CNAME record to add
+1. Vercel → **Settings** → **Domains** → type `intel.wprotalents.lat` → **Add**
+2. Vercel shows a CNAME record
 
-### Step 8 — Add DNS record in Namecheap
+### Step 7 — DNS record in Namecheap
 
-1. Log in to **Namecheap** → click **Manage** on `wprotalents.lat`
-2. Go to **Advanced DNS** tab
-3. Click **Add New Record**
-4. Fill in:
+1. **Namecheap** → Manage `wprotalents.lat` → **Advanced DNS**
+2. **Add New Record:**
    - **Type:** CNAME Record
    - **Host:** `intel`
    - **Value:** `cname.vercel-dns.com`
    - **TTL:** Automatic
-5. Click the ✓ checkmark to save
-
-Wait 5–10 minutes. Vercel auto-provisions SSL. Your site is live at `intel.wprotalents.lat`.
+3. Save. Wait 5–10 min for SSL. Live at `intel.wprotalents.lat`.
 
 ---
 
-## PART 4 — Set up Stripe to take $29/mo payments
+## PART 4 — Set up payments ($29/mo card + $29 crypto)
 
-### Step 9 — Create your product in Stripe
+### Card payments — Lemon Squeezy
 
-1. Go to **stripe.com** → **Products** → **Add Product**
-2. Fill in:
-   - **Name:** LATAM INTEL Executive
-   - **Description:** Full Workforce Daily, salary data, AI tools, WPro resources
-   - **Pricing:** Recurring, $29.00 / month
-3. Click **Save Product**
-4. Copy the **Price ID** (starts with `price_`)
-5. Go back to Vercel → Settings → Environment Variables → add `VITE_STRIPE_PRO_PRICE_ID` = that price ID
-6. Redeploy (Vercel → Deployments → click the 3 dots → Redeploy)
+The checkout URL is hardcoded in `api/create-checkout-session.ts` pointing to your
+Lemon Squeezy product. No additional client-side keys needed.
 
-### Step 10 — Set up Stripe Webhook
+1. Go to **lemonsqueezy.com** → your store → **Settings** → **API**
+2. Copy the API key → add as `LEMON_SQUEEZY_API_KEY` in Vercel env vars
+3. Go to **Settings** → **Webhooks** → **Create Webhook**
+4. **URL:** `https://intel.wprotalents.lat/api/webhooks/lemon-squeezy`
+5. **Events:** `subscription_created`, `subscription_updated`, `subscription_cancelled`
+6. Copy the signing secret → add as `LEMON_SQUEEZY_WEBHOOK_SECRET` in Vercel
+7. Redeploy
 
-1. Stripe Dashboard → **Developers** → **Webhooks** → **Add Endpoint**
-2. **Endpoint URL:** `https://intel.wprotalents.lat/api/webhooks/stripe`
-3. **Events to listen for:** select these two:
-   - `checkout.session.completed`
-   - `customer.subscription.deleted`
-4. Click **Add Endpoint**
-5. Click **Reveal** under "Signing secret" → copy the `whsec_...` value
-6. Go to Vercel → add env var `STRIPE_WEBHOOK_SECRET` = that value
+### Crypto payments — Coinbase Commerce
+
+1. Go to **commerce.coinbase.com** → **Settings** → **API Key** → Create
+2. Copy the API key → add as `COINBASE_COMMERCE_API_KEY` in Vercel
+3. Go to **Settings** → **Webhook Subscriptions** → Create
+4. **URL:** `https://intel.wprotalents.lat/api/crypto-webhook`
+5. **Events:** `charge:confirmed`
+6. Copy the shared secret → add as `COINBASE_COMMERCE_WEBHOOK_SECRET` in Vercel
 7. Redeploy
 
 ---
 
 ## PART 5 — Set up the database
 
-### Step 11 — Run the Supabase schema
+### Step 8 — Run the Supabase schema
 
-1. Go to **supabase.com** → your project → **SQL Editor**
-2. Open `supabase-schema.sql` (in your folder)
-3. Paste the entire contents → click **Run**
-4. Done — all tables created with security rules
+1. **supabase.com** → your project → **SQL Editor**
+2. Open `supabase-schema.sql` → paste → **Run**
+3. All tables created with RLS policies
 
 ---
 
-## PART 6 — Automate the newsletter (Monday 8am)
+## PART 6 — Automate the newsletter (Monday 12:00 UTC)
 
-### Step 12 — Set up Vercel Cron Jobs (free)
+Vercel Cron Jobs are configured in `vercel.json`:
 
-Add this to your `vercel.json` (already included):
+1. **12:00 UTC Monday** — `POST /api/newsletter/generate` — Gemini writes the issue
+2. **13:00 UTC Monday** — `POST /api/newsletter/send` — Pushes to Beehiiv
 
-The cron runs two endpoints every Monday at 8am:
-1. `POST /api/newsletter/generate` — Gemini writes the issue from real news
-2. `POST /api/newsletter/send` — Pushes it to Beehiiv, everyone gets the teaser
-
-To trigger manually at any time (for testing):
+Manual trigger (for testing):
 ```bash
 curl -X POST https://intel.wprotalents.lat/api/newsletter/generate \
   -H "x-cron-secret: YOUR_CRON_SECRET"
@@ -188,57 +135,32 @@ curl -X POST https://intel.wprotalents.lat/api/newsletter/send \
 
 ---
 
-## PART 7 — Add the dashboard link to wprotalents.lat
-
-### Step 13 — Link from your main site
-
-In your WProTalents site code, add this button wherever makes sense
-(hero section, nav, footer):
-
-```html
-<!-- HTML version -->
-<a href="https://intel.wprotalents.lat">
-  LATAM AI Intelligence Dashboard →
-</a>
-
-<!-- React version -->
-<a
-  href="https://intel.wprotalents.lat"
-  target="_blank"
-  rel="noopener noreferrer"
-  className="your-button-class"
->
-  AI Job Market Intelligence →
-</a>
-```
-
-Push that change → Vercel redeploys `wprotalents.lat` automatically.
-
----
-
-## Quick checklist before sharing the link
+## Pre-launch checklist
 
 - [ ] `intel.wprotalents.lat` loads the dashboard
-- [ ] `/members` shows the paywall (not logged in)
-- [ ] Google Sign-In works
+- [ ] `/members` shows the paywall (free state)
+- [ ] Language toggle (EN/ES/PT) works
 - [ ] Newsletter subscribe form works (check Beehiiv dashboard)
-- [ ] Stripe test payment works (use card `4242 4242 4242 4242`, any future date, any CVC)
-- [ ] After payment, `/members` shows full content
+- [ ] Lemon Squeezy card payment redirects to checkout
+- [ ] Coinbase Commerce crypto payment creates a charge
+- [ ] After payment, `/members?email=...` verifies and unlocks content
 - [ ] Run newsletter generate once manually to confirm AI works
+- [ ] `npx tsc --noEmit` passes clean before every commit
 
 ---
 
-## Your free stack summary
+## Free stack summary
 
-| Service | Cost | Limit before paying |
+| Service | Cost | Notes |
 |---|---|---|
 | Vercel | $0 | 100GB bandwidth/mo |
 | Supabase | $0 | 500MB database |
-| Firebase | $0 | 1GB storage, 50K reads/day |
+| Firebase Firestore | $0 | 1GB storage, 50K reads/day |
 | Gemini API | $0 | 1M tokens/day |
 | Beehiiv | $0 | 2,500 subscribers |
 | Resend | $0 | 3,000 emails/mo |
-| Stripe | $0 | 2.9% + 30¢ per transaction only |
+| Lemon Squeezy | $0 | 5% + 50¢ per transaction |
+| Coinbase Commerce | $0 | 1% per transaction |
 | Newsdata.io | $0 | 200 req/day (we use ~6/day) |
 
-**First dollar comes in when someone pays $29. You keep $27.89 after Stripe fees.**
+**Revenue: $29/mo per subscriber. After Lemon Squeezy fees: ~$27.05.**
