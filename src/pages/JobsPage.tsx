@@ -871,6 +871,7 @@ function JobPortal({ lang, t, onPostVacancy }: { lang: string; t: typeof T.EN; o
   const [jobs, setJobs] = useState<Job[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
+  const [sourceHealth, setSourceHealth] = useState<{ name: string; status: string; count: number; error?: string }[]>([]);
   const [search, setSearch] = useState('');
   const [region, setRegion] = useState('All');
   const [page, setPage] = useState(1);
@@ -902,8 +903,11 @@ function JobPortal({ lang, t, onPostVacancy }: { lang: string; t: typeof T.EN; o
       // Fetch aggregated jobs from server-side API — bypasses CORS, 30-min cache
       const res = await fetch('/api/jobs');
       if (!res.ok) throw new Error('jobs API error');
-      const apiJobs: any[] = await res.json();
+      const payload = await res.json();
+      // API returns { jobs: [], health: [], cached: bool } for diagnostics
+      const apiJobs: any[] = Array.isArray(payload) ? payload : (payload.jobs || []);
       setJobs(apiJobs);
+      setSourceHealth(Array.isArray(payload?.health) ? payload.health : []);
     } catch {
       setError(true);
     } finally {
@@ -1249,8 +1253,31 @@ function JobPortal({ lang, t, onPostVacancy }: { lang: string; t: typeof T.EN; o
               <p className="mono text-[10px] text-text/20">
                 {jobs.length === 0 ? ((t as any).noJobsEmpty || 'No jobs loaded — tap ↻ to retry.') : t.noJobs}
               </p>
+              {jobs.length === 0 && sourceHealth.length > 0 && (
+                <div className="mt-4 max-w-md mx-auto text-left">
+                  <p className="mono text-[8px] text-text/15 mb-2">SOURCE STATUS</p>
+                  <div className="space-y-1">
+                    {sourceHealth.map((s, i) => (
+                      <div key={i} className="flex items-center justify-between gap-2 mono text-[8px]">
+                        <span className="text-text/30">{s.name}</span>
+                        <span className={
+                          s.status === 'ok' ? 'text-emerald-400' :
+                          s.status === 'empty' ? 'text-yellow-400' :
+                          s.status === 'no-key' ? 'text-violet-400' :
+                          'text-red-400'
+                        }>
+                          {s.status === 'ok' ? `● ${s.count} jobs` :
+                           s.status === 'empty' ? '○ 0 jobs' :
+                           s.status === 'no-key' ? '○ no API key' :
+                           `✕ ${s.error || 'error'}`}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
               {jobs.length === 0 && (
-                <button onClick={load} className="mt-3 mono text-[9px] text-accent/50 hover:text-accent transition-colors flex items-center gap-1.5 mx-auto">
+                <button onClick={load} className="mt-4 mono text-[9px] text-accent/50 hover:text-accent transition-colors flex items-center gap-1.5 mx-auto">
                   <RefreshCw size={10} /> Retry
                 </button>
               )}

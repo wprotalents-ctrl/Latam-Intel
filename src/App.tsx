@@ -1363,9 +1363,7 @@ export default function App() {
                     {t.upgradeOpen}
                   </button>
                 </div>
-              )}
             </motion.div>
-          )}
         </AnimatePresence>
       </main>
 

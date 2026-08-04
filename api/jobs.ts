@@ -19,10 +19,10 @@ const BROWSER_HEADERS = {
 
 async function timed(url: string, options?: RequestInit): Promise<Response> {
   const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 10000);
+  const timeout = setTimeout(() => controller.abort(), 8000);
   try {
-    const res = await fetch(url, { 
-      ...options, 
+    const res = await fetch(url, {
+      ...options,
       signal: controller.signal,
       headers: { ...BROWSER_HEADERS, ...(options?.headers || {}) }
     });
@@ -34,14 +34,25 @@ async function timed(url: string, options?: RequestInit): Promise<Response> {
   }
 }
 
+// Source health tracking — lets the UI show meaningful errors instead of "0 roles"
+interface SourceHealth {
+  name: string;
+  status: 'ok' | 'empty' | 'error' | 'no-key';
+  count: number;
+  error?: string;
+}
+
 // ---------- Job sources ----------
 
 // 1. Remotive (remote tech jobs)
-async function remotive(): Promise<any[]> {
+async function remotive(): Promise<{ jobs: any[]; health: SourceHealth }> {
   try {
     const r = await timed('https://remotive.com/api/remote-jobs?limit=50');
+    if (!r.ok) {
+      return { jobs: [], health: { name: 'Remotive', status: 'error', count: 0, error: `HTTP ${r.status}` } };
+    }
     const data = await r.json();
-    return (data.jobs || []).map((j: any) => ({
+    const jobs = (data.jobs || []).map((j: any) => ({
       id: `remotive-${j.id}`,
       title: j.title,
       company: j.company_name,
@@ -53,15 +64,21 @@ async function remotive(): Promise<any[]> {
       region: region(j.candidate_required_location || 'Remote'),
       postedAt: j.publication_date,
     }));
-  } catch { return []; }
+    return { jobs, health: { name: 'Remotive', status: jobs.length ? 'ok' : 'empty', count: jobs.length } };
+  } catch (e: any) {
+    return { jobs: [], health: { name: 'Remotive', status: 'error', count: 0, error: e?.message || 'fetch failed' } };
+  }
 }
 
 // 2. Arbeitnow (developer jobs)
-async function arbeitnow(): Promise<any[]> {
+async function arbeitnow(): Promise<{ jobs: any[]; health: SourceHealth }> {
   try {
     const r = await timed('https://www.arbeitnow.com/api/job-board-api');
+    if (!r.ok) {
+      return { jobs: [], health: { name: 'Arbeitnow', status: 'error', count: 0, error: `HTTP ${r.status}` } };
+    }
     const data = await r.json();
-    return (data.data || []).map((j: any) => ({
+    const jobs = (data.data || []).map((j: any) => ({
       id: `arbeitnow-${j.slug}`,
       title: j.title,
       company: j.company_name,
@@ -73,37 +90,21 @@ async function arbeitnow(): Promise<any[]> {
       region: region(j.location || 'Remote'),
       postedAt: j.created_at,
     }));
-  } catch { return []; }
+    return { jobs, health: { name: 'Arbeitnow', status: jobs.length ? 'ok' : 'empty', count: jobs.length } };
+  } catch (e: any) {
+    return { jobs: [], health: { name: 'Arbeitnow', status: 'error', count: 0, error: e?.message || 'fetch failed' } };
+  }
 }
 
-// 3. RemoteOK (remote developer jobs)
-async function remoteok(): Promise<any[]> {
-  try {
-    const r = await timed('https://remoteok.com/api');
-    const data = await r.json();
-    // first item is a header, skip it
-    const jobs = Array.isArray(data) ? data.slice(1) : [];
-    return jobs.map((j: any) => ({
-      id: `remoteok-${j.id}`,
-      title: j.position,
-      company: j.company,
-      location: j.location || 'Remote',
-      url: j.url,
-      salary: j.salary_min ? `$${j.salary_min}k–$${j.salary_max}k` : null,
-      tags: j.tags?.join(', ') || '',
-      source: 'RemoteOK',
-      region: region(j.location || 'Remote'),
-      postedAt: j.date,
-    }));
-  } catch { return []; }
-}
-
-// 4. Jobicy (remote jobs, free, no key)
-async function jobicy(): Promise<any[]> {
+// 3. Jobicy (remote jobs, free, no key) — primary fallback for the free sources
+async function jobicy(): Promise<{ jobs: any[]; health: SourceHealth }> {
   try {
     const r = await timed('https://jobicy.com/api/v2/remote-jobs?count=50');
+    if (!r.ok) {
+      return { jobs: [], health: { name: 'Jobicy', status: 'error', count: 0, error: `HTTP ${r.status}` } };
+    }
     const data = await r.json();
-    return (data.jobs || []).map((j: any) => ({
+    const jobs = (data.jobs || []).map((j: any) => ({
       id: `jobicy-${j.id}`,
       title: j.jobTitle,
       company: j.companyName,
@@ -115,17 +116,25 @@ async function jobicy(): Promise<any[]> {
       region: 'Worldwide',
       postedAt: j.publishedDate,
     }));
-  } catch { return []; }
+    return { jobs, health: { name: 'Jobicy', status: jobs.length ? 'ok' : 'empty', count: jobs.length } };
+  } catch (e: any) {
+    return { jobs: [], health: { name: 'Jobicy', status: 'error', count: 0, error: e?.message || 'fetch failed' } };
+  }
 }
 
-// 5. The Muse (requires API key, but they have a free tier)
-async function themuse(): Promise<any[]> {
+// 4. The Muse (requires API key, but they have a free tier)
+async function themuse(): Promise<{ jobs: any[]; health: SourceHealth }> {
   const apiKey = process.env.THE_MUSE_API_KEY;
-  if (!apiKey) return [];
+  if (!apiKey) {
+    return { jobs: [], health: { name: 'The Muse', status: 'no-key', count: 0, error: 'THE_MUSE_API_KEY not set' } };
+  }
   try {
     const r = await timed(`https://www.themuse.com/api/public/jobs?page=1&api_key=${apiKey}`);
+    if (!r.ok) {
+      return { jobs: [], health: { name: 'The Muse', status: 'error', count: 0, error: `HTTP ${r.status}` } };
+    }
     const data = await r.json();
-    return (data.results || []).map((j: any) => ({
+    const jobs = (data.results || []).map((j: any) => ({
       id: `muse-${j.id}`,
       title: j.name,
       company: j.company?.name || 'Unknown',
@@ -137,19 +146,24 @@ async function themuse(): Promise<any[]> {
       region: region(j.locations?.map((l: any) => l.name).join(', ') || 'Remote'),
       postedAt: j.publication_date,
     }));
-  } catch { return []; }
+    return { jobs, health: { name: 'The Muse', status: jobs.length ? 'ok' : 'empty', count: jobs.length } };
+  } catch (e: any) {
+    return { jobs: [], health: { name: 'The Muse', status: 'error', count: 0, error: e?.message || 'fetch failed' } };
+  }
 }
 
-// 6. Adzuna – uses existing ADZUNA_APP_ID and ADZUNA_APP_KEY (set in Vercel)
-async function adzuna(): Promise<any[]> {
+// 5. Adzuna – uses ADZUNA_APP_ID and ADZUNA_APP_KEY (set in Vercel)
+async function adzuna(): Promise<{ jobs: any[]; health: SourceHealth }> {
   const appId = process.env.ADZUNA_APP_ID;
   const appKey = process.env.ADZUNA_APP_KEY;
-  if (!appId || !appKey) return [];
+  if (!appId || !appKey) {
+    return { jobs: [], health: { name: 'Adzuna', status: 'no-key', count: 0, error: 'ADZUNA_APP_ID or ADZUNA_APP_KEY not set' } };
+  }
   try {
     const countries = [
       { code: 'us', query: 'software engineer remote' },
       { code: 'gb', query: 'software engineer remote' },
-      { code: 'br', query: 'desenvolvedor remote' }, // Brazil
+      { code: 'br', query: 'desenvolvedor remote' },
     ];
     const results = await Promise.allSettled(
       countries.map(c =>
@@ -161,7 +175,7 @@ async function adzuna(): Promise<any[]> {
     for (const r of results) {
       if (r.status === 'fulfilled') jobs.push(...(r.value?.results || []));
     }
-    return jobs.map((j: any) => ({
+    const mapped = jobs.map((j: any) => ({
       id: `adzuna-${j.id}`,
       title: j.title,
       company: j.company?.display_name || 'Unknown',
@@ -173,19 +187,27 @@ async function adzuna(): Promise<any[]> {
       region: region(j.location?.display_name || 'Remote'),
       postedAt: j.created,
     }));
-  } catch { return []; }
+    return { jobs: mapped, health: { name: 'Adzuna', status: mapped.length ? 'ok' : 'empty', count: mapped.length } };
+  } catch (e: any) {
+    return { jobs: [], health: { name: 'Adzuna', status: 'error', count: 0, error: e?.message || 'fetch failed' } };
+  }
 }
 
-// 7. Findwork – requires free API key from findwork.dev
-async function findwork(): Promise<any[]> {
+// 6. Findwork – requires free API key from findwork.dev
+async function findwork(): Promise<{ jobs: any[]; health: SourceHealth }> {
   const apiKey = process.env.FINDWORK_API_KEY;
-  if (!apiKey) return [];
+  if (!apiKey) {
+    return { jobs: [], health: { name: 'Findwork', status: 'no-key', count: 0, error: 'FINDWORK_API_KEY not set' } };
+  }
   try {
     const r = await timed('https://findwork.dev/api/jobs/?remote=true&limit=100', {
       headers: { Authorization: `Token ${apiKey}` }
     });
+    if (!r.ok) {
+      return { jobs: [], health: { name: 'Findwork', status: 'error', count: 0, error: `HTTP ${r.status}` } };
+    }
     const data = await r.json();
-    return (data.results || []).map((j: any) => ({
+    const jobs = (data.results || []).map((j: any) => ({
       id: `findwork-${j.id}`,
       title: j.role,
       company: j.company_name,
@@ -197,11 +219,15 @@ async function findwork(): Promise<any[]> {
       region: region(j.location || 'Remote'),
       postedAt: j.date_posted,
     }));
-  } catch { return []; }
+    return { jobs, health: { name: 'Findwork', status: jobs.length ? 'ok' : 'empty', count: jobs.length } };
+  } catch (e: any) {
+    return { jobs: [], health: { name: 'Findwork', status: 'error', count: 0, error: e?.message || 'fetch failed' } };
+  }
 }
 
 // ---------- In‑memory cache (30 minutes) ----------
 let cachedJobs: any[] | null = null;
+let cachedHealth: SourceHealth[] | null = null;
 let cacheTime = 0;
 const CACHE_DURATION = 30 * 60 * 1000;
 
@@ -213,11 +239,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   // Return cached data if fresh
   if (cachedJobs && Date.now() - cacheTime < CACHE_DURATION) {
-    return res.status(200).json(cachedJobs);
+    return res.status(200).json({ jobs: cachedJobs, health: cachedHealth, cached: true });
   }
 
   try {
-    // Fetch from all sources concurrently (remoteok excluded — blocks serverless IPs)
+    // Fetch from all sources concurrently. RemoteOK intentionally excluded — it blocks serverless IPs.
     const [remotiveRes, arbeitnowRes, jobicyRes, themuseRes, adzunaRes, findworkRes] = await Promise.allSettled([
       remotive(),
       arbeitnow(),
@@ -228,39 +254,48 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     ]);
 
     const allJobs: any[] = [];
-    const addJobs = (result: PromiseSettledResult<any[]>, sourceName: string) => {
-      if (result.status === 'fulfilled' && Array.isArray(result.value)) {
-        allJobs.push(...result.value);
-        console.log(`${sourceName}: ${result.value.length} jobs`);
+    const health: SourceHealth[] = [];
+    const collect = (result: PromiseSettledResult<{ jobs: any[]; health: SourceHealth }>) => {
+      if (result.status === 'fulfilled' && result.value) {
+        allJobs.push(...result.value.jobs);
+        health.push(result.value.health);
       } else {
-        console.warn(`${sourceName} failed:`, result.status === 'rejected' ? result.reason : 'unknown');
+        health.push({ name: 'unknown', status: 'error', count: 0, error: result.status === 'rejected' ? String(result.reason) : 'unknown' });
       }
     };
 
-    addJobs(remotiveRes, 'Remotive');
-    addJobs(arbeitnowRes, 'Arbeitnow');
-    addJobs(jobicyRes, 'Jobicy');
-    addJobs(themuseRes, 'The Muse');
-    addJobs(adzunaRes, 'Adzuna');
-    addJobs(findworkRes, 'Findwork');
+    collect(remotiveRes);
+    collect(arbeitnowRes);
+    collect(jobicyRes);
+    collect(themuseRes);
+    collect(adzunaRes);
+    collect(findworkRes);
 
     // Remove duplicates by id
     const unique = Array.from(new Map(allJobs.map(job => [job.id, job])).values());
     // Sort by date (newest first)
     unique.sort((a, b) => (b.postedAt || '').localeCompare(a.postedAt || ''));
 
-    console.log(`Total unique jobs: ${unique.length}`);
+    console.log(`[jobs] aggregated ${unique.length} jobs`, JSON.stringify(health));
 
     // Update cache
     cachedJobs = unique;
+    cachedHealth = health;
     cacheTime = Date.now();
 
-    return res.status(200).json(unique);
-  } catch (error) {
+    return res.status(200).json({ jobs: unique, health, cached: false });
+  } catch (error: any) {
     console.error('Job aggregation error:', error);
     // Serve stale cache rather than error
-    if (cachedJobs) return res.status(200).json(cachedJobs);
-    // Return empty array — never 500 to the client
-    return res.status(200).json([]);
+    if (cachedJobs) {
+      return res.status(200).json({ jobs: cachedJobs, health: cachedHealth, cached: true, stale: true });
+    }
+    // Return empty array with error info — never 500 to the client
+    return res.status(200).json({
+      jobs: [],
+      health: [{ name: 'aggregator', status: 'error', count: 0, error: error?.message || 'unknown' }],
+      cached: false,
+    });
   }
 }
+

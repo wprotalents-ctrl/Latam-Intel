@@ -10,53 +10,81 @@ export const config = { maxDuration: 30 };
 // ── /api/market-intel/news ────────────────────────────────────────────────────
 async function handleNews(req: VercelRequest, res: VercelResponse) {
   const force = req.query?.force === '1';
-  const news = await fetchFreshNews(force);
-  res.json(news);
+  try {
+    const news = await fetchFreshNews(force);
+    res.json(news);
+  } catch (e: any) {
+    // Never 500 the dashboard — return empty + reason
+    res.json([]);
+  }
 }
 
 // ── /api/market-intel/brief ───────────────────────────────────────────────────
 async function handleBrief(res: VercelResponse) {
-  const [newsSnap, trendsSnap] = await Promise.all([
-    db.collection("market_news").orderBy("publishedAt", "desc").limit(5).get(),
-    db.collection("market_intel_snapshots").orderBy("date", "desc").limit(1).get(),
-  ]);
-  const newsContext = newsSnap.docs.map((d) => d.data().title).join("\n");
-  const trendsContext = trendsSnap.empty ? "" : JSON.stringify(trendsSnap.docs[0].data().trends);
-  const ai = getGemini();
-  const r = await ai.models.generateContent({
-    model: GEMINI_FLASH_L,
-    contents: `Write a 150-word LATAM AI workforce brief. Direct, no filler, data-driven.
+  try {
+    if (!process.env.GEMINI_API_KEY) {
+      // Soft-fail: client knows to show "GEMINI_API_KEY not configured" empty state
+      return res.json({ brief: null, reason: 'GEMINI_API_KEY not configured in Vercel env vars' });
+    }
+    const ai = getGemini();
+    const [newsSnap, trendsSnap] = await Promise.all([
+      db.collection("market_news").orderBy("publishedAt", "desc").limit(5).get(),
+      db.collection("market_intel_snapshots").orderBy("date", "desc").limit(1).get(),
+    ]);
+    const newsContext = newsSnap.docs.map((d) => d.data().title).join("\n");
+    const trendsContext = trendsSnap.empty ? "" : JSON.stringify(trendsSnap.docs[0].data().trends);
+    const r = await ai.models.generateContent({
+      model: GEMINI_FLASH_L,
+      contents: `Write a 150-word LATAM AI workforce brief. Direct, no filler, data-driven.
 NEWS: ${newsContext}
 TRENDS: ${trendsContext}`,
-  });
-  res.json({ brief: r.text });
+    });
+    res.json({ brief: r.text });
+  } catch (e: any) {
+    // Soft-fail: brief generation failed — return null with reason
+    res.json({ brief: null, reason: e?.message || 'brief generation failed' });
+  }
 }
 
 // ── /api/market-intel/crypto-news ────────────────────────────────────────────
 async function handleCryptoNews(res: VercelResponse) {
-  const API_KEY = process.env.NEWSDATA_API_KEY;
-  if (!API_KEY) return res.json([]);
-  const r = await fetch(
-    `https://newsdata.io/api/1/news?apikey=${API_KEY}&q=crypto+blockchain+web3+LATAM&language=en&size=5`
-  );
-  const data = await r.json();
-  const articles = (data.results || [])
-    .filter((a: any) => a.title && a.link)
-    .map((a: any) => ({ title: a.title, url: a.link, source: a.source_id }));
-  res.json(articles);
+  if (!process.env.NEWSDATA_API_KEY) {
+    return res.json([]);
+  }
+  try {
+    const API_KEY = process.env.NEWSDATA_API_KEY;
+    const r = await fetch(
+      `https://newsdata.io/api/1/news?apikey=${API_KEY}&q=crypto+blockchain+web3+LATAM&language=en&size=5`
+    );
+    const data = await r.json();
+    const articles = (data.results || [])
+      .filter((a: any) => a.title && a.link)
+      .map((a: any) => ({ title: a.title, url: a.link, source: a.source_id }));
+    res.json(articles);
+  } catch {
+    res.json([]);
+  }
 }
 
 // ── /api/market-intel/trends ──────────────────────────────────────────────────
 async function handleTrends(res: VercelResponse) {
-  const snap = await db.collection("market_intel_snapshots").orderBy("date", "desc").limit(1).get();
-  if (snap.empty) return res.json({ sectors: [], companies: [] });
-  res.json(snap.docs[0].data().trends || { sectors: [], companies: [] });
+  try {
+    const snap = await db.collection("market_intel_snapshots").orderBy("date", "desc").limit(1).get();
+    if (snap.empty) return res.json({ sectors: [], companies: [] });
+    res.json(snap.docs[0].data().trends || { sectors: [], companies: [] });
+  } catch {
+    res.json({ sectors: [], companies: [] });
+  }
 }
 
 // ── /api/market-intel/volume ──────────────────────────────────────────────────
 async function handleVolume(res: VercelResponse) {
-  const snap = await db.collection("market_intel_snapshots").orderBy("date", "desc").limit(7).get();
-  res.json(snap.docs.map((d) => d.data().volume || []));
+  try {
+    const snap = await db.collection("market_intel_snapshots").orderBy("date", "desc").limit(7).get();
+    res.json(snap.docs.map((d) => d.data().volume || []));
+  } catch {
+    res.json([]);
+  }
 }
 
 // ── Main dispatcher ───────────────────────────────────────────────────────────
@@ -77,6 +105,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         return res.status(400).json({ error: `Unknown section: "${section}". Use: news, brief, crypto-news, trends, volume` });
     }
   } catch (e: any) {
-    res.status(500).json({ error: e.message });
+    // Outer safety net — never 500
+    res.status(200).json({ error: e?.message || 'unknown' });
   }
 }
