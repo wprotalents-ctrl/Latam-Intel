@@ -885,6 +885,30 @@ export default function App() {
             </button>
           </div>
 
+          {/* Company Portal Tabs (only visible when company portal is active) */}
+          {portalType === 'company' && (
+            <nav className="hidden md:flex items-center gap-0.5 ml-2 border-l border-border pl-2">
+              <button
+                onClick={() => setCompanyTab('intel')}
+                className={`px-3 py-1.5 mono text-[10px] flex items-center gap-1.5 rounded-md transition-colors ${companyTab === 'intel' ? 'text-accent bg-accent/10 border border-accent/20' : 'text-text-muted hover:text-text border border-transparent'}`}
+              >
+                <Brain size={11} /> Market Intel
+              </button>
+              <button
+                onClick={() => setCompanyTab('post')}
+                className={`px-3 py-1.5 mono text-[10px] flex items-center gap-1.5 rounded-md transition-colors ${companyTab === 'post' ? 'text-accent bg-accent/10 border border-accent/20' : 'text-text-muted hover:text-text border border-transparent'}`}
+              >
+                <Newspaper size={11} /> Post a Role
+              </button>
+              <button
+                onClick={() => setCompanyTab('radar')}
+                className={`px-3 py-1.5 mono text-[10px] flex items-center gap-1.5 rounded-md transition-colors ${companyTab === 'radar' ? 'text-accent bg-accent/10 border border-accent/20' : 'text-text-muted hover:text-text border border-transparent'}`}
+              >
+                <Crosshair size={11} /> CV Radar
+              </button>
+            </nav>
+          )}
+
           {/* Mobile menu */}
           <button className="md:hidden p-2 border border-border rounded-lg text-text-muted hover:text-text">
             <Menu size={18} />
@@ -894,6 +918,82 @@ export default function App() {
 
       <main className="flex-1 relative overflow-hidden grid-bg">
         <AnimatePresence mode="wait">
+          {portalType === 'company' ? (
+            <motion.div
+              key="company"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="absolute inset-0 overflow-y-auto"
+            >
+              {/* Company Portal */}
+              <div className="px-6 md:px-10 py-6 max-w-7xl mx-auto">
+                {companyTab === 'intel' && (
+                  <div>
+                    <div className="mb-4">
+                      <h2 className="text-xl font-black uppercase tracking-tight flex items-center gap-2">
+                        <Brain size={16} className="text-accent" />
+                        {t.marketIntel}
+                      </h2>
+                      <p className="mono text-[9px] text-text/40 mt-1">{t.tagline}</p>
+                    </div>
+                    <CompanyIntelPanel lang={lang} />
+                  </div>
+                )}
+                {companyTab === 'post' && (
+                  <div>
+                    <div className="mb-4">
+                      <h2 className="text-xl font-black uppercase tracking-tight flex items-center gap-2">
+                        <Newspaper size={16} className="text-accent" />
+                        {t.clientPostTitle}
+                      </h2>
+                      <p className="mono text-[9px] text-text/40 mt-1">{t.clientPostSubtitle}</p>
+                    </div>
+                    <ClientJobPostForm
+                      lang={lang}
+                      onSubmit={(data: ClientJobPostData) => {
+                        setJobPostSaved(true);
+                        setTimeout(() => setJobPostSaved(false), 3000);
+                      }}
+                    />
+                    {jobPostSaved && (
+                      <div className="mt-4 p-3 bg-accent/10 border border-accent/30 text-accent text-sm flex items-center gap-2">
+                        <CheckCircle2 size={16} />
+                        Role posted successfully (preview only — backend integration pending).
+                      </div>
+                    )}
+                  </div>
+                )}
+                {companyTab === 'radar' && (
+                  <div>
+                    <div className="mb-4">
+                      <h2 className="text-xl font-black uppercase tracking-tight flex items-center gap-2">
+                        <Crosshair size={16} className="text-accent" />
+                        CV Radar
+                      </h2>
+                      <p className="mono text-[9px] text-text/40 mt-1">
+                        Automated candidate matching for your talent requirements
+                      </p>
+                    </div>
+                    <div className="bg-surface border border-border p-12 text-center">
+                      <Crosshair size={48} className="text-accent mx-auto mb-4 opacity-40" />
+                      <h3 className="text-lg font-bold mb-2">CV Radar — Coming Soon</h3>
+                      <p className="text-sm text-text/60 max-w-md mx-auto mb-4">
+                        Create a Radar with your job requirements and we'll auto-match candidates
+                        from our 23K+ vetted network. Requires client authentication (coming with login).
+                      </p>
+                      <button
+                        disabled
+                        className="px-6 py-3 bg-accent/20 text-accent mono text-[10px] font-bold rounded-lg cursor-not-allowed"
+                      >
+                        + New Radar (auth required)
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </motion.div>
+          ) : (
           <motion.div
             key="dashboard"
             initial={{ opacity: 0 }}
@@ -1353,6 +1453,7 @@ export default function App() {
                   </div>
                 </div>
               </motion.div>
+          )}
         </AnimatePresence>
       </main>
 
