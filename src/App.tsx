@@ -58,6 +58,8 @@ import CompanyIntelPanel from './components/CompanyIntelPanel';
 import CandidateIntel from './components/CandidateIntel';
 import CVRadarDashboard from './components/CVRadarDashboard';
 import SalaryCalculator from './components/SalaryCalculator';
+import ATSChecker from './components/ATSChecker';
+import CandidateResources from './components/CandidateResources';
 import RadarDetailsPage from './components/RadarDetailsPage';
 import { type HiringPlan } from './lib/hiringPlan';
 import { type NetworkReach } from './lib/networkReach';
@@ -1048,6 +1050,14 @@ export default function App() {
                 {/* Salary Calculator — top of dashboard for candidates */}
                 <div className="p-4 lg:p-6 bg-bg">
                   <SalaryCalculator lang={lang} />
+                </div>
+                {/* ATS Resume Checker — local-only, helps candidates beat 75% ATS rejection */}
+                <div className="p-4 lg:p-6 bg-bg">
+                  <ATSChecker lang={lang} />
+                </div>
+                {/* Candidate Resources — LinkedIn, CV, AI-for-employment, top courses */}
+                <div className="p-4 lg:p-6 bg-bg">
+                  <CandidateResources lang={lang} />
                 </div>
                 {/* Top Row: Map and Radar */}
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-px bg-border">
