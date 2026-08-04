@@ -71,21 +71,35 @@ export interface RemoteReadinessResult {
 }
 
 // ─── Base salary data ─────────────────────────────────────────────────────────
-// Mid-level (3–5yr), local pay, USD/year
+// Local market MID (3–6yr), USD/year, Q1 2026 LATAM tech market.
+//
+// Calibration source: Juan's audit (2026-08-04) — LATAM tech bands per
+// Levels.fyi LATAM, Howdy, Mismo, Nexton, Terminal Remote:
+//   - Junior (1–3y):  AR/MX/BR/CL ~$22-38K, CO lowest at $20-30K
+//   - Mid    (3–6y):  AR/CL ~$40-60K, BR/MX ~$37-55K, CO ~$35-50K
+//   - Senior (6+y):   AR/CL ~$60-85K, BR/MX ~$55-75K, CO ~$50-65K
+//   - Data/AI/ML:     $45-90K+ (highest specialization premium)
+//   - DevOps/Cloud:   $40-75K (mid starts $35-48K)
+//   - Mobile:         $45-90K
+//   - Eng. Manager:   +30% managerial premium on top of role anchor
+//   - Fully-loaded (EOR): 1.4-1.5× base → senior average $65-72K
+//
+// BASE_SALARY = local mid anchor per (role, country) in USD/yr.
+// Multiplied by SENIORITY_MULT and ENGLISH_MULT to derive the per-candidate result.
 
 const BASE_SALARY: Record<RoleKey, Record<CountryCode, number>> = {
-  // Local market pay (USD/yr) — mid-level, 3–5yr exp — Q1 2026
-  // Source: WProTalents mandates, Glassdoor LATAM, LinkedIn Salary
-  ai_ml:       { BR: 18000, MX: 16000, CO: 14000, AR: 12000, CL: 18000 },
-  llm:         { BR: 21000, MX: 19000, CO: 17000, AR: 15000, CL: 21000 },
-  data:        { BR: 15000, MX: 13500, CO: 12000, AR: 10500, CL: 15000 },
-  backend:     { BR: 14000, MX: 12500, CO: 11000, AR: 9500,  CL: 14000 },
-  frontend:    { BR: 12500, MX: 11000, CO: 9500,  AR: 8000,  CL: 12500 },
-  fullstack:   { BR: 14000, MX: 12500, CO: 11000, AR: 9500,  CL: 14000 },
-  devops:      { BR: 16000, MX: 14500, CO: 13000, AR: 11500, CL: 16000 },
-  product:     { BR: 14500, MX: 13000, CO: 11500, AR: 10000, CL: 14500 },
-  data_eng:    { BR: 16000, MX: 14500, CO: 13000, AR: 11500, CL: 16000 },
-  eng_manager: { BR: 26000, MX: 23000, CO: 20000, AR: 17000, CL: 26000 },
+  // Local market pay (USD/yr) — mid-level, 3–6yr exp — Q1 2026
+  // Source: WProTalents mandates + Mismo + Howdy + Levels.fyi LATAM
+  ai_ml:       { BR: 65000, MX: 65000, CO: 55000, AR: 70000, CL: 70000 },
+  llm:         { BR: 70000, MX: 70000, CO: 60000, AR: 75000, CL: 75000 },
+  data:        { BR: 55000, MX: 55000, CO: 50000, AR: 60000, CL: 60000 },
+  backend:     { BR: 45000, MX: 46000, CO: 42000, AR: 48000, CL: 51000 },
+  frontend:    { BR: 45000, MX: 46000, CO: 42000, AR: 48000, CL: 51000 },
+  fullstack:   { BR: 45000, MX: 46000, CO: 42000, AR: 48000, CL: 51000 },
+  devops:      { BR: 55000, MX: 55000, CO: 50000, AR: 60000, CL: 60000 },
+  product:     { BR: 45000, MX: 46000, CO: 42000, AR: 48000, CL: 51000 },
+  data_eng:    { BR: 55000, MX: 55000, CO: 50000, AR: 60000, CL: 60000 },
+  eng_manager: { BR: 58000, MX: 58000, CO: 54000, AR: 62000, CL: 65000 },
 };
 
 // NOTE on auto-update strategy: BASE_SALARY is the local market mid-level (3-5yr)
@@ -96,19 +110,30 @@ const BASE_SALARY: Record<RoleKey, Record<CountryCode, number>> = {
 // first and falls back to this const only if the table is empty. See HANDOFF.md §5.
 
 const SENIORITY_MULT: Record<SeniorityKey, number> = {
-  junior: 0.55, mid: 1.00, senior: 1.55, staff: 2.20,
+  // Calibrated against Juan's verified LATAM tech bands (2026-08-04):
+  //   junior 0.59 × $45K = $26.5K (target $22-32K BR)
+  //   mid    1.00 × $45K = $45K  (target $38-53K BR)
+  //   senior 1.55 × $45K = $70K  (target $55-75K BR)
+  //   staff  1.55 × 1.40 = 2.17  (Lead/Staff +40% above senior)
+  junior: 0.59, mid: 1.00, senior: 1.55, staff: 2.17,
 };
 
 const REMOTE_MULT: Record<CountryCode, number> = {
-  // Uplift when working for US/EU company vs local market — 2026
-  BR: 3.00, MX: 3.20, CO: 3.40, AR: 3.72, CL: 3.00,
+  // Uplift when working for US/EU company (independent contractor remote) vs local
+  // Target senior remote-USD for backend:
+  //   BR 70K × 1.7 = $119K   (US nearshore backend $90-130K)
+  //   MX 71K × 1.7 = $120K
+  //   CO 65K × 1.7 = $110K
+  //   AR 74K × 1.5 = $112K   (AR local is already high → smaller uplift)
+  //   CL 79K × 1.5 = $119K
+  BR: 1.70, MX: 1.70, CO: 1.70, AR: 1.50, CL: 1.50,
 };
 
 const ENGLISH_MULT: Record<EnglishLevel, number> = {
   basic: 1.00, conversational: 1.12, fluent: 1.28, bilingual: 1.40,
 };
 
-const RANGE_SPREAD = 0.30;
+const RANGE_SPREAD = 0.20;
 
 // ─── Live data override (monthly auto-refresh) ────────────────────────────────
 // BASE_SALARY and REMOTE_MULT above are the hardcoded defaults. If Supabase has
@@ -281,9 +306,11 @@ const SKILLS_ROI_TABLE: { skill: string; boost: number; time: Record<Lang, strin
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
 function getSeniority(yearsExp: number): SeniorityKey {
-  if (yearsExp <= 2) return 'junior';
-  if (yearsExp <= 4) return 'mid';
-  if (yearsExp <= 7) return 'senior';
+  // Per Juan's audit (2026-08-04) — LATAM tech bands:
+  //   Junior 1–3y · Mid 3–6y · Senior 6+y · Lead/Staff 10+y
+  if (yearsExp <= 3) return 'junior';
+  if (yearsExp <= 6) return 'mid';
+  if (yearsExp <= 10) return 'senior';
   return 'staff';
 }
 
