@@ -35,7 +35,8 @@ import {
   Newspaper,
   Sun,
   Copy,
-  CheckCircle2
+  CheckCircle2,
+  Lock
 } from 'lucide-react';
 import { 
   BarChart, 
@@ -48,8 +49,6 @@ import {
 } from 'recharts';
 import { MOCK_BRIEFINGS, getRecentBriefings } from './services/intelService';
 import { Language, Briefing, IntelligenceBrief } from './types';
-import { db, handleFirestoreError, FirestoreOperation } from './firebase';
-import { onSnapshot, doc, getDoc, setDoc, collection, query, orderBy, limit, serverTimestamp } from 'firebase/firestore';
 import { SubscriptionSection } from './components/SubscriptionSection';
 import JobsPage from './pages/JobsPage';
 import PrivacyPage from './pages/PrivacyPage';
@@ -65,6 +64,8 @@ const TRANSLATIONS = {
   EN: {
     dashboard: "Dashboard",
     jobs: "Jobs",
+    forCandidates: "For Candidates",
+    forCompanies: "For Companies",
     marketIntel: "Market Intel",
     tagline: "WProTalents: Strategic Talent Acquisition & AI Market Intelligence",
     signal: "WPro Signal",
@@ -207,6 +208,8 @@ const TRANSLATIONS = {
   ES: {
     dashboard: "Panel",
     jobs: "Empleos",
+    forCandidates: "Para Candidatos",
+    forCompanies: "Para Empresas",
     marketIntel: "Inteligencia de Mercado",
     tagline: "Inteligencia del Mercado Laboral de IA y Tendencias Globales",
     signal: "Señal de Empleos IA",
@@ -348,6 +351,8 @@ const TRANSLATIONS = {
   PT: {
     dashboard: "Painel",
     jobs: "Empregos",
+    forCandidates: "Para Candidatos",
+    forCompanies: "Para Empresas",
     marketIntel: "Inteligência de Mercado",
     tagline: "Inteligência do Mercado de Trabalho de IA e Tendências Globais",
     signal: "Sinal de Empregos de IA",
@@ -646,19 +651,19 @@ export default function App() {
     const saved = localStorage.getItem('wpro_lang');
     return (saved === 'EN' || saved === 'ES' || saved === 'PT') ? saved as Language : 'EN';
   });
+  const [portalType, setPortalType] = useState<'candidate' | 'company'>(() => {
+    const saved = localStorage.getItem('wpro_portal');
+    return (saved === 'candidate' || saved === 'company') ? saved : 'candidate';
+  });
+  const togglePortal = (type: 'candidate' | 'company') => {
+    setPortalType(type);
+    localStorage.setItem('wpro_portal', type);
+  };
   const [viewMode, setViewMode] = useState<'Dashboard' | 'Jobs' | 'Privacy'>('Dashboard');
   const [currentTime, setCurrentTime] = useState(new Date());
   const [isSyncing, setIsSyncing] = useState(false);
   const [isCustomizeOpen, setIsCustomizeOpen] = useState(false);
   const [showUpgrade, setShowUpgrade] = useState(false);
-
-  // Auth/paywall state — disabled for free portal. Re-enable when login is implemented.
-  // All references in the JSX are gated on these constants, so removing the auth UI
-  // without changing these would have caused runtime crashes.
-  const userRole: 'candidate' | 'company' = 'candidate';
-  const isAdmin = false;
-  const subscriptionStatus: 'free' | 'premium' = 'free';
-
   const [widgets, setWidgets] = useState<Record<string, boolean>>(() => {
     try {
       const saved = localStorage.getItem('wpro-widgets');
@@ -767,7 +772,7 @@ export default function App() {
         const data = await response.json();
         alert(`Sync successful! New briefing ID: ${data.briefingId}`);
         // Re-fetch briefings
-        const recent = await getRecentBriefings(20, subscriptionStatus === 'premium' || isAdmin);
+        const recent = await getRecentBriefings(20, false);
         setBriefings(recent);
       } else {
         alert('Sync failed. Check server logs.');
@@ -809,7 +814,7 @@ export default function App() {
               <LayoutDashboard size={13} />
               {t.dashboard}
             </button>
-            {userRole === 'candidate' && (
+            {portalType === 'candidate' && (
               <button
                 onClick={() => setViewMode('Jobs')}
                 className={`px-4 py-1.5 mono text-[10px] transition-all duration-200 flex items-center gap-2 rounded-md ${viewMode === 'Jobs' ? 'text-accent bg-accent/10 border border-accent/20' : 'text-text-muted hover:text-text hover:bg-surface-2 border border-transparent'}`}
@@ -864,19 +869,21 @@ export default function App() {
             {theme === 'dark' ? <Sun size={15} /> : <Moon size={15} />}
           </button>
 
-          {/* Admin Sync */}
-          {isAdmin && (
+          {/* Portal Toggle: For Candidates / For Companies */}
+          <div className="hidden md:flex border border-border rounded-lg overflow-hidden">
             <button
-              onClick={handleSyncIntelligence}
-              disabled={isSyncing}
-              className="hidden lg:flex items-center gap-2 px-3 py-1.5 bg-accent/10 border border-accent/30 text-accent mono text-[9px] font-bold rounded-lg hover:bg-accent/20 transition-all disabled:opacity-50"
+              onClick={() => togglePortal('candidate')}
+              className={`px-3 py-1.5 text-[9px] font-mono font-bold transition-all duration-150 flex items-center gap-1.5 ${portalType === 'candidate' ? 'bg-accent text-black' : 'bg-surface text-text-muted hover:bg-surface-2 hover:text-text'}`}
             >
-              <RefreshCw size={11} className={isSyncing ? 'animate-spin' : ''} />
-              {isSyncing ? 'Syncing...' : 'Sync'}
+              <UserIcon size={11} /> {t.forCandidates}
             </button>
-          )}
-
-          {/* Auth removed — free portal, no login. Re-add later when login is implemented. */}
+            <button
+              onClick={() => togglePortal('company')}
+              className={`px-3 py-1.5 text-[9px] font-mono font-bold transition-all duration-150 flex items-center gap-1.5 ${portalType === 'company' ? 'bg-accent text-black' : 'bg-surface text-text-muted hover:bg-surface-2 hover:text-text'}`}
+            >
+              <Briefcase size={11} /> {t.forCompanies}
+            </button>
+          </div>
 
           {/* Mobile menu */}
           <button className="md:hidden p-2 border border-border rounded-lg text-text-muted hover:text-text">
@@ -892,14 +899,14 @@ export default function App() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="h-full overflow-y-auto"
+            className="absolute inset-0 overflow-y-auto"
           >
             {/* Dashboard */}
-            <div className="flex flex-col lg:flex-row min-h-full">
+            <div className="grid grid-cols-12 gap-px bg-border min-h-full">
               {/* Main content */}
-              <div className="w-full lg:w-2/3 flex flex-col">
+              <div className="col-span-12 lg:col-span-8 flex flex-col gap-px bg-border">
                 {/* Top Row: Map and Radar */}
-                    <div className="grid grid-cols-1 md:grid-cols-3 border-b border-border">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-px bg-border">
                       {widgets.map !== false && (
                         <div className="md:col-span-2 bg-bg relative min-h-[400px]">
                           <div className="absolute top-4 left-4 z-20 flex items-center gap-2 mono text-[9px] bg-surface/80 p-2 border border-border">
@@ -937,7 +944,7 @@ export default function App() {
                     </div>
 
                     {/* Middle Row: Conflict Monitor and News */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 border-b border-border">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-px bg-border">
                       <div className="bg-bg p-6 flex flex-col">
                         <div className="flex items-center justify-between mb-6">
                           <div className="mono text-[9px] text-accent flex items-center gap-2">
@@ -1061,12 +1068,12 @@ export default function App() {
                         ))}
                       </div>
                     </div>
-                    {/* Filler: fills remaining height */}
+                    {/* Filler: fills remaining height so bg-border gap doesn't show */}
                     <div className="flex-1 bg-bg" />
                   </div>
 
                   {/* Sidebar */}
-                  <div className="w-full lg:w-1/3 flex flex-col border-t border-border lg:border-t-0 lg:border-l border-border">
+                  <div className="col-span-12 lg:col-span-4 flex flex-col gap-px bg-border">
                     {widgets.pulse !== false && <section className="p-8 bg-bg">
                       <div className="flex items-center justify-between mb-8">
                         <div className="mono text-[9px] text-text/40 flex items-center gap-2">
@@ -1328,22 +1335,24 @@ export default function App() {
                       <p className="mono text-[8px] text-black/40 mt-3 text-center">{t.cancelAny}</p>
                     </section>
                   </div>
-                </div>
 
-                {/* Upgrade strip — full width below the main+sidebar row */}
-                <div className="border-t border-border px-6 py-2 flex items-center justify-between gap-4 bg-surface/30">
-                  <span className="mono text-[8px] text-text/25">
-                    <span className="text-accent/70 font-bold">EXECUTIVE</span>
-                    {' · '}{t.dailyBriefingsStrip}
-                  </span>
-                  <button
-                    onClick={() => window.location.href = '/members'}
-                    className="mono text-[8px] border border-accent/30 text-accent/70 px-3 py-1 hover:bg-accent hover:text-black hover:border-accent transition-all whitespace-nowrap shrink-0"
-                  >
-                    {t.upgradeOpen}
-                  </button>
+                  {/* Upgrade strip */}
+                  <div className="col-span-12">
+                    <div className="border-t border-border px-6 py-2 flex items-center justify-between gap-4 bg-surface/30">
+                      <span className="mono text-[8px] text-text/25">
+                        <span className="text-accent/70 font-bold">EXECUTIVE</span>
+                        {' · '}{t.dailyBriefingsStrip}
+                      </span>
+                      <button
+                        onClick={() => window.location.href = '/members'}
+                        className="mono text-[8px] border border-accent/30 text-accent/70 px-3 py-1 hover:bg-accent hover:text-black hover:border-accent transition-all whitespace-nowrap shrink-0"
+                      >
+                        {t.upgradeOpen}
+                      </button>
+                    </div>
+                  </div>
                 </div>
-            </motion.div>
+              </motion.div>
         </AnimatePresence>
       </main>
 
@@ -1476,7 +1485,7 @@ export default function App() {
 
                 <div className="space-y-8">
                   <h4 className="mono text-[10px] text-text/40 uppercase tracking-widest">The Deep Dive</h4>
-                  {subscriptionStatus === 'premium' || isAdmin ? (
+                  {false ? (
                     <div className="text-text/80 leading-relaxed whitespace-pre-wrap text-lg">
                       {selectedIntelBrief.paid_analysis}
                     </div>
