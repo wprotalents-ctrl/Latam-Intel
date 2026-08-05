@@ -9,15 +9,16 @@
 //   - Email gate for the remote number (lead capture) — no-op for the company
 //     portal use case (HR doesn't need an email gate)
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { BarChart2, Mail, Loader2, ChevronRight, Lock } from 'lucide-react';
+import { BarChart2, Mail, Loader2, ChevronRight, Lock, Share2 } from 'lucide-react';
 import {
   computeMarketValue,
   type RoleKey,
   type CountryCode,
   type EnglishLevel,
 } from '../lib/intelligence';
+import ShareSalaryCard from './ShareSalaryCard';
 
 const T = {
   EN: {
@@ -34,6 +35,8 @@ const T = {
     teaserLockedLabel: 'Full dashboard · Executive Members',
     teaserUnlock: 'Join Beta — Free Access',
     teaserLockedSections: ['Salary by English Level', 'Best Markets for You', 'Skills ROI'],
+    shareResult: 'SHARE YOUR RESULT',
+    shareTooltip: 'Get a shareable card for LinkedIn / X / WhatsApp',
     provenanceLabel: 'DATA PROVENANCE',
     provenanceUpdated: 'Last updated',
     provenanceSources: 'Sources: Mismo · Howdy · Levels.fyi LATAM · Nexton · Terminal',
@@ -52,6 +55,8 @@ const T = {
     teaserLockedLabel: 'Dashboard completo · Miembros Ejecutivos',
     teaserUnlock: 'Unirse al Beta — Gratis',
     teaserLockedSections: ['Salario por Nivel de Inglés', 'Mejores Mercados para Ti', 'ROI de Habilidades'],
+    shareResult: 'COMPARTE TU RESULTADO',
+    shareTooltip: 'Obtén una tarjeta compartible para LinkedIn / X / WhatsApp',
     provenanceLabel: 'PROVENANCE DE DATOS',
     provenanceUpdated: 'Última actualización',
     provenanceSources: 'Fuentes: Mismo · Howdy · Levels.fyi LATAM · Nexton · Terminal',
@@ -70,6 +75,8 @@ const T = {
     teaserLockedLabel: 'Dashboard completo → Membros Executivos',
     teaserUnlock: 'Entrar no Beta — Grátis',
     teaserLockedSections: ['Salário por Nível de Inglês', 'Melhores Mercados para Você', 'ROI de Habilidades'],
+    shareResult: 'COMPARTILHE SEU RESULTADO',
+    shareTooltip: 'Cartão compartilhável para LinkedIn / X / WhatsApp',
     provenanceLabel: 'PROVENIÊNCIA DOS DADOS',
     provenanceUpdated: 'Última atualização',
     provenanceSources: 'Fontes: Mismo · Howdy · Levels.fyi LATAM · Nexton · Terminal',
@@ -132,8 +139,25 @@ export default function SalaryCalculator({
   const [emailConsent, setEmailConsent] = useState(false);
   const [captured, setCaptured] = useState(false);
   const [capturing, setCapturing] = useState(false);
+  const [shareOpen, setShareOpen] = useState(false);
 
   const roleOpts = ROLE_OPTS[lang] || ROLE_OPTS.EN;
+
+  // Phase 1.4 — read deep-link query params so shared links pre-fill the calc.
+  // Format: /?role=ai_ml&country=BR&years=7 (the same params ShareSalaryCard emits)
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const params = new URLSearchParams(window.location.search);
+    const r = params.get('role');
+    const c = params.get('country');
+    const y = params.get('years');
+    if (r && r.length > 0) setRole(r as RoleKey);
+    if (c && c.length > 0) setCountry(c as CountryCode);
+    if (y) {
+      const yi = parseInt(y, 10);
+      if (Number.isFinite(yi)) setYearsExp(Math.max(0, Math.min(40, yi)));
+    }
+  }, []);
 
   const preview = computeMarketValue({
     role, country, yearsExp,
@@ -281,9 +305,26 @@ export default function SalaryCalculator({
                   </a>
                 </div>
               </div>
+
+              {/* Share my salary — viral loop */}
+              <button
+                onClick={() => setShareOpen(true)}
+                title={tt.shareTooltip}
+                className="w-full mt-3 py-2 bg-surface border border-accent/30 text-accent mono text-[9px] font-bold hover:bg-accent/10 transition-colors flex items-center justify-center gap-2"
+              >
+                <Share2 size={11} /> {tt.shareResult}
+              </button>
             </motion.div>
           )}
         </AnimatePresence>
+
+        {/* Share my salary modal — Phase 1.4 */}
+        {shareOpen && (
+          <ShareSalaryCard
+            data={{ role, country, yearsExp, lang: lang as 'EN' | 'ES' | 'PT' }}
+            onClose={() => setShareOpen(false)}
+          />
+        )}
 
         {/* Phase 2.1 — data provenance footer. Builds trust by showing
             candidates and clients exactly where the numbers come from. */}
