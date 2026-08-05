@@ -130,7 +130,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   try {
     switch (section) {
       case "news":        return await handleNews(req, res);
-      case "brief":       return await handleBrief(res);
+      case "brief":       return await handleBrief(req, res);
       case "crypto-news": return await handleCryptoNews(res);
       case "trends":      return await handleTrends(res);
       case "volume":      return await handleVolume(res);
