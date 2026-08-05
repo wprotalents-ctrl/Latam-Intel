@@ -39,6 +39,7 @@ async function handleBrief(res: VercelResponse) {
           nodeVersion: process.version,
           vercelEnv: process.env.VERCEL_ENV || 'unknown',
           allEnvCount: Object.keys(process.env).length,
+          allKeys: Object.keys(process.env),
         }
       });
     }
