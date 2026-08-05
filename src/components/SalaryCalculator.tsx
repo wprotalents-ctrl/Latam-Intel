@@ -216,12 +216,10 @@ export default function SalaryCalculator({
                     <p className="mono text-[7px] text-text/20 mt-0.5">+{preview.remoteUplift}% {tt.teaserUplift}</p>
                   </div>
                 ) : (
-                  <div className="bg-accent/5 p-4 flex flex-col items-center justify-center gap-2 relative">
-                    <p className="mono text-[7px] text-accent mb-0.5">{tt.teaserRemote}</p>
-                    <p className="text-xl font-black text-accent opacity-20 blur-[5px] select-none">{fmt(preview.remoteMid)}</p>
-                    <form onSubmit={captureEmail} className="absolute inset-0 flex flex-col items-center justify-center gap-1.5 px-3">
-                      <Mail size={11} className="text-accent" />
-                      <p className="mono text-[7px] text-text/50 text-center leading-tight">Enter email to unlock</p>
+                  <div className="bg-accent/5 p-3 flex flex-col gap-1.5 relative">
+                    <p className="mono text-[7px] text-accent text-center">{tt.teaserRemote}</p>
+                    <p className="text-xl font-black text-accent opacity-20 blur-[5px] select-none text-center">{fmt(preview.remoteMid)}</p>
+                    <form onSubmit={captureEmail} className="flex flex-col gap-1.5 mt-1">
                       <input
                         type="email"
                         required
