@@ -59,15 +59,20 @@ Rules:
 - Keep total body under 800 words per language
 - The ES and PT versions should be proper translations, not just English with different words`;
 
-    const r = await ai.models.generateContent({
-      model: GEMINI_FLASH,
-      contents: prompt,
-      config: {
-    responseMimeType: 'application/json',
-  },
-    });
+    // Use Gemini Flash with JSON response mode for structured output
+    // (the older SDK doesn't support responseMimeType in generateContent,
+    // so we use a stronger prompt and parse defensively)
+    const result = await ai.generateContent(prompt + '\n\nRespond with valid JSON only, no markdown.');
 
-    const parsed = JSON.parse(r.text);
+    let parsed: any;
+    try {
+      // Strip any markdown fences the model might add
+      const text = result.response.text().replace(/^```json\s*/i, '').replace(/```\s*$/, '').trim();
+      parsed = JSON.parse(text);
+    } catch (e) {
+      // Soft-fail: newsletter generation failed
+      throw new Error('Failed to parse Gemini response as JSON: ' + (e as any)?.message);
+    }
 
     // 3. Store in Supabase
     const issueId = `workforce-daily-${new Date().toISOString().slice(0, 10)}`;

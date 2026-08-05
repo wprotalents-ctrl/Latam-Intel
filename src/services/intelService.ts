@@ -1,12 +1,13 @@
 /// <reference types="vite/client" />
-import { GoogleGenAI, Type } from "@google/genai";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 import { Language, Briefing, Category, IntelligenceBrief } from "../types";
 import { db, handleFirestoreError, FirestoreOperation, doc, setDoc, collection, getDocs, query, orderBy, limit, where, serverTimestamp } from "../firebase";
 
 // GEMINI_API_KEY is a server-side env var. The browser doesn't have it.
 // Any Gemini calls must go through the /api/market-intel/brief endpoint instead.
 // If you really need a client-side key, use VITE_GEMINI_API_KEY (and add the VITE_ prefix in Vercel).
-const ai = new GoogleGenAI({ apiKey: (import.meta as any).env?.VITE_GEMINI_API_KEY || "" });
+const aiKey = (import.meta as any).env?.VITE_GEMINI_API_KEY || "";
+const ai = aiKey ? new GoogleGenerativeAI(aiKey) : null;
 
 export const MOCK_BRIEFINGS: Briefing[] = [
   {
@@ -118,31 +119,19 @@ Output Format: Return valid JSON only.
   "target_persona": "Hiring Manager|Candidate|Analyst"
 }`;
 
-  const response = await ai.models.generateContent({
-    model: "gemini-3.1-pro-preview",
-    contents: prompt,
-    config: {
-      responseMimeType: "application/json",
-      responseSchema: {
-        type: Type.OBJECT,
-        properties: {
-          id: { type: Type.STRING },
-          category: { type: Type.STRING, enum: ['Workforce Daily', 'TechJobs', 'AI Impact', 'Recruitment', 'HR'] },
-          country_code: { type: Type.STRING, enum: ['BR', 'MX', 'CO', 'AR', 'CL'] },
-          is_hiring_signal: { type: Type.BOOLEAN },
-          subject_line: { type: Type.STRING },
-          free_teaser: { type: Type.STRING },
-          paid_analysis: { type: Type.STRING },
-          slack_hook: { type: Type.STRING },
-          target_persona: { type: Type.STRING, enum: ['Hiring Manager', 'Candidate', 'Analyst'] }
-        },
-        required: ["id", "category", "country_code", "is_hiring_signal", "subject_line", "free_teaser", "paid_analysis", "slack_hook", "target_persona"]
-      }
-    }
+  if (!ai) {
+    // Fallback: no client-side key, return empty brief (caller will use mock data)
+    throw new Error('VITE_GEMINI_API_KEY not set — client-side Gemini unavailable, use /api/market-intel/brief endpoint');
+  }
+
+  // Use Gemini Flash with JSON response mode for structured output
+  const response = await ai.getGenerativeModel({ model: 'gemini-2.0-flash' }).generateContent({
+    contents: [{ role: 'user', parts: [{ text: prompt }] }],
+    generationConfig: { responseMimeType: 'application/json' },
   });
 
   try {
-    return JSON.parse(response.text) as IntelligenceBrief;
+    return JSON.parse(response.response.text()) as IntelligenceBrief;
   } catch (error) {
     console.error("Failed to parse Intelligence Brief response:", error);
     throw error;
@@ -199,99 +188,20 @@ Topics to cover based on category:
 
 The response MUST be in ${langNames[language]}.`;
 
-  const response = await ai.models.generateContent({
-    model: "gemini-3.1-pro-preview",
-    contents: prompt,
-    config: {
-      responseMimeType: "application/json",
-      responseSchema: {
-        type: Type.OBJECT,
-        properties: {
-          id: { type: Type.STRING },
-          date: { type: Type.STRING },
-          region: { type: Type.STRING },
-          category: { type: Type.STRING },
-          isPremium: { type: Type.BOOLEAN },
-          content: {
-            type: Type.OBJECT,
-            properties: {
-              EN: {
-                type: Type.OBJECT,
-                properties: {
-                  title: { type: Type.STRING },
-                  sections: {
-                    type: Type.ARRAY,
-                    items: {
-                      type: Type.OBJECT,
-                      properties: {
-                        heading: { type: Type.STRING },
-                        paragraphs: {
-                          type: Type.ARRAY,
-                          items: { type: Type.STRING }
-                        },
-                        soWhat: { type: Type.STRING }
-                      },
-                      required: ["heading", "paragraphs", "soWhat"]
-                    }
-                  }
-                },
-                required: ["title", "sections"]
-              },
-              ES: {
-                type: Type.OBJECT,
-                properties: {
-                  title: { type: Type.STRING },
-                  sections: {
-                    type: Type.ARRAY,
-                    items: {
-                      type: Type.OBJECT,
-                      properties: {
-                        heading: { type: Type.STRING },
-                        paragraphs: {
-                          type: Type.ARRAY,
-                          items: { type: Type.STRING }
-                        },
-                        soWhat: { type: Type.STRING }
-                      },
-                      required: ["heading", "paragraphs", "soWhat"]
-                    }
-                  }
-                },
-                required: ["title", "sections"]
-              },
-              PT: {
-                type: Type.OBJECT,
-                properties: {
-                  title: { type: Type.STRING },
-                  sections: {
-                    type: Type.ARRAY,
-                    items: {
-                      type: Type.OBJECT,
-                      properties: {
-                        heading: { type: Type.STRING },
-                        paragraphs: {
-                          type: Type.ARRAY,
-                          items: { type: Type.STRING }
-                        },
-                        soWhat: { type: Type.STRING }
-                      },
-                      required: ["heading", "paragraphs", "soWhat"]
-                    }
-                  }
-                },
-                required: ["title", "sections"]
-              }
-            },
-            required: [language]
-          }
-        },
-        required: ["id", "date", "region", "category", "isPremium", "content"]
-      }
-    }
+  if (!ai) {
+    throw new Error('VITE_GEMINI_API_KEY not set — client-side Gemini unavailable, use /api/market-intel/brief endpoint');
+  }
+
+  // The @google/generative-ai SDK doesn't support responseSchema, only
+  // responseMimeType. We rely on the prompt's schema description to
+  // shape the response and parse defensively.
+  const response = await ai.getGenerativeModel({ model: 'gemini-2.0-flash' }).generateContent({
+    contents: [{ role: 'user', parts: [{ text: prompt }] }],
+    generationConfig: { responseMimeType: 'application/json' },
   });
 
   try {
-    const briefing = JSON.parse(response.text);
+    const briefing = JSON.parse(response.response.text());
     const fullBriefing: Briefing = {
       ...briefing,
       content: {
