@@ -33,10 +33,12 @@ async function handleBrief(res: VercelResponse) {
       return res.json({
         brief: null,
         reason: 'GEMINI_API_KEY not configured in Vercel env vars',
+        _buildId: 'dfc5b45-debug-payload-2026-08-05',
         debug: {
           presentEnvKeys,
           nodeVersion: process.version,
           vercelEnv: process.env.VERCEL_ENV || 'unknown',
+          allEnvCount: Object.keys(process.env).length,
         }
       });
     }
