@@ -1,7 +1,7 @@
-// api/report/salary.ts
+﻿// api/report/salary.ts
 // Serverless endpoint that generates a branded PDF salary report for the
 // company portal. Companies enter role/country/seniority in the salary
-// bench, hit "Download PDF report" → get a multi-page PDF they can
+// bench, hit "Download PDF report" -> get a multi-page PDF they can
 // forward internally (WPRO-branded, provenance-stamped).
 //
 // Self-contained: salary math is inlined (mirror of src/lib/intelligence.ts
@@ -12,7 +12,7 @@
 // serverless). Each report includes:
 //   1. Cover with role/country/seniority summary
 //   2. Salary table (local mid, remote mid, 5-country comparison)
-//   3. Per-role LATAM market context (text, no charts — PDFs are for
+//   3. Per-role LATAM market context (text, no charts - PDFs are for
 //      printing/forwarding, not for clicking)
 //   4. Provenance footer with sources + last-updated date
 //   5. Share-back link to the live calculator
@@ -101,7 +101,7 @@ const COPY: Record<Lang, {
     sources: 'Sources: Mismo · Howdy · Levels.fyi LATAM · Nexton · Terminal',
     lastUpdated: 'Last updated: 2026-08-04',
     shareBack: 'See this benchmark live',
-    shareBackDesc: 'Use this link to share with your team — opens the live calculator with these exact parameters:',
+    shareBackDesc: 'Use this link to share with your team - opens the live calculator with these exact parameters:',
     footer: 'WProTalents · intel.wprotalents.lat · Confidential salary report',
     page: 'Page', of: 'of',
   },
@@ -116,7 +116,7 @@ const COPY: Record<Lang, {
     sources: 'Fuentes: Mismo · Howdy · Levels.fyi LATAM · Nexton · Terminal',
     lastUpdated: 'Última actualización: 2026-08-04',
     shareBack: 'Ver este benchmark en vivo',
-    shareBackDesc: 'Usa este enlace para compartir con tu equipo — abre la calculadora en vivo con estos parámetros exactos:',
+    shareBackDesc: 'Usa este enlace para compartir con tu equipo - abre la calculadora en vivo con estos parámetros exactos:',
     footer: 'WProTalents · intel.wprotalents.lat · Reporte salarial confidencial',
     page: 'Página', of: 'de',
   },
@@ -131,7 +131,7 @@ const COPY: Record<Lang, {
     sources: 'Fontes: Mismo · Howdy · Levels.fyi LATAM · Nexton · Terminal',
     lastUpdated: 'Última atualização: 2026-08-04',
     shareBack: 'Veja este benchmark ao vivo',
-    shareBackDesc: 'Use este link para compartilhar com sua equipe — abre a calculadora ao vivo com estes parâmetros exatos:',
+    shareBackDesc: 'Use este link para compartilhar com sua equipe - abre a calculadora ao vivo com estes parâmetros exatos:',
     footer: 'WProTalents · intel.wprotalents.lat · Relatório salarial confidencial',
     page: 'Página', of: 'de',
   },
@@ -303,7 +303,7 @@ async function buildPdf(opts: {
     const r = compute(role, c, years);
     const isHighlighted = c === country;
     const rowColor = isHighlighted ? ORANGE : WHITE;
-    page2.drawText(COUNTRY_NAMES[c][lang] + (isHighlighted ? '  ★' : ''), {
+    page2.drawText(COUNTRY_NAMES[c][lang] + (isHighlighted ? '  <--' : ''), {
       x: 50, y: ty, size: 11, font: isHighlighted ? helvBold : helv, color: rowColor,
     });
     page2.drawText(fmt(r.marketMid), {
@@ -321,7 +321,7 @@ async function buildPdf(opts: {
   // Highlighted note
   ty -= 20;
   drawWrappedText(page2,
-    `★ = Selected country. Use the live calculator to see real-time data for each market: intel.wprotalents.lat/?role=${role}&country=${country}&years=${years}`,
+    `<-- = Selected country. Use the live calculator to see real-time data for each market: intel.wprotalents.lat/?role=${role}&country=${country}&years=${years}`,
     { x: 50, y: ty, size: 8, font: helvOblique, color: GRAY_LIGHT, maxWidth: width - 100 }
   );
 
@@ -363,14 +363,14 @@ async function buildPdf(opts: {
     x: 60, y: linkY - 18, size: 9, font: courier, color: ORANGE,
   });
 
-  // QR code would be nice but adds a dep — skip for now
+  // QR code would be nice but adds a dep - skip for now
 
   // Brand block
   let by = linkY - 100;
   page3.drawText('About WProTalents', { x: 50, y: by, size: 10, font: helvBold, color: ORANGE });
   by -= 18;
   drawWrappedText(page3,
-    'WProTalents is a 20-year veteran LATAM tech recruitment firm with 23,000+ vetted professionals across Brazil, Mexico, Colombia, Argentina, and Chile. Latam-Intel is our free market intelligence tool — the same salary data we use to negotiate mandates, now available to everyone.',
+    'WProTalents is a 20-year veteran LATAM tech recruitment firm with 23,000+ vetted professionals across Brazil, Mexico, Colombia, Argentina, and Chile. Latam-Intel is our free market intelligence tool - the same salary data we use to negotiate mandates, now available to everyone.',
     { x: 50, y: by, size: 9, font: helv, color: GRAY_LIGHT, maxWidth: width - 100 }
   );
   by -= 80;
