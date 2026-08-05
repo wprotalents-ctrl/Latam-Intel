@@ -24,7 +24,21 @@ async function handleBrief(res: VercelResponse) {
   try {
     if (!process.env.GEMINI_API_KEY) {
       // Soft-fail: client knows to show "GEMINI_API_KEY not configured" empty state
-      return res.json({ brief: null, reason: 'GEMINI_API_KEY not configured in Vercel env vars' });
+      // Diagnostic: also surface what env keys ARE present, so we can see whether
+      // Vercel is injecting the env vars at all. This is a one-line debug helper
+      // that runs only when the key is missing — zero cost in the happy path.
+      const presentEnvKeys = Object.keys(process.env).filter(k =>
+        k.includes('API') || k.includes('KEY') || k.includes('SUPABASE') || k.includes('GEMINI') || k.includes('NEWS')
+      );
+      return res.json({
+        brief: null,
+        reason: 'GEMINI_API_KEY not configured in Vercel env vars',
+        debug: {
+          presentEnvKeys,
+          nodeVersion: process.version,
+          vercelEnv: process.env.VERCEL_ENV || 'unknown',
+        }
+      });
     }
     const ai = getGemini();
     const [newsSnap, trendsSnap] = await Promise.all([
