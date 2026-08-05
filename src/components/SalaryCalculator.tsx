@@ -11,7 +11,7 @@
 
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { BarChart2, Mail, Loader2, ChevronRight, Lock, Share2 } from 'lucide-react';
+import { BarChart2, Mail, Loader2, ChevronRight, Lock, Share2, FileDown } from 'lucide-react';
 import {
   computeMarketValue,
   type RoleKey,
@@ -37,6 +37,8 @@ const T = {
     teaserLockedSections: ['Salary by English Level', 'Best Markets for You', 'Skills ROI'],
     shareResult: 'SHARE YOUR RESULT',
     shareTooltip: 'Get a shareable card for LinkedIn / X / WhatsApp',
+    downloadPdf: 'DOWNLOAD PDF REPORT',
+    downloadPdfTooltip: 'Branded multi-page PDF you can forward to your team',
     provenanceLabel: 'DATA PROVENANCE',
     provenanceUpdated: 'Last updated',
     provenanceSources: 'Sources: Mismo · Howdy · Levels.fyi LATAM · Nexton · Terminal',
@@ -57,6 +59,8 @@ const T = {
     teaserLockedSections: ['Salario por Nivel de Inglés', 'Mejores Mercados para Ti', 'ROI de Habilidades'],
     shareResult: 'COMPARTE TU RESULTADO',
     shareTooltip: 'Obtén una tarjeta compartible para LinkedIn / X / WhatsApp',
+    downloadPdf: 'DESCARGAR REPORTE PDF',
+    downloadPdfTooltip: 'PDF multipágina con marca que puedes reenviar a tu equipo',
     provenanceLabel: 'PROVENANCE DE DATOS',
     provenanceUpdated: 'Última actualización',
     provenanceSources: 'Fuentes: Mismo · Howdy · Levels.fyi LATAM · Nexton · Terminal',
@@ -77,6 +81,8 @@ const T = {
     teaserLockedSections: ['Salário por Nível de Inglês', 'Melhores Mercados para Você', 'ROI de Habilidades'],
     shareResult: 'COMPARTILHE SEU RESULTADO',
     shareTooltip: 'Cartão compartilhável para LinkedIn / X / WhatsApp',
+    downloadPdf: 'BAIXAR RELATÓRIO PDF',
+    downloadPdfTooltip: 'PDF multipágina com marca para enviar à sua equipe',
     provenanceLabel: 'PROVENIÊNCIA DOS DADOS',
     provenanceUpdated: 'Última atualização',
     provenanceSources: 'Fontes: Mismo · Howdy · Levels.fyi LATAM · Nexton · Terminal',
@@ -314,6 +320,20 @@ export default function SalaryCalculator({
               >
                 <Share2 size={11} /> {tt.shareResult}
               </button>
+
+              {/* Download PDF report — company portal only (no email gate) */}
+              {!emailGate && (
+                <a
+                  href={`/api/report/salary?role=${role}&country=${country}&years=${yearsExp}&lang=${lang}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  title={tt.downloadPdfTooltip}
+                  className="w-full mt-2 py-2 bg-accent text-black mono text-[9px] font-bold hover:opacity-90 transition-opacity flex items-center justify-center gap-2"
+                  download
+                >
+                  <FileDown size={11} /> {tt.downloadPdf}
+                </a>
+              )}
             </motion.div>
           )}
         </AnimatePresence>

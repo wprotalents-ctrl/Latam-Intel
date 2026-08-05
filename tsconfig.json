@@ -28,6 +28,8 @@
     "functions",
     "api/_lib/supabase.ts",
     "api/webhooks",
-    "backend"
+    "backend",
+    "check_exports.ts",
+    "server.ts"
   ]
 }
