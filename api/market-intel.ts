@@ -30,8 +30,13 @@ async function handleBrief(req: VercelRequest, res: VercelResponse) {
     if (!gKey) {
       return res.json({
         brief: null,
-        reason: 'GEMINI_API_KEY not configured in Vercel env vars',
-        note: 'You can temporarily pass ?key=YOUR_KEY in the URL to test',
+        reason: 'GEMINI_API_KEY is missing',
+        debug: {
+          envKey,
+          urlKey,
+          reqQuery: req.query,
+          reqUrl: req.url,
+        },
       });
     }
     const ai = getGemini(gKey);
