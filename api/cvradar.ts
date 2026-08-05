@@ -1,6 +1,5 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { db } from './_lib/firebase';
-import admin from 'firebase-admin';
+import { db, admin } from './_lib/firebase';
 
 /*
   Consolidated CV Radar API — replaces:

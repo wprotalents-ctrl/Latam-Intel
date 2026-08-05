@@ -1,8 +1,7 @@
 /// <reference types="vite/client" />
 import { GoogleGenAI, Type } from "@google/genai";
 import { Language, Briefing, Category, IntelligenceBrief } from "../types";
-import { db, handleFirestoreError, FirestoreOperation } from "../firebase";
-import { doc, setDoc, collection, getDocs, query, orderBy, limit, where, serverTimestamp } from "firebase/firestore";
+import { db, handleFirestoreError, FirestoreOperation, doc, setDoc, collection, getDocs, query, orderBy, limit, where, serverTimestamp } from "../firebase";
 
 // GEMINI_API_KEY is a server-side env var. The browser doesn't have it.
 // Any Gemini calls must go through the /api/market-intel/brief endpoint instead.

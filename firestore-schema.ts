@@ -6,7 +6,9 @@
  * receive automated notifications when matching candidates are found.
  */
 
-import { Timestamp } from 'firebase-admin/firestore';
+// Firebase removed 2026-08-04. Timestamp type stub for type-compat.
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type Timestamp = any;
 
 /**
  * CLIENT CV RADAR PROFILE

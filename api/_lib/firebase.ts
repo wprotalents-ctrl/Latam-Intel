@@ -1,19 +1,35 @@
-import admin from "firebase-admin";
-import { getFirestore } from "firebase-admin/firestore";
+// api/_lib/firebase.ts
+// Firebase STUB — removed firebase-admin dependency in 2026-08-04.
+// The DB calls (trends, volume, brief context, news cache) are no
+// longer supported. All callers now soft-fail to empty arrays / null
+// so the UI handles them gracefully.
+//
+// If Firebase is needed in the future, replace this stub with a real
+// firebase-admin initialization + getFirestore().
 
-if (!admin.apps.length) {
-  const serviceAccountJson = process.env.FIREBASE_SERVICE_ACCOUNT;
-  if (serviceAccountJson) {
-    const serviceAccount = JSON.parse(serviceAccountJson);
-    admin.initializeApp({
-      credential: admin.credential.cert(serviceAccount),
-      projectId: "ai-studio-applet-webapp-b5093",
-    });
-  } else {
-    // Fallback for local dev with ADC
-    admin.initializeApp({ projectId: "ai-studio-applet-webapp-b5093" });
-  }
-}
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const db: any = {
+  collection: () => ({
+    orderBy: () => ({
+      limit: () => ({
+        get: async () => ({ docs: [], empty: true }),
+      }),
+    }),
+    doc: () => ({
+      get: async () => ({ exists: false, data: () => null }),
+      set: async () => {},
+    }),
+    add: async () => ({ id: 'stub' }),
+  }),
+};
 
-export const db = getFirestore(admin.app(), "ai-studio-98e74f83-a378-445d-baa9-3c954d2762c7");
-export { admin };
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const admin: any = {
+  apps: [],
+  initializeApp: () => {},
+  credential: { cert: () => ({}) },
+  firestore: {
+    Timestamp: { now: () => ({}), fromDate: () => ({}) },
+    FieldValue: { serverTimestamp: () => ({}) },
+  },
+};
