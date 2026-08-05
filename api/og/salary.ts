@@ -13,8 +13,7 @@
 // manual PNG download.
 
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { renderShareSvg } from '../../src/lib/shareSalaryCard';
-import type { RoleKey, CountryCode } from '../../src/lib/intelligence';
+import { renderShareSvg, type RoleKey, type CountryCode } from '../../src/lib/shareSalaryCard';
 
 const VALID_ROLES = new Set<RoleKey>([
   'ai_ml','llm','data','backend','frontend','fullstack',

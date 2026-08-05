@@ -5,18 +5,62 @@
 //
 // Lives in /lib (not /components) because it has no React deps — keeps
 // the OG endpoint bundle tiny (no lucide-react, no @vercel/node JSX).
+//
+// IMPORTANT: salary math is inlined here (not imported from intelligence.ts)
+// so the OG endpoint bundle doesn't drag in @supabase/supabase-js, which
+// would crash Vercel functions. Keep this section in sync with the consts
+// in src/lib/intelligence.ts (BASE_SALARY + SENIORITY_MULT + REMOTE_MULT).
 
-import {
-  computeMarketValue,
-  type RoleKey,
-  type CountryCode,
-} from './intelligence';
+export type RoleKey = 'ai_ml' | 'llm' | 'data' | 'backend' | 'frontend' | 'fullstack' | 'devops' | 'product' | 'data_eng' | 'eng_manager';
+export type CountryCode = 'BR' | 'MX' | 'CO' | 'AR' | 'CL';
 
 export interface ShareSalaryCardData {
   role: RoleKey;
   country: CountryCode;
   yearsExp: number;
   lang?: 'EN' | 'ES' | 'PT';
+}
+
+// ── Inlined salary math (mirror of src/lib/intelligence.ts BASE_SALARY) ──
+// Keep in sync with intelligence.ts. Last calibrated 2026-08-04.
+const BASE_SALARY: Record<RoleKey, Record<CountryCode, number>> = {
+  ai_ml:       { BR: 65000, MX: 65000, CO: 55000, AR: 70000, CL: 70000 },
+  llm:         { BR: 70000, MX: 70000, CO: 60000, AR: 75000, CL: 75000 },
+  data:        { BR: 55000, MX: 55000, CO: 50000, AR: 60000, CL: 60000 },
+  backend:     { BR: 45000, MX: 46000, CO: 42000, AR: 48000, CL: 51000 },
+  frontend:    { BR: 45000, MX: 46000, CO: 42000, AR: 48000, CL: 51000 },
+  fullstack:   { BR: 45000, MX: 46000, CO: 42000, AR: 48000, CL: 51000 },
+  devops:      { BR: 55000, MX: 55000, CO: 50000, AR: 60000, CL: 60000 },
+  product:     { BR: 45000, MX: 46000, CO: 42000, AR: 48000, CL: 51000 },
+  data_eng:    { BR: 55000, MX: 55000, CO: 50000, AR: 60000, CL: 60000 },
+  eng_manager: { BR: 58000, MX: 58000, CO: 54000, AR: 62000, CL: 65000 },
+};
+
+const SENIORITY_MULT: Record<'junior' | 'mid' | 'senior' | 'staff', number> = {
+  junior: 0.59, mid: 1.00, senior: 1.55, staff: 2.17,
+};
+
+const REMOTE_MULT: Record<CountryCode, number> = {
+  BR: 1.70, MX: 1.70, CO: 1.70, AR: 1.50, CL: 1.50,
+};
+
+const ENGLISH_MULT = { basic: 1.00, conversational: 1.12, fluent: 1.28, bilingual: 1.40 } as const;
+
+function getSeniority(yearsExp: number): 'junior' | 'mid' | 'senior' | 'staff' {
+  if (yearsExp <= 3) return 'junior';
+  if (yearsExp <= 6) return 'mid';
+  if (yearsExp <= 10) return 'senior';
+  return 'staff';
+}
+
+function computeShareValue(data: ShareSalaryCardData) {
+  const seniority = getSeniority(data.yearsExp);
+  const base = BASE_SALARY[data.role][data.country];
+  const local = base * SENIORITY_MULT[seniority];
+  const localMid = Math.round(local / 500) * 500;
+  const remoteMid = Math.round(local * REMOTE_MULT[data.country] * ENGLISH_MULT.conversational / 500) * 500;
+  const remoteUplift = Math.round(((remoteMid - localMid) / localMid) * 100);
+  return { marketMid: localMid, remoteMid, remoteUplift };
 }
 
 const ROLE_LABELS: Record<RoleKey, Record<'EN' | 'ES' | 'PT', string>> = {
@@ -43,13 +87,6 @@ const SENIORITY_LABEL: Record<string, Record<'EN' | 'ES' | 'PT', string>> = {
   staff:   { EN: 'Staff',      ES: 'Lead',    PT: 'Lead' },
 };
 
-function getSeniority(yearsExp: number): 'junior' | 'mid' | 'senior' | 'staff' {
-  if (yearsExp <= 3) return 'junior';
-  if (yearsExp <= 6) return 'mid';
-  if (yearsExp <= 10) return 'senior';
-  return 'staff';
-}
-
 function fmt(n: number): string {
   return '$' + n.toLocaleString('en-US');
 }
@@ -65,16 +102,7 @@ export function renderShareSvg(data: ShareSalaryCardData): string {
   const flag = COUNTRY_FLAGS[data.country] || '';
   const seniority = SENIORITY_LABEL[getSeniority(data.yearsExp)][lang];
 
-  const result = computeMarketValue({
-    role: data.role,
-    country: data.country,
-    yearsExp: data.yearsExp,
-    englishLevel: 'conversational',
-    skills: [],
-    hasRemoteExp: false,
-    hasPortfolio: false,
-  } as any, lang);
-
+  const result = computeShareValue(data);
   const local = fmt(result.marketMid);
   const remote = fmt(result.remoteMid);
   const uplift = result.remoteUplift;
