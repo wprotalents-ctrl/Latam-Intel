@@ -88,7 +88,8 @@ async function arbeitnow(): Promise<{ jobs: any[]; health: SourceHealth }> {
       tags: j.tags?.join(', ') || '',
       source: 'Arbeitnow',
       region: region(j.location || 'Remote'),
-      postedAt: j.created_at,
+      // Arbeitnow returns created_at as a Unix timestamp (number); normalize to ISO
+      postedAt: typeof j.created_at === 'number' ? new Date(j.created_at * 1000).toISOString() : j.created_at,
     }));
     return { jobs, health: { name: 'Arbeitnow', status: jobs.length ? 'ok' : 'empty', count: jobs.length } };
   } catch (e: any) {
@@ -273,8 +274,15 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     // Remove duplicates by id
     const unique = Array.from(new Map(allJobs.map(job => [job.id, job])).values());
-    // Sort by date (newest first)
-    unique.sort((a, b) => (b.postedAt || '').localeCompare(a.postedAt || ''));
+    // Sort by date (newest first). Coerce to string first — some sources (Arbeitnow)
+    // return postedAt as a Unix timestamp number, not an ISO string, which breaks
+    // String.prototype.localeCompare. Defensive: also wrap in Number coercion as
+    // a fallback so timestamps vs strings both sort correctly.
+    unique.sort((a, b) => {
+      const aDate = a.postedAt ? new Date(a.postedAt).getTime() : 0;
+      const bDate = b.postedAt ? new Date(b.postedAt).getTime() : 0;
+      return bDate - aDate;  // newest first
+    });
 
     console.log(`[jobs] aggregated ${unique.length} jobs`, JSON.stringify(health));
 

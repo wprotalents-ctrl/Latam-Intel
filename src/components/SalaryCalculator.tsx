@@ -34,6 +34,9 @@ const T = {
     teaserLockedLabel: 'Full dashboard · Executive Members',
     teaserUnlock: 'Join Beta — Free Access',
     teaserLockedSections: ['Salary by English Level', 'Best Markets for You', 'Skills ROI'],
+    provenanceLabel: 'DATA PROVENANCE',
+    provenanceUpdated: 'Last updated',
+    provenanceSources: 'Sources: Mismo · Howdy · Levels.fyi LATAM · Nexton · Terminal',
   },
   ES: {
     teaserBadge: 'CALCULADORA DE VALOR DE MERCADO · VISTA PREVIA',
@@ -49,6 +52,9 @@ const T = {
     teaserLockedLabel: 'Dashboard completo · Miembros Ejecutivos',
     teaserUnlock: 'Unirse al Beta — Gratis',
     teaserLockedSections: ['Salario por Nivel de Inglés', 'Mejores Mercados para Ti', 'ROI de Habilidades'],
+    provenanceLabel: 'PROVENANCE DE DATOS',
+    provenanceUpdated: 'Última actualización',
+    provenanceSources: 'Fuentes: Mismo · Howdy · Levels.fyi LATAM · Nexton · Terminal',
   },
   PT: {
     teaserBadge: 'CALCULADORA DE VALOR DE MERCADO · PRÉVIA GRATUITA',
@@ -64,6 +70,9 @@ const T = {
     teaserLockedLabel: 'Dashboard completo → Membros Executivos',
     teaserUnlock: 'Entrar no Beta — Grátis',
     teaserLockedSections: ['Salário por Nível de Inglês', 'Melhores Mercados para Você', 'ROI de Habilidades'],
+    provenanceLabel: 'PROVENIÊNCIA DOS DADOS',
+    provenanceUpdated: 'Última atualização',
+    provenanceSources: 'Fontes: Mismo · Howdy · Levels.fyi LATAM · Nexton · Terminal',
   },
 };
 
@@ -275,6 +284,18 @@ export default function SalaryCalculator({
             </motion.div>
           )}
         </AnimatePresence>
+
+        {/* Phase 2.1 — data provenance footer. Builds trust by showing
+            candidates and clients exactly where the numbers come from. */}
+        <div className="mt-4 pt-3 border-t border-accent/10">
+          <p className="mono text-[7px] font-bold text-text/40 tracking-widest mb-1">
+            {tt.provenanceLabel}
+          </p>
+          <p className="mono text-[8px] text-text/50 leading-relaxed">
+            <span className="text-accent/80">{tt.provenanceUpdated}:</span> 2026-08-04 ·{' '}
+            {tt.provenanceSources}
+          </p>
+        </div>
       </div>
     </div>
   );
