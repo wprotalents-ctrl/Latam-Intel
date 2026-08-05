@@ -55,7 +55,7 @@ import JobsPage from './pages/JobsPage';
 import PrivacyPage from './pages/PrivacyPage';
 import ClientJobPostForm, { type ClientJobPostData } from './components/ClientJobPostForm';
 import CompanyIntelPanel from './components/CompanyIntelPanel';
-import CandidateIntel from './components/CandidateIntel';
+// import CandidateIntel from './components/CandidateIntel'; // archived in _archive/ — kept for post-funding revival
 import CVRadarDashboard from './components/CVRadarDashboard';
 import SalaryCalculator from './components/SalaryCalculator';
 import ATSChecker from './components/ATSChecker';
@@ -1524,7 +1524,7 @@ export default function App() {
                         ))}
                       </div>
                       <button
-                        onClick={() => window.location.href = '/members'}
+                        onClick={() => window.location.href = 'mailto:wprotalents@gmail.com?subject=Executive%20membership%20waitlist'}
                         className="w-full bg-bg text-accent py-4 mono font-bold text-[10px] hover:opacity-90 transition-opacity flex items-center justify-center gap-2"
                       >
                         <Zap size={13} /> {t.upgradeCta}
@@ -1541,7 +1541,7 @@ export default function App() {
                         {' · '}{t.dailyBriefingsStrip}
                       </span>
                       <button
-                        onClick={() => window.location.href = '/members'}
+                        onClick={() => window.location.href = 'mailto:wprotalents@gmail.com?subject=Executive%20membership%20waitlist'}
                         className="mono text-[8px] border border-accent/30 text-accent/70 px-3 py-1 hover:bg-accent hover:text-black hover:border-accent transition-all whitespace-nowrap shrink-0"
                       >
                         {t.upgradeOpen}

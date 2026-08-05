@@ -1,3 +1,10 @@
+// @ts-nocheck
+// ARCHIVED 2026-08-05: Premium "Executive members" tier was removed
+// when we made the portal 100% free. This file is kept for the
+// post-funding revival. Imports to ../components/CandidateIntel
+// etc. are intentionally broken — they only work when this file is
+// moved back to src/pages/MembersPage.tsx.
+
 /// <reference types="vite/client" />
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
