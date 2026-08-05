@@ -1,11 +1,14 @@
 import { GoogleGenAI } from "@google/genai";
 
 let client: GoogleGenAI | null = null;
+let clientKey: string | null = null;
 
-export function getGemini() {
-  if (!client) {
-    const key = process.env.GEMINI_API_KEY;
-    if (!key) throw new Error("GEMINI_API_KEY is missing");
+export function getGemini(overrideKey?: string) {
+  const key = overrideKey || process.env.GEMINI_API_KEY;
+  if (!key) throw new Error("GEMINI_API_KEY is missing");
+  // Rebuild client if the key changed (URL-override path)
+  if (!client || clientKey !== key) {
+    clientKey = key;
     client = new GoogleGenAI({ apiKey: key });
   }
   return client;

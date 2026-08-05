@@ -34,7 +34,7 @@ async function handleBrief(req: VercelRequest, res: VercelResponse) {
         note: 'You can temporarily pass ?key=YOUR_KEY in the URL to test',
       });
     }
-    const ai = getGemini();
+    const ai = getGemini(gKey);
     const [newsSnap, trendsSnap] = await Promise.all([
       db.collection("market_news").orderBy("publishedAt", "desc").limit(5).get(),
       db.collection("market_intel_snapshots").orderBy("date", "desc").limit(1).get(),
