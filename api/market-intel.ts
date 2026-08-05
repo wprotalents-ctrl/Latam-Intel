@@ -20,36 +20,18 @@ async function handleNews(req: VercelRequest, res: VercelResponse) {
 }
 
 // ── /api/market-intel/brief ───────────────────────────────────────────────────
-async function handleBrief(res: VercelResponse) {
+async function handleBrief(req: VercelRequest, res: VercelResponse) {
   try {
-    // Comprehensive env-var diagnostic — helps diagnose Vercel injection issues
-    const gKey = process.env.GEMINI_API_KEY;
-    const gType = gKey === undefined ? 'undefined' : gKey === '' ? 'empty-string' : gKey === null ? 'null' : typeof gKey;
-    const gLen = typeof gKey === 'string' ? gKey.length : 0;
-    const gStart = typeof gKey === 'string' ? gKey.substring(0, 6) : '';
+    // URL param override (for testing) — only if env var is not set
+    // Allows manual workaround: /api/market-intel/brief?key=AQ.Ab8R...
+    const envKey = process.env.GEMINI_API_KEY;
+    const urlKey = (req.query.key as string) || '';
+    const gKey = envKey || urlKey;
     if (!gKey) {
       return res.json({
         brief: null,
         reason: 'GEMINI_API_KEY not configured in Vercel env vars',
-        envDebug: {
-          type: gType,
-          length: gLen,
-          startsWith: gStart,
-          totalEnvKeys: Object.keys(process.env).length,
-          vercelEnv: process.env.VERCEL_ENV || 'unknown',
-          vercelRegion: process.env.VERCEL_REGION || 'unknown',
-          vercelSha: (process.env.VERCEL_GIT_COMMIT_SHA || '').substring(0, 7),
-          keyInProcessEnv: 'GEMINI_API_KEY' in process.env,
-          // List ALL env keys that look like user vars (filter out Vercel/AWS noise)
-          userEnvKeys: Object.keys(process.env).filter(k =>
-            !k.startsWith('VERCEL_') &&
-            !k.startsWith('AWS_') &&
-            !['PATH', 'LANG', 'TZ', 'NODE_ENV', 'SHLVL', 'PWD', 'NODE_PATH', 'HOME', 'USER', 'SHELL',
-              'OLDPWD', 'HOSTNAME', 'LOGNAME', 'TERM', 'XDG_SESSION_ID', 'XDG_RUNTIME_DIR',
-              'INIT_CWD', 'npm_lifecycle_event', 'npm_package_name', 'npm_node_execpath',
-              'NPM_CONFIG_REGISTRY', 'npm_execpath', 'npm_config_user_agent', 'FORCE_COLOR'].includes(k)
-          ),
-        }
+        note: 'You can temporarily pass ?key=YOUR_KEY in the URL to test',
       });
     }
     const ai = getGemini();
