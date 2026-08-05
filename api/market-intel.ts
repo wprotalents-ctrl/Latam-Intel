@@ -113,6 +113,31 @@ async function handleVolume(res: VercelResponse) {
   }
 }
 
+// ── /api/market-intel/env-test ────────────────────────────────────────────────
+// Diagnostic endpoint: which env var names actually reach the function?
+// Tests a variety of name patterns to see if Vercel is filtering by name.
+async function handleEnvTest(req: VercelRequest, res: VercelResponse) {
+  const probe = (name: string) => {
+    const v = process.env[name];
+    if (v === undefined) return 'undefined';
+    if (v === '') return 'empty-string';
+    if (v === null) return 'null';
+    return `present(len=${v.length})`;
+  };
+  return res.json({
+    GEMINI_API_KEY: probe('GEMINI_API_KEY'),
+    NEWSDATA_API_KEY: probe('NEWSDATA_API_KEY'),
+    SUPABASE_URL: probe('SUPABASE_URL'),
+    SUPABASE_SERVICE_ROLE_KEY: probe('SUPABASE_SERVICE_ROLE_KEY'),
+    VITE_SUPABASE_URL: probe('VITE_SUPABASE_URL'),
+    VITE_SUPABASE_ANON_KEY: probe('VITE_SUPABASE_ANON_KEY'),
+    // Test if any user env var is making it through at all
+    randomTestVar: probe('RANDOM_TEST_VAR_THAT_WAS_NEVER_SET'),
+    allKeysCount: Object.keys(process.env).length,
+    allEnvKeys: Object.keys(process.env).sort(),
+  });
+}
+
 // ── Main dispatcher ───────────────────────────────────────────────────────────
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (handleCors(req, res)) return;
@@ -127,8 +152,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       case "crypto-news": return await handleCryptoNews(res);
       case "trends":      return await handleTrends(res);
       case "volume":      return await handleVolume(res);
+      case "env-test":    return await handleEnvTest(req, res);
       default:
-        return res.status(400).json({ error: `Unknown section: "${section}". Use: news, brief, crypto-news, trends, volume` });
+        return res.status(400).json({ error: `Unknown section: "${section}". Use: news, brief, crypto-news, trends, volume, env-test` });
     }
   } catch (e: any) {
     // Outer safety net — never 500
