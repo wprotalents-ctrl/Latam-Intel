@@ -1,0 +1,10 @@
+# Latam-Intel robots.txt
+# Public job listings + salary calc are indexable.
+# Admin endpoints, drafts, and personal dashboards are disallowed.
+
+User-agent: *
+Allow: /
+Disallow: /api/
+
+# Point crawlers to sitemap
+Sitemap: https://intel.wprotalents.lat/sitemap.xml
