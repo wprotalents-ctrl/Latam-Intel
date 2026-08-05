@@ -7,8 +7,11 @@ export interface FxRate {
   flag: string;
 }
 
-// Frankfurter: free, no auth, CORS-enabled, ECB data
-const BASE_URL = 'https://api.frankfurter.app';
+// open.er-api.com: free, no auth, supports all LATAM currencies.
+// (Replaces Frankfurter which only had BRL + MXN from LATAM, and
+// exchangerate.host which now requires an API key.)
+// Docs: https://www.exchangerate-api.com/docs/free
+const BASE_URL = 'https://open.er-api.com/v6/latest';
 
 const PAIRS = [
   { code: 'COP', label: 'COP/USD', flag: '🇨🇴' },
@@ -31,27 +34,35 @@ export function useFxRates() {
 
   useEffect(() => {
     let cancelled = false;
-    const codes = PAIRS.map(p => p.code).join(',');
 
     async function fetchRates() {
       try {
-        const res = await fetch(`${BASE_URL}/latest?from=USD&to=${codes}`);
+        // Endpoint returns rates keyed by code, where each rate is
+        // "1 USD = X [CODE]". We invert to get "1 [CODE] = Y USD"
+        // which is what the dashboard displays.
+        const res = await fetch(`${BASE_URL}/USD`);
         if (!res.ok) throw new Error('fx fetch failed');
         const data = await res.json();
         if (cancelled) return;
+        if (data.result !== 'success') throw new Error('fx api error: ' + (data['error-type'] || 'unknown'));
 
         const built: FxRate[] = PAIRS.map(p => {
-          const current: number = data.rates[p.code] ?? 0;
+          // data.rates.COP = "1 USD = 3233 COP" → invert
+          const oneUnitInUsd = data.rates?.[p.code];
+          if (!oneUnitInUsd) return null;
+          const usdPerOne = 1 / oneUnitInUsd;
           return {
             pair: p.label,
-            rate: fmt(current, p.code),
+            rate: fmt(usdPerOne, p.code),
             change: '',
             flag: p.flag,
           };
-        }).filter(r => r.rate !== '0');
+        }).filter((r): r is FxRate => r !== null);
 
         setRates(built);
-        setLastUpdated(data.date || '');
+        // time_last_update_utc is RFC 1123 format — convert to YYYY-MM-DD
+        const d = new Date(data.time_last_update_utc);
+        setLastUpdated(d.toISOString().slice(0, 10));
       } catch {
         // Keep stale or empty — widget hides gracefully
       } finally {
