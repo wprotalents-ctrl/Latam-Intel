@@ -776,8 +776,7 @@ function JobPortal({ lang, t, onPostVacancy }: { lang: string; t: typeof T.EN; o
       })
       .filter(x => x.score >= 3)
       .sort((a, b) => b.score - a.score)
-      .slice(0, 10)
-      .map(x => x.job);
+      .slice(0, 10);
   })() : [];
 
   return (
@@ -823,6 +822,16 @@ function JobPortal({ lang, t, onPostVacancy }: { lang: string; t: typeof T.EN; o
         <div className="flex items-center gap-2 mb-3">
           <Zap size={10} className="text-accent" />
           <span className="mono text-[9px] font-bold text-accent tracking-widest uppercase">{t.matchTitle}</span>
+          <div className="flex-1" />
+          {hasPrefs && (
+            <button
+              onClick={() => saveMatchPrefs({ roleType: '', seniority: '', region: '' })}
+              className="mono text-[8px] text-text/40 hover:text-accent transition-colors uppercase tracking-wider"
+              title="Clear all match filters"
+            >
+              ✕ Clear
+            </button>
+          )}
         </div>
         <div className="grid grid-cols-3 gap-2">
           {/* Role Type */}
@@ -862,6 +871,11 @@ function JobPortal({ lang, t, onPostVacancy }: { lang: string; t: typeof T.EN; o
             </select>
           </div>
         </div>
+        {hasPrefs && (
+          <p className="mono text-[8px] text-text/40 mt-3 leading-relaxed">
+            How it works: we score each job by matching your role keywords in the title (×3), seniority signals in title/tags (×2), and region (×2). Top 10 highest-scoring jobs appear below.
+          </p>
+        )}
       </div>
 
       {/* ── Top 10 matches ───────────────────────────────────────── */}
@@ -876,13 +890,14 @@ function JobPortal({ lang, t, onPostVacancy }: { lang: string; t: typeof T.EN; o
           </div>
           {matchOpen && (
             <div className="divide-y divide-accent/10">
-              {topMatches.map(job => (
+              {topMatches.map(({ job, score }) => (
                 <a key={job.id} href={job.url} target="_blank" rel="noopener noreferrer"
                   className="flex items-start gap-3 px-4 py-3 hover:bg-accent/5 transition-colors group">
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-0.5 flex-wrap">
                       <span className="mono text-[7px] font-bold text-accent bg-accent/10 px-1.5 py-0.5">{t.matchBadge}</span>
                       <h4 className="mono text-[10px] font-bold text-text group-hover:text-accent transition-colors truncate">{job.title}</h4>
+                      <span className="mono text-[7px] text-text/30 ml-auto shrink-0" title="Match score">★ {score}/7</span>
                     </div>
                     <div className="flex items-center gap-2 flex-wrap">
                       <span className="mono text-[8px] text-text/40">{job.company}</span>
