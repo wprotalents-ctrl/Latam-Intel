@@ -939,6 +939,31 @@ export default function App() {
       </header>
 
       <main className="flex-1 relative overflow-hidden grid-bg">
+        {viewMode === 'Jobs' ? (
+          <AnimatePresence mode="wait">
+            <motion.div
+              key="jobs-page"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="absolute inset-0 overflow-y-auto"
+            >
+              <JobsPage lang={lang} isLoggedIn={false} />
+            </motion.div>
+          </AnimatePresence>
+        ) : viewMode === 'Privacy' ? (
+          <AnimatePresence mode="wait">
+            <motion.div
+              key="privacy-page"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="absolute inset-0 overflow-y-auto"
+            >
+              <PrivacyPage onBack={() => setViewMode('Dashboard')} />
+            </motion.div>
+          </AnimatePresence>
+        ) : (
         <AnimatePresence mode="wait">
           {portalType === 'company' ? (
             <motion.div
@@ -1552,6 +1577,7 @@ export default function App() {
               </motion.div>
           )}
         </AnimatePresence>
+        )}
       </main>
 
       {/* Footer */}
