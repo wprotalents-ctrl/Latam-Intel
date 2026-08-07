@@ -127,6 +127,7 @@ async function handleLinkedInBoost(req: VercelRequest, res: VercelResponse) {
 
   try {
     await db.collection("linkedin_boosts").add(submission);
+    console.log(`[linkedin-boost] new submission: ${name} (${role}) — ${contact}`);
     sendNotification(
       `\ud83d\udd25 New Talent Pool: ${name} \u2014 ${role}`,
       `<h2 style="font-family:monospace">New Talent Pool Submission</h2>
@@ -141,14 +142,12 @@ async function handleLinkedInBoost(req: VercelRequest, res: VercelResponse) {
       </table>
       <hr style="margin:16px 0"/>
       <h3 style="font-family:monospace">Generated LinkedIn Post</h3>
-      <pre style="background:#f5f5f5;padding:12px;font-size:12px;white-space:pre-wrap">${generatedPost}</pre>
-      <hr style="margin:16px 0"/>
-      <p style="font-family:monospace;font-size:12px"><a href="${FIREBASE_CONSOLE}/~2Flinkedin_boosts">View all submissions in Firebase \u2192</a></p>`,
+      <pre style="background:#f5f5f5;padding:12px;font-size:12px;white-space:pre-wrap">${generatedPost}</pre>`,
     );
     return res.json({ success: true });
   } catch (e: any) {
-    console.error("LinkedIn boost save error:", e.message);
-    return res.json({ success: true });
+    console.error("[linkedin-boost] save error:", e.message);
+    return res.status(500).json({ success: false, error: e.message || "Save failed" });
   }
 }
 

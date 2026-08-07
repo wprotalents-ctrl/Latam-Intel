@@ -166,13 +166,20 @@ export default function LinkedInBoostModal({ isOpen, onClose, lang = 'EN' }: Pro
     e.preventDefault();
     setStatus('loading');
     try {
-      await fetch('/api/submissions?action=linkedin-boost', {
+      const res = await fetch('/api/submissions?action=linkedin-boost', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ ...form, generatedPost: post, lang }),
       });
-      setStatus('done');
-    } catch {
+      const data = await res.json().catch(() => ({}));
+      if (res.ok && data.success !== false) {
+        setStatus('done');
+      } else {
+        console.error('Pool submission failed:', res.status, data);
+        setStatus('error');
+      }
+    } catch (err) {
+      console.error('Pool submission network error:', err);
       setStatus('error');
     }
   };
@@ -325,7 +332,13 @@ export default function LinkedInBoostModal({ isOpen, onClose, lang = 'EN' }: Pro
                     </button>
 
                     {status === 'error' && (
-                      <p className="mono text-[8px] text-red-400 text-center">Something went wrong. Try again.</p>
+                      <div className="text-center space-y-2">
+                        <p className="mono text-[9px] text-red-400">Something went wrong. Try again, or email us directly:</p>
+                        <a href="mailto:wprotalents@gmail.com?subject=Talent%20Pool%20Application"
+                           className="mono text-[9px] text-accent hover:underline block">
+                          wprotalents@gmail.com →
+                        </a>
+                      </div>
                     )}
 
                     <p className="mono text-[7px] text-text/15 text-center">{t.legal}</p>
