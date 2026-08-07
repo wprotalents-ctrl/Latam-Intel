@@ -71,6 +71,30 @@
     @apply font-sans font-bold tracking-tight;
   }
 
+  /* ── Phase 1.1: readable body text (was 10-12px in many places) ── */
+  p, li, dd, dt, blockquote, label, input, textarea, select, button {
+    font-size: 14px;
+    line-height: 1.6;
+  }
+  p {
+    margin-bottom: 0.75rem;
+  }
+  li {
+    margin-bottom: 0.25rem;
+  }
+  /* Allow explicit Tailwind classes to override (text-xs, text-sm, etc) */
+  .text-xs { font-size: 0.75rem; line-height: 1rem; }
+  .text-sm { font-size: 0.875rem; line-height: 1.25rem; }
+  .text-lg { font-size: 1.125rem; line-height: 1.75rem; }
+  .text-xl { font-size: 1.25rem; line-height: 1.75rem; }
+  .text-2xl { font-size: 1.5rem; line-height: 2rem; }
+  .text-3xl { font-size: 1.875rem; line-height: 2.25rem; }
+  /* Mono labels (eyebrows, status pills, buttons) stay compact — intentional */
+  .mono, .font-mono.mono, .btn-mono, .label-tag, .eyebrow {
+    font-size: 10px;
+    line-height: 1.2;
+  }
+
   ::selection {
     background: var(--accent-glow-strong);
     color: var(--accent-bright);
