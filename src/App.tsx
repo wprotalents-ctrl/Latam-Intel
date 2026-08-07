@@ -509,106 +509,6 @@ const TRANSLATIONS = {
   }
 };
 
-const WorldMap = () => (
-  <div className="relative w-full h-full bg-bg overflow-hidden group">
-    <div className="scanline" />
-    <div className="absolute inset-0 grid-bg opacity-10" />
-    <svg viewBox="0 0 1000 500" className="w-full h-full opacity-40">
-      {/* Latitude/Longitude lines */}
-      {[...Array(10)].map((_, i) => (
-        <line key={`lat-${i}`} x1="0" y1={i * 50} x2="1000" y2={i * 50} stroke="currentColor" strokeWidth="0.2" className="text-text opacity-10" />
-      ))}
-      {[...Array(20)].map((_, i) => (
-        <line key={`lon-${i}`} x1={i * 50} y1="0" x2={i * 50} y2="500" stroke="currentColor" strokeWidth="0.2" className="text-text opacity-10" />
-      ))}
-      
-      <path 
-        d="M150,150 L200,150 L250,200 L300,200 L350,250 L400,250 L450,300 L500,300 L550,250 L600,250 L650,200 L700,200 L750,150 L800,150 L850,200 L900,200" 
-        fill="none" 
-        stroke="var(--accent)" 
-        strokeWidth="0.5" 
-        className="opacity-40"
-      />
-      
-      {/* Abstract landmasses */}
-      <path d="M100,100 Q150,80 200,120 T300,100 T400,150 T350,250 T200,300 T100,200 Z" fill="currentColor" className="text-text opacity-5" />
-      <path d="M500,200 Q550,180 600,220 T700,200 T800,250 T750,350 T600,400 T500,300 Z" fill="currentColor" className="text-text opacity-5" />
-      
-      {[...Array(60)].map((_, i) => (
-        <circle 
-          key={i}
-          cx={Math.random() * 1000}
-          cy={Math.random() * 500}
-          r={Math.random() * 2 + 0.5}
-          fill={Math.random() > 0.8 ? "var(--accent)" : "currentColor"}
-          className="animate-pulse text-text"
-          style={{ animationDelay: `${Math.random() * 5}s` }}
-        />
-      ))}
-    </svg>
-    <div className="absolute bottom-4 left-4 mono text-[7px] text-text/40 bg-surface/80 px-2 py-1 border border-text/10 backdrop-blur-sm">
-      LAT: 35.41217 | LON: -50.55469 | ALT: 12,400M
-    </div>
-    <div className="absolute top-4 right-4 mono text-[7px] text-accent bg-surface/80 px-2 py-1 border border-accent/20 backdrop-blur-sm animate-pulse">
-      LIVE FEED // SAT_04
-    </div>
-  </div>
-);
-
-const RadarWidget = ({ lang, count }: { lang: Language; count: number }) => {
-  const t = TRANSLATIONS[lang];
-  const [blips, setBlips] = useState<{ id: number; x: number; y: number; opacity: number }[]>([]);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setBlips(prev => {
-        const newBlips = prev.map(b => ({ ...b, opacity: b.opacity - 0.1 })).filter(b => b.opacity > 0);
-        if (Math.random() > 0.7) {
-          newBlips.push({
-            id: Date.now(),
-            x: Math.random() * 100,
-            y: Math.random() * 100,
-            opacity: 1
-          });
-        }
-        return newBlips;
-      });
-    }, 500);
-    return () => clearInterval(interval);
-  }, []);
-
-  return (
-    <div className="relative w-full aspect-square bg-surface/30 flex items-center justify-center border border-border overflow-hidden">
-      <div className="absolute inset-0 flex items-center justify-center">
-        {[1, 2, 3, 4].map(i => (
-          <div 
-            key={i} 
-            className="absolute border border-text/10 rounded-full" 
-            style={{ width: `${i * 25}%`, height: `${i * 25}%` }} 
-          />
-        ))}
-        <div className="absolute w-full h-px bg-text/10" />
-        <div className="absolute h-full w-px bg-text/10" />
-        <div className="absolute w-full h-full radar-sweep" />
-        
-        {blips.map(blip => (
-          <motion.div
-            key={blip.id}
-            initial={{ scale: 0 }}
-            animate={{ scale: 1, opacity: blip.opacity }}
-            className="absolute w-1.5 h-1.5 bg-accent rounded-full shadow-[0_0_5px_var(--accent)]"
-            style={{ left: `${blip.x}%`, top: `${blip.y}%` }}
-          />
-        ))}
-      </div>
-      <div className="z-10 flex flex-col items-center bg-surface/40 p-2 backdrop-blur-sm border border-text/5">
-        <div className="mono text-[8px] text-accent font-bold mb-1">{t.scanning}</div>
-        <div className="mono text-[12px] font-black text-text">{count > 0 ? count : '—'} {t.aircraft}</div>
-      </div>
-    </div>
-  );
-};
-
 const SystemLog = ({ lang }: { lang: Language }) => {
   const t = TRANSLATIONS[lang];
   const [logs, setLogs] = useState<{ id: number; time: string; msg: string; type: 'INFO' | 'WARN' | 'CRIT' }[]>([]);
@@ -684,8 +584,8 @@ export default function App() {
   const [widgets, setWidgets] = useState<Record<string, boolean>>(() => {
     try {
       const saved = localStorage.getItem('wpro-widgets');
-      return saved ? JSON.parse(saved) : { map: true, radar: true, pulse: true, log: true, fx: true };
-    } catch { return { map: true, radar: true, pulse: true, log: true, fx: true }; }
+      return saved ? JSON.parse(saved) : { pulse: true, log: true, fx: true };
+    } catch { return { pulse: true, log: true, fx: true }; }
   });
   const toggleWidget = (key: string) => {
     setWidgets(prev => {
@@ -1194,43 +1094,7 @@ export default function App() {
                 <div className="p-4 lg:p-6 bg-bg">
                   <CandidateResources lang={lang} />
                 </div>
-                {/* Top Row: Map and Radar */}
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-px bg-border">
-                      {widgets.map !== false && (
-                        <div className="md:col-span-2 bg-bg relative min-h-[400px]">
-                          <div className="absolute top-4 left-4 z-20 flex items-center gap-2 mono text-[9px] bg-surface/80 p-2 border border-border">
-                            <Globe size={10} className="text-accent" /> {t.worldMap}
-                          </div>
-                          <WorldMap />
-                        </div>
-                      )}
-                      {widgets.radar !== false && (
-                        <div className={`bg-bg relative p-4 flex flex-col ${widgets.map === false ? 'md:col-span-3' : ''}`}>
-                          <div className="flex items-center justify-between mb-4">
-                            <div className="mono text-[9px] text-text/40 flex items-center gap-2">
-                              <Activity size={10} className="text-accent" /> {t.radar}
-                            </div>
-                          </div>
-                          <RadarWidget lang={lang} count={briefings.length} />
-                          <div className="mt-4 space-y-2">
-                            {[
-                              { label: 'Executive / C-Level', color: 'bg-yellow-500', pct: 12 },
-                              { label: 'Senior Individual Contributor', color: 'bg-green-500', pct: 38 },
-                              { label: 'Mid-Level', color: 'bg-blue-400', pct: 35 },
-                              { label: 'Emerging / Rising Talent', color: 'bg-accent', pct: 15 }
-                            ].map(item => (
-                              <div key={item.label} className="flex items-center justify-between mono text-[8px]">
-                                <div className="flex items-center gap-2">
-                                  <div className={`w-1.5 h-1.5 rounded-full ${item.color}`} />
-                                  {item.label}
-                                </div>
-                                <span className="text-text/40">{item.pct}%</span>
-                              </div>
-                            ))}
-                          </div>
-                        </div>
-                      )}
-                    </div>
+                {/* Top Row: Map and Radar (removed 2026-08-07 — pure decoration) */}
 
                     {/* Middle Row: Conflict Monitor and News */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-px bg-border">
