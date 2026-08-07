@@ -680,6 +680,7 @@ export default function App() {
   const [isSyncing, setIsSyncing] = useState(false);
   const [isCustomizeOpen, setIsCustomizeOpen] = useState(false);
   const [showUpgrade, setShowUpgrade] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [widgets, setWidgets] = useState<Record<string, boolean>>(() => {
     try {
       const saved = localStorage.getItem('wpro-widgets');
@@ -804,7 +805,7 @@ export default function App() {
   const t = TRANSLATIONS[lang];
 
   return (
-    <div className={`h-screen flex flex-col bg-bg text-text selection:bg-accent selection:text-black font-sans relative transition-colors duration-300 ${theme === 'light' ? 'light' : ''}`}>
+    <div className={`md:h-screen min-h-screen flex flex-col bg-bg text-text selection:bg-accent selection:text-black font-sans relative transition-colors duration-300 ${theme === 'light' ? 'light' : ''}`}>
       <div className="scanline pointer-events-none fixed inset-0 z-[200]" />
       {/* Top Bar / WPro Intel Header */}
       <header className="border-b border-border/50 bg-surface/90 backdrop-blur-xl flex items-center justify-between px-5 py-2.5 relative z-50">
@@ -932,13 +933,122 @@ export default function App() {
           )}
 
           {/* Mobile menu */}
-          <button className="md:hidden p-2 border border-border rounded-lg text-text-muted hover:text-text">
-            <Menu size={18} />
+          <button
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            className="md:hidden p-2 border border-border rounded-lg text-text-muted hover:text-text"
+            aria-label="Menu"
+          >
+            {mobileMenuOpen ? <X size={18} /> : <Menu size={18} />}
           </button>
         </div>
       </header>
 
-      <main className="flex-1 relative overflow-hidden grid-bg">
+      {/* Mobile Menu Drawer */}
+      <AnimatePresence>
+        {mobileMenuOpen && (
+          <>
+            <motion.div
+              key="mobile-overlay"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setMobileMenuOpen(false)}
+              className="md:hidden fixed inset-0 bg-black/60 z-[60]"
+            />
+            <motion.div
+              key="mobile-drawer"
+              initial={{ x: '100%' }}
+              animate={{ x: 0 }}
+              exit={{ x: '100%' }}
+              transition={{ type: 'tween', duration: 0.2 }}
+              className="md:hidden fixed top-0 right-0 bottom-0 w-72 bg-surface border-l border-border z-[70] overflow-y-auto"
+            >
+              <div className="p-4 border-b border-border flex items-center justify-between">
+                <span className="mono text-[11px] font-bold text-text">MENU</span>
+                <button
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="p-1.5 border border-border rounded text-text-muted hover:text-text"
+                  aria-label="Close"
+                >
+                  <X size={14} />
+                </button>
+              </div>
+              <nav className="p-3 space-y-1">
+                {/* Portal toggle */}
+                <div className="pb-2 mb-2 border-b border-border">
+                  <div className="mono text-[8px] text-text/40 uppercase tracking-widest mb-1.5 px-2">Portal</div>
+                  <div className="grid grid-cols-2 gap-px bg-border">
+                    <button
+                      onClick={() => { setPortalType('candidate'); setMobileMenuOpen(false); }}
+                      className={`p-3 mono text-[10px] uppercase tracking-wider font-bold ${portalType === 'candidate' ? 'bg-accent text-black' : 'bg-surface text-text/60 hover:text-text'}`}
+                    >
+                      Candidates
+                    </button>
+                    <button
+                      onClick={() => { setPortalType('company'); setMobileMenuOpen(false); }}
+                      className={`p-3 mono text-[10px] uppercase tracking-wider font-bold ${portalType === 'company' ? 'bg-accent text-black' : 'bg-surface text-text/60 hover:text-text'}`}
+                    >
+                      Companies
+                    </button>
+                  </div>
+                </div>
+
+                {/* Nav items */}
+                <div className="mono text-[8px] text-text/40 uppercase tracking-widest mb-1.5 px-2">View</div>
+                <button
+                  onClick={() => { setViewMode('Dashboard'); setMobileMenuOpen(false); }}
+                  className={`w-full flex items-center gap-2 p-3 rounded text-left mono text-[10px] uppercase tracking-wider font-bold ${viewMode === 'Dashboard' ? 'bg-accent/10 text-accent border border-accent/30' : 'text-text/70 hover:bg-surface-2 border border-transparent'}`}
+                >
+                  <LayoutDashboard size={12} /> {t.dashboard}
+                </button>
+                <button
+                  onClick={() => { setViewMode('Jobs'); setMobileMenuOpen(false); }}
+                  className={`w-full flex items-center gap-2 p-3 rounded text-left mono text-[10px] uppercase tracking-wider font-bold ${viewMode === 'Jobs' ? 'bg-accent/10 text-accent border border-accent/30' : 'text-text/70 hover:bg-surface-2 border border-transparent'}`}
+                >
+                  <Briefcase size={12} /> {t.jobs}
+                </button>
+                <button
+                  onClick={() => { setViewMode('Privacy'); setMobileMenuOpen(false); }}
+                  className="w-full flex items-center gap-2 p-3 rounded text-left mono text-[10px] uppercase tracking-wider font-bold text-text/70 hover:bg-surface-2 border border-transparent"
+                >
+                  <Shield size={12} /> {t.privacy || 'Privacy'}
+                </button>
+
+                {/* Language switcher */}
+                <div className="mt-3 pt-3 border-t border-border">
+                  <div className="mono text-[8px] text-text/40 uppercase tracking-widest mb-1.5 px-2">Language</div>
+                  <div className="grid grid-cols-3 gap-px bg-border">
+                    {(['EN', 'ES', 'PT'] as Language[]).map(l => (
+                      <button
+                        key={l}
+                        onClick={() => { setLang(l); setMobileMenuOpen(false); }}
+                        className={`p-2 mono text-[10px] uppercase tracking-wider font-bold ${lang === l ? 'bg-accent text-black' : 'bg-surface text-text/60 hover:text-text'}`}
+                      >
+                        {l}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* External links */}
+                <div className="mt-3 pt-3 border-t border-border">
+                  <a
+                    href="https://wprotalents.lat"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="w-full flex items-center gap-2 p-3 rounded text-left mono text-[10px] uppercase tracking-wider font-bold text-text/70 hover:bg-surface-2 border border-transparent"
+                  >
+                    <ArrowUpRight size={12} /> WProTalents Main
+                  </a>
+                </div>
+              </nav>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
+
+      <main className="flex-1 relative md:overflow-hidden overflow-y-auto grid-bg">
         {viewMode === 'Jobs' ? (
           <AnimatePresence mode="wait">
             <motion.div

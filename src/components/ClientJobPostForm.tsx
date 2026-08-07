@@ -20,6 +20,10 @@ const ROLES = [
   'AI / ML Engineer', 'LLM Engineer', 'Data Scientist', 'Data Engineer',
   'Backend Engineer', 'Frontend Engineer', 'Full Stack Engineer',
   'DevOps / SRE', 'Product Manager', 'Engineering Manager',
+  'UX / UI Designer', 'Mobile (iOS / Android)', 'QA Engineer', 'Security Engineer',
+  'Sales / Account Executive', 'Customer Success', 'Marketing / Growth',
+  'Operations / Office Manager', 'Finance / Accounting', 'Legal / Compliance',
+  'HR / People Ops', 'Executive / C-Suite', 'Other (specify below)',
 ];
 
 const COUNTRIES = [
@@ -44,6 +48,7 @@ const PLANS: { value: 'free' | 'promoted'; label: string; desc: string; Icon: Re
 
 export default function ClientJobPostForm({ onSubmit, loading = false }: Props) {
   const [role, setRole] = useState('');
+  const [roleOther, setRoleOther] = useState('');
   const [seniority, setSeniority] = useState<'junior' | 'mid' | 'senior'>('mid');
   const [country, setCountry] = useState('');
   const [salary, setSalary] = useState('');
@@ -55,12 +60,13 @@ export default function ClientJobPostForm({ onSubmit, loading = false }: Props) 
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!role) { setError('Please select a role.'); return; }
+    const finalRole = role === 'Other (specify below)' ? roleOther.trim() : role;
+    if (!finalRole) { setError(role === 'Other (specify below)' ? 'Please specify the role in the field below.' : 'Please select a role.'); return; }
     if (!description.trim()) { setError('Please add a short description.'); return; }
     setError('');
 
     const data: ClientJobPostData = {
-      role,
+      role: finalRole,
       seniority,
       country,
       salary: salary ? Number(salary) : undefined,
@@ -101,6 +107,16 @@ export default function ClientJobPostForm({ onSubmit, loading = false }: Props) 
             <option value="">Select role...</option>
             {ROLES.map(r => <option key={r} value={r}>{r}</option>)}
           </select>
+          {role === 'Other (specify below)' && (
+            <input
+              type="text"
+              value={roleOther}
+              onChange={e => setRoleOther(e.target.value)}
+              placeholder="e.g. Concierge, Sommelier, Private Chef, Yacht Captain..."
+              className={`${inp} mt-2`}
+              autoFocus
+            />
+          )}
         </div>
         <div>
           <label className={lbl}>Seniority *</label>
