@@ -2,6 +2,7 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 import { handleCors } from "./_lib/cors.js";
 import { db } from "./_lib/firebase.js";
+import { getSupabase } from "./_lib/supabase.js";
 
 // ── Shared: send Resend email ───────────────────────────────────────────────
 function sendNotification(subject: string, html: string) {
@@ -126,8 +127,28 @@ async function handleLinkedInBoost(req: VercelRequest, res: VercelResponse) {
   };
 
   try {
-    await db.collection("linkedin_boosts").add(submission);
-    console.log(`[linkedin-boost] new submission: ${name} (${role}) — ${contact}`);
+    // Save to Supabase (primary). If env vars missing, fallback to no-op log.
+    const sb = getSupabase();
+    let savedToDb = false;
+    if (sb) {
+      const { error: dbErr } = await (sb as any).from("talent_pool").insert([{
+        name, role, location: null,
+        skills, experience, availability,
+        salary: salary || null, contact,
+        generated_post: generatedPost || null,
+        lang: lang || "EN",
+        status: "new",
+      }]);
+      if (dbErr) {
+        console.error("[linkedin-boost] supabase insert error:", dbErr.message);
+      } else {
+        savedToDb = true;
+      }
+    } else {
+      console.warn("[linkedin-boost] supabase not configured (env vars missing) — submission NOT persisted");
+    }
+
+    console.log(`[linkedin-boost] new submission: ${name} (${role}) — ${contact} — saved=${savedToDb}`);
     sendNotification(
       `\ud83d\udd25 New Talent Pool: ${name} \u2014 ${role}`,
       `<h2 style="font-family:monospace">New Talent Pool Submission</h2>
@@ -144,7 +165,7 @@ async function handleLinkedInBoost(req: VercelRequest, res: VercelResponse) {
       <h3 style="font-family:monospace">Generated LinkedIn Post</h3>
       <pre style="background:#f5f5f5;padding:12px;font-size:12px;white-space:pre-wrap">${generatedPost}</pre>`,
     );
-    return res.json({ success: true });
+    return res.json({ success: true, saved: savedToDb });
   } catch (e: any) {
     console.error("[linkedin-boost] save error:", e.message);
     return res.status(500).json({ success: false, error: e.message || "Save failed" });
