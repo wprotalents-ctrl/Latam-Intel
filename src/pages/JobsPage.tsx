@@ -552,7 +552,7 @@ function CandidateResourcesPanel({ onLinkedInBoost, lang = 'EN' }: { onLinkedInB
         </div>
 
         {/* Tab navigation */}
-        <div className="flex gap-1 overflow-x-auto no-scrollbar mb-6 pb-1">
+        <div className="flex flex-wrap gap-1 mb-6 pb-1">
           {SECTION_ORDER.map(key => {
             const s = portalSections[key];
             const isActive = activeSection === key;
@@ -560,7 +560,7 @@ function CandidateResourcesPanel({ onLinkedInBoost, lang = 'EN' }: { onLinkedInB
               <button
                 key={key}
                 onClick={() => setActiveSection(key)}
-                className={`flex items-center gap-2 px-3 py-2 mono text-[8px] font-bold border whitespace-nowrap transition-all shrink-0 ${
+                className={`flex items-center gap-1.5 px-2.5 py-2 mono text-[8px] font-bold border whitespace-nowrap transition-all shrink-0 ${
                   isActive
                     ? `${s.accent} border-transparent`
                     : 'bg-bg border-border text-text/30 hover:text-text/60 hover:border-text/20'
