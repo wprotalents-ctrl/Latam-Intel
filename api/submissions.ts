@@ -128,21 +128,30 @@ async function handleLinkedInBoost(req: VercelRequest, res: VercelResponse) {
 
   try {
     // Save to Supabase (primary). If env vars missing, fallback to no-op log.
-    const sb = getSupabase();
+    let sb: any = null;
     let savedToDb = false;
+    try {
+      sb = getSupabase();
+    } catch (sbErr: any) {
+      console.error("[linkedin-boost] supabase init error:", sbErr.message);
+    }
     if (sb) {
-      const { error: dbErr } = await (sb as any).from("talent_pool").insert([{
-        name, role, location: null,
-        skills, experience, availability,
-        salary: salary || null, contact,
-        generated_post: generatedPost || null,
-        lang: lang || "EN",
-        status: "new",
-      }]);
-      if (dbErr) {
-        console.error("[linkedin-boost] supabase insert error:", dbErr.message);
-      } else {
-        savedToDb = true;
+      try {
+        const { error: dbErr } = await sb.from("talent_pool").insert([{
+          name, role, location: null,
+          skills, experience, availability,
+          salary: salary || null, contact,
+          generated_post: generatedPost || null,
+          lang: lang || "EN",
+          status: "new",
+        }]);
+        if (dbErr) {
+          console.error("[linkedin-boost] supabase insert error:", dbErr.message);
+        } else {
+          savedToDb = true;
+        }
+      } catch (insertErr: any) {
+        console.error("[linkedin-boost] supabase insert threw:", insertErr.message);
       }
     } else {
       console.warn("[linkedin-boost] supabase not configured (env vars missing) — submission NOT persisted");
